@@ -172,3 +172,6 @@ Cope mappings:
 Just do following:
 * Remove `~/.vim_runtime`
 * Remove any lines that reference `.vim_runtime` in your `~/.vimrc`
+
+## Inspiration
+* [https://github.com/amix/vimrc](https://github.com/amix/vimrc)
