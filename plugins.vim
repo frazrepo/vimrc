@@ -33,6 +33,7 @@ Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'yegappan/mru'
+Plugin 'yuttie/comfortable-motion.vim'
 " Plugins End
 
 " Vundle End
