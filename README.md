@@ -3,10 +3,9 @@
 
 	1) git clone --depth=1 https://github.com/frazrepo/vimrc.git ~/.vim_runtime
 	
-	2) use the provided _vimrc
+	2) use the provided .vimrc
+    (For Windows : rename .vimrc to _vimrc)
 
-	3) start vim and do a :PluginInstall
-	
 ## How to update to latest version?
 
 Just do a git rebase!
