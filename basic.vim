@@ -114,11 +114,11 @@ set relativenumber
 " Maximized window on start
 if has("gui_running")
   if has("gui_gtk2")
-    au GUIEnter * simalt ~n
+    set lines=768 columns=1366
   elseif has("gui_macvim")
-    au GUIEnter * simalt ~n
+    set lines=768 columns=1366
   elseif has("gui_win32")
-    au GUIEnter * simalt ~n
+    set lines=768 columns=1366
   endif
 endif
 

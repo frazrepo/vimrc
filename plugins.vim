@@ -26,7 +26,7 @@ Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 
 " Code Editing
 Plugin 'terryma/vim-multiple-cursors'
-" Plugin 'tpope/vim-repeat'
+Plugin 'tpope/vim-repeat'
 
 " Code formatting
 Plugin 'Chiel92/vim-autoformat'
@@ -43,8 +43,8 @@ Plugin 'ryanoasis/vim-devicons'
 " Plugin 'christoomey/vim-tmux-navigator'
 
 " Git integration
-" Plugin 'airblade/vim-gitgutter'
-" Plugin 'tpope/vim-fugitive'
+Plugin 'airblade/vim-gitgutter'
+Plugin 'tpope/vim-fugitive'
 Plugin 'vim-airline/vim-airline'
 
 " File management, searching
@@ -56,7 +56,7 @@ Plugin 'scrooloose/nerdtree'
 " Notes, markdown, wiki
 Plugin 'xolox/vim-notes'
 Plugin 'plasticboy/vim-markdown'
-" Plugin 'vimwiki/vimwiki'
+Plugin 'vimwiki/vimwiki'
 
 " Snippet Code Generation
 Plugin 'tpope/vim-surround'
