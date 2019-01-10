@@ -53,7 +53,8 @@ Plugin 'yegappan/mru'
 Plugin 'scrooloose/nerdtree'
 
 " Navigation
-Plugin 'tpope/vim-unimpaired'
+" Todo
+
 
 " Notes, markdown, wiki
 Plugin 'plasticboy/vim-markdown'

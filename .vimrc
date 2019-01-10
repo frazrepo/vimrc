@@ -9,8 +9,7 @@ source $HOME/.vim_runtime/plugins.vim
 source $HOME/.vim_runtime/basic.vim
 source $HOME/.vim_runtime/plugins_config.vim
 
-" Others
-source $VIMRUNTIME/vimrc_example.vim
+" Others Windows common stuff
 source $VIMRUNTIME/mswin.vim
 
 

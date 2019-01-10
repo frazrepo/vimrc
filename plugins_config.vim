@@ -87,13 +87,4 @@ let g:lightline = {
 nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
 nnoremap <silent> <leader>b :Buffers<CR>
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-unimpaired for non-us keyboards
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""  
-nmap < [
-nmap > ]
-omap < [
-omap > ]
-xmap < [
-xmap > ]
 
