@@ -55,14 +55,6 @@ Useful mappings for managing tabs:
 	" Super useful when editing files in the same directory
 	map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 	
-Switch [CWD](http://vim.wikia.com/wiki/Set_working_directory_to_the_current_file) to the directory of the open buffer:
-	
-	map <leader>cd :cd %:p:h<cr>:pwd<cr>
-	
-Open `ack.vim` for fast search:
-	
-	map <leader>g :Ack 
-
 Quickly open a buffer for scripbble:
 	
 	map <leader>q :e ~/buffer<cr>
@@ -133,6 +125,36 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
 
     :W 
 
+### Plugins usage
+
+vim-surround
+
+    Change: cs"', cst"
+    Add : ysiw], ysim<em>
+    Delete :  ds", ds{
+
+nerdree
+
+    Default directory :      <leader>nn, 
+    Current file directory:  <leader>nf
+
+mru
+
+    Recent files : <leader>f
+
+vim-wiki
+
+    Open index page : <leader>ww
+
+vim-unimpaired
+
+    Switch between tabs   : <t, >t
+    Switch between buffers: <b, >b
+
+fzf
+
+    Files :   CTRL + p
+    Buffers : <leader>b
 
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:
@@ -145,27 +167,6 @@ Shortcuts using `<leader>` instead of special characters:
     map <leader>sp [s
     map <leader>sa zg
     map <leader>s? z=
-
-
-### Cope
-Query `:help cope` if you are unsure what cope is. It's super useful!
-
-When you search with `Ack.vim`, display your results in cope by doing:
-`<leader>cc`
-
-To go to the next search result do:
-`<leader>n`
-
-To go to the previous search results do:
-`<leader>p`
-
-Cope mappings:
-
-    map <leader>cc :botright cope<cr>
-    map <leader>co ggVGy:tabnew<cr>:set syntax=qf<cr>pgg
-    map <leader>n :cn<cr>
-    map <leader>p :cp<cr>
-
 
 ## How to uninstall
 Just do following:
