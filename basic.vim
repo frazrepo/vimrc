@@ -113,8 +113,8 @@ set relativenumber
 
 " Maximized window on start
 if has("gui_running")
-  if has("gui_gtk2")
-    set lines=768 columns=1366
+  if has("gui_gtk3")
+    set lines=999 columns=999
   elseif has("gui_macvim")
     set lines=768 columns=1366
   elseif has("gui_win32")
