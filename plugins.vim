@@ -68,8 +68,7 @@ Plugin 'mattn/emmet-vim'
 Plugin 'tpope/vim-commentary'
 
 " Session management
-Plugin 'xolox/vim-session'
-
+" Todo
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugins End
