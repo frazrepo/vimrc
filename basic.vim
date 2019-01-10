@@ -242,13 +242,11 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 " :map <C-n> :enew
 " :map <C-o> :e . <Enter>
 " :map <C-s> :w <Enter>
-" :map <C-c> "+y
-" :map <C-v> "+gP
+:map <C-c> "+y
+:map <C-v> "+gP
 " :map <C-x> "+x
 " :map <C-z> u
 :map <C-t> :tabnew <Enter>
-:map <Enter> o<ESC>
-:map <S-Enter> O<ESC>
 
 " Remap VIM 0 to first non-blank character
 map 0 ^
