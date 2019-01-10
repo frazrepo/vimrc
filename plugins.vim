@@ -34,6 +34,7 @@ Plugin 'plasticboy/vim-markdown'
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'yegappan/mru'
 Plugin 'yuttie/comfortable-motion.vim'
+Plugin 'vim-airline/vim-airline'
 " Plugins End
 
 " Vundle End
