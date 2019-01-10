@@ -75,3 +75,8 @@ let g:lightline = {
       \ 'subseparator': { 'left': ' ', 'right': ' ' }
       \ }
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vimwiki using markdown syntax
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+  let g:vimwiki_list = [{'path': '~/vimwiki/',
+                       \ 'syntax': 'markdown', 'ext': '.md'}]
