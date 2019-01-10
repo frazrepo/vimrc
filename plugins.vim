@@ -53,6 +53,9 @@ Plugin 'junegunn/fzf.vim'
 Plugin 'yegappan/mru'
 Plugin 'scrooloose/nerdtree'
 
+" Navigation
+Plugin 'tpope/vim-unimpaired'
+
 " Notes, markdown, wiki
 Plugin 'xolox/vim-notes'
 Plugin 'plasticboy/vim-markdown'

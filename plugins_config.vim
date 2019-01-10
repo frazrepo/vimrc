@@ -85,3 +85,13 @@ let g:lightline = {
 " => fzf map to CTRL+P
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-unimpaired for non-us keyboards
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""  
+nmap < [
+nmap > ]
+omap < [
+omap > ]
+xmap < [
+xmap > ]
