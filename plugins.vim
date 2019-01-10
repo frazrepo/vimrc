@@ -57,7 +57,6 @@ Plugin 'scrooloose/nerdtree'
 Plugin 'tpope/vim-unimpaired'
 
 " Notes, markdown, wiki
-Plugin 'xolox/vim-notes'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'vimwiki/vimwiki'
 
