@@ -96,3 +96,10 @@ omap < [
 omap > ]
 xmap < [
 xmap > ]
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => xolox session autosave and autoload
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""  
+let g:session_autoload = 'yes'
+let g:session_autosave = 'yes'
