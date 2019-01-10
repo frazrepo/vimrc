@@ -112,7 +112,15 @@ set nu
 set relativenumber
 
 " Maximized window on start
-au GUIEnter * simalt ~n
+if has("gui_running")
+  if has("gui_gtk2")
+    au GUIEnter * simalt ~n
+  elseif has("gui_macvim")
+    au GUIEnter * simalt ~n
+  elseif has("gui_win32")
+    au GUIEnter * simalt ~n
+  endif
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts

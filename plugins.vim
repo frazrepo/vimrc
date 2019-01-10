@@ -14,28 +14,60 @@ call vundle#begin('$HOME/.vim_runtime/plugins/')
 " let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugins Start
-Plugin 'itchyny/lightline.vim'
-Plugin 'junegunn/fzf'
-Plugin 'junegunn/fzf.vim'
-Plugin 'mattn/emmet-vim'
-Plugin 'scrooloose/nerdtree'
-Plugin 'terryma/vim-multiple-cursors'
-Plugin 'tpope/vim-surround'
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Dependencies
 Plugin 'w0rp/ale'
-Plugin 'tpope/vim-commentary'
 Plugin 'chrisbra/vim-autosave'
 Plugin 'xolox/vim-misc'
-Plugin 'xolox/vim-notes'
-Plugin 'dracula/vim'
 Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
-Plugin 'godlygeek/tabular'
-Plugin 'plasticboy/vim-markdown'
+
+" Code Editing
+Plugin 'terryma/vim-multiple-cursors'
+" Plugin 'tpope/vim-repeat'
+
+" Code formatting
 Plugin 'Chiel92/vim-autoformat'
-Plugin 'yegappan/mru'
+Plugin 'godlygeek/tabular'
+
+" Visual Comfort
+Plugin 'dracula/vim'
 Plugin 'yuttie/comfortable-motion.vim'
+Plugin 'itchyny/lightline.vim'
+Plugin 'ryanoasis/vim-devicons'
+
+" Tmux integration - Uncomment for linux
+" Plugin 'edkolev/tmuxline.vim'
+" Plugin 'christoomey/vim-tmux-navigator'
+
+" Git integration
+" Plugin 'airblade/vim-gitgutter'
+" Plugin 'tpope/vim-fugitive'
 Plugin 'vim-airline/vim-airline'
+
+" File management, searching
+Plugin 'junegunn/fzf'
+Plugin 'junegunn/fzf.vim'
+Plugin 'yegappan/mru'
+Plugin 'scrooloose/nerdtree'
+
+" Notes, markdown, wiki
+Plugin 'xolox/vim-notes'
+Plugin 'plasticboy/vim-markdown'
+" Plugin 'vimwiki/vimwiki'
+
+" Snippet Code Generation
+Plugin 'tpope/vim-surround'
+" Requires python on windows
+" Plugin 'SirVer/ultisnips' 
+Plugin 'mattn/emmet-vim'
+Plugin 'tpope/vim-commentary'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugins End
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Vundle End
 call vundle#end()
