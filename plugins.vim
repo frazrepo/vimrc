@@ -36,9 +36,8 @@ Plugin 'godlygeek/tabular'
 Plugin 'dracula/vim'
 Plugin 'yuttie/comfortable-motion.vim'
 Plugin 'itchyny/lightline.vim'
-Plugin 'ryanoasis/vim-devicons'
 
-" Tmux integration - Uncomment for linux
+" Todo : Tmux integration - Uncomment for linux
 " Plugin 'edkolev/tmuxline.vim'
 " Plugin 'christoomey/vim-tmux-navigator'
 
