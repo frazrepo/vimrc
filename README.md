@@ -30,11 +30,10 @@ Map `<Space>` to `/` (search) and `<Ctrl>+<Space>` to `?` (backwards search):
 	
 	map <space> /
 	map <c-space> ?
-	map <silent> <leader><cr> :noh<cr>
 
-Disable highlights when you press `<leader><cr>`:
+Disable highlights when you press `<leader><space>`:
 	
-	map <silent> <leader><cr> :noh<cr>
+	map <silent> <leader><space> :noh<cr>
 
 Smart way to move between windows (`<ctrl>j` etc.):
 	
