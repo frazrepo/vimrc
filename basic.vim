@@ -180,6 +180,18 @@ set wrap "Wrap lines
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
+" When you press `<leader>r` you can search and replace the selected text:
+
+vnoremap <silent> <leader>r :call VisualSelection('replace')<CR>
+
+" Surround the visual selection in parenthesis/brackets/etc.:
+
+vnoremap $1 <esc>`>a)<esc>`<i(<esc>
+vnoremap $2 <esc>`>a]<esc>`<i[<esc>
+vnoremap $3 <esc>`>a}<esc>`<i{<esc>
+vnoremap $$ <esc>`>a"<esc>`<i"<esc>
+vnoremap $q <esc>`>a'<esc>`<i'<esc>
+vnoremap $e <esc>`>a"<esc>`<i"<esc>
 
 """"""""""""""""""""""""""""""
 " => Session management
@@ -212,7 +224,6 @@ map <leader>bd :Bclose<cr>:tabclose<cr>gT
 
 " Close all the buffers
 map <leader>ba :bufdo bd<cr>
-
 map <leader>l :bnext<cr>
 map <leader>h :bprevious<cr>
 
@@ -276,6 +287,24 @@ if has("mac") || has("macunix")
   vmap <D-k> <M-k>
 endif
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Parenthesis/bracket
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+vnoremap $1 <esc>`>a)<esc>`<i(<esc>
+vnoremap $2 <esc>`>a]<esc>`<i[<esc>
+vnoremap $3 <esc>`>a}<esc>`<i{<esc>
+vnoremap $$ <esc>`>a"<esc>`<i"<esc>
+vnoremap $q <esc>`>a'<esc>`<i'<esc>
+vnoremap $e <esc>`>a"<esc>`<i"<esc>
+
+" Map auto complete of (, ", ', [
+inoremap $1 ()<esc>i
+inoremap $2 []<esc>i
+inoremap $3 {}<esc>i
+inoremap $4 {<esc>o}<esc>O
+inoremap $q ''<esc>i
+inoremap $e ""<esc>i
+
 " Delete trailing white space on save, useful for some filetypes ;)
 fun! CleanExtraSpaces()
     let save_cursor = getpos(".")
@@ -288,6 +317,11 @@ endfun
 if has("autocmd")
     autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
 endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => General abbreviations
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+iab xdate <c-r>=strftime("%d/%m/%y %H:%M:%S")<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Misc

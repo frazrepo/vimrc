@@ -48,7 +48,7 @@ Closing of the current buffer(s) (`<leader>bd` and (`<leader>ba`)):
 	map <leader>bd :Bclose<cr>
 	
 	" Close all buffers
-	map <leader>ba :1,1000 bd!<cr>
+	map <leader>ba :bufdo bd$1i$1$1$&sqsqii<cr>
 	
 Useful mappings for managing tabs:
 	
@@ -60,7 +60,15 @@ Useful mappings for managing tabs:
 	" Opens a new tab with the current buffer's path
 	" Super useful when editing files in the same directory
 	map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
+
+Quickly open an empty buffer in all direction:	
 	
+    nnoremap <Leader>hn :leftabove  vnew<CR>
+    nnoremap <Leader>ln :rightbelow vnew<CR>
+    nnoremap <Leader>kn :leftabove  new<CR>
+    nnoremap <Leader>jn :rightbelow new<CR>
+
+
 Quickly open a buffer for scripbble:
 	
 	map <leader>q :e ~/buffer<cr>
@@ -77,10 +85,6 @@ Visual mode pressing `*` or `#` searches for the current selection:
 
 	vnoremap <silent> * :call VisualSelection('f')<CR>
 	vnoremap <silent> # :call VisualSelection('b')<CR>
-
-When you press gv you `Ack.vim` after the selected text:
-
-	vnoremap <silent> gv :call VisualSelection('gv', '')<CR>
 
 When you press `<leader>r` you can search and replace the selected text:
 
