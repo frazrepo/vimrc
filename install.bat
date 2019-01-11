@@ -11,7 +11,6 @@ if exist %backupConfig% (
     del "%backupConfig%"
 )
 if exist %userConfig% (
-    echo "copy /y %userConfig% %backupConfig% ..."
     copy /y  "%userConfig%" "%backupConfig%"
 )
 
