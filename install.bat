@@ -1,9 +1,20 @@
 @echo off
 
-echo "Installing frazrepo/vimrc configuration...."
+echo "Installing vimrc file.."
 
-git clone --depth=1 https://github.com/frazrepo/vimrc.git ~/.vim_runtime
+set userdir=%USERPROFILE%
+set userConfig=%USERPROFILE%/\_vimrc
+set backupConfig=%USERPROFILE%/\_vimrc.bkp
+set vimrcfile=vimrc
+
+if exist %backupConfig% (
+    del "%backupConfig%"
+)
+if exist %userConfig% (
+    echo "copy /y %userConfig% %backupConfig% ..."
+    copy /y  "%userConfig%" "%backupConfig%"
+)
+
+copy /y "%vimrcfile%" "%userConfig%"
 
 echo "Done!"
-
-REM copy ~/.vim_runtime/.vimrc ~/.vim_runtime/_vimrc

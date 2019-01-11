@@ -1,10 +1,15 @@
 
-## How to install ?
+## How to install for Linux ?
 
 	1) git clone --depth=1 https://github.com/frazrepo/vimrc.git ~/.vim_runtime
 	
-	2) use the provided .vimrc
-    (For Windows : rename .vimrc to _vimrc)
+	2) run ./install.sh
+
+## How to install Windows ?
+
+	1) git clone --depth=1 https://github.com/frazrepo/vimrc.git %USERPROFILE%/.vim_runtime
+	
+	2) run install.bat
 
 ## How to update to latest version?
 
@@ -12,6 +17,8 @@ Just do a git rebase!
 
     cd ~/.vim_runtime
     git pull --rebase
+
+And run install.sh (or install.bat) to update vimrc configuration file
 
 ### Normal mode mappings
 
