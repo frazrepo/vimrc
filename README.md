@@ -163,6 +163,10 @@ fzf
     Files :   CTRL + p
     Buffers : <leader>b
 
+sqlutilities
+
+    Formattting :   <leader>sf (in Visual Mode)
+
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:
 
