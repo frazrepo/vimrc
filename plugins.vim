@@ -31,6 +31,8 @@ Plugin 'tpope/vim-repeat'
 " Code formatting
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'godlygeek/tabular'
+Plugin 'vim-scripts/Align'
+Plugin 'vim-scripts/SQLUtilities'
 
 " Visual Comfort
 Plugin 'dracula/vim'
@@ -62,8 +64,6 @@ Plugin 'vimwiki/vimwiki'
 
 " Snippet Code Generation
 Plugin 'tpope/vim-surround'
-" Requires python on windows
-" Plugin 'SirVer/ultisnips' 
 Plugin 'mattn/emmet-vim'
 Plugin 'tpope/vim-commentary'
 

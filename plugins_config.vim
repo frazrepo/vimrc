@@ -87,4 +87,7 @@ let g:lightline = {
 nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
 nnoremap <silent> <leader>b :Buffers<CR>
 
-
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => SQLUtilities
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+let g:sqlutil_align_comma = 1
