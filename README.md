@@ -65,6 +65,7 @@ Useful mappings for managing tabs:
 Quickly open a buffer for scripbble:
 	
 	map <leader>q :e ~/buffer<cr>
+	map <leader>x :e ~/buffer.md<cr>
 
 Toggle paste mode on and off:
 	
