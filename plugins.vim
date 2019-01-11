@@ -27,6 +27,7 @@ Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 " Code Editing
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'tpope/vim-repeat'
+Plugin 'SirVer/ultisnips'
 
 " Code formatting
 Plugin 'Chiel92/vim-autoformat'
@@ -53,9 +54,6 @@ Plugin 'junegunn/fzf'
 Plugin 'junegunn/fzf.vim'
 Plugin 'yegappan/mru'
 Plugin 'scrooloose/nerdtree'
-
-" Navigation
-" Todo
 
 
 " Notes, markdown, wiki

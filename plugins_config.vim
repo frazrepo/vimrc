@@ -91,3 +91,11 @@ nnoremap <silent> <leader>b :Buffers<CR>
 " => SQLUtilities
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:sqlutil_align_comma = 1
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => ultisnips configuration
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
