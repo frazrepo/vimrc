@@ -7,14 +7,12 @@ userConfig=$userdir/.vimrc
 backupConfig=~/.vimrc.bkp
 vimrcfile=vimrc
 
-if exist $backupConfig (
-    rm $backupConfig
-)
-if exist $userConfig (
-    echo "cp $userConfig $backupConfig ..."
-    cp  $userConfig $backupConfig
-)
+[ -e $backupConfig ] &&  rm $backupConfig
 
-cp /y $vimrcfile $userConfig
+if [ $userConfig ]; then
+    cp  $userConfig $backupConfig
+fi
+
+cp  $vimrcfile $userConfig
 
 echo "Done!"
