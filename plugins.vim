@@ -38,6 +38,7 @@ Plugin 'vim-scripts/SQLUtilities'
 Plugin 'dracula/vim'
 Plugin 'yuttie/comfortable-motion.vim'
 Plugin 'itchyny/lightline.vim'
+Plugin 'frazrepo/vim-rainbow'
 
 " Todo : Tmux integration - Uncomment for linux
 " Plugin 'edkolev/tmuxline.vim'

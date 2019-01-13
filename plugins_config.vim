@@ -93,6 +93,12 @@ nnoremap <silent> <leader>b :Buffers<CR>
 let g:sqlutil_align_comma = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-rainbow brackets
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+" Set this to 1 if you want to activate by default  , or active by typing the :RainbowToggle command
+let g:rainbow_active = 0
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => ultisnips configuration
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
