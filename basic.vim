@@ -260,15 +260,11 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-:map <C-n> :enew <Enter>
-:map <C-c> "+y
-:map <C-v> "+gP
-:map <C-t> :tabnew <Enter>
+" New tab
+noremap <C-t> :tabnew <Enter>
 
-" Remap Shift + Tab
-" for command mode
+" Tabulation Remap Shift + Tab
 nnoremap <S-Tab> <<
-" for insert mode
 inoremap <S-Tab> <C-d>
 
 " Remap VIM 0 to first non-blank character
