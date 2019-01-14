@@ -122,6 +122,9 @@ if has("gui_running")
   endif
 endif
 
+" Tab title
+set guitablabel=%N/\ %t\ %M
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
@@ -194,12 +197,6 @@ vnoremap $$ <esc>`>a"<esc>`<i"<esc>
 vnoremap $q <esc>`>a'<esc>`<i'<esc>
 vnoremap $e <esc>`>a"<esc>`<i"<esc>
 
-""""""""""""""""""""""""""""""
-" => Session management
-""""""""""""""""""""""""""""""
-map <F2> :mksession! ~/vim_session <cr> " Quick write session with F2
-map <F4> :source ~/vim_session <cr>     " And load session with F4
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers
@@ -240,6 +237,11 @@ let g:lasttab = 1
 nmap <Leader>tl :exe "tabn ".g:lasttab<CR>
 au TabLeave * let g:lasttab = tabpagenr()
 
+" CTRL-Tab /CTRL-Shift-Tab Next and Previous tab
+map    <C-Tab>    :tabnext<CR>
+imap   <C-Tab>    <C-O>:tabnext<CR>
+map    <C-S-Tab>  :tabprev<CR>
+imap   <C-S-Tab>  <C-O>:tabprev<CR>
 
 " Opens a new tab with the current buffer's path
 " Super useful when editing files in the same directory
@@ -261,8 +263,9 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" New tab
-noremap <C-t> :tabnew <Enter>
+" Create new tab with Ctrl-n in normal and insert mode
+map <C-n> :tabnew <Enter>
+imap <C-n> <C-O>:tabnew <Enter>
 
 " Tabulation Remap Shift + Tab
 nnoremap <S-Tab> <<

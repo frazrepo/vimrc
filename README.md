@@ -52,10 +52,14 @@ Closing of the current buffer(s) (`<leader>bd` and (`<leader>ba`)):
 	
 Useful mappings for managing tabs:
 	
+    gt or (ngt) : Go to tab or Go to nth tab
+    C-Tab or C-S-Tab : Next or Previous Tab
 	map <leader>tn :tabnew<cr>
+	map <C-n> :tabnew<cr>
 	map <leader>to :tabonly<cr>
 	map <leader>tc :tabclose<cr>
 	map <leader>tm :tabmove 
+	map <leader>tl :tabnext 
 	
 	" Opens a new tab with the current buffer's path
 	" Super useful when editing files in the same directory
