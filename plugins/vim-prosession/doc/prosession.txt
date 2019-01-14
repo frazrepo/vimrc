@@ -1,0 +1,125 @@
+*prosession*                          VIM ProSession for easy session switching
+------------------------------------------------------------------------------
+                                 VIM ProSession
+
+                   Handle sessions like a PRO. Version 0.5.6
+
+              Repo: https://github.com/dhruvasagar/vim-prosession
+                 Author: Dhruva Sagar <http://dhruvasagar.com/>
+               License: Same terms as Vim itself (see |license|)
+
+------------------------------------------------------------------------------
+REQUIREMENTS                                           *prosession-requirements*
+
+VIM ProSession depends on tpope/vim-obsession, kindly ensure you have that
+installed before installing vim-prosession.
+
+------------------------------------------------------------------------------
+OPTIONS                                                     *prosession-options*
+
+                                                             *prosession-loaded*
+g:loaded_prosession   Use this option to disable the plugin. Default: >
+                        let g:loaded_prosession = 1
+<
+                                                                *prosession-dir*
+g:prosession_dir      Use this option to configure the path to store all
+                      session files. Default: >
+                        let g:prosession_dir = '~/.vim/session/'
+<
+                                                         *prosession-tmux-title*
+g:prosession_tmux_title
+                      Use this option to enable tmux window name updates as
+                      per current session. Default: >
+                        let g:prosession_tmux_title = 0
+<
+                                                  *prosession-tmux-title-format*
+g:prosession_tmux_title_format
+                      Use this option to format the tmux window name updates.
+                      Use "@@@" as placeholder for folder name. Default: >
+                        let g:prosession_tmux_title_format = "vim - @@@"
+<
+                                                         *prosession-on-startup*
+g:prosession_on_startup
+                      Use this option to enable auto loading of session on
+                      startup if no arguments are supplied to vim. Default: >
+                        let g:prosession_on_startup = 1
+<
+                                                *g:prosession-default-session*
+g:prosession_default_session
+                      This option creates & uses a 'default' session to be
+                      used in case when launching vim and a corresponding
+                      session hasn't been found yet. >
+                        let g:prosession_default_session = 0
+<
+                                                     *g:prosession_per_branch*
+g:prosession_per_branch
+                      This is disabled by default. You can use this to enable
+                      per git branch sessions. >
+                        let g:prosession_per_branch = 0
+<
+                                                     *g:prosession_branch_cmd*
+g:prosession_branch_cmd
+                      This defines the shell command to use to determine the
+                      current branch. By default this is set to work with git
+                      but can be changed for other vcs as well. >
+                        let g:prosession_branch_cmd = 'git rev-parse --abbrev-ref HEAD 2>/dev/null
+<
+                                               *g:prosession_last_session_dir*
+g:prosession_last_session_dir
+                      This defines the directory where when vim launches
+                      instead of creating / starting the session for that
+                      directory we start the last used session.
+
+------------------------------------------------------------------------------
+USAGE                                                              *:Prosession*
+
+:Prosession {dir}     Switch to the session of the directory if one already
+                      exists otherwise start a new session, autocompletes
+                      paths.
+
+                                                             *:ProsessionDelete*
+:ProsessionDelete [{dir}]
+                      Deletes the session attached to the specified {dir}.
+                      If no {dir} is specified, deletes the currently
+                      active session.
+------------------------------------------------------------------------------
+FUNCTIONS                                                 *prosession-functions*
+
+
+                                                     *prosession#ListSessions()*
+prosession#ListSessions([{filter}])
+                      Gets a list of the available sessions optionally
+                      filtered by {filter}.
+
+------------------------------------------------------------------------------
+DENITE SUPPORT                                               *prosession-denite*
+
+
+Prosession includes support for Denite https://github.com/Shougo/denite.nvim 
+if it's installed in your system, you should see a new prosession source which
+lists your available sessions. After selecting a session you can either switch
+to it (default) or delete it in order to tidy up your environment.
+
+You can control the formatting of the denite list using the format variable.
+Available options are:
+
+default
+                  Displays the full path of your session, highlighting the
+                  last directory.
+split
+                  Displays the last directory to the left and the base path to
+                  the right of the denite window.
+minimal
+                  Displays only the directory name of your session.
+
+Usage example:
+	call denite#custom#var('prosession', 'format', 'split')
+
+------------------------------------------------------------------------------
+CONTRIBUTING                                           *prosession-contributing*
+
+Contributions are welcome. Fork the repo and send a pull request or open an
+issue if you discover one at
+https://github.com/dhruvasagar/vim-prosession/issues.
+
+ vim:tw=78:sw=2:ft=help:norl:ai:et

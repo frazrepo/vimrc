@@ -66,7 +66,8 @@ Plugin 'mattn/emmet-vim'
 Plugin 'tpope/vim-commentary'
 
 " Session management
-" Todo
+Plugin 'tpope/vim-obsession'
+Plugin 'dhruvasagar/vim-prosession'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugins End
