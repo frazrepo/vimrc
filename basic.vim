@@ -122,6 +122,7 @@ if has("gui_running")
   endif
 endif
 
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -266,6 +267,9 @@ noremap <C-t> :tabnew <Enter>
 " Tabulation Remap Shift + Tab
 nnoremap <S-Tab> <<
 inoremap <S-Tab> <C-d>
+
+" Quick yanking to the end of the line
+nnoremap Y y$
 
 " Remap VIM 0 to first non-blank character
 map 0 ^
