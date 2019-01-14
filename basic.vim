@@ -176,6 +176,18 @@ set ai "Auto indent
 set si "Smart indent
 set wrap "Wrap lines
 
+
+
+""""""""""""""""""""""""""""""
+" => Mode related
+""""""""""""""""""""""""""""""
+
+" capslock to esc
+" use this command on linux system : setxkbmap -option caps:swapescape
+vnoremap jj <Esc>
+inoremap jj <Esc>
+
+
 """"""""""""""""""""""""""""""
 " => Visual mode related
 """"""""""""""""""""""""""""""
