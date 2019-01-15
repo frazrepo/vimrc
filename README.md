@@ -146,40 +146,37 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
 
 ### Plugins usage
 
-vim-surround
+**vim-surround**
 
     Change: cs"', cst"
     Add : ysiw], ysim<em>
     Delete :  ds", ds{
 
-nerdtree
+**nerdtree**
 
     Default directory :      <leader>nn, 
     Current file directory:  <leader>nf
 
-mru
+**mru**
 
     Recent files : <leader>f
 
-vim-wiki
+**vim-unimpaired**
 
-    Open index page : <leader>ww
+    Map keys : ( and )
+    Switch between tabs   : (t, )t
+    Switch between buffers: (b, )b
 
-vim-unimpaired
-
-    Switch between tabs   : <t, >t
-    Switch between buffers: <b, >b
-
-fzf
+**fzf**
 
     Files :   CTRL + p (t to open file in tab)
     Buffers : <leader>b
 
-sqlutilities
+**sqlutilities**
 
-    Formattting :   <leader>sf (in Visual Mode)
+    Formattting :   <leader>sf (in Visual Mode or do via Menu)
 
-sort-motion
+**sort-motion**
 
     Sorting :   gs(motion) [ Ex: gs3j, gsi(,...]
 
