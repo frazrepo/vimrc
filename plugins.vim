@@ -56,7 +56,6 @@ Plugin 'junegunn/fzf.vim'
 Plugin 'yegappan/mru'
 Plugin 'scrooloose/nerdtree'
 
-
 " Notes, markdown, wiki
 Plugin 'plasticboy/vim-markdown'
 

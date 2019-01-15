@@ -154,7 +154,7 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
 
 **nerdtree**
 
-    Default directory :      <leader>nn, 
+    Default directory :      <leader>nn 
     Current file directory:  <leader>nf
 
 **mru**
@@ -169,16 +169,16 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
 
 **fzf**
 
-    Files :   CTRL + p (t to open file in tab)
+    Files : CTRL + p (t to open file in tab)
     Buffers : <leader>b
 
 **sqlutilities**
 
-    Formattting :   <leader>sf (in Visual Mode or do via Menu)
+    Formattting : <leader>sf (in Visual Mode or do via Menu)
 
 **sort-motion**
 
-    Sorting :   gs(motion) [ Ex: gs3j, gsi(,...]
+    Sorting : gs(motion) [ Ex: gs3j, gsi(,...]
 
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:
