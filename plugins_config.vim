@@ -11,6 +11,15 @@
 let MRU_Max_Entries = 400
 map <leader>f :MRU<CR>
 
+""""""""""""""""""""""""""""""
+" => fzf plugin
+""""""""""""""""""""""""""""""
+" This is the default extra key bindings
+let g:fzf_action = {
+  \ 't': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Nerd Tree
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
