@@ -20,7 +20,6 @@ Plugin 'VundleVim/Vundle.vim'
 
 " Dependencies
 Plugin 'w0rp/ale'
-Plugin 'chrisbra/vim-autosave'
 Plugin 'xolox/vim-misc'
 Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 
