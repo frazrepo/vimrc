@@ -209,6 +209,10 @@ vnoremap $$ <esc>`>a"<esc>`<i"<esc>
 vnoremap $q <esc>`>a'<esc>`<i'<esc>
 vnoremap $e <esc>`>a"<esc>`<i"<esc>
 
+" Tab should indent the selection
+vmap <Tab> >gv
+vmap <S-Tab> <gv
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers
