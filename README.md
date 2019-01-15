@@ -20,6 +20,10 @@ Just do a git rebase!
 
 And run install.sh (or install.bat) to update vimrc configuration file
 
+### Leader key
+
+	leader = ,
+
 ### Normal mode mappings
 
 Fast saving of a buffer (`<leader>w`):
@@ -148,7 +152,7 @@ vim-surround
     Add : ysiw], ysim<em>
     Delete :  ds", ds{
 
-nerdree
+nerdtree
 
     Default directory :      <leader>nn, 
     Current file directory:  <leader>nf
@@ -168,12 +172,16 @@ vim-unimpaired
 
 fzf
 
-    Files :   CTRL + p
+    Files :   CTRL + p (t to open file in tab)
     Buffers : <leader>b
 
 sqlutilities
 
     Formattting :   <leader>sf (in Visual Mode)
+
+sort-motion
+
+    Sorting :   gs(motion) [ Ex: gs3j, gsi(,...]
 
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:

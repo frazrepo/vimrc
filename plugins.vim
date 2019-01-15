@@ -34,6 +34,9 @@ Plugin 'godlygeek/tabular'
 Plugin 'vim-scripts/Align'
 Plugin 'vim-scripts/SQLUtilities'
 
+" Sorting
+Plugin 'christoomey/vim-sort-motion'
+
 " Visual Comfort
 Plugin 'dracula/vim'
 Plugin 'yuttie/comfortable-motion.vim'
