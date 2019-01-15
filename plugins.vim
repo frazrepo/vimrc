@@ -59,7 +59,6 @@ Plugin 'scrooloose/nerdtree'
 
 " Notes, markdown, wiki
 Plugin 'plasticboy/vim-markdown'
-Plugin 'vimwiki/vimwiki'
 
 " Snippet Code Generation
 Plugin 'tpope/vim-surround'
