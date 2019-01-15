@@ -46,9 +46,7 @@ Plugin 'frazrepo/vim-rainbow'
 " Plugin 'christoomey/vim-tmux-navigator'
 
 " Git integration
-Plugin 'airblade/vim-gitgutter'
 Plugin 'tpope/vim-fugitive'
-Plugin 'vim-airline/vim-airline'
 
 " File management, searching
 Plugin 'junegunn/fzf'
