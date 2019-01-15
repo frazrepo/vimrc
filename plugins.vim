@@ -27,6 +27,7 @@ Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 " Code Editing
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'tpope/vim-repeat'
+Plugin 'tpope/vim-unimpaired'
 
 " Code formatting
 Plugin 'Chiel92/vim-autoformat'
