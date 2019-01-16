@@ -37,7 +37,7 @@ Plugin 'vim-scripts/SQLUtilities'
 " Sorting
 Plugin 'christoomey/vim-sort-motion'
 
-" Visual Comfort
+" Visual Comfort - Color Schemes
 Plugin 'dracula/vim'
 Plugin 'yuttie/comfortable-motion.vim'
 Plugin 'itchyny/lightline.vim'

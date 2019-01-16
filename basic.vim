@@ -133,7 +133,7 @@ set guitablabel=%N/\ %t\ %M
 " Activate by default dracula theme
 syntax on
 
-" ColorSchema to dracula, need install
+" ColorScheme dracula
 color dracula
 
 " Fonts Consolas
@@ -143,7 +143,7 @@ if has("gui_running")
   elseif has("gui_macvim")
     set guifont=Menlo\ Regular:h14
   elseif has("gui_win32")
-    set guifont=Consolas:h11:cANSI
+    set guifont=Consolas:h14:cANSI
   endif
 endif
 
