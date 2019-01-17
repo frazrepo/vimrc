@@ -143,7 +143,8 @@ if has("gui_running")
    " Install fonts on Ubuntu
    " sudo apt-get install fonts-inconsolata
    " sudo fc-cache -fv
-    set guifont=Inconsolata\ 9
+   " Pbm cannot set font > 12 
+    set guifont=Inconsolata\ 11
   elseif has("gui_macvim")
     set guifont=Menlo\ Regular:h14
   elseif has("gui_win32")
