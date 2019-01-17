@@ -139,6 +139,7 @@ color dracula
 " Fonts Consolas
 if has("gui_running")
   if has("gui_gtk2")
+   " Install fonts : sudo apt-get install fonts-inconsolata
     set guifont=Inconsolata\ 12
   elseif has("gui_macvim")
     set guifont=Menlo\ Regular:h14
