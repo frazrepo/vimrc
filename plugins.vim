@@ -68,6 +68,11 @@ Plugin 'tpope/vim-commentary'
 Plugin 'tpope/vim-obsession'
 Plugin 'dhruvasagar/vim-prosession'
 
+"  Zen Mode for writing text
+Plugin 'junegunn/goyo.vim'
+Plugin 'amix/vim-zenroom2'
+
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugins End
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
