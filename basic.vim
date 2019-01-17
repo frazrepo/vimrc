@@ -137,12 +137,13 @@ syntax on
 color dracula
 
 " Fonts Consolas
+
 if has("gui_running")
-  if has("gui_gtk2")
+  if has("gui_gtk2") || has("gui_gtk3") 
    " Install fonts on Ubuntu
    " sudo apt-get install fonts-inconsolata
    " sudo fc-cache -fv
-    set guifont=Inconsolata\ 12
+    set guifont=Inconsolata\ 9
   elseif has("gui_macvim")
     set guifont=Menlo\ Regular:h14
   elseif has("gui_win32")
