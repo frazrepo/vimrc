@@ -180,6 +180,10 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
 
     Sorting : gs(motion) [ Ex: gs3j, gsi(,...]
 
+**goyo and zenroom**
+
+    Zen mode : <leader>z
+
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:
 

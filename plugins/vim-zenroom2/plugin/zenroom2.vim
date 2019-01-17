@@ -69,7 +69,8 @@ function! s:zenroom_goyo_before()
     let is_mark_or_rst = &filetype == "markdown" || &filetype == "rst" || &filetype == "text"
 
     if is_mark_or_rst
-        call s:markdown_room()
+        "  frazrepo Comment : keep current theme
+        "  call s:markdown_room()
     endif
 endfunction
 
