@@ -196,6 +196,36 @@ Shortcuts using `<leader>` instead of special characters:
     map <leader>sa zg
     map <leader>s? z=
 
+## Plugins list
+
+- ale
+- Align
+- base16-vim
+- comfortable-motion-vim
+- emmet-vim
+- fzf / fzf.vim
+- goyo
+- lightline
+- mru
+- nerdtree
+- sparkup
+- SQLUtilities
+- tabular
+- vim-autoformat
+- vim-commentary
+- vim-fugitive
+- vim-markdown
+- vim-misc
+- vim-mutiple-cursors
+- vim-obsession / vim-prosession
+- vim-rainbow
+- vim-repeat
+- vim-sort-motion
+- vim-surround
+- vim-unimpaired
+- vim-zenroom2 (use goyo)
+
+
 ## How to uninstall
 Just do following:
 * Remove `~/.vim_runtime`
