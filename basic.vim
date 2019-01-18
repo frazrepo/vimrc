@@ -3,13 +3,17 @@
 "       frazrepo
 "       https://github.com/frazrepo/vimrc
 "
+" Debug : vim --startuptime vim.log
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sets how many lines of history VIM has to remember
-set history=500
+set history=1000
+
+" Same for undolevels
+set undolevels=1000
 
 " Filetype
 set nocompatible 
@@ -108,6 +112,10 @@ set fileencoding=utf-8
 set mouse=a
 set nu
 
+" Make the keyboard fast
+set ttyfast
+set timeout timeoutlen=1000 ttimeoutlen=50
+
 " Default relativenumber
 set relativenumber
 
@@ -124,7 +132,6 @@ endif
 
 " Tab title
 set guitablabel=%N/\ %t\ %M
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
@@ -182,7 +189,6 @@ set si "Smart indent
 set wrap "Wrap lines
 
 
-
 """"""""""""""""""""""""""""""
 " => Mode related
 """"""""""""""""""""""""""""""
@@ -192,6 +198,12 @@ set wrap "Wrap lines
 vnoremap jj <Esc>
 inoremap jj <Esc>
 
+""""""""""""""""""""""""""""""
+" => Map for VIM Interface
+""""""""""""""""""""""""""""""
+
+" Toggle show/hide invisible chars
+nnoremap <leader>I :set list!<cr>
 
 """"""""""""""""""""""""""""""
 " => Visual mode related

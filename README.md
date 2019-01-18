@@ -203,3 +203,4 @@ Just do following:
 
 ## Inspiration
 * [https://github.com/amix/vimrc](https://github.com/amix/vimrc)
+* [https://github.com/nvie/vimrc/blob/master/vimrc](https://github.com/nvie/vimrc/blob/master/vimrc)
