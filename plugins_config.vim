@@ -133,4 +133,9 @@ xmap ) ]
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Goyo and zenroom2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+" Default 80%
+let g:goyo_width=100
+" Default 85%
+let g:goyo_height=90
+" Toggle
 nnoremap <silent> <leader>z :Goyo<cr>
