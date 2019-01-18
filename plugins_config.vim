@@ -66,6 +66,9 @@ au FileType mako vmap Si S"i${ _(<esc>2f"a) }<esc>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => lightline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Show on multiple screen not on single screen
+set laststatus=2
+
 let g:lightline = {
       \ 'colorscheme': 'wombat',
       \ }
