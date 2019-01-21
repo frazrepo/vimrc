@@ -196,6 +196,12 @@ Shortcuts using `<leader>` instead of special characters:
     map <leader>sa zg
     map <leader>s? z=
 
+## Custom Docs
+
+Regexp search/replace pattern
+
+    :helptags fzregexp
+
 ## Plugins list
 
 - ale
