@@ -1,0 +1,33 @@
+*regexp.txt*    Common search regexp for vim    Last Changed: 2019 Jan 21
+Generation : `helptags ~/.vim_runtime/vim-docs/doc/`
+
+INTRODUCTION                                    *fz-regexp*
+
+Delete any empty lines
+>
+    :g/^$/ d
+<
+Reduce multiples blank lines to a single blank
+>
+    :g/^$/,/./-j
+<
+Reverse the order of the lines starting from the line 10 up to the line 20
+>
+    :10,20g/^/ mo 10
+<
+Delete all lines not matching a pattern
+>
+    :g!/foo/d  or :v/foo/d
+<
+Find this or that
+>
+    /this\|that
+<
+Find this and that
+>
+    /.*this\&.*that
+<
+Change whole word foo to bar
+>
+    :%s/\<foo\>/bar/gc
+<
