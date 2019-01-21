@@ -200,7 +200,7 @@ Shortcuts using `<leader>` instead of special characters:
 
 Regexp search/replace pattern
 
-    :helptags fzregexp
+    :helptags fz-regexp
 
 ## Plugins list
 
