@@ -207,7 +207,6 @@ Regexp search/replace pattern
 - ale
 - Align
 - base16-vim
-- comfortable-motion-vim
 - emmet-vim
 - fzf / fzf.vim
 - goyo

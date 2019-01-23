@@ -39,7 +39,6 @@ Plugin 'christoomey/vim-sort-motion'
 
 " Visual Comfort - Color Schemes
 Plugin 'dracula/vim'
-Plugin 'yuttie/comfortable-motion.vim'
 Plugin 'itchyny/lightline.vim'
 Plugin 'frazrepo/vim-rainbow'
 
@@ -71,7 +70,6 @@ Plugin 'dhruvasagar/vim-prosession'
 "  Zen Mode for writing text
 Plugin 'junegunn/goyo.vim'
 Plugin 'amix/vim-zenroom2'
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugins End
