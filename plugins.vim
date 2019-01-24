@@ -28,6 +28,10 @@ Plugin 'terryma/vim-multiple-cursors'
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-unimpaired'
 
+" Code Searching
+" Plugin 'ddrscott/vim-side-search'
+Plugin 'dyng/ctrlsf.vim'
+
 " Code formatting
 Plugin 'Chiel92/vim-autoformat'
 Plugin 'godlygeek/tabular'
