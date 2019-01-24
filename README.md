@@ -224,7 +224,6 @@ Regexp search/replace pattern
 - vim-fugitive
 - vim-markdown : Markdown editing
 - vim-misc
-- vim-mutiple-cursors : Multi cursor editing
 - vim-obsession / vim-prosession : Autosave session
 - vim-rainbow : Color parentheses, brackets,...
 - vim-repeat
