@@ -146,6 +146,11 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
 
 ### Plugins usage
 
+**vim-abolish**
+
+    Command: Subvert
+    Coercion :  Press crs (coerce to snake_case). MixedCase (crm), camelCase (crc), snake_case (crs), UPPER_CASE (cru), dash-case (cr-), dot.case (cr.), space case (cr<space>), and Title Case (crt)
+
 **vim-surround**
 
     Change: cs"', cst"
