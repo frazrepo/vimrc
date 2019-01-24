@@ -149,6 +149,14 @@ nnoremap <silent> <leader>z :Goyo<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => ctrlsf Side Search
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+let g:ctrlsf_auto_close = {
+    \ "normal" : 0,
+    \ "compact": 0
+    \}
+    
+let g:ctrlsf_default_root = 'project'
+let g:ctrlsf_default_view_mode = 'compact'
+
 nmap     <C-F>f <Plug>CtrlSFPrompt
 vmap     <C-F>f <Plug>CtrlSFVwordPath
 vmap     <C-F>F <Plug>CtrlSFVwordExec
