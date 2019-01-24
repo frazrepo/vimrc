@@ -16,6 +16,3 @@ source $HOME/.vim_runtime/plugins_config.vim
 " Comment if you do not want this 
 source $HOME/.vim_runtime/mswin.vim
 
-" Abbreviations
-source $HOME/.vim_runtime/abbrev.vim
-

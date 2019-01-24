@@ -123,6 +123,9 @@ let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
+" Add custom directories for snippets
+let g:UltiSnipsSnippetDirectories = [$HOME.'/.vim_runtime/plugins/frazrepo-snippets', 'UltiSnips']
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim unimpaired
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
