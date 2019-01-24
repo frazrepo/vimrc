@@ -210,30 +210,30 @@ Regexp search/replace pattern
 
 - ale
 - Align
-- base16-vim
 - emmet-vim
 - fzf / fzf.vim
-- goyo
-- lightline
-- mru
-- nerdtree
+- goyo : Dependency for zenroom2
+- lightline : Lightweight status line 
+- mru : Browse most recent files
+- nerdtree : File browser
 - sparkup
-- SQLUtilities
+- SQLUtilities : SQL formatting
 - tabular
 - vim-autoformat
 - vim-commentary
 - vim-fugitive
-- vim-markdown
+- vim-markdown : Markdown editing
 - vim-misc
-- vim-mutiple-cursors
-- vim-obsession / vim-prosession
-- vim-rainbow
+- vim-mutiple-cursors : Multi cursor editing
+- vim-obsession / vim-prosession : Autosave session
+- vim-rainbow : Color parentheses, brackets,...
 - vim-repeat
 - vim-sort-motion
+- ctrlsf.vim  : Side searching
 - vim-surround
 - vim-unimpaired
-- vim-zenroom2 (use goyo)
-
+- utilsnips + vim-snippets : Snippets
+- vim-zenroom2 (use goyo) : Zen mode editing
 
 ## How to uninstall
 Just do following:
