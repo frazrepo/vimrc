@@ -184,6 +184,10 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
 
     Zen mode : <leader>z
 
+**ultisnips and vim-snippets**
+
+    Activation : <tab>
+
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:
 

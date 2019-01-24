@@ -63,6 +63,9 @@ Plugin 'tpope/vim-surround'
 Plugin 'mattn/emmet-vim'
 Plugin 'tpope/vim-commentary'
 
+Plugin 'SirVer/ultisnips'
+Plugin 'honza/vim-snippets'
+
 " Session management
 Plugin 'tpope/vim-obsession'
 Plugin 'dhruvasagar/vim-prosession'
