@@ -209,6 +209,7 @@ Regexp search/replace pattern
 ## Plugins list
 
 - ale
+- vim-abolish
 - Align
 - emmet-vim
 - fzf / fzf.vim

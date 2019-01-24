@@ -28,8 +28,9 @@ Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-unimpaired'
 
 " Code Searching
-" Plugin 'ddrscott/vim-side-search'
 Plugin 'dyng/ctrlsf.vim'
+Plugin 'tpope/vim-abolish'
+
 
 " Code formatting
 Plugin 'Chiel92/vim-autoformat'
