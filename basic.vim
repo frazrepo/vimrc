@@ -296,9 +296,6 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Create new tab with Ctrl-n in normal and insert mode
-" map <C-n> :tabnew <Enter> " Conflict with multi cursors
-imap <C-n> <C-O>:tabnew <Enter>
 
 " Tabulation Remap Shift + Tab
 nnoremap <S-Tab> <<
