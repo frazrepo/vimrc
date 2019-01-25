@@ -234,7 +234,6 @@ Regexp search/replace pattern
 - lightline : Lightweight status line 
 - mru : Browse most recent files
 - nerdtree : File browser
-- sparkup : Html editing
 - SQLUtilities : SQL formatting
 - tabular : Align lines bases on separator
 - vim-autoformat

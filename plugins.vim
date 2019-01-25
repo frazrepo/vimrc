@@ -21,7 +21,6 @@ Plugin 'VundleVim/Vundle.vim'
 " Dependencies
 Plugin 'w0rp/ale'
 Plugin 'xolox/vim-misc'
-Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 
 " Code Editing
 Plugin 'tpope/vim-repeat'
