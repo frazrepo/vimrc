@@ -26,6 +26,7 @@ Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 " Code Editing
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-unimpaired'
+Plugin 'mg979/vim-visual-multi'
 
 " Code Searching
 Plugin 'dyng/ctrlsf.vim'

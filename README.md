@@ -197,6 +197,10 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
 
     Activation : <tab>
 
+**vim-visual-multi**
+
+    Multiple vertical cursors : <C-Down>
+
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:
 
@@ -243,6 +247,7 @@ Regexp search/replace pattern
 - vim-unimpaired
 - utilsnips + vim-snippets : Snippets
 - vim-zenroom2 (use goyo) : Zen mode editing
+- vim-visual-multi : Alternative multi-cursor editing
 
 ## How to uninstall
 Just do following:
