@@ -226,20 +226,20 @@ Regexp search/replace pattern
 ## Plugins list
 
 - ale
-- vim-abolish
-- Align
-- emmet-vim
+- vim-abolish : Search words, Coercion
+- Align : Dependencies for other plugins
+- emmet-vim : Html editing
 - fzf / fzf.vim
 - goyo : Dependency for zenroom2
 - lightline : Lightweight status line 
 - mru : Browse most recent files
 - nerdtree : File browser
-- sparkup
+- sparkup : Html editing
 - SQLUtilities : SQL formatting
 - tabular : Align lines bases on separator
 - vim-autoformat
 - vim-commentary
-- vim-fugitive
+- vim-fugitive : Git command inside vim
 - vim-markdown : Markdown editing
 - vim-misc : Dependencies for other plugins
 - vim-obsession / vim-prosession : Autosave session
