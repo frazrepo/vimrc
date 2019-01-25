@@ -181,6 +181,10 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
     Files : CTRL + p (t to open file in tab)
     Buffers : <leader>b
 
+**vim-rainbow**
+
+    Toggle coloring :RainbowToogle
+
 **sqlutilities**
 
     Formattting : <leader>sf (in Visual Mode or do via Menu)
