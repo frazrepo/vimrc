@@ -146,6 +146,10 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
 
 ### Plugins usage
 
+**Tabular**
+
+    :Tab(ularize) /(separator) (Eg :Tab /=)
+
 **vim-abolish**
 
     Command: Subvert
@@ -224,12 +228,12 @@ Regexp search/replace pattern
 - nerdtree : File browser
 - sparkup
 - SQLUtilities : SQL formatting
-- tabular
+- tabular : Align lines bases on separator
 - vim-autoformat
 - vim-commentary
 - vim-fugitive
 - vim-markdown : Markdown editing
-- vim-misc
+- vim-misc : Dependencies for other plugins
 - vim-obsession / vim-prosession : Autosave session
 - vim-rainbow : Color parentheses, brackets,...
 - vim-repeat
