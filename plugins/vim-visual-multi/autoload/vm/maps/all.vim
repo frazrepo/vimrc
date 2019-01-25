@@ -72,7 +72,7 @@ fun! vm#maps#all#permanent()
         let maps["Visual All"][0]               = leader.'A'
         let maps["Visual Add"][0]               = '<C-a>'
         let maps["Visual Find"][0]              = '<C-f>'
-        let maps["Visual Cursors"][0]           = '<C-c>'
+        let maps["Visual Cursors"][0]           = '<C-o>' " Fix remap here  <C-c> is already used for copy
     endif
 
     if g:VM_mouse_mappings
