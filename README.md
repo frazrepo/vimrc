@@ -241,6 +241,7 @@ Regexp search/replace pattern
 - nerdtree : File browser
 - SQLUtilities : SQL formatting
 - tabular : Align lines bases on separator
+- Supertab : Manage auto completion correctly
 - vim-autoformat
 - vim-commentary
 - vim-fugitive : Git command inside vim

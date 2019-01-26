@@ -26,6 +26,7 @@ Plugin 'xolox/vim-misc'
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'mg979/vim-visual-multi'
+Plugin 'ervandew/supertab'
 
 " Code Searching
 Plugin 'dyng/ctrlsf.vim'
