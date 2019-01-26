@@ -146,6 +146,10 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
 
 ### Plugins usage
 
+**Emmet**
+
+    Generation: <leader>, or ,,
+
 **Tabular**
 
     :Tab(ularize) /(separator) (Eg :Tab /=)
@@ -204,6 +208,7 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
 **vim-visual-multi**
 
     Multiple vertical cursors : <C-Down>
+    Multiple word cursors : <C-n> and <C-n> to select next words
 
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:
