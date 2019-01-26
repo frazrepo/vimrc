@@ -122,13 +122,17 @@ set relativenumber
 " Maximized window on start
 if has("gui_running")
   if has("gui_gtk3")
-    set lines=999 columns=999
+    set lines=480 columns=1366
+    " set lines=768 columns=1366 " cause bug infinite max size not supported on linux, all fonts and linespace not working
   elseif has("gui_macvim")
     set lines=768 columns=1366
   elseif has("gui_win32")
     set lines=768 columns=1366
   endif
 endif
+
+" Linespace
+set linespace=6
 
 " Tab title
 set guitablabel=%N/\ %t\ %M
@@ -152,8 +156,7 @@ if has("gui_running")
    " Install fonts on Ubuntu
    " sudo apt-get install fonts-inconsolata
    " sudo fc-cache -fv
-   " Pbm cannot set font > 12 
-    set guifont=Inconsolata\ 11
+    set guifont=Inconsolata\ 14
   elseif has("gui_macvim")
     set guifont=Menlo\ Regular:h14
   elseif has("gui_win32")
