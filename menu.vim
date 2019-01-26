@@ -4,6 +4,7 @@ function! Tabs_Menu()
             let menuRoot     = 'Tabs'
             let menuPriority = exists("g:tabs_menu_priority") ? g:tabs_menu_priority : ''
 
+            exec 'amenu <script> '.menuPriority.' '.menuRoot.'.Open<TAB>:tabnew :browse tabnew<CR>'
             exec 'amenu <script> '.menuPriority.' '.menuRoot.'.New<TAB>:tabnew :tabnew<CR>'
             exec 'amenu <script> '.menuPriority.' '.menuRoot.'.Close<TAB>:tabclose :close<CR>'
             exec 'amenu <script> '.menuPriority.' '.menuRoot.'.Only<TAB>:tabonly :tabonly<CR>'
