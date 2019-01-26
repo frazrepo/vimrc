@@ -45,6 +45,7 @@ Plugin 'christoomey/vim-sort-motion'
 Plugin 'dracula/vim'
 Plugin 'itchyny/lightline.vim'
 Plugin 'frazrepo/vim-rainbow'
+Plugin 'gosukiwi/vim-atom-dark'
 
 " Todo : Tmux integration - Uncomment for linux
 " Plugin 'edkolev/tmuxline.vim'

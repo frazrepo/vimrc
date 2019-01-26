@@ -142,6 +142,8 @@ syntax on
 
 " ColorScheme dracula
 color dracula
+" Alternative scheme
+" color atom-dark-256
 
 " Fonts Consolas
 
