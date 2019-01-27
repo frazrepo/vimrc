@@ -193,6 +193,8 @@ set ai "Auto indent
 set si "Smart indent
 set wrap "Wrap lines
 
+" Complete option
+set complete=.,w,b,u
 
 """"""""""""""""""""""""""""""
 " => Mode related
