@@ -39,6 +39,7 @@ Plugin 'godlygeek/tabular'
 Plugin 'vim-scripts/Align'
 Plugin 'vim-scripts/SQLUtilities'
 
+
 " Sorting
 Plugin 'christoomey/vim-sort-motion'
 
@@ -79,6 +80,9 @@ Plugin 'dhruvasagar/vim-prosession'
 "  Zen Mode for writing text
 Plugin 'junegunn/goyo.vim'
 Plugin 'amix/vim-zenroom2'
+
+" Language
+Plugin 'PProvost/vim-ps1.git'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugins End
