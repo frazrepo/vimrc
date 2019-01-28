@@ -232,7 +232,7 @@ Regexp search/replace pattern
 
 - ale
 - vim-abolish : Search words, Coercion
-- Align : Dependencies for other plugins
+- Align : Dependencies for other plugins , Align text based on separators
 - emmet-vim : Html editing
 - fzf / fzf.vim
 - goyo : Dependency for zenroom2
