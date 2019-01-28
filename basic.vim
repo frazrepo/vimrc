@@ -132,7 +132,7 @@ if has("gui_running")
 endif
 
 " Linespace
-set linespace=15
+set linespace=8
 
 " Tab title
 set guitablabel=%N/\ %t\ %M
@@ -233,10 +233,12 @@ vnoremap $$ <esc>`>a"<esc>`<i"<esc>
 vnoremap $q <esc>`>a'<esc>`<i'<esc>
 vnoremap $e <esc>`>a"<esc>`<i"<esc>
 
-" Tab should indent the selection
-vmap <Tab> >gv
-vmap <S-Tab> <gv
-
+" Keep selection in select mode after shifting
+" Tab not working with UltiSnips 
+" vmap <Tab> >gv
+" vmap <S-Tab> <gv
+vnoremap > >gv
+vnoremap < <gv
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers
