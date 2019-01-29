@@ -22,7 +22,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 ### Leader key
 
-	leader = ,
+	leader = <space>
 
 ### Normal mode mappings
 
