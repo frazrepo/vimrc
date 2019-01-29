@@ -119,6 +119,8 @@ endif
 
 " Locate current buffer in explorer
 if has("gui")
-  nmap <F11> :!start explorer /select,%:p<cr>
-  imap <F11> <Esc><F11>
+  if has("win16") || has("win32")
+    nmap <F11> :!start explorer /select,%:p<cr>
+    imap <F11> <Esc><F11>
+  endif
 endif
