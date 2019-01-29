@@ -27,6 +27,7 @@ Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-unimpaired'
 Plugin 'mg979/vim-visual-multi'
 Plugin 'ervandew/supertab'
+Plugin 'AndrewRadev/splitjoin.vim'
 
 " Code Searching
 Plugin 'dyng/ctrlsf.vim'

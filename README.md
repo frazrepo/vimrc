@@ -220,6 +220,11 @@ Whichkey - Help remembering mapping with leader key
     Multiple vertical cursors : <C-Down>
     Multiple word cursors : <C-n> and <C-n> to select next words
 
+**splitjoin-vim**
+
+    Join gJ
+    Split gS
+
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:
 
@@ -263,10 +268,12 @@ Regexp search/replace pattern
 - vim-sort-motion
 - ctrlsf.vim  : Side searching
 - vim-surround
+- splitjoin.vim
 - vim-unimpaired
 - utilsnips + vim-snippets : Snippets
 - vim-zenroom2 (use goyo) : Zen mode editing
 - vim-visual-multi : Alternative multi-cursor editing
+- vim-whichkey : Help remembering mapping
 
 ## How to uninstall
 Just do following:
