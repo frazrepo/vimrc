@@ -144,6 +144,12 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
 
     :W 
 
+### Various mappings
+
+Open current buffer directory in windows explorer (Windows only)
+
+    F11
+
 ### Plugins usage
 
 **Emmet**
