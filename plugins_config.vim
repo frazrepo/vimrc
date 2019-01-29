@@ -21,6 +21,15 @@ let g:fzf_action = {
   \ 'ctrl-v': 'vsplit' }
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => fzf map to CTRL+P
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
+nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
+nnoremap <silent> <leader>b :Buffers<CR>
+" To ignore git files
+" Add this to ENV
+" FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Nerd Tree
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:NERDTreeWinPos = "left"
@@ -79,11 +88,6 @@ let g:lightline = {
       \ 'subseparator': { 'left': ' ', 'right': ' ' }
       \ }
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => fzf map to CTRL+P
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
-nnoremap <silent> <leader>b :Buffers<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => SQLUtilities
