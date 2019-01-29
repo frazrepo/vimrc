@@ -156,3 +156,9 @@ nmap     <C-F>p <Plug>CtrlSFPwordPath
 nnoremap <C-F>o :CtrlSFOpen<CR>
 nnoremap <C-F>t :CtrlSFToggle<CR>
 inoremap <C-F>t <Esc>:CtrlSFToggle<CR>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => whichkey help for leader key
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+nnoremap <silent> <F12>      :<c-u>WhichKey '<Space>'<CR>

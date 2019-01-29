@@ -150,6 +150,10 @@ Open current buffer directory in windows explorer (Windows only)
 
     F11
 
+Whichkey - Help remembering mapping with leader key
+    
+    F12
+
 ### Plugins usage
 
 **Emmet**
