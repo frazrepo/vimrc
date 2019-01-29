@@ -116,3 +116,9 @@ if 1
   let &cpoptions = s:save_cpo
   unlet s:save_cpo
 endif
+
+" Locate current buffer in explorer
+if has("gui")
+  nmap <F11> :!start explorer /select,%:p<cr>
+  imap <F11> <Esc><F11>
+endif
