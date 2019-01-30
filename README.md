@@ -267,9 +267,10 @@ Regexp search/replace pattern
 - vim-repeat
 - vim-sort-motion
 - ctrlsf.vim  : Side searching
-- vim-surround
-- splitjoin.vim
+- vim-surround : Surround text
+- splitjoin.vim : Split or Join lines (code)
 - vim-unimpaired
+- vim-signature : Display marks
 - utilsnips + vim-snippets : Snippets
 - vim-zenroom2 (use goyo) : Zen mode editing
 - vim-visual-multi : Alternative multi-cursor editing

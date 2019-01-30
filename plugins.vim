@@ -50,6 +50,7 @@ Plugin 'itchyny/lightline.vim'
 Plugin 'frazrepo/vim-rainbow'
 Plugin 'gosukiwi/vim-atom-dark'
 Plugin 'liuchengxu/vim-which-key'
+Plugin 'kshenoy/vim-signature'
 
 " Todo : Tmux integration - Uncomment for linux
 " Plugin 'edkolev/tmuxline.vim'
