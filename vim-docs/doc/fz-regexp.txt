@@ -16,34 +16,34 @@ INTRODUCTION                                    *fz-regexp*
 ==============================================================================
 
 1. Delete any empty lines                         *fz-regexp-1*  
-
+>
     :g/^$/d
-
+<
 2. Reduce multiples blank lines to a single blank *fz-regexp-2*
-
+>
   :g/^$/,/./-j
-
+<
 3. Reverse the order of the lines from 10 to 20   *fz-regexp-3*
-
+>
   :10,20g/^/ mo 10
-
+<
 4. Delete all lines not matching a pattern        *fz-regexp-4*
-
+>
   :g!/foo/d  or :v/foo/d
-
+<
 5. Find this or that                              *fz-regexp-5*
-
+>
   /this\|that
-
+<
 6. Find this and that                             *fz-regexp-6*
-
+>
   /.*this\&.*that
-
+<
 7. Change whole word foo to bar                   *fz-regexp-7*
-
+>
   :%s/\<foo\>/bar/gc
-
+<
 8. Transpose a line with separator ; to columns   *fz-regexp-8*
-
+>
   :%s/;/;\r/g
-
+<
