@@ -1,0 +1,22 @@
+*macro.txt*    Macro tips    Last Changed:  2019 Jan 30
+Generation : `helptags ~/.vim_runtime/vim-docs/doc/`
+
+INTRODUCTION                                    *fz-macro*
+
+Apply macro to all lines
+>
+    :%norm! @a
+<
+Apply macro to range of lines
+>
+    :5,10norm! @a
+    :5,$norm! @a
+<
+Apply macro to a pattern of lines
+>
+    :g/pattern/normal! @a
+<
+Apply macro to visual selection of lines
+>
+    :'<,'>norm! @a
+<
