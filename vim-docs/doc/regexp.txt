@@ -31,3 +31,7 @@ Change whole word foo to bar
 >
     :%s/\<foo\>/bar/gc
 <
+Transpose a line with separator ; to columns
+>
+    :%s/;/;\r/g
+<
