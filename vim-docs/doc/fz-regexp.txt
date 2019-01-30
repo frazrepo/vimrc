@@ -5,7 +5,7 @@ INTRODUCTION                                    *fz-regexp*
 
 1. Delete any empty lines
 >
-    :g/^$/ d
+    :g/^$/d
 <
 2. Reduce multiples blank lines to a single blank
 >
