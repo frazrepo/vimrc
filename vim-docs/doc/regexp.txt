@@ -3,35 +3,35 @@ Generation : `helptags ~/.vim_runtime/vim-docs/doc/`
 
 INTRODUCTION                                    *fz-regexp*
 
-Delete any empty lines
+1. Delete any empty lines
 >
     :g/^$/ d
 <
-Reduce multiples blank lines to a single blank
+2. Reduce multiples blank lines to a single blank
 >
     :g/^$/,/./-j
 <
-Reverse the order of the lines starting from the line 10 up to the line 20
+3. Reverse the order of the lines starting from the line 10 up to the line 20
 >
     :10,20g/^/ mo 10
 <
-Delete all lines not matching a pattern
+4. Delete all lines not matching a pattern
 >
     :g!/foo/d  or :v/foo/d
 <
-Find this or that
+5. Find this or that
 >
     /this\|that
 <
-Find this and that
+6. Find this and that
 >
     /.*this\&.*that
 <
-Change whole word foo to bar
+7. Change whole word foo to bar
 >
     :%s/\<foo\>/bar/gc
 <
-Transpose a line with separator ; to columns
+8. Transpose a line with separator ; to columns
 >
     :%s/;/;\r/g
 <
