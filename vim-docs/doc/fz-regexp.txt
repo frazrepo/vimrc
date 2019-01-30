@@ -1,4 +1,4 @@
-*regexp.txt*    Common search regexp for vim    Last Changed: 2019 Jan 21
+*fz-regexp.txt*    Common search regexp for vim    Last Changed: 2019 Jan 21
 Generation : `helptags ~/.vim_runtime/vim-docs/doc/`
 
 INTRODUCTION                                    *fz-regexp*
