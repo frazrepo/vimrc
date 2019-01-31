@@ -3,35 +3,47 @@ Generation : `helptags ~/.vim_runtime/vim-docs/doc/`
 
 INTRODUCTION                                    *fz-regexp*
 
-1. Delete any empty lines
+1. Delete any empty lines                         |fz-regexp-1|  
+2. Reduce multiples blank lines to a single blank |fz-regexp-2|
+3. Reverse the order of the lines from 10 to 20   |fz-regexp-3|
+4. Delete all lines not matching a pattern        |fz-regexp-4|
+5. Find this or that                              |fz-regexp-5|
+6. Find this and that                             |fz-regexp-6|
+7. Change whole word foo to bar                   |fz-regexp-7|
+8. Transpose a line with separator ; to columns   |fz-regexp-8|
+
+
+==============================================================================
+
+1. Delete any empty lines                         *fz-regexp-1*  
 >
     :g/^$/d
 <
-2. Reduce multiples blank lines to a single blank
+2. Reduce multiples blank lines to a single blank *fz-regexp-2*
 >
-    :g/^$/,/./-j
+  :g/^$/,/./-j
 <
-3. Reverse the order of the lines starting from the line 10 up to the line 20
+3. Reverse the order of the lines from 10 to 20   *fz-regexp-3*
 >
-    :10,20g/^/ mo 10
+  :10,20g/^/ mo 10
 <
-4. Delete all lines not matching a pattern
+4. Delete all lines not matching a pattern        *fz-regexp-4*
 >
-    :g!/foo/d  or :v/foo/d
+  :g!/foo/d  or :v/foo/d
 <
-5. Find this or that
+5. Find this or that                              *fz-regexp-5*
 >
-    /this\|that
+  /this\|that
 <
-6. Find this and that
+6. Find this and that                             *fz-regexp-6*
 >
-    /.*this\&.*that
+  /.*this\&.*that
 <
-7. Change whole word foo to bar
+7. Change whole word foo to bar                   *fz-regexp-7*
 >
-    :%s/\<foo\>/bar/gc
+  :%s/\<foo\>/bar/gc
 <
-8. Transpose a line with separator ; to columns
+8. Transpose a line with separator ; to columns   *fz-regexp-8*
 >
-    :%s/;/;\r/g
+  :%s/;/;\r/g
 <
