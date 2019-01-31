@@ -230,6 +230,7 @@ Whichkey - Help remembering mapping with leader key
     Uri u , ciu, dau
     Quotes q, ciq, daq
     Comments c, cic, dac
+    Indents i, cii, dai
 
 ### Spell checking
 Pressing `<leader>ss` will toggle spell checking:
@@ -282,7 +283,7 @@ Regexp search/replace pattern
 - vim-zenroom2 (use goyo) : Zen mode editing
 - vim-visual-multi : Alternative multi-cursor editing
 - vim-whichkey : Help remembering mapping
-- vim-textobj : Some text objects -  uri (u), quotes (q), comments (c)
+- vim-textobj : Some text objects -  uri (u), quotes (q), comments (c), indents (i)
 
 ## How to uninstall
 Just do following:

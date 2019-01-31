@@ -36,6 +36,7 @@ Plugin 'kana/vim-textobj-user'
 Plugin 'jceb/vim-textobj-uri'
 Plugin 'beloglazov/vim-textobj-quotes'
 Plugin 'glts/vim-textobj-comment'
+Plugin 'michaeljsmith/vim-indent-object'
 
 " Code Searching
 Plugin 'dyng/ctrlsf.vim'
