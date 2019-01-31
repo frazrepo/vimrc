@@ -67,6 +67,7 @@ Plugin 'yegappan/mru'
 Plugin 'scrooloose/nerdtree'
 
 " Notes, markdown, wiki
+" Should be declared after tabular plugin
 Plugin 'plasticboy/vim-markdown'
 
 " Snippet Code Generation
