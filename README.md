@@ -276,7 +276,7 @@ Regexp search/replace pattern
 - vim-zenroom2 (use goyo) : Zen mode editing
 - vim-visual-multi : Alternative multi-cursor editing
 - vim-whichkey : Help remembering mapping
-
+- vim-textobj : Some text objects -  uri, quotes
 ## How to uninstall
 Just do following:
 * Remove `~/.vim_runtime`

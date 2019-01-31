@@ -30,6 +30,12 @@ Plugin 'ervandew/supertab'
 Plugin 'AndrewRadev/splitjoin.vim'
 Plugin 'jiangmiao/auto-pairs'
 
+
+" Code Editing assist - Text Objects
+Plugin 'kana/vim-textobj-user'
+Plugin 'jceb/vim-textobj-uri'
+Plugin 'beloglazov/vim-textobj-quotes'
+
 " Code Searching
 Plugin 'dyng/ctrlsf.vim'
 Plugin 'tpope/vim-abolish'
