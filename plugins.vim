@@ -28,6 +28,7 @@ Plugin 'tpope/vim-unimpaired'
 Plugin 'mg979/vim-visual-multi'
 Plugin 'ervandew/supertab'
 Plugin 'AndrewRadev/splitjoin.vim'
+Plugin 'jiangmiao/auto-pairs'
 
 " Code Searching
 Plugin 'dyng/ctrlsf.vim'

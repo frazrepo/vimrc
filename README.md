@@ -258,6 +258,7 @@ Regexp search/replace pattern
 - tabular : Align lines bases on separator
 - Supertab : Manage auto completion correctly
 - vim-autoformat
+- auto-pairs : () , {} ,[] , etc...
 - vim-commentary
 - vim-fugitive : Git command inside vim
 - vim-markdown : Markdown editing
