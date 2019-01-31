@@ -35,6 +35,7 @@ Plugin 'jiangmiao/auto-pairs'
 Plugin 'kana/vim-textobj-user'
 Plugin 'jceb/vim-textobj-uri'
 Plugin 'beloglazov/vim-textobj-quotes'
+Plugin 'glts/vim-textobj-comment'
 
 " Code Searching
 Plugin 'dyng/ctrlsf.vim'
