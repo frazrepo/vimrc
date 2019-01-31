@@ -166,3 +166,8 @@ inoremap <C-F>t <Esc>:CtrlSFToggle<CR>
 " => whichkey help for leader key
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 nnoremap <silent> <F12>      :<c-u>WhichKey '<Space>'<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-markdown
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+let g:vim_markdown_folding_disabled = 1
