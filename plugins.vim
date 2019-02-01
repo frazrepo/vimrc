@@ -55,6 +55,7 @@ Plugin 'christoomey/vim-sort-motion'
 
 " Visual Comfort - Color Schemes
 Plugin 'dracula/vim'
+Plugin 'rafi/awesome-vim-colorschemes'
 Plugin 'itchyny/lightline.vim'
 Plugin 'frazrepo/vim-rainbow'
 Plugin 'gosukiwi/vim-atom-dark'
