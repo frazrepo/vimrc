@@ -65,7 +65,7 @@ Plugin 'MattesGroeger/vim-bookmarks'
 
 " Todo : Tmux integration - Uncomment for linux
 " Plugin 'edkolev/tmuxline.vim'
-" Plugin 'christoomey/vim-tmux-navigator'
+Plugin 'christoomey/vim-tmux-navigator'
 
 " Git integration
 Plugin 'tpope/vim-fugitive'
