@@ -139,7 +139,7 @@ nnoremap <silent> <leader>z :Goyo<cr>
 " => Emmet plugin remap
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 
-let g:user_emmet_leader_key=','
+let g:user_emmet_leader_key='<tab>'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => ctrlsf Side Search

@@ -158,7 +158,7 @@ Whichkey - Help remembering mapping with leader key
 
 **Emmet**
 
-    Generation: <leader>, or ,,
+    Generation: <tab>,
 
 **Tabular**
 
