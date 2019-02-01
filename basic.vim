@@ -144,10 +144,12 @@ set guitablabel=%N/\ %t\ %M
 " Activate by default dracula theme
 syntax on
 
-" ColorScheme dracula
-color dracula
-" Alternative scheme
-" color atom-dark-256
+" ColorScheme dracula for GUI and atom for terminal
+if has("gui_running")
+    color dracula
+else
+    color atom-dark-256
+endif
 
 " Fonts Consolas
 
