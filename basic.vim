@@ -232,6 +232,10 @@ vnoremap <silent> <leader>r :call VisualSelection('replace')<CR>
 vnoremap > >gv
 vnoremap < <gv
 
+" Insert mode cursor for terminal (xterm, bash, tmux,...)
+let &t_SI = "\e[6 q"
+let &t_EI = "\e[2 q"
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
