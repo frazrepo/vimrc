@@ -247,9 +247,6 @@ vnoremap < <gv
 map <space> /
 map <c-space> ?
 
-" Map ; to : in normal mode, really useful
-:nmap ; :
-
 " Disable highlight when <leader><cr> is pressed
 map <silent> <leader><space> :noh<cr>
 
