@@ -60,6 +60,7 @@ Plugin 'frazrepo/vim-rainbow'
 Plugin 'gosukiwi/vim-atom-dark'
 Plugin 'liuchengxu/vim-which-key'
 Plugin 'kshenoy/vim-signature'
+Plugin 'MattesGroeger/vim-bookmarks'
 
 " Todo : Tmux integration - Uncomment for linux
 " Plugin 'edkolev/tmuxline.vim'

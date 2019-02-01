@@ -211,6 +211,11 @@ Whichkey - Help remembering mapping with leader key
 
     Zen mode : <leader>z
 
+**vim-bookmarks**
+
+    Add/Remove bookmark : mm
+    Show all : ma
+
 **ultisnips and vim-snippets**
 
     Activation : <tab>
@@ -279,6 +284,7 @@ Regexp search/replace pattern
 - splitjoin.vim : Split or Join lines (code)
 - vim-unimpaired
 - vim-signature : Display marks
+- vim-bookmarks : Add bookmarks management easily
 - utilsnips + vim-snippets : Snippets
 - vim-zenroom2 (use goyo) : Zen mode editing
 - vim-visual-multi : Alternative multi-cursor editing
