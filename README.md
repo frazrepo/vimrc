@@ -116,13 +116,6 @@ Quickly insert parenthesis/brackets/etc.:
     inoremap $2 []<esc>i
     inoremap $3 {}<esc>i
     inoremap $4 {<esc>o}<esc>O
-    inoremap $q ''<esc>i
-    inoremap $e ""<esc>i
-    inoremap $t <><esc>i
-
-Insert the current date and time (useful for timestamps):
-
-    iab xdate <c-r>=strftime("%d/%m/%y %H:%M:%S")<cr>
 
 
 ### Command line mappings
@@ -187,9 +180,11 @@ Whichkey - Help remembering mapping with leader key
 
 **vim-unimpaired**
 
-    Map keys : ( and )
-    Switch between tabs   : (t, )t
-    Switch between buffers: (b, )b
+    Map keys : < and >
+    Switch between tabs   : <t, >t
+    Switch between buffers: <b, >b
+    Toggle Options : yo[r,n,....]
+    Lines operations : <space, >space, 10>space, <e, >e
 
 **fzf**
 
@@ -238,18 +233,6 @@ Whichkey - Help remembering mapping with leader key
     Comments c, cic, dac
     Indents i, cii, dai
 
-### Spell checking
-Pressing `<leader>ss` will toggle spell checking:
-
-    map <leader>ss :setlocal spell!<cr>
-
-Shortcuts using `<leader>` instead of special characters:
-
-    map <leader>sn ]s
-    map <leader>sp [s
-    map <leader>sa zg
-    map <leader>s? z=
-
 ## Custom Docs
 
 Regexp search/replace pattern
@@ -283,7 +266,7 @@ Regexp search/replace pattern
 - ctrlsf.vim  : Side searching
 - vim-surround : Surround text
 - splitjoin.vim : Split or Join lines (code)
-- vim-unimpaired
+- vim-unimpaired :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
 - vim-signature : Display marks
 - vim-bookmarks : Add bookmarks management easily
 - utilsnips + vim-snippets : Snippets

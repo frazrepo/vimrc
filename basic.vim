@@ -223,17 +223,7 @@ vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
 " When you press `<leader>r` you can search and replace the selected text:
-
 vnoremap <silent> <leader>r :call VisualSelection('replace')<CR>
-
-" Surround the visual selection in parenthesis/brackets/etc.:
-
-vnoremap $1 <esc>`>a)<esc>`<i(<esc>
-vnoremap $2 <esc>`>a]<esc>`<i[<esc>
-vnoremap $3 <esc>`>a}<esc>`<i{<esc>
-vnoremap $$ <esc>`>a"<esc>`<i"<esc>
-vnoremap $q <esc>`>a'<esc>`<i'<esc>
-vnoremap $e <esc>`>a"<esc>`<i"<esc>
 
 " Keep selection in select mode after shifting
 " Tab not working with UltiSnips 
@@ -271,16 +261,13 @@ map <leader>tn :tabnew<cr>
 map <leader>to :tabonly<cr>
 map <leader>tc :tabclose<cr>
 map <leader>tm :tabmove 
-map <leader>t<leader> :tabnext 
 
 " Let 'tl' toggle between this and the last accessed tab
 let g:lasttab = 1
 nmap <Leader>tl :exe "tabn ".g:lasttab<CR>
 au TabLeave * let g:lasttab = tabpagenr()
 
-" CTRL-Tab /CTRL-Shift-Tab Next and Previous tab
-map    <C-Tab>    :tabnext<CR>
-imap   <C-Tab>    <C-O>:tabnext<CR>
+" CTRL-Shift-Tab Rotating between Tab
 map    <C-S-Tab>  :tabprev<CR>
 imap   <C-S-Tab>  <C-O>:tabprev<CR>
 
@@ -333,6 +320,7 @@ endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Parenthesis/bracket
+" Surround the visual selection in parenthesis/brackets/etc.:
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 vnoremap $1 <esc>`>a)<esc>`<i(<esc>
 vnoremap $2 <esc>`>a]<esc>`<i[<esc>
@@ -346,8 +334,6 @@ inoremap $1 ()<esc>i
 inoremap $2 []<esc>i
 inoremap $3 {}<esc>i
 inoremap $4 {<esc>o}<esc>O
-inoremap $q ''<esc>i
-inoremap $e ""<esc>i
 
 " Delete trailing white space on save, useful for some filetypes ;)
 fun! CleanExtraSpaces()

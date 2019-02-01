@@ -118,12 +118,12 @@ let g:UltiSnipsSnippetDirectories = [$HOME.'/.vim_runtime/plugins/frazrepo-snipp
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim unimpaired
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-nmap ( [
-nmap ) ]
-omap ( [
-omap ) ]
-xmap ( [
-xmap ) ]
+nmap < [
+nmap > ]
+omap < [
+omap > ]
+xmap < [
+xmap > ]
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Goyo and zenroom2
