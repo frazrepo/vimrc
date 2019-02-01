@@ -174,6 +174,7 @@ Whichkey - Help remembering mapping with leader key
     Change: cs"', cst"
     Add : ysiw], ysim<em>
     Delete :  ds", ds{
+    Visual Mode : select and then S" or S'    
 
 **nerdtree**
 
