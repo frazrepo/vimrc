@@ -39,6 +39,7 @@ Plugin 'glts/vim-textobj-comment'
 Plugin 'michaeljsmith/vim-indent-object'
 
 " Code Searching
+Plugin 'mileszs/ack.vim'
 Plugin 'dyng/ctrlsf.vim'
 Plugin 'tpope/vim-abolish'
 

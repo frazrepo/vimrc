@@ -171,3 +171,13 @@ nnoremap <silent> <F12>      :<c-u>WhichKey '<Space>'<CR>
 " => vim-markdown
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:vim_markdown_folding_disabled = 1
+
+
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Ack.vim to use ag
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+if executable('ag') 
+    let g:ackprg = 'ag --vimgrep' 
+endif
