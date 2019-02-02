@@ -242,6 +242,7 @@ Regexp search/replace pattern
 ## Plugins list
 
 - ale
+- ack.vim : Search in files
 - vim-abolish : Search words, Coercion
 - Align : Dependencies for other plugins , Align text based on separators
 - emmet-vim : Html editing

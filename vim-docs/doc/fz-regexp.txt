@@ -11,6 +11,7 @@ INTRODUCTION                                    *fz-regexp*
 6. Find this and that                             |fz-regexp-6|
 7. Change whole word foo to bar                   |fz-regexp-7|
 8. Transpose a line with separator ; to columns   |fz-regexp-8|
+9. Search and replace in files                    |fz-regexp-9|
 
 
 ==============================================================================
@@ -46,4 +47,9 @@ INTRODUCTION                                    *fz-regexp*
 8. Transpose a line with separator ; to columns   *fz-regexp-8*
 >
   :%s/;/;\r/g
+<
+9. Search and replace in files                    *fz-regexp-9*
+>
+  :Ack pattern
+  :cfdo s/foo/bar/g | update
 <
