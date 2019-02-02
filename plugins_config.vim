@@ -28,7 +28,8 @@ nnoremap <silent> <leader>b :Buffers<CR>
 " To ignore git files
 " Add this to ENV
 " FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
-
+ nnoremap <silent> <leader>/ :execute 'Ag ' . input('Ag/')<CR>
+ 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Nerd Tree
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
