@@ -92,6 +92,7 @@ Plugin 'honza/vim-snippets'
 " Session management
 Plugin 'tpope/vim-obsession'
 Plugin 'dhruvasagar/vim-prosession'
+Plugin 'artnez/vim-wipeout'
 
 "  Zen Mode for writing text
 Plugin 'junegunn/goyo.vim'
