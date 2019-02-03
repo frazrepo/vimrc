@@ -54,14 +54,14 @@ nnoremap <silent> <leader>b :Buffers<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 let g:ctrlsf_populate_qflist = 1
 
-nnoremap <silent> F :call SearchWordWithAck()<CR>
-vnoremap <silent> F :call SearchVisualSelectionWithAck()<CR>
+nnoremap <silent> F :call SearchWordWithCtrlSf()<CR>
+vnoremap <silent> F :call SearchVisualSelectionWithCtrlSf()<CR>
 
-function! SearchWordWithAck()
+function! SearchWordWithCtrlSf()
    execute 'CtrlSF' expand('<cword>')
 endfunction
 
-function! SearchVisualSelectionWithAck() range
+function! SearchVisualSelectionWithCtrlSf() range
     let old_reg = getreg('"')
     let old_regtype = getregtype('"')
     let old_clipboard = &clipboard
