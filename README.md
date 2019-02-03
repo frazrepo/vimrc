@@ -52,7 +52,10 @@ Closing of the current buffer(s) (`<leader>bd` and (`<leader>ba`)):
 	map <leader>bd :Bclose<cr>
 	
 	" Close all buffers
-	map <leader>ba :bufdo bd$1i$1$1$&sqsqii<cr>
+	map <leader>ba :bufdo bd<cr>
+	
+	" Wipeout all hidden buffers
+	map <leader>bw :Wipeout<cr>
 	
 Useful mappings for managing tabs:
 	
@@ -147,6 +150,10 @@ Whichkey - Help remembering mapping with leader key
     
     F12
 
+Toggle QuickFix windows
+    
+    F8
+
 ### Plugins usage
 
 **Emmet**
@@ -190,6 +197,7 @@ Whichkey - Help remembering mapping with leader key
 
     Files : CTRL + p (t to open file in tab)
     Buffers : <leader>b
+    K : Ag select words
 
 **vim-rainbow**
 
@@ -226,6 +234,10 @@ Whichkey - Help remembering mapping with leader key
     Join gJ
     Split gS
 
+**CtrlSF**
+
+    F : Find selected word 
+
 **custom text-objects**
 
     Uri u , ciu, dau
@@ -238,6 +250,7 @@ Whichkey - Help remembering mapping with leader key
 Regexp search/replace pattern
 
     :helptags fz-regexp
+    :helptags fz-macro
 
 ## Plugins list
 
@@ -274,6 +287,7 @@ Regexp search/replace pattern
 - vim-zenroom2 (use goyo) : Zen mode editing
 - vim-visual-multi : Alternative multi-cursor editing
 - vim-whichkey : Help remembering mapping
+- vim-wipeout : Close all hidden buffers
 - vim-textobj : Some text objects -  uri (u), quotes (q), comments (c), indents (i)
 
 ## How to uninstall
