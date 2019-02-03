@@ -367,6 +367,9 @@ map <leader>x :e ~/buffer.md<cr>
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
 
+" Toogle quickfix windows
+map <silent> <F8> :call <SID>ToggleQf()<cr>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Buffers in split in all directions
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -428,4 +431,16 @@ function! VisualSelection(direction, extra_filter) range
 
     let @/ = l:pattern
     let @" = l:saved_reg
+endfunction
+
+function! s:ToggleQf()
+  for buffer in tabpagebuflist()
+    if bufname(buffer) == ''
+      " then it should be the quickfix window
+      cclose
+      return
+    endif
+  endfor
+
+  copen
 endfunction
