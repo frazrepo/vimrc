@@ -30,17 +30,12 @@ nnoremap <silent> <leader>b :Buffers<CR>
 " FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
  nnoremap <silent> <leader>/ :execute 'Ag ' . input('Ag/')<CR>
  nnoremap <silent> K :call SearchWordWithAg()<CR>
- nnoremap <silent> KK:call SearchWordWithAck()<CR>
  vnoremap <silent> K :call SearchVisualSelectionWithAg()<CR>
- vnoremap <silent> KK :call SearchVisualSelectionWithAck()<CR>
 
  function! SearchWordWithAg()
     execute 'Ag' expand('<cword>')
   endfunction
 
- function! SearchWordWithAck()
-    execute 'CtrlSF' expand('<cword>')
-  endfunction
 
   function! SearchVisualSelectionWithAg() range
     let old_reg = getreg('"')
@@ -53,7 +48,20 @@ nnoremap <silent> <leader>b :Buffers<CR>
     let &clipboard = old_clipboard
     execute 'Ag' selection
   endfunction
- function! SearchVisualSelectionWithAck() range
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => CtrlSF
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
+let g:ctrlsf_populate_qflist = 1
+
+nnoremap <silent> F :call SearchWordWithAck()<CR>
+vnoremap <silent> F :call SearchVisualSelectionWithAck()<CR>
+
+function! SearchWordWithAck()
+   execute 'CtrlSF' expand('<cword>')
+endfunction
+
+function! SearchVisualSelectionWithAck() range
     let old_reg = getreg('"')
     let old_regtype = getregtype('"')
     let old_clipboard = &clipboard
@@ -63,8 +71,7 @@ nnoremap <silent> <leader>b :Buffers<CR>
     call setreg('"', old_reg, old_regtype)
     let &clipboard = old_clipboard
     execute 'CtrlSF' selection
-  endfunction
-
+ endfunction
   
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => NerdTree
