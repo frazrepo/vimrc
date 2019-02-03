@@ -29,7 +29,25 @@ nnoremap <silent> <leader>b :Buffers<CR>
 " Add this to ENV
 " FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
  nnoremap <silent> <leader>/ :execute 'Ag ' . input('Ag/')<CR>
- 
+ nnoremap <silent> K :call SearchWordWithAg()<CR>
+ vnoremap <silent> K :call SearchVisualSelectionWithAg()<CR>
+
+ function! SearchWordWithAg()
+    execute 'Ag' expand('<cword>')
+  endfunction
+
+  function! SearchVisualSelectionWithAg() range
+    let old_reg = getreg('"')
+    let old_regtype = getregtype('"')
+    let old_clipboard = &clipboard
+    set clipboard&
+    normal! ""gvy
+    let selection = getreg('"')
+    call setreg('"', old_reg, old_regtype)
+    let &clipboard = old_clipboard
+    execute 'Ag' selection
+  endfunction
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Nerd Tree
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
