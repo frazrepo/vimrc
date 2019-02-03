@@ -236,7 +236,8 @@ Toggle QuickFix windows
 
 **CtrlSF**
 
-    F : Find selected word 
+    F  : Find selected word 
+    F9 : Toggle CtrlSF result Window 
 
 **custom text-objects**
 
