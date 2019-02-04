@@ -69,6 +69,8 @@ Plug 'christoomey/vim-tmux-navigator'
 
 " Git integration
 Plug 'tpope/vim-fugitive'
+Plug 'mhinz/vim-signify'
+
 
 " File management, searching
 Plug 'junegunn/fzf'
