@@ -203,6 +203,9 @@ if has("menu") && has("gui_running") && &go =~# 'm' && !exists("s:firstmenu")
  if !exists("g:DrChipTopLvlMenu")
   let g:DrChipTopLvlMenu= "DrChip."
  endif
+ 
+ " Workaround to disable DrChip menu
+ let g:DrChipTopLvlMenu= ""
  if g:DrChipTopLvlMenu != ""
   let s:mapleader = exists("g:mapleader")? g:mapleader : '\'
   let s:emapleader= escape(s:mapleader,'\ ')
