@@ -26,6 +26,7 @@ Plug 'mg979/vim-visual-multi'
 Plug 'ervandew/supertab'
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'jiangmiao/auto-pairs'
+Plug 'matze/vim-move'
 
 
 " Code Editing assist - Text Objects
@@ -45,7 +46,7 @@ Plug 'tpope/vim-abolish'
 Plug 'Chiel92/vim-autoformat'
 Plug 'godlygeek/tabular'
 Plug 'vim-scripts/Align'
-Plug 'vim-scripts/SQLUtilities'
+Plug 'vim-scripts/SQLUtilities', { 'for' : 'sql' }
 
 
 " Sorting
@@ -93,7 +94,7 @@ Plug 'dhruvasagar/vim-prosession'
 Plug 'artnez/vim-wipeout'
 
 "  Zen Mode for writing text
-Plug 'junegunn/goyo.vim'
+Plug 'junegunn/goyo.vim', { 'for' : 'markdown' }
 Plug 'amix/vim-zenroom2'
 
 " Language
