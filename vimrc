@@ -1,4 +1,5 @@
 
+" For Vim Plug autoload and plugins
 set rtp+=$HOME/.vim_runtime
 
 " Custom documentations
