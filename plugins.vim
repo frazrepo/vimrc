@@ -73,11 +73,11 @@ Plug 'tpope/vim-fugitive'
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'yegappan/mru'
-Plug 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdtree' , { 'on': 'NERDTreeToggle'}
 
 " Notes, markdown, wiki
 " Should be declared after tabular plugin
-Plug 'plasticboy/vim-markdown'
+Plug 'plasticboy/vim-markdown' , { 'for' : 'markdown' }
 
 " Snippet Code Generation
 Plug 'tpope/vim-surround'
@@ -97,7 +97,7 @@ Plug 'junegunn/goyo.vim'
 Plug 'amix/vim-zenroom2'
 
 " Language
-Plug 'PProvost/vim-ps1.git'
+Plug 'PProvost/vim-ps1.git', { 'for' : 'ps1' } 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugs End
