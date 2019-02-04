@@ -1,9 +1,6 @@
 
 set rtp+=$HOME/.vim_runtime
 
-" set the runtime path to include Vundle and initialize
-set rtp+=$HOME/.vim_runtime/plugins/Vundle.vim/
-
 " Custom documentations
 set rtp+=$HOME/.vim_runtime/vim-docs/
 

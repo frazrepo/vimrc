@@ -17,11 +17,11 @@ set undolevels=1000
 
 " Filetype
 set nocompatible 
-filetype off 
+" filetype off 
 
 " Enable filetype plugins
-filetype plugin on   
-filetype indent on
+" filetype plugin on   
+" filetype indent on
 
 
 " With a map leader it's possible to do extra key combinations
@@ -106,7 +106,7 @@ set foldcolumn=1
 
 " Dealing with special chars
 set encoding=utf-8
-set fileencoding=utf-8
+" set fileencoding=utf-8
 
 " Activate mouse
 set mouse=a
