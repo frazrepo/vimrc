@@ -97,8 +97,9 @@ Plug 'artnez/vim-wipeout'
 Plug 'junegunn/goyo.vim', { 'for' : 'markdown' }
 Plug 'amix/vim-zenroom2', { 'for' : 'markdown' }
 
-" Language
+" Languages
 Plug 'PProvost/vim-ps1.git', { 'for' : 'ps1' } 
+Plug 'honza/dockerfile.vim'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugs End
