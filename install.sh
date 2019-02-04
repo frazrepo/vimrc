@@ -1,7 +1,11 @@
 #!/bin/bash
 
-echo "Installing vimrc file.."
+vimPlugRuntime=~/.vim/autoload/plug.vim
+vimPlugRuntimeSource=./autoload/plug.vim
+echo "Installing vim plug runtime .."
+[ ! -e $vimPlugRuntime ] &&  cp  $vimPlugRuntimeSource $vimPlugRuntime
 
+echo "Installing vimrc file.."
 userdir=~
 userConfig=$userdir/.vimrc
 backupConfig=~/.vimrc.bkp

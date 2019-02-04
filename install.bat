@@ -1,5 +1,13 @@
 @echo off
 
+set vimPlugRuntime=%USERPROFILE%/.vim/autoload/plug.vim
+set vimPlugRuntimeSource=./autoload/plug.vim
+echo "Installing vim plug runtime .."
+
+if not exist %vimPlugRuntime% (
+    copy /y  "%vimPlugRuntimeSource%" "%vimPlugRuntime%"
+)
+
 echo "Installing vimrc file.."
 
 set userdir=%USERPROFILE%
