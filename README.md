@@ -274,6 +274,7 @@ Regexp search/replace pattern
 - vim-fugitive : Git command inside vim
 - vim-markdown : Markdown editing
 - vim-misc : Dependencies for other plugins
+- vim-move : Move lines or selections up and down using jk keys
 - vim-obsession / vim-prosession : Autosave session
 - vim-rainbow : Color parentheses, brackets,...
 - vim-repeat

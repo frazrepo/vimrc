@@ -95,7 +95,7 @@ Plug 'artnez/vim-wipeout'
 
 "  Zen Mode for writing text
 Plug 'junegunn/goyo.vim', { 'for' : 'markdown' }
-Plug 'amix/vim-zenroom2'
+Plug 'amix/vim-zenroom2', { 'for' : 'markdown' }
 
 " Language
 Plug 'PProvost/vim-ps1.git', { 'for' : 'ps1' } 
