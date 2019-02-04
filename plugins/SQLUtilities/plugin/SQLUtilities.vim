@@ -219,6 +219,8 @@ function! SQLU_Menu()
             let leader = g:mapleader
         endif
         let leader = escape(leader, '\')
+        " Workaround for menu display
+        let leader =',' 
 
         if s:sqlutil_menus_created == 0 
             exec 'vnoremenu <script> '.menuPriority.' '.menuRoot.'.Format\ Range\ Stmts<TAB>'.leader.'sfr :SQLUFormatStmts<CR>'
