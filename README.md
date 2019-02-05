@@ -178,9 +178,9 @@ Toggle QuickFix windows
 
     Toggle coloring :RainbowToogle
 
-**sqlutilities**
+**vim-sqlformat**
 
-    Formattting : <leader>sf (in Visual Mode or do via Menu)
+    Formattting : select and just use gq
 
 **sort-motion**
 
