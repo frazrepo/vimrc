@@ -46,7 +46,8 @@ Plug 'tpope/vim-abolish'
 Plug 'Chiel92/vim-autoformat'
 Plug 'godlygeek/tabular'
 Plug 'vim-scripts/Align'
-Plug 'vim-scripts/SQLUtilities', { 'for' : 'sql' }
+" Requires pip install sqlparse
+Plug 'mpyatishev/vim-sqlformat', { 'for' : 'sql' }
 
 
 " Sorting

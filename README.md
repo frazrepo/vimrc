@@ -265,7 +265,7 @@ Regexp search/replace pattern
 - lightline : Lightweight status line 
 - mru : Browse most recent files
 - nerdtree : File browser
-- SQLUtilities : SQL formatting
+- vim-sqlformat : SQL formatting
 - tabular : Align lines bases on separator
 - Supertab : Manage auto completion correctly
 - vim-autoformat
