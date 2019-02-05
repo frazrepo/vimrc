@@ -45,7 +45,6 @@ Plug 'tpope/vim-abolish'
 " Code formatting
 Plug 'Chiel92/vim-autoformat'
 Plug 'godlygeek/tabular'
-Plug 'vim-scripts/Align'
 " Requires pip install sqlparse or pip3 install sqlparse
 Plug 'mpyatishev/vim-sqlformat', { 'for' : 'sql' }
 
