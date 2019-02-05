@@ -134,11 +134,6 @@ let g:lightline = {
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => SQLUtilities
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:sqlutil_align_comma = 1
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-rainbow brackets
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 " Set this to 1 if you want to activate by default  , or active by typing the :RainbowToggle command
