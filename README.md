@@ -195,6 +195,12 @@ Toggle QuickFix windows
     Add/Remove bookmark : mm
     Show all : ma
 
+**vim-sneak**
+
+    Search : s{char}{char}
+    Delete : z{char}{char}
+    Next match : ;
+
 **ultisnips and vim-snippets**
 
     Activation : <tab>
@@ -255,6 +261,7 @@ Regexp search/replace pattern
 - vim-sort-motion
 - ctrlsf.vim  : Side searching
 - vim-surround : Surround text
+- vim-sneak : Find text using two characters (line f but handle vertical positions)
 - splitjoin.vim : Split or Join lines (code)
 - vim-unimpaired :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
 - vim-signature : Display marks
