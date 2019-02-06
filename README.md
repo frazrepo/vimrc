@@ -199,7 +199,7 @@ Toggle QuickFix windows
 
     Search : s{char}{char}
     Delete : z{char}{char}
-    Next match : ;
+    Next match : , ;
 
 **ultisnips and vim-snippets**
 
