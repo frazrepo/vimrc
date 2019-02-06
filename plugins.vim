@@ -17,7 +17,7 @@ call plug#begin('~/.vim_runtime/plugins')
 
 " Dependencies
 Plug 'w0rp/ale', { 'on' : 'ALEToggle' }
-Plug 'xolox/vim-misc'
+" Plug 'xolox/vim-misc'
 
 " Code Editing
 Plug 'tpope/vim-repeat'
