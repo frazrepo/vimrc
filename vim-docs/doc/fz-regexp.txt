@@ -12,6 +12,7 @@ INTRODUCTION                                    *fz-regexp*
 7. Change whole word foo to bar                   |fz-regexp-7|
 8. Transpose a line with separator ; to columns   |fz-regexp-8|
 9. Search and replace in files                    |fz-regexp-9|
+10.Ressources                                     |fz-regexp-10|
 
 
 ==============================================================================
@@ -53,3 +54,5 @@ INTRODUCTION                                    *fz-regexp*
   :Ack pattern
   :cfdo s/foo/bar/g | update
 <
+10.Ressources                                     *fz-regexp-10*
+ - http://zzapper.co.uk/vimtips.html
