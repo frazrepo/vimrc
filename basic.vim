@@ -143,6 +143,8 @@ set guitablabel=%N/\ %t\ %M
 
 " Activate by default dracula theme
 syntax on
+" And optimize performance for longlines
+set synmaxcol = 200
 
 " ColorScheme dracula for GUI and atom for terminal
 if has("gui_running")
