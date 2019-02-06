@@ -60,7 +60,6 @@ Closing of the current buffer(s) (`<leader>bd` and (`<leader>ba`)):
 Useful mappings for managing tabs:
 	
     gt or (ngt) : Go to tab or Go to nth tab
-    C-Tab or C-S-Tab : Next or Previous Tab
 	map <leader>tn :tabnew<cr>
 	map <C-n> :tabnew<cr>
 	map <leader>to :tabonly<cr>
@@ -110,31 +109,7 @@ Surround the visual selection in parenthesis/brackets/etc.:
     vnoremap $q <esc>`>a'<esc>`<i'<esc>
     vnoremap $e <esc>`>a"<esc>`<i"<esc>
 
-
-### Insert mode mappings
-
-Quickly insert parenthesis/brackets/etc.:
-
-    inoremap $1 ()<esc>i
-    inoremap $2 []<esc>i
-    inoremap $3 {}<esc>i
-    inoremap $4 {<esc>o}<esc>O
-
-
 ### Command line mappings
-
-$q is super useful when browsing on the command line. It deletes everything until the last slash:
-
-    cno $q <C-\>eDeleteTillSlash()<cr>
-
-Bash like keys for the command line:
-
-    cnoremap <C-A>		<Home>
-    cnoremap <C-E>		<End>
-    cnoremap <C-K>		<C-U>
-
-    cnoremap <C-P> <Up>
-    cnoremap <C-N> <Down>
 
 Write the file as sudo (works only on Unix). Super useful when you open a file and you don't have permissions to save your changes. [Vim tip](http://vim.wikia.com/wiki/Su-write):
 
@@ -187,11 +162,11 @@ Toggle QuickFix windows
 
 **vim-unimpaired**
 
-    Map keys : < and >
-    Switch between tabs   : <t, >t
-    Switch between buffers: <b, >b
+    Map keys : ( and )
+    Switch between tabs   : (t, )t
+    Switch between buffers: (b, )b
     Toggle Options : yo[r,n,....]
-    Lines operations : <space, >space, 10>space, <e, >e
+    Lines operations : (space, )space, 10)space, (e, )e
 
 **fzf**
 

@@ -271,10 +271,6 @@ let g:lasttab = 1
 nmap <Leader>tl :exe "tabn ".g:lasttab<CR>
 au TabLeave * let g:lasttab = tabpagenr()
 
-" CTRL-Shift-Tab Rotating between Tab
-map    <C-S-Tab>  :tabprev<CR>
-imap   <C-S-Tab>  <C-O>:tabprev<CR>
-
 " Opens a new tab with the current buffer's path
 " Super useful when editing files in the same directory
 map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/

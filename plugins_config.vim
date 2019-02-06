@@ -160,14 +160,20 @@ let g:UltiSnipsEditSplit="vertical"
 let g:UltiSnipsSnippetDirectories = [$HOME.'/.vim_runtime/plugins/frazrepo-snippets', 'UltiSnips']
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim unimpaired
+" => vim unimpaired > and < conflict with visual indentation
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-nmap < [
-nmap > ]
-omap < [
-omap > ]
-xmap < [
-xmap > ]
+nmap ( [
+nmap ) ]
+omap ( [
+omap ) ]
+xmap ( [
+xmap ) ]
+" nmap < [
+" nmap > ]
+" omap < [
+" omap > ]
+" xmap < [
+" xmap > ]
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Goyo and zenroom2
