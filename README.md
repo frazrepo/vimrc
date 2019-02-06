@@ -198,7 +198,7 @@ Toggle QuickFix windows
 **vim-sneak**
 
     Search : s{char}{char}
-    Delete : z{char}{char}
+    Combine with Surround : z{char}{char} , Ex: yszab"
     Next match : , ;
 
 **ultisnips and vim-snippets**
