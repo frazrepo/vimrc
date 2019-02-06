@@ -37,7 +37,7 @@ Plug 'michaeljsmith/vim-indent-object'
 
 " Code Searching
 Plug 'mileszs/ack.vim'
-Plug 'dyng/ctrlsf.vim', { 'on' : 'CtrlSF' }
+Plug 'dyng/ctrlsf.vim'
 Plug 'tpope/vim-abolish'
 Plug 'justinmk/vim-sneak'
 
