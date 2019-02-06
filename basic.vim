@@ -300,6 +300,10 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 nnoremap <S-Tab> <<
 inoremap <S-Tab> <C-d>
 
+" Change word under cursor and dot repeat, really useful to edit quickly
+nnoremap c* *Ncgn
+nnoremap c# #NcgN
+
 " Quick yanking to the end of the line
 nnoremap Y y$
 
@@ -328,11 +332,6 @@ vnoremap $$ <esc>`>a"<esc>`<i"<esc>
 vnoremap $q <esc>`>a'<esc>`<i'<esc>
 vnoremap $e <esc>`>a"<esc>`<i"<esc>
 
-" Map auto complete of (, ", ', [
-inoremap $1 ()<esc>i
-inoremap $2 []<esc>i
-inoremap $3 {}<esc>i
-inoremap $4 {<esc>o}<esc>O
 
 " Delete trailing white space on save, useful for some filetypes ;)
 fun! CleanExtraSpaces()
