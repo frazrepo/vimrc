@@ -17,23 +17,22 @@ call plug#begin('~/.vim_runtime/plugins')
 
 " Dependencies
 Plug 'w0rp/ale', { 'on' : 'ALEToggle' }
-" Plug 'xolox/vim-misc'
 
 " Code Editing
-Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-unimpaired'
-Plug 'mg979/vim-visual-multi'
-Plug 'ervandew/supertab'
 Plug 'AndrewRadev/splitjoin.vim'
+Plug 'ervandew/supertab'
 Plug 'jiangmiao/auto-pairs'
 Plug 'matze/vim-move'
+Plug 'mg979/vim-visual-multi'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-unimpaired'
 
 
 " Code Editing assist - Text Objects
-Plug 'kana/vim-textobj-user'
-Plug 'jceb/vim-textobj-uri'
 Plug 'beloglazov/vim-textobj-quotes'
 Plug 'glts/vim-textobj-comment'
+Plug 'jceb/vim-textobj-uri'
+Plug 'kana/vim-textobj-user'
 Plug 'michaeljsmith/vim-indent-object'
 
 " Code Searching
