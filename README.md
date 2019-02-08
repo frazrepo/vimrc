@@ -205,11 +205,6 @@ Toggle QuickFix windows
 
     Activation : <tab>
 
-**vim-visual-multi**
-
-    Multiple vertical cursors : <C-Down>
-    Multiple word cursors : <C-n> and <C-n> to select next words
-
 **splitjoin-vim**
 
     Join gJ
@@ -268,7 +263,6 @@ Regexp search/replace pattern
 - vim-bookmarks : Add bookmarks management easily
 - utilsnips + vim-snippets : Snippets
 - vim-zenroom2 (use goyo) : Zen mode editing
-- vim-visual-multi : Alternative multi-cursor editing
 - vim-whichkey : Help remembering mapping
 - vim-wipeout : Close all hidden buffers
 - vim-textobj : Some text objects -  uri (u), quotes (q), comments (c), indents (i)
