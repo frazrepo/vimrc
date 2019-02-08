@@ -225,7 +225,7 @@ vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
 " When you press `<leader>r` you can search and replace the selected text:
-vnoremap <silent> <leader>r :call VisualSelection('replace')<CR>
+vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
 
 " Keep selection in select mode after shifting
 " Tab not working with UltiSnips 
