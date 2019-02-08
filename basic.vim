@@ -436,3 +436,10 @@ function! s:ToggleQf()
 
   copen
 endfunction
+" Execute a macro over a visual range
+xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
+
+function! ExecuteMacroOverVisualRange()
+  echo "@".getcmdline()
+  execute ":'<,'>normal @".nr2char(getchar())
+endfunction
