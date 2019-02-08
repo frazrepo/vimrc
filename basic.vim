@@ -362,6 +362,9 @@ map <leader>pp :setlocal paste!<cr>
 " Toogle quickfix windows
 map <silent> <F8> :call <SID>ToggleQf()<cr>
 
+" Workaround to start visual block mode on terminal if C-v or C-q is not working
+command! VisualBlock execute "normal! \<C-v>"
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Buffers in split in all directions
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
