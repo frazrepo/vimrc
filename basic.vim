@@ -238,6 +238,9 @@ let &t_EI = "\e[2 q"
 " Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
 map <space> /
 map <c-space> ?
+" Search using magic regex
+nnoremap / /\v
+nnoremap ? ?\v
 
 " Disable highlight when <leader><cr> is pressed
 map <silent> <leader><space> :noh<cr>
