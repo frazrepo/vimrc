@@ -39,6 +39,7 @@ Plug 'mileszs/ack.vim'
 Plug 'dyng/ctrlsf.vim'
 Plug 'tpope/vim-abolish'
 Plug 'justinmk/vim-sneak'
+Plug 'frazrepo/yankmatches'
 
 
 " Code formatting

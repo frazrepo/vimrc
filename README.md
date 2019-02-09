@@ -215,6 +215,11 @@ Toggle QuickFix windows
     F  : Find selected word 
     F9 : Toggle CtrlSF result Window 
 
+**yankmatches**
+
+    ym / YM : Yank highlighted search lines  (YM for inverse) 
+    dm / DM : Delete highlighteed search line (DM for inverse)
+
 **custom text-objects**
 
     Uri u , ciu, dau
@@ -266,6 +271,7 @@ Regexp search/replace pattern
 - vim-whichkey : Help remembering mapping
 - vim-wipeout : Close all hidden buffers
 - vim-textobj : Some text objects -  uri (u), quotes (q), comments (c), indents (i)
+- yankmatches : Copy or Delete search results
 
 ## How to uninstall
 Just do following:
@@ -275,3 +281,4 @@ Just do following:
 ## Inspiration
 * [https://github.com/amix/vimrc](https://github.com/amix/vimrc)
 * [https://github.com/nvie/vimrc/blob/master/vimrc](https://github.com/nvie/vimrc/blob/master/vimrc)
+* [https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup](https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup)
