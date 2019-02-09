@@ -292,6 +292,7 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 " Tab not working with UltiSnips 
 " vmap <Tab> >gv
 " vmap <S-Tab> <gv
+" Indenting not working when the line starts with ##
 vnoremap > >gv
 vnoremap < <gv
 
