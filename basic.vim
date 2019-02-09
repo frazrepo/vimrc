@@ -227,12 +227,6 @@ vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 " When you press `<leader>r` you can search and replace the selected text:
 vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
 
-" Keep selection in select mode after shifting
-" Tab not working with UltiSnips 
-" vmap <Tab> >gv
-" vmap <S-Tab> <gv
-vnoremap > >gv
-vnoremap < <gv
 
 " Insert mode cursor for terminal (xterm, bash, tmux,...)
 let &t_SI = "\e[6 q"
@@ -293,6 +287,13 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Keep selection in select mode after shifting
+" Tab not working with UltiSnips 
+" vmap <Tab> >gv
+" vmap <S-Tab> <gv
+vnoremap > >gv
+vnoremap < <gv
 
 " Tabulation Remap Shift + Tab
 nnoremap <S-Tab> <<
