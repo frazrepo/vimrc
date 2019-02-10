@@ -252,7 +252,7 @@ Regexp search/replace pattern
 - nerdtree : File browser
 - vim-sqlformat : SQL formatting
 - tabular : Align lines bases on separator
-- Supertab : Manage auto completion correctly
+- completor : Manage auto completion correctly
 - vim-autoformat
 - auto-pairs : () , {} ,[] , etc...
 - vim-commentary

@@ -20,11 +20,11 @@ Plug 'w0rp/ale', { 'on' : 'ALEToggle' }
 
 " Code Editing
 Plug 'AndrewRadev/splitjoin.vim'
-Plug 'ervandew/supertab'
 Plug 'jiangmiao/auto-pairs'
 Plug 'matze/vim-move'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-unimpaired'
+Plug 'maralla/completor.vim'
 
 
 " Code Editing assist - Text Objects
