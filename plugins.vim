@@ -33,6 +33,7 @@ Plug 'glts/vim-textobj-comment'
 Plug 'jceb/vim-textobj-uri'
 Plug 'kana/vim-textobj-user'
 Plug 'michaeljsmith/vim-indent-object'
+Plug 'zirrostig/vim-schlepp'
 
 " Code Searching
 Plug 'mileszs/ack.vim'

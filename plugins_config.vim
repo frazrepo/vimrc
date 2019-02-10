@@ -234,3 +234,11 @@ endif
 " => Wipeout
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 map <leader>bw :Wipeout<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-schlep to drag in visual mode
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+vmap <unique> <up>    <Plug>SchleppUp
+vmap <unique> <down>  <Plug>SchleppDown
+vmap <unique> <left>  <Plug>SchleppLeft
+vmap <unique> <right> <Plug>SchleppRight

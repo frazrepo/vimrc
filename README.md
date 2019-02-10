@@ -220,7 +220,12 @@ Toggle QuickFix windows
     ym / YM : Yank highlighted search lines  (YM for inverse) 
     dm / DM : Delete highlighteed search line (DM for inverse)
 
+**zirrostig/vim-schlepp**
+
+    up/down/left/right : After a selection in visual mode, drag using arrow key
+
 **custom text-objects**
+
 
     Uri u , ciu, dau
     Quotes q, ciq, daq
@@ -272,6 +277,7 @@ Regexp search/replace pattern
 - vim-wipeout : Close all hidden buffers
 - vim-textobj : Some text objects -  uri (u), quotes (q), comments (c), indents (i)
 - yankmatches : Copy or Delete search results
+- vim-schlepp : Drag selection in visual mode
 
 ## How to uninstall
 Just do following:
