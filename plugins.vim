@@ -28,11 +28,11 @@ Plug 'maralla/completor.vim'
 
 
 " Code Editing assist - Text Objects
-Plug 'beloglazov/vim-textobj-quotes'
 Plug 'glts/vim-textobj-comment'
 Plug 'jceb/vim-textobj-uri'
 Plug 'kana/vim-textobj-user'
 Plug 'michaeljsmith/vim-indent-object'
+Plug 'wellle/targets.vim'
 Plug 'zirrostig/vim-schlepp'
 
 " Code Searching

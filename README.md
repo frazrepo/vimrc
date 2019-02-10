@@ -231,6 +231,7 @@ Toggle QuickFix windows
     Quotes q, ciq, daq
     Comments c, cic, dac
     Indents i, cii, dai
+    Targets cin(l)q, dai, ci,, ci=, ..
 
 ## Custom Docs
 
@@ -275,7 +276,7 @@ Regexp search/replace pattern
 - vim-zenroom2 (use goyo) : Zen mode editing
 - vim-whichkey : Help remembering mapping
 - vim-wipeout : Close all hidden buffers
-- vim-textobj : Some text objects -  uri (u), quotes (q), comments (c), indents (i)
+- vim-textobj/targets.vim : Some text objects -  uri (u), quotes (q), comments (c), indents (i)
 - yankmatches : Copy or Delete search results
 - vim-schlepp : Drag selection in visual mode
 
