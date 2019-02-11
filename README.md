@@ -141,7 +141,7 @@ Toggle QuickFix windows
 
 **vim-abolish**
 
-    Command: Subvert
+    Search Command: Subvert
     Coercion :  Press crs (coerce to snake_case). MixedCase (crm), camelCase (crc), snake_case (crs), UPPER_CASE (cru), dash-case (cr-), dot.case (cr.), space case (cr<space>), and Title Case (crt)
 
 **vim-surround**
@@ -226,7 +226,6 @@ Toggle QuickFix windows
 
 **custom text-objects**
 
-
     Uri u , ciu, dau
     Quotes q, ciq, daq
     Comments c, cic, dac
@@ -260,7 +259,7 @@ Regexp search/replace pattern
 - vim-fugitive : Git command inside vim
 - vim-signify : Git status
 - vim-markdown : Markdown editing
-- vim-move : Move lines or selections up and down using jk keys
+- vim-move : Move lines or selections up and down using (ALT) jk keys
 - vim-obsession / vim-prosession : Autosave session
 - vim-rainbow : Color parentheses, brackets,...
 - vim-repeat

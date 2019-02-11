@@ -160,7 +160,7 @@ let g:UltiSnipsEditSplit="vertical"
 let g:UltiSnipsSnippetDirectories = [$HOME.'/.vim_runtime/plugins/frazrepo-snippets', 'UltiSnips']
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim unimpaired > and < conflict with visual indentation
+" => vim unimpaired (> and < conflict with visual indentation)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 nmap ( [
 nmap ) ]

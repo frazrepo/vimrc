@@ -20,19 +20,17 @@ Plug 'w0rp/ale', { 'on' : 'ALEToggle' }
 
 " Code Editing
 Plug 'AndrewRadev/splitjoin.vim'
-Plug 'jiangmiao/auto-pairs'
-Plug 'matze/vim-move'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-unimpaired'
-Plug 'maralla/completor.vim'
 
 
-" Code Editing assist - Text Objects
+" Code Editing assist and Text Objects
 Plug 'glts/vim-textobj-comment'
 Plug 'jceb/vim-textobj-uri'
 Plug 'kana/vim-textobj-user'
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'wellle/targets.vim'
+Plug 'matze/vim-move'
 Plug 'zirrostig/vim-schlepp'
 
 " Code Searching
@@ -42,13 +40,12 @@ Plug 'tpope/vim-abolish'
 Plug 'justinmk/vim-sneak'
 Plug 'frazrepo/yankmatches'
 
-
 " Code formatting
+" Requires external formatter for each language
 Plug 'Chiel92/vim-autoformat'
 Plug 'godlygeek/tabular'
 " Requires pip install sqlparse or pip3 install sqlparse
 Plug 'mpyatishev/vim-sqlformat', { 'for' : 'sql' }
-
 
 " Sorting
 Plug 'christoomey/vim-sort-motion'
@@ -64,14 +61,12 @@ Plug 'kshenoy/vim-signature'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'machakann/vim-highlightedyank'
 
-" Todo : Tmux integration - Uncomment for linux
-" Plug 'edkolev/tmuxline.vim'
+" Tmux integration
 Plug 'christoomey/vim-tmux-navigator'
 
 " Git integration
 Plug 'tpope/vim-fugitive'
 Plug 'mhinz/vim-signify'
-
 
 " File management, searching
 Plug 'junegunn/fzf'
@@ -83,11 +78,12 @@ Plug 'scrooloose/nerdtree' , { 'on': 'NERDTreeToggle'}
 " Should be declared after tabular plugin
 Plug 'plasticboy/vim-markdown' , { 'for' : 'markdown' }
 
-" Snippet Code Generation
+" Snippet -  Code Generation - AutoCompletion
+Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-surround'
 Plug 'mattn/emmet-vim'
 Plug 'tpope/vim-commentary'
-
+Plug 'maralla/completor.vim'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
