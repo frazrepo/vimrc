@@ -215,6 +215,8 @@ set complete=.,w,b,u
 " use this command on linux system : setxkbmap -option caps:swapescape
 vnoremap jj <Esc>
 inoremap jj <Esc>
+vnoremap jk <Esc>
+inoremap jk <Esc>
 
 """"""""""""""""""""""""""""""
 " => Map for VIM Interface
