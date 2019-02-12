@@ -258,6 +258,8 @@ map <leader>bd :Bclose<cr>:tabclose<cr>gT
 map <leader>ba :bufdo bd<cr>
 map <leader>l :bnext<cr>
 map <leader>h :bprevious<cr>
+" Backspace to navigate to alternate buffer
+nnoremap <bs> <c-^>
 
 " Useful mappings for managing tabs
 map <leader>tn :tabnew<cr>

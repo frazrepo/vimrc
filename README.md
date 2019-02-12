@@ -49,13 +49,19 @@ Smart way to move between windows (`<ctrl>j` etc.):
 Closing of the current buffer(s) (`<leader>bd` and (`<leader>ba`)):
 	
 	" Close current buffer
-	map <leader>bd :Bclose<cr>
+	<leader>bd
 	
 	" Close all buffers
-	map <leader>ba :bufdo bd<cr>
+	<leader>ba
 	
 	" Wipeout all hidden buffers
-	map <leader>bw :Wipeout<cr>
+	<leader>bw
+
+	" Navigate alternate buffer
+	<bs>
+
+	" Navigate left and right buffer
+	<leader>h, <leader>l
 	
 Useful mappings for managing tabs:
 	
