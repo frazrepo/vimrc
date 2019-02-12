@@ -23,6 +23,12 @@ set nocompatible
 " filetype plugin on   
 " filetype indent on
 
+" Default register to clipboard
+if has('unnamedplus')
+  set clipboard=unnamedplus
+else
+  set clipboard=unnamed
+endif
 
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
