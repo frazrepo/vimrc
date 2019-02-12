@@ -61,6 +61,7 @@ Plug 'rafi/awesome-vim-colorschemes'
 Plug 'itchyny/lightline.vim'
 Plug 'frazrepo/vim-rainbow', { 'on' : 'RainbowToggle' }
 Plug 'gosukiwi/vim-atom-dark'
+Plug 'gilgigilgil/anderson.vim'
 Plug 'liuchengxu/vim-which-key'
 Plug 'kshenoy/vim-signature'
 Plug 'MattesGroeger/vim-bookmarks'

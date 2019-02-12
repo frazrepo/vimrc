@@ -157,6 +157,7 @@ if has("gui_running")
     color dracula
 else
     color atom-dark-256
+    " color anderson
 endif
 
 " Fonts Consolas
