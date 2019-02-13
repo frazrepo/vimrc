@@ -16,3 +16,4 @@ tags
 # Persistent undo
 [._]*.un~
 *.pyc
+.vundle
