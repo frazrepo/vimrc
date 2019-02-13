@@ -27,7 +27,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 ### Available color scheme
 
     Default : dracula (dark theme)
-    Dark theme : anderson, atom-dark256, ayu, minimalist, molokai, papercolor, seoul
+    Dark theme : anderson, atom-dark256, ayu, minimalist, molokai, papercolor, seoul, space-vim-dark
     Light theme : seoul256-light
 
 ### Normal mode mappings
