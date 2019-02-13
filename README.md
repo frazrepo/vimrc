@@ -171,7 +171,7 @@ Remove bad formatting ^M
     Default directory :      <leader>nn 
     Current file directory:  <leader>nf
 
-**mru**
+**fzfmru**
 
     Recent files : <leader>f
 
@@ -265,7 +265,7 @@ Regexp search/replace pattern
 - fzf / fzf.vim
 - goyo : Dependency for zenroom2
 - lightline : Lightweight status line 
-- mru : Browse most recent files
+- fzfmru : Browse most recent files
 - nerdtree : File browser
 - splitjoin.vim : Split or Join lines (code)
 - tabular : Align lines bases on separator

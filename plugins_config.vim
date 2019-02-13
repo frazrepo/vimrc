@@ -11,12 +11,11 @@
 let g:ale_enabled = 0
 
 """"""""""""""""""""""""""""""
-" => MRU plugin
+" => FZF MRU plugin
 """"""""""""""""""""""""""""""
-let MRU_Max_Entries = 20
-let MRU_Max_Menu_Entries = 20
-let MRU_Auto_Close = 1
-map <leader>f :MRU<CR>
+map <leader>f :FZFMru<CR>
+" Uncomment to list only files within the current directory
+" let g:fzf_mru_relative = 1
 
 """"""""""""""""""""""""""""""
 " => fzf plugin

@@ -78,7 +78,7 @@ Plug 'mhinz/vim-signify'
 " File management, searching
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
-Plug 'yegappan/mru'
+Plug 'pbogut/fzf-mru.vim'
 Plug 'scrooloose/nerdtree' , { 'on': 'NERDTreeToggle'}
 
 " Notes, markdown, wiki
