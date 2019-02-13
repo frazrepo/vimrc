@@ -134,6 +134,10 @@ Toggle QuickFix windows
     
     F8
 
+Remove bad formatting ^M
+    
+    <Leader>m
+
 ### Plugins usage
 
 **Emmet**
