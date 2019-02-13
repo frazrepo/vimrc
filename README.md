@@ -24,6 +24,12 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 	leader = <space>
 
+### Available color scheme
+
+    Default : dracula (dark theme)
+    Dark theme : anderson, atom-dark256, ayu, minimalist, molokai, papercolor, seoul
+    Light theme : seoul256-light
+
 ### Normal mode mappings
 
 Fast saving of a buffer (`<leader>w`):
