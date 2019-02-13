@@ -221,6 +221,8 @@ vnoremap jj <Esc>
 inoremap jj <Esc>
 vnoremap jk <Esc>
 inoremap jk <Esc>
+vnoremap kj <Esc>
+inoremap kj <Esc>
 
 """"""""""""""""""""""""""""""
 " => Map for VIM Interface
