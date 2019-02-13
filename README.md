@@ -1,15 +1,15 @@
 
 ## How to install for Linux ?
 
-	1) git clone --depth=1 https://github.com/frazrepo/vimrc.git ~/.vim_runtime
-	
-	2) run ./install.sh
+    1) git clone --depth=1 https://github.com/frazrepo/vimrc.git ~/.vim_runtime
+    
+    2) run ./install.sh
 
 ## How to install Windows ?
 
-	1) git clone --depth=1 https://github.com/frazrepo/vimrc.git %USERPROFILE%/.vim_runtime
-	
-	2) run install.bat
+    1) git clone --depth=1 https://github.com/frazrepo/vimrc.git %USERPROFILE%/.vim_runtime
+    
+    2) run install.bat
 
 ## How to update to latest version?
 
@@ -22,7 +22,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 ### Leader key
 
-	leader = <space>
+    leader = <space>
 
 ### Available color scheme
 
@@ -34,82 +34,82 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 Fast saving of a buffer (`<leader>w`):
 
-	nmap <leader>w :w!<cr>
-	
+    nmap <leader>w :w!<cr>
+    
 Map `<Space>` to `/` (search) and `<Ctrl>+<Space>` to `?` (backwards search):
-	
-	map <space> /
-	map <c-space> ?
+    
+    map <space> /
+    map <c-space> ?
+    map <leader>fr : FindReplace with highlighted text (vim-over)
 
 Disable highlights when you press `<leader><space>`:
-	
-	map <silent> <leader><space> :noh<cr>
+    
+    map <silent> <leader><space> :noh<cr>
 
 Smart way to move between windows (`<ctrl>j` etc.):
-	
-	map <C-j> <C-W>j
-	map <C-k> <C-W>k
-	map <C-h> <C-W>h
-	map <C-l> <C-W>l
+    
+    map <C-j> <C-W>j
+    map <C-k> <C-W>k
+    map <C-h> <C-W>h
+    map <C-l> <C-W>l
 
 Closing of the current buffer(s) (`<leader>bd` and (`<leader>ba`)):
-	
-	" Close current buffer
-	<leader>bd
-	
-	" Close all buffers
-	<leader>ba
-	
-	" Wipeout all hidden buffers
-	<leader>bw
+    
+    " Close current buffer
+    <leader>bd
+    
+    " Close all buffers
+    <leader>ba
+    
+    " Wipeout all hidden buffers
+    <leader>bw
 
-	" Navigate alternate buffer
-	<bs>
+    " Navigate alternate buffer
+    <bs>
 
-	" Navigate left and right buffer
-	<leader>h, <leader>l
-	
+    " Navigate left and right buffer
+    <leader>h, <leader>l
+    
 Useful mappings for managing tabs:
-	
+    
     gt or (ngt) : Go to tab or Go to nth tab
-	<leader>tn :tabnew<cr>
-	<leader>to :tabonly<cr>
-	<leader>tc :tabclose<cr>
-	<leader>tm :tabmove 
-	<leader>tl or <leader><bs> : alternate tab 
-	
-	" Opens a new tab with the current buffer's path
-	" Super useful when editing files in the same directory
-	map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
+    <leader>tn :tabnew<cr>
+    <leader>to :tabonly<cr>
+    <leader>tc :tabclose<cr>
+    <leader>tm :tabmove 
+    <leader>tl or <leader><bs> : alternate tab 
+    
+    " Opens a new tab with the current buffer's path
+    " Super useful when editing files in the same directory
+    map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 
 Quickly open an empty buffer in all direction:	
-	
+    
     nnoremap <Leader>hn :leftabove  vnew<CR>
     nnoremap <Leader>ln :rightbelow vnew<CR>
     nnoremap <Leader>kn :leftabove  new<CR>
     nnoremap <Leader>jn :rightbelow new<CR>
 
-
 Quickly open a buffer for scripbble:
-	
-	map <leader>q :e ~/buffer<cr>
-	map <leader>x :e ~/buffer.md<cr>
+    
+    map <leader>q :e ~/buffer<cr>
+    map <leader>x :e ~/buffer.md<cr>
 
 Toggle paste mode on and off:
-	
-	map <leader>pp :setlocal paste!<cr>
+    
+    map <leader>pp :setlocal paste!<cr>
 
 
 ### Visual mode mappings
 
 Visual mode pressing `*` or `#` searches for the current selection:
 
-	vnoremap <silent> * :call VisualSelection('f')<CR>
-	vnoremap <silent> # :call VisualSelection('b')<CR>
+    vnoremap <silent> * :call VisualSelection('f')<CR>
+    vnoremap <silent> # :call VisualSelection('b')<CR>
 
 When you press `<leader>r` you can search and replace the selected text:
 
-	vnoremap <silent> <leader>r :call VisualSelection('replace')<CR>
+    vnoremap <silent> <leader>r :call VisualSelection('replace')<CR>
 
 Surround the visual selection in parenthesis/brackets/etc.:
 
@@ -256,43 +256,44 @@ Regexp search/replace pattern
 
 ## Plugins list
 
-- ale
 - ack.vim : Search in files
-- vim-abolish : Search words, Coercion
+- ale
+- auto-pairs : () , {} ,[] , etc...
+- completor : Manage auto completion correctly
+- ctrlsf.vim  : Side searching
 - emmet-vim : Html editing
 - fzf / fzf.vim
 - goyo : Dependency for zenroom2
 - lightline : Lightweight status line 
 - mru : Browse most recent files
 - nerdtree : File browser
-- vim-sqlformat : SQL formatting
+- splitjoin.vim : Split or Join lines (code)
 - tabular : Align lines bases on separator
-- completor : Manage auto completion correctly
+- utilsnips + vim-snippets : Snippets
+- vim-abolish : Search words, Coercion
 - vim-autoformat
-- auto-pairs : () , {} ,[] , etc...
+- vim-bookmarks : Add bookmarks management easily
 - vim-commentary
 - vim-fugitive : Git command inside vim
-- vim-signify : Git status
 - vim-markdown : Markdown editing
 - vim-move : Move lines or selections up and down using (ALT) jk keys
 - vim-obsession / vim-prosession : Autosave session
+- vim-over : Highlight buffer when operating from command line (s/, /, g/)
 - vim-rainbow : Color parentheses, brackets,...
 - vim-repeat
-- vim-sort-motion
-- ctrlsf.vim  : Side searching
-- vim-surround : Surround text
-- vim-sneak : Find text using two characters (line f but handle vertical positions)
-- splitjoin.vim : Split or Join lines (code)
-- vim-unimpaired :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
+- vim-schlepp : Drag selection in visual mode
 - vim-signature : Display marks
-- vim-bookmarks : Add bookmarks management easily
-- utilsnips + vim-snippets : Snippets
-- vim-zenroom2 (use goyo) : Zen mode editing
+- vim-signify : Git status
+- vim-sneak : Find text using two characters (line f but handle vertical positions)
+- vim-sort-motion
+- vim-sqlformat : SQL formatting
+- vim-surround : Surround text
+- vim-textobj/targets.vim : Some text objects -  uri (u), quotes (q), comments (c), indents (i)
+- vim-unimpaired :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
 - vim-whichkey : Help remembering mapping
 - vim-wipeout : Close all hidden buffers
-- vim-textobj/targets.vim : Some text objects -  uri (u), quotes (q), comments (c), indents (i)
+- vim-zenroom2 (use goyo) : Zen mode editing
 - yankmatches : Copy or Delete search results
-- vim-schlepp : Drag selection in visual mode
 
 ## How to uninstall
 Just do following:
