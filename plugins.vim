@@ -44,6 +44,7 @@ Plug 'dyng/ctrlsf.vim'
 Plug 'tpope/vim-abolish'
 Plug 'justinmk/vim-sneak'
 Plug 'frazrepo/yankmatches'
+Plug 'osyo-manga/vim-over'
 
 " Code formatting
 " Requires external formatter for each language

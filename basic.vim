@@ -236,6 +236,9 @@ vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 " When you press `<leader>r` you can search and replace the selected text:
 vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
 
+"Visual find and replace
+nnoremap <Leader>fr :call VisualFindAndReplace()<CR>
+xnoremap <Leader>fr :call VisualFindAndReplaceWithSelection()<CR>
 
 " Insert mode cursor for terminal (xterm, bash, tmux,...)
 let &t_SI = "\e[6 q"
@@ -446,6 +449,14 @@ function! VisualSelection(direction, extra_filter) range
 
     let @/ = l:pattern
     let @" = l:saved_reg
+endfunction
+
+function! VisualFindAndReplace()
+    :OverCommandLine%s/
+endfunction
+
+function! VisualFindAndReplaceWithSelection() range
+    :'<,'>OverCommandLine s/
 endfunction
 
 function! s:ToggleQf()
