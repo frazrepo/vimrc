@@ -259,6 +259,7 @@ Regexp search/replace pattern
 - ack.vim : Search in files
 - ale
 - auto-pairs : () , {} ,[] , etc...
+- CamelCaseMotion : camel case motion (w,b,e)
 - completor : Manage auto completion correctly
 - ctrlsf.vim  : Side searching
 - emmet-vim : Html editing

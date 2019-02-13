@@ -37,6 +37,7 @@ Plug 'michaeljsmith/vim-indent-object'
 Plug 'wellle/targets.vim'
 Plug 'matze/vim-move'
 Plug 'zirrostig/vim-schlepp'
+Plug 'bkad/CamelCaseMotion'
 
 " Code Searching
 Plug 'mileszs/ack.vim'
