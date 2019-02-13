@@ -35,26 +35,26 @@ nnoremap <silent> <leader>b :Buffers<CR>
 " To ignore git files
 " Add this to ENV
 " FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
- nnoremap <silent> <leader>/ :execute 'Ag ' . input('Ag/')<CR>
- nnoremap <silent> K :call SearchWordWithAg()<CR>
- vnoremap <silent> K :call SearchVisualSelectionWithAg()<CR>
+nnoremap <silent> <leader>/ :execute 'Ag ' . input('Ag/')<CR>
+nnoremap <silent> K :call SearchWordWithAg()<CR>
+vnoremap <silent> K :call SearchVisualSelectionWithAg()<CR>
 
- function! SearchWordWithAg()
+function! SearchWordWithAg()
     execute 'Ag' expand('<cword>')
-  endfunction
+endfunction
 
 
-  function! SearchVisualSelectionWithAg() range
-    let old_reg = getreg('"')
-    let old_regtype = getregtype('"')
-    let old_clipboard = &clipboard
-    set clipboard&
-    normal! ""gvy
-    let selection = getreg('"')
-    call setreg('"', old_reg, old_regtype)
-    let &clipboard = old_clipboard
-    execute 'Ag' selection
-  endfunction
+function! SearchVisualSelectionWithAg() range
+  let old_reg = getreg('"')
+  let old_regtype = getregtype('"')
+  let old_clipboard = &clipboard
+  set clipboard&
+  normal! ""gvy
+  let selection = getreg('"')
+  call setreg('"', old_reg, old_regtype)
+  let &clipboard = old_clipboard
+  execute 'Ag' selection
+endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => CtrlSF
@@ -84,6 +84,7 @@ function! SearchVisualSelectionWithCtrlSf() range
 " => NerdTree
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 let g:NERDTreeWinPos = "left"
+let g:NERDTreeQuitOnOpen= 1
 " Show hidden files, too
 let NERDTreeShowFiles=1
 let NERDTreeShowHidden=1
@@ -98,7 +99,8 @@ map <leader>nf :NERDTreeFind<cr>
 let NERDTreeBookmarksFile=expand("~/.vim/NERDTreeBookmarks")
 " Show the bookmarks table on startup
 let NERDTreeShowBookmarks=1
-
+" Close vim when the last window is nerdtree
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => surround.vim config
