@@ -227,7 +227,7 @@ Remove bad formatting ^M
 
 **CtrlSF**
 
-    F  : Find selected word 
+    ff  : Find selected word 
     F9 : Toggle CtrlSF result Window 
 
 **yankmatches**
