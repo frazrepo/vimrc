@@ -36,7 +36,7 @@ nnoremap <silent> <leader>b :Buffers<CR>
 " FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Ack.vim --> Ag
+" => FZF Ag
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <silent> <leader>/ :execute 'Ag ' . input('Ag/')<CR>
 nnoremap <silent> K :call SearchWordWithAg()<CR>
