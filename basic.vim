@@ -129,7 +129,7 @@ set relativenumber
 if has("gui_running")
   if has("gui_gtk3")
     set lines=500 columns=1366
-    " set lines=768 columns=1366 " cause bug infinite max size notp supported on linux, all fonts and linespace not working
+    " set lines=768 columns=1366 " cause bug infinite max size not supported on linux, all fonts and linespace not working
   elseif has("gui_macvim")
     set lines=768 columns=1366
   elseif has("gui_win32")

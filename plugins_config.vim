@@ -13,7 +13,9 @@ let g:ale_enabled = 0
 """"""""""""""""""""""""""""""
 " => MRU plugin
 """"""""""""""""""""""""""""""
-let MRU_Max_Entries = 400
+let MRU_Max_Entries = 20
+let MRU_Max_Menu_Entries = 20
+let MRU_Auto_Close = 1
 map <leader>f :MRU<CR>
 
 """"""""""""""""""""""""""""""
