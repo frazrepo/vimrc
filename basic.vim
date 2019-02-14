@@ -217,11 +217,8 @@ set complete=.,w,b,u
 
 " capslock to esc
 " use this command on linux system : setxkbmap -option caps:swapescape
-vnoremap jj <Esc>
 inoremap jj <Esc>
-vnoremap jk <Esc>
 inoremap jk <Esc>
-vnoremap kj <Esc>
 inoremap kj <Esc>
 
 """"""""""""""""""""""""""""""
