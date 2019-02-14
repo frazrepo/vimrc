@@ -385,6 +385,12 @@ map <leader>q :e ~/buffer<cr>
 " Quickly open a markdown buffer for scribble
 map <leader>x :e ~/buffer.md<cr>
 
+" Swap paste mode to behave normally
+noremap p gp
+noremap P gP
+noremap gp p
+noremap gP P
+
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
 
