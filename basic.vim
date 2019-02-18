@@ -52,6 +52,9 @@ source $VIMRUNTIME/menu.vim
 " Turn on the Wild menu
 set wildmenu
 
+" Do no display toolbar to have more text by default 
+set guioptions -=T
+
 " Ignore compiled files
 set wildignore=*.o,*~,*.pyc
 if has("win16") || has("win32")
@@ -132,7 +135,7 @@ set relativenumber
 " Maximized window on start
 if has("gui_running")
   if has("gui_gtk3")
-    set lines=500 columns=1366
+    set lines=535 columns=1366
     " set lines=768 columns=1366 " cause bug infinite max size not supported on linux, all fonts and linespace not working
   elseif has("gui_macvim")
     set lines=768 columns=1366
