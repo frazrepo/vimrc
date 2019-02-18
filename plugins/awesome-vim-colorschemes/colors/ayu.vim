@@ -5,7 +5,7 @@ if exists("syntax_on")
   syntax reset
 endif
 
-let s:style = get(g:, 'ayucolor', 'dark')
+let s:style = get(g:, 'ayucolor', 'light')
 let g:colors_name = "ayu"
 "}}}
 
