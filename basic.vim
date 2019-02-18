@@ -160,7 +160,7 @@ set synmaxcol=200
 if has("gui_running")
     color dracula
 else
-    color atom-dark-256
+    color monokai
     " color anderson
 endif
 
