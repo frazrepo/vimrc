@@ -137,6 +137,7 @@ if has("gui_running")
   if has("gui_gtk3")
     set lines=535 columns=1366
     " set lines=768 columns=1366 " cause bug infinite max size not supported on linux, all fonts and linespace not working
+    " http://ubuntuguide.net/get-gvim-start-in-maximized-window-in-ubuntu-gnome
   elseif has("gui_macvim")
     set lines=768 columns=1366
   elseif has("gui_win32")
