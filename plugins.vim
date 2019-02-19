@@ -99,6 +99,8 @@ Plug 'honza/vim-snippets'
 Plug 'tpope/vim-obsession'
 Plug 'dhruvasagar/vim-prosession'
 Plug 'artnez/vim-wipeout'
+Plug 'frazrepo/vim-autosave'
+
 
 "  Zen Mode for writing text
 Plug 'junegunn/goyo.vim', { 'for' : 'markdown' }
