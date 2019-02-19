@@ -140,7 +140,9 @@ if has("gui_running")
   elseif has("gui_macvim")
     set lines=768 columns=1366
   elseif has("gui_win32")
-    set lines=768 columns=1366
+    " set lines=768 columns=1366
+    " For french keyboard
+    autocmd GUIEnter * :simalt ~n
   endif
 endif
 
