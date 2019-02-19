@@ -164,7 +164,8 @@ set synmaxcol=200
 
 " ColorScheme dracula for GUI and atom for terminal
 if has("gui_running")
-    color dracula
+    color ayu
+    " color dracula
 else
     color monokai
     " color anderson
