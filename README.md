@@ -54,8 +54,11 @@ Smart way to move between windows (`<ctrl>j` etc.):
     map <C-h> <C-W>h
     map <C-l> <C-W>l
 
-Closing of the current buffer(s) (`<leader>bd` and (`<leader>ba`)):
-    
+Useful mappings for managing buffers :
+
+    " New buffer
+     <leader>n
+
     " Close current buffer
     <leader>bd
     
