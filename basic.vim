@@ -276,6 +276,15 @@ map <C-k> <C-W>k
 map <C-h> <C-W>h
 map <C-l> <C-W>l
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Buffers 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Creating splits with empty buffers in all directions
+nnoremap <Leader>hn :leftabove  vnew<CR>
+nnoremap <Leader>ln :rightbelow vnew<CR>
+nnoremap <Leader>kn :leftabove  new<CR>
+nnoremap <Leader>jn :rightbelow new<CR>
+
 " Close the current buffer
 map <leader>bd :Bclose<cr>:tabclose<cr>gT
 
@@ -286,6 +295,10 @@ map <leader>l :bnext<cr>
 map <leader>h :bprevious<cr>
 " Backspace to navigate to alternate buffer
 nnoremap <bs> <c-^>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Tabs
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Useful mappings for managing tabs
 map <leader>tn :tabnew<cr>
@@ -407,15 +420,6 @@ map <silent> <F8> :call <SID>ToggleQf()<cr>
 
 " Workaround to start visual block mode on terminal if C-v or C-q is not working
 command! VisualBlock execute "normal! \<C-v>"
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Buffers in split in all directions
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Creating splits with empty buffers in all directions
-nnoremap <Leader>hn :leftabove  vnew<CR>
-nnoremap <Leader>ln :rightbelow vnew<CR>
-nnoremap <Leader>kn :leftabove  new<CR>
-nnoremap <Leader>jn :rightbelow new<CR>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
