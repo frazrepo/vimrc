@@ -156,6 +156,10 @@ set linespace=8
 " Tab title
 set guitablabel=%N/\ %t\ %M
 
+" Split mode
+set splitbelow
+set splitright
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -256,6 +260,9 @@ xnoremap <Leader>fr :call VisualFindAndReplaceWithSelection()<CR>
 " Insert mode cursor for terminal (xterm, bash, tmux,...)
 let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
+
+" VirtualEdit block allow selection everywhere
+set virtualedit=block
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers
