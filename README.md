@@ -201,6 +201,10 @@ Remove bad formatting ^M
 
     Formattting : select and just use gq
 
+**vim-scripts/Tranpose**
+
+    Commands : Tranpose, TranposeWords, TranposeTab, TranposeCSV, TranposeInteractive
+
 **sort-motion**
 
     Sorting : gs(motion) [ Ex: gs3j, gsi(,...]
@@ -288,6 +292,7 @@ Regexp search/replace pattern
 - vim-sqlformat : SQL formatting
 - vim-surround : Surround text
 - vim-textobj/targets.vim : Some text objects -  uri (u), quotes (q), comments (c), indents (i)
+- vim-tranpose : Tranpose lines, csv, words, ...
 - vim-unimpaired :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
 - vim-whichkey : Help remembering mapping
 - vim-wipeout : Close all hidden buffers

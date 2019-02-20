@@ -26,7 +26,7 @@ Plug 'w0rp/ale', { 'on' : 'ALEToggle' }
 " Code Editing
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-unimpaired'
-
+Plug 'vim-scripts/Transpose'
 
 " Code Editing assist and Text Objects
 Plug 'glts/vim-textobj-comment'
