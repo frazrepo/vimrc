@@ -24,7 +24,6 @@ call plug#begin('~/.vim_runtime/plugins')
 Plug 'w0rp/ale', { 'on' : 'ALEToggle' }
 
 " Code Editing
-Plug 'AndrewRadev/splitjoin.vim'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-unimpaired'
 

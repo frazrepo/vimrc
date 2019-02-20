@@ -224,11 +224,6 @@ Remove bad formatting ^M
 
     Activation : <tab>
 
-**splitjoin-vim**
-
-    Join gJ
-    Split gS
-
 **CtrlSF**
 
     ff  : Find selected word 
@@ -272,7 +267,6 @@ Regexp search/replace pattern
 - lightline : Lightweight status line 
 - fzfmru : Browse most recent files
 - nerdtree : File browser
-- splitjoin.vim : Split or Join lines (code)
 - tabular : Align lines bases on separator
 - utilsnips + vim-snippets : Snippets
 - vim-abolish : Search words, Coercion
