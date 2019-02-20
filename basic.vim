@@ -23,6 +23,9 @@ set nocompatible
 " filetype plugin on   
 " filetype indent on
 
+" Disable startup message
+set shortmess=atI
+
 " Default register to clipboard
 if has('unnamedplus')
   set clipboard=unnamedplus
