@@ -633,9 +633,18 @@ function! fzf#vim#buffers(...)
   return s:fzf('buffers', {
   \ 'source':  map(s:buflisted_sorted(), 's:format_buffer(v:val)'),
   \ 'sink*':   s:function('s:bufopen'),
-  \ 'options': ['+m', '-x', '--tiebreak=index', '--header-lines=1', '--ansi', '-d', '\t', '-n', '2,1..2', '--prompt', 'Buf> ', '--query', query]
+  \ 'options': ['+m', '-x', '--tiebreak=index', '--ansi', '-d', '\t', '-n', '2,1..2', '--prompt', 'Buf> ', '--query', query]
   \}, args)
 endfunction
+" function! fzf#vim#buffers(...)
+"   let [query, args] = (a:0 && type(a:1) == type('')) ?
+"         \ [a:1, a:000[1:]] : ['', a:000]
+"   return s:fzf('buffers', {
+"   \ 'source':  map(s:buflisted_sorted(), 's:format_buffer(v:val)'),
+"   \ 'sink*':   s:function('s:bufopen'),
+"   \ 'options': ['+m', '-x', '--tiebreak=index', '--header-lines=1', '--ansi', '-d', '\t', '-n', '2,1..2', '--prompt', 'Buf> ', '--query', query]
+"   \}, args)
+" endfunction
 
 " ------------------------------------------------------------------
 " Ag / Rg
