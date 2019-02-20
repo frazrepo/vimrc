@@ -57,7 +57,7 @@ Smart way to move between windows (`<ctrl>j` etc.):
 Useful mappings for managing buffers :
 
     " New buffer
-     <leader>n
+     <leader>bn
 
     " Close current buffer
     <leader>bd

@@ -280,7 +280,7 @@ map <C-l> <C-W>l
 map <leader>bd :Bclose<cr>:tabclose<cr>gT
 
 " Useful mapping for managing  buffers
-map <leader>n :enew<cr>
+map <leader>bn :enew<cr>
 map <leader>ba :bufdo bd<cr>
 map <leader>l :bnext<cr>
 map <leader>h :bprevious<cr>
