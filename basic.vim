@@ -27,11 +27,13 @@ set nocompatible
 set shortmess=atI
 
 " Default register to clipboard
-if has('unnamedplus')
-  set clipboard=unnamedplus
-else
-  set clipboard=unnamed
-endif
+" Conflict because all commands (d, c,..) use the default register
+" it is better to user <C-v> to paster clipboard register
+" if has('unnamedplus')
+"   set clipboard=unnamedplus
+" else
+"   set clipboard=unnamed
+" endif
 
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
