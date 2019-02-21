@@ -17,11 +17,6 @@ set undolevels=1000
 
 " Filetype
 set nocompatible 
-" filetype off 
-
-" Enable filetype plugins
-" filetype plugin on   
-" filetype indent on
 
 " Disable startup message
 set shortmess=atI
@@ -169,6 +164,7 @@ set splitright
 
 " Activate by default dracula theme
 syntax on
+
 " And optimize performance for longlines
 set synmaxcol=200
 
@@ -182,7 +178,6 @@ else
 endif
 
 " Fonts Consolas
-
 if has("gui_running")
   if has("gui_gtk2") || has("gui_gtk3") 
    " Install fonts on Ubuntu
@@ -263,7 +258,7 @@ xnoremap <Leader>fr :call VisualFindAndReplaceWithSelection()<CR>
 let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
 
-" VirtualEdit block allow selection everywhere
+" VirtualEdit block allow selection everywhere in visual block mode
 set virtualedit=block
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -272,6 +267,7 @@ set virtualedit=block
 " Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
 nnoremap <space> /\v
 nnoremap <c-space> ?\v
+
 " Search using magic regex
 nnoremap / /\v
 nnoremap ? ?\v
@@ -418,7 +414,7 @@ map <leader>q :e ~/buffer<cr>
 " Quickly open a markdown buffer for scribble
 map <leader>x :e ~/buffer.md<cr>
 
-" Swap paste mode to behave normally
+" Swap paste mode to behave normally (ie cursor after pasted text)
 " Commented : Conflicts with YankRing mapping
 " noremap p gp
 " noremap P gP

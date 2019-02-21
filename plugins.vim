@@ -102,7 +102,6 @@ Plug 'dhruvasagar/vim-prosession'
 Plug 'artnez/vim-wipeout'
 Plug 'frazrepo/vim-autosave'
 
-
 "  Zen Mode for writing text
 Plug 'junegunn/goyo.vim', { 'for' : 'markdown' }
 Plug 'amix/vim-zenroom2', { 'for' : 'markdown' }

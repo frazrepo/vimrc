@@ -296,4 +296,3 @@ nnoremap cu d
 xnoremap cu d
 
 nnoremap cuu dd
-" nnoremap cu$ D
