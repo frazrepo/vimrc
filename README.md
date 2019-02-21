@@ -265,7 +265,7 @@ Regexp search/replace pattern
 ## Plugins list
 
 - ack.vim : Search in files
-- ale
+- ale : Linter
 - auto-pairs : () , {} ,[] , etc...
 - CamelCaseMotion : camel case motion (w,b,e)
 - completor : Manage auto completion correctly
@@ -289,12 +289,12 @@ Regexp search/replace pattern
 - vim-obsession / vim-prosession : Autosave session
 - vim-over : Highlight buffer when operating from command line (s/, /, g/)
 - vim-rainbow : Color parentheses, brackets,...
-- vim-repeat
+- vim-repeat : To repeat plugin command with dot (.)
 - vim-schlepp : Drag selection in visual mode
 - vim-signature : Display marks
 - vim-signify : Git status
 - vim-sneak : Find text using two characters (line f but handle vertical positions)
-- vim-sort-motion
+- vim-sort-motion : Add an operator gs to apply sort
 - vim-sqlformat : SQL formatting
 - vim-surround : Surround text
 - vim-textobj/targets.vim : Some text objects -  uri (u), quotes (q), comments (c), indents (i)
