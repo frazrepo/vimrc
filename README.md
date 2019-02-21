@@ -274,6 +274,7 @@ Regexp search/replace pattern
 - emmet-vim : Html editing
 - fzf / fzf.vim
 - goyo : Dependency for zenroom2
+- LargeFile : Handling large files
 - lightline : Lightweight status line 
 - fzfmru : Browse most recent files
 - nerdtree : File browser
