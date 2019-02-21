@@ -189,9 +189,10 @@ Remove bad formatting ^M
 
 **fzf**
 
-    Files : CTRL + p (t to open file in tab)
-    Buffers : <leader>b
-    K : Ag select words
+    Files   : <c-t> (t to open file in tab)
+    Buffers : <c-b>
+    MRU     : <c-m>
+    K       : Ag select words
 
 **vim-rainbow**
 
@@ -201,6 +202,10 @@ Remove bad formatting ^M
 
     Mapping to cut : cu 
     cu{motion}, cuu (line), cu$ (to the end of line)
+
+**vim-yankring**
+
+    Cycle Paste : <c-p> and <c-n>
 
 **vim-sqlformat**
 
@@ -270,6 +275,7 @@ Regexp search/replace pattern
 - CamelCaseMotion : camel case motion (w,b,e)
 - completor : Manage auto completion correctly
 - ctrlsf.vim  : Side searching
+- cutlass/yankring: Enhance copy/paste experience
 - emmet-vim : Html editing
 - fzf / fzf.vim
 - goyo : Dependency for zenroom2

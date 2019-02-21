@@ -231,7 +231,6 @@ set complete=.,w,b,u
 """"""""""""""""""""""""""""""
 " => Mode related
 """"""""""""""""""""""""""""""
-
 " capslock to esc
 " use this command on linux system : setxkbmap -option caps:swapescape
 inoremap jj <Esc>
@@ -271,8 +270,8 @@ set virtualedit=block
 " => Moving around, tabs, windows and buffers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
-map <space> /
-map <c-space> ?
+nnoremap <space> /\v
+nnoremap <c-space> ?\v
 " Search using magic regex
 nnoremap / /\v
 nnoremap ? ?\v
@@ -379,6 +378,9 @@ if has("mac") || has("macunix")
   vmap <D-k> <M-k>
 endif
 
+" Quick append ; at the end of the line
+nnoremap <leader>; A;<Esc>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Parenthesis/bracket
 " Surround the visual selection in parenthesis/brackets/etc.:
@@ -417,10 +419,11 @@ map <leader>q :e ~/buffer<cr>
 map <leader>x :e ~/buffer.md<cr>
 
 " Swap paste mode to behave normally
-noremap p gp
-noremap P gP
-noremap gp p
-noremap gP P
+" Commented : Conflicts with YankRing mapping
+" noremap p gp
+" noremap P gP
+" noremap gp p
+" noremap gP P
 
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>

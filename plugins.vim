@@ -28,7 +28,7 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-unimpaired'
 Plug 'vim-scripts/Transpose'
 Plug 'svermeulen/vim-cutlass'
-" Plug 'frazrepo/vim-yankring'
+Plug 'frazrepo/vim-yankring'
 
 " Code Editing assist and Text Objects
 Plug 'glts/vim-textobj-comment'

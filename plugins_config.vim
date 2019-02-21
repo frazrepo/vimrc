@@ -13,7 +13,7 @@ let g:ale_enabled = 0
 """"""""""""""""""""""""""""""
 " => FZF MRU plugin
 """"""""""""""""""""""""""""""
-map <leader>f :FZFMru<CR>
+map <c-m> :FZFMru<CR>
 " Uncomment to list only files within the current directory
 " let g:fzf_mru_relative = 1
 
@@ -43,10 +43,10 @@ let g:fzf_colors =
   \ 'header':  ['fg', 'Comment'] }
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => fzf map to CTRL+P
+" => fzf map to CTRL-T (like Resharper) / CTRL+P
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
-nnoremap <silent> <leader>b :Buffers<CR>
+nnoremap <silent> <c-t> :Files <C-R>=expand('%:h')<CR><CR>
+nnoremap <silent> <c-b> :Buffers<CR>
 " To ignore git files
 " Add this to ENV
 " FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
@@ -296,4 +296,4 @@ nnoremap cu d
 xnoremap cu d
 
 nnoremap cuu dd
-nnoremap cu$ D
+" nnoremap cu$ D
