@@ -272,7 +272,7 @@ nnoremap <c-space> ?\v
 nnoremap / /\v
 nnoremap ? ?\v
 
-" Disable highlight when <leader><cr> is pressed
+" Disable highlight when <leader><space> is pressed
 map <silent> <leader><space> :noh<cr>
 
 " Smart way to move between windows
@@ -298,6 +298,7 @@ map <leader>bn :enew<cr>
 map <leader>ba :bufdo bd<cr>
 map <leader>l :bnext<cr>
 map <leader>h :bprevious<cr>
+
 " Backspace to navigate to alternate buffer
 nnoremap <bs> <c-^>
 
