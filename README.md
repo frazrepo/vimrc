@@ -198,11 +198,6 @@ Remove bad formatting ^M
 
     Toggle coloring :RainbowToogle
 
-**vim-cutlass**
-
-    Mapping to cut : cu 
-    cu{motion}, cuu (line), cu$ (to the end of line)
-
 **vim-yankring**
 
     Cycle Paste : <c-p> and <c-n>
@@ -275,7 +270,7 @@ Regexp search/replace pattern
 - CamelCaseMotion : camel case motion (w,b,e)
 - completor : Manage auto completion correctly
 - ctrlsf.vim  : Side searching
-- cutlass/yankring: Enhance copy/paste experience
+- yankring: Enhance copy/paste experience
 - emmet-vim : Html editing
 - fzf / fzf.vim
 - goyo : Dependency for zenroom2
