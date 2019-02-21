@@ -375,8 +375,8 @@ if has("mac") || has("macunix")
   vmap <D-k> <M-k>
 endif
 
-" Quick append ; at the end of the line
-nnoremap <leader>; A;<Esc>
+" Quick append ; at the end of the line and keep the cursor position
+nnoremap <leader>; mhA;<Esc>`h
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Parenthesis/bracket
