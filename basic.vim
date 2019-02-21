@@ -58,8 +58,9 @@ source $VIMRUNTIME/menu.vim
 set wildmenu
 
 " Do no display toolbar to have more text by default 
-set guioptions -=T
-
+if has("gui_running")
+    set guioptions -=T
+endif
 " Ignore compiled files
 set wildignore=*.o,*~,*.pyc
 if has("win16") || has("win32")
