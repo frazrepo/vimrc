@@ -288,3 +288,12 @@ xmap <silent> ie <Plug>CamelCaseMotion_ie
 
 imap <silent> <S-Left> <C-o><Plug>CamelCaseMotion_b
 imap <silent> <S-Right> <C-o><Plug>CamelCaseMotion_w
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-cutlass mapping for cu , mnemonics cu = cut
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+nnoremap cu d
+xnoremap cu d
+
+nnoremap cuu dd
+nnoremap cu$ D

@@ -197,6 +197,11 @@ Remove bad formatting ^M
 
     Toggle coloring :RainbowToogle
 
+**vim-cutlass**
+
+    Mapping to cut : cu 
+    cu{motion}, cuu (line), cu$ (to the end of line)
+
 **vim-sqlformat**
 
     Formattting : select and just use gq
