@@ -224,6 +224,7 @@ Remove bad formatting ^M
     Add/Remove bookmark : bb 
     Show all : ba
     Clear : bc
+    Annotation : bi
 
 **vim-sneak**
 
