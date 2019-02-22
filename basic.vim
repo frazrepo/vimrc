@@ -261,7 +261,7 @@ let &t_EI = "\e[2 q"
 " VirtualEdit block allow selection everywhere in visual block mode
 set virtualedit=block
 
-" Repeat . command 
+" Repeat . command in visual mode
 vnoremap . :normal.<CR>
 
 " Keep selection in select mode after shifting
