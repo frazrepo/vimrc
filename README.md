@@ -221,8 +221,9 @@ Remove bad formatting ^M
 
 **vim-bookmarks**
 
-    Add/Remove bookmark : mm
-    Show all : ma
+    Add/Remove bookmark : bb 
+    Show all : ba
+    Clear : bc
 
 **vim-sneak**
 

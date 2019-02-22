@@ -300,3 +300,17 @@ let g:sneak#label = 1
 let g:yankring_max_element_length = 0
 nnoremap <silent> <F3> :YRShow<cr>
 inoremap <silent> <F3> <ESC>:YRShow<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-bookmarks
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+nmap bb  <Plug>BookmarkToggle
+nmap bi  <Plug>BookmarkAnnotate
+nmap ba  <Plug>BookmarkShowAll
+nmap bj  <Plug>BookmarkNext
+nmap bk  <Plug>BookmarkPrev
+nmap bc  <Plug>BookmarkClear
+nmap bx  <Plug>BookmarkClearAll
+nmap bkk <Plug>BookmarkMoveUp
+nmap bjj <Plug>BookmarkMoveDown
+nmap bg  <Plug>BookmarkMoveToLine
