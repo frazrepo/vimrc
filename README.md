@@ -215,7 +215,7 @@ Remove bad formatting ^M
 
     Sorting : gs(motion) [ Ex: gs3j, gsi(,...]
 
-**goyo and zenroom**
+**goyo and zenroom for markdown**
 
     Zen mode : <leader>z
 
