@@ -81,9 +81,6 @@ Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'pbogut/fzf-mru.vim'
 Plug 'scrooloose/nerdtree' , { 'on': 'NERDTreeToggle'}
-" Notes, markdown, wiki
-" Should be declared after tabular plugin
-Plug 'plasticboy/vim-markdown' , { 'for' : 'markdown' }
 Plug 'vim-scripts/LargeFile'
 
 " Snippet -  Code Generation - AutoCompletion
@@ -106,8 +103,7 @@ Plug 'junegunn/goyo.vim', { 'for' : 'markdown' }
 Plug 'amix/vim-zenroom2', { 'for' : 'markdown' }
 
 " Languages
-Plug 'PProvost/vim-ps1.git', { 'for' : 'ps1' } 
-Plug 'honza/dockerfile.vim'
+Plug 'sheerun/vim-polyglot'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugs End

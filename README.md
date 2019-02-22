@@ -288,10 +288,10 @@ Regexp search/replace pattern
 - vim-bookmarks : Add bookmarks management easily
 - vim-commentary
 - vim-fugitive : Git command inside vim
-- vim-markdown : Markdown editing
 - vim-move : Move lines or selections up and down using (ALT) jk keys
 - vim-obsession / vim-prosession : Autosave session
 - vim-over : Highlight buffer when operating from command line (s/, /, g/)
+- vim-polyglot : Languages Support
 - vim-rainbow : Color parentheses, brackets,...
 - vim-repeat : To repeat plugin command with dot (.)
 - vim-schlepp : Drag selection in visual mode
