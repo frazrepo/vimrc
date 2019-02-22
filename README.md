@@ -201,6 +201,7 @@ Remove bad formatting ^M
 **vim-yankring**
 
     Cycle Paste : <c-p> and <c-n>
+    Toggle YRShow  : F3
 
 **vim-sqlformat**
 

@@ -298,3 +298,5 @@ let g:sneak#label = 1
 " => yankring
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:yankring_max_element_length = 0
+nnoremap <silent> <F3> :YRShow<cr>
+inoremap <silent> <F3> <ESC>:YRShow<cr>
