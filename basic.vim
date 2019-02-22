@@ -261,6 +261,17 @@ let &t_EI = "\e[2 q"
 " VirtualEdit block allow selection everywhere in visual block mode
 set virtualedit=block
 
+" Repeat . command 
+vnoremap . :normal.<CR>
+
+" Keep selection in select mode after shifting
+" Tab not working with UltiSnips 
+" vmap <Tab> >gv
+" vmap <S-Tab> <gv
+" Indenting not working when the line starts with ##
+vnoremap > >gv
+vnoremap < <gv
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -339,13 +350,6 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 " => Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Keep selection in select mode after shifting
-" Tab not working with UltiSnips 
-" vmap <Tab> >gv
-" vmap <S-Tab> <gv
-" Indenting not working when the line starts with ##
-vnoremap > >gv
-vnoremap < <gv
 
 " Tabulation Remap Shift + Tab
 nnoremap <S-Tab> <<
