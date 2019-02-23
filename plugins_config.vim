@@ -304,13 +304,13 @@ inoremap <silent> <F3> <ESC>:YRShow<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-bookmarks
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-nmap bb  <Plug>BookmarkToggle
-nmap bi  <Plug>BookmarkAnnotate
-nmap ba  <Plug>BookmarkShowAll
-nmap bj  <Plug>BookmarkNext
-nmap bk  <Plug>BookmarkPrev
-nmap bc  <Plug>BookmarkClear
-nmap bx  <Plug>BookmarkClearAll
-nmap bkk <Plug>BookmarkMoveUp
-nmap bjj <Plug>BookmarkMoveDown
-nmap bg  <Plug>BookmarkMoveToLine
+nmap <silent> bb  <Plug>BookmarkToggle
+nmap <silent> bi  <Plug>BookmarkAnnotate
+nmap <silent> ba  <Plug>BookmarkShowAll
+nmap <silent> bj  <Plug>BookmarkNext
+nmap <silent> bk  <Plug>BookmarkPrev
+nmap <silent> bc  <Plug>BookmarkClear
+nmap <silent> bx  <Plug>BookmarkClearAll
+nmap <silent> bkk <Plug>BookmarkMoveUp
+nmap <silent> bjj <Plug>BookmarkMoveDown
+nmap <silent> bg  <Plug>BookmarkMoveToLine
