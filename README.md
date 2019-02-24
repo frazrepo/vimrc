@@ -266,6 +266,8 @@ Remove bad formatting ^M
     Comments c, cic, dac
     Indents i, cii, dai
     Targets cin(l)q, dai, ci,, ci=, ..
+    Line l , cil, yil
+    Entire e , yie, cie
 
 ## Custom Docs
 
@@ -312,7 +314,7 @@ Regexp search/replace pattern
 - vim-sort-motion : Add an operator gs to apply sort
 - vim-sqlformat : SQL formatting
 - vim-surround : Surround text
-- vim-textobj/targets.vim : Some text objects -  uri (u), quotes (q), comments (c), indents (i)
+- vim-textobj/targets.vim : Some text objects -  uri (u), quotes (q), comments (c), indents (i), line (l), entire buffer (e)
 - vim-tranpose : Tranpose lines, csv, words, ...
 - vim-unimpaired :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
 - vim-whichkey : Help remembering mapping
