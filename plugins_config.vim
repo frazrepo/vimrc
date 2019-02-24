@@ -302,7 +302,7 @@ nnoremap <silent> <F3> :YRShow<cr>
 inoremap <silent> <F3> <ESC>:YRShow<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-bookmarks
+" => vim-bookmarks (require python)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 nmap <silent> bb  <Plug>BookmarkToggle
 nmap <silent> bi  <Plug>BookmarkAnnotate
