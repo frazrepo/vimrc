@@ -304,16 +304,16 @@ inoremap <silent> <F3> <ESC>:YRShow<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-bookmarks (require python)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-nmap <silent> bb  <Plug>BookmarkToggle
-nmap <silent> bi  <Plug>BookmarkAnnotate
-nmap <silent> ba  <Plug>BookmarkShowAll
-nmap <silent> bj  <Plug>BookmarkNext
-nmap <silent> bk  <Plug>BookmarkPrev
-nmap <silent> bc  <Plug>BookmarkClear
-nmap <silent> bx  <Plug>BookmarkClearAll
-nmap <silent> bkk <Plug>BookmarkMoveUp
-nmap <silent> bjj <Plug>BookmarkMoveDown
-nmap <silent> bg  <Plug>BookmarkMoveToLine
+nmap <silent> <leader>bb  <Plug>BookmarkToggle
+nmap <silent> <leader>bi  <Plug>BookmarkAnnotate
+nmap <silent> <leader>ba  <Plug>BookmarkShowAll
+nmap <silent> <leader>bj  <Plug>BookmarkNext
+nmap <silent> <leader>bk  <Plug>BookmarkPrev
+nmap <silent> <leader>bc  <Plug>BookmarkClear
+nmap <silent> <leader>bx  <Plug>BookmarkClearAll
+nmap <silent> <leader>bkk <Plug>BookmarkMoveUp
+nmap <silent> <leader>bjj <Plug>BookmarkMoveDown
+nmap <silent> <leader>bg  <Plug>BookmarkMoveToLine
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-operator-replace
