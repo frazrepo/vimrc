@@ -314,3 +314,8 @@ nmap <silent> bx  <Plug>BookmarkClearAll
 nmap <silent> bkk <Plug>BookmarkMoveUp
 nmap <silent> bjj <Plug>BookmarkMoveDown
 nmap <silent> bg  <Plug>BookmarkMoveToLine
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-operator-replace
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+nmap cp <Plug>(operator-replace)

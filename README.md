@@ -168,6 +168,10 @@ Remove bad formatting ^M
     Operator : cx{motion}
     Line : cxx
 
+**vim-operator-replace**
+
+    Operator : {"register}cp{motion}
+
 **vim-surround**
 
     Change: cs"', cst"
