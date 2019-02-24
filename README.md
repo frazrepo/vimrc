@@ -163,6 +163,13 @@ Remove bad formatting ^M
     Search Command: Subvert
     Coercion :  Press crs (coerce to snake_case). MixedCase (crm), camelCase (crc), snake_case (crs), UPPER_CASE (cru), dash-case (cr-), dot.case (cr.), space case (cr<space>), and Title Case (crt)
 
+**vim-bookmarks**
+
+    Add/Remove bookmark : bb 
+    Show all : ba
+    Clear : bc
+    Annotation : bi
+
 **vim-exchange**
 
     Operator : cx{motion}
@@ -227,13 +234,6 @@ Remove bad formatting ^M
 **goyo and zenroom for markdown**
 
     Zen mode : <leader>z
-
-**vim-bookmarks**
-
-    Add/Remove bookmark : bb 
-    Show all : ba
-    Clear : bc
-    Annotation : bi
 
 **vim-sneak**
 
