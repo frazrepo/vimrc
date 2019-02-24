@@ -281,7 +281,6 @@ Regexp search/replace pattern
 - ack.vim : Search in files
 - ale : Linter
 - auto-pairs : () , {} ,[] , etc...
-- CamelCaseMotion : camel case motion (w,b,e)
 - completor : Manage auto completion correctly
 - ctrlsf.vim  : Side searching
 - yankring: Enhance copy/paste experience
