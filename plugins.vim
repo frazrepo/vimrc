@@ -29,7 +29,7 @@ Plug 'tpope/vim-unimpaired'
 Plug 'vim-scripts/Transpose'
 Plug 'frazrepo/vim-yankring'
 
-" Code Editing assist and Text Objects
+" Text Objects, Motions and Operators
 Plug 'glts/vim-textobj-comment'
 Plug 'jceb/vim-textobj-uri'
 Plug 'kana/vim-textobj-user'
@@ -39,6 +39,8 @@ Plug 'matze/vim-move'
 Plug 'zirrostig/vim-schlepp'
 Plug 'bkad/CamelCaseMotion'
 Plug 'tommcdo/vim-exchange'
+Plug 'kana/vim-operator-user'
+Plug 'kana/vim-operator-replace'
 
 " Code Searching
 Plug 'mileszs/ack.vim'
