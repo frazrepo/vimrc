@@ -38,6 +38,7 @@ Plug 'wellle/targets.vim'
 Plug 'matze/vim-move'
 Plug 'zirrostig/vim-schlepp'
 Plug 'bkad/CamelCaseMotion'
+Plug 'tommcdo/vim-exchange'
 
 " Code Searching
 Plug 'mileszs/ack.vim'
