@@ -299,6 +299,7 @@ Regexp search/replace pattern
 - vim-commentary
 - vim-exchange : Exchange in pair with a new operator cx
 - vim-fugitive : Git command inside vim
+- vim-hardtime : For practising hardmode (timer on hjkl and arrow keys)
 - vim-operator-user/vim-operator-replace : Custom operators
 - vim-move : Move lines or selections up and down using (ALT) jk keys
 - vim-obsession / vim-prosession : Autosave session

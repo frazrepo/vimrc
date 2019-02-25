@@ -109,6 +109,9 @@ Plug 'amix/vim-zenroom2', { 'for' : 'markdown' }
 " Languages
 Plug 'sheerun/vim-polyglot'
 
+" Miscellaneous
+Plug 'takac/vim-hardtime'
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugs End
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
