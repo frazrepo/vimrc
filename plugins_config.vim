@@ -283,7 +283,7 @@ inoremap <silent> <F3> <ESC>:YRShow<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 nmap <silent> <leader>bb  <Plug>BookmarkToggle
 nmap <silent> <leader>bi  <Plug>BookmarkAnnotate
-nmap <silent> <leader>baa  <Plug>BookmarkShowAll
+nmap <silent> <leader>bs  <Plug>BookmarkShowAll
 nmap <silent> <leader>bj  <Plug>BookmarkNext
 nmap <silent> <leader>bk  <Plug>BookmarkPrev
 nmap <silent> <leader>bc  <Plug>BookmarkClear
