@@ -142,6 +142,10 @@ endif
 " Linespace
 set linespace=8
 
+" List Chars
+set listchars=tab:→\ ,eol:↲,nbsp:␣,trail:•,extends:⟩,precedes:⟨
+set showbreak=↪\
+
 " Tab title
 set guitablabel=%N/\ %t\ %M
 
