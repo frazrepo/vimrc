@@ -218,8 +218,7 @@ Remove bad formatting ^M
 
 **vim-signature**
 
-    Add mark : m{x}
-    Delete mark : dm{x}
+    Add(Toggle) mark : ma, mb, ...
     Navigation between marks : (' or )'
     Delete all marks : m<space>
 
