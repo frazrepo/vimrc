@@ -296,3 +296,8 @@ nmap <silent> <leader>bg  <Plug>BookmarkMoveToLine
 " => vim-operator-replace
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 nmap cp <Plug>(operator-replace)
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-cool
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+let g:CoolTotalMatches = 1

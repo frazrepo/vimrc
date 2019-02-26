@@ -297,6 +297,7 @@ Regexp search/replace pattern
 - vim-autoformat
 - vim-bookmarks : Add bookmarks management easily
 - vim-commentary
+- vim-cool : Enhance hlsearch experience
 - vim-exchange : Exchange in pair with a new operator cx
 - vim-fugitive : Git command inside vim
 - vim-hardtime : For practising hardmode (timer on hjkl and arrow keys)

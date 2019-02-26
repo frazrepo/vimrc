@@ -72,6 +72,7 @@ Plug 'liuchengxu/vim-which-key'
 Plug 'kshenoy/vim-signature'
 Plug 'MattesGroeger/vim-bookmarks'
 Plug 'machakann/vim-highlightedyank'
+Plug 'romainl/vim-cool'
 
 " Tmux integration
 Plug 'christoomey/vim-tmux-navigator'
