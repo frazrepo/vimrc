@@ -1,6 +1,6 @@
 " vim-rotatescheme - Rotate a list of ColorSchemes
 " Author:       frazrepo
-" Version:      0.1
+" Version:      0.1 (Experimental)
 
 if v:version < 700 || exists('loaded_rotatescheme') || &cp
   finish
