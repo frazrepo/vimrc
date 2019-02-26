@@ -70,7 +70,6 @@ Plug 'gosukiwi/vim-atom-dark'
 Plug 'gilgigilgil/anderson.vim'
 Plug 'liuchengxu/vim-which-key'
 Plug 'kshenoy/vim-signature'
-Plug 'MattesGroeger/vim-bookmarks'
 Plug 'machakann/vim-highlightedyank'
 Plug 'romainl/vim-cool'
 

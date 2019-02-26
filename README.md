@@ -163,13 +163,6 @@ Remove bad formatting ^M
     Search Command: Subvert
     Coercion :  Press crs (coerce to snake_case). MixedCase (crm), camelCase (crc), snake_case (crs), UPPER_CASE (cru), dash-case (cr-), dot.case (cr.), space case (cr<space>), and Title Case (crt)
 
-**vim-bookmarks**
-
-    Add/Remove bookmark : bb 
-    Show all : ba
-    Clear : bc
-    Annotation : bi
-
 **vim-exchange**
 
     Operator : cx{motion}
@@ -295,7 +288,6 @@ Regexp search/replace pattern
 - utilsnips + vim-snippets : Snippets
 - vim-abolish : Search words, Coercion
 - vim-autoformat
-- vim-bookmarks : Add bookmarks management easily
 - vim-commentary
 - vim-cool : Enhance hlsearch experience
 - vim-exchange : Exchange in pair with a new operator cx

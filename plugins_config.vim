@@ -280,20 +280,6 @@ nnoremap <silent> <F3> :YRShow<cr>
 inoremap <silent> <F3> <ESC>:YRShow<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-bookmarks (require python)
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-nmap <silent> <leader>bb  <Plug>BookmarkToggle
-nmap <silent> <leader>bi  <Plug>BookmarkAnnotate
-nmap <silent> <leader>bs  <Plug>BookmarkShowAll
-nmap <silent> <leader>bj  <Plug>BookmarkNext
-nmap <silent> <leader>bk  <Plug>BookmarkPrev
-nmap <silent> <leader>bc  <Plug>BookmarkClear
-nmap <silent> <leader>bx  <Plug>BookmarkClearAll
-nmap <silent> <leader>bkk <Plug>BookmarkMoveUp
-nmap <silent> <leader>bjj <Plug>BookmarkMoveDown
-nmap <silent> <leader>bg  <Plug>BookmarkMoveToLine
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-operator-replace
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 nmap cp <Plug>(operator-replace)
