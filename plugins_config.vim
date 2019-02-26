@@ -278,3 +278,11 @@ nmap cp <Plug>(operator-replace)
 " => vim-cool
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:CoolTotalMatches = 1
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-signature for easier marks navigation on azerty keyboard 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+map (' ['
+map )' ]'
+map (` [`
+map )` ]`
