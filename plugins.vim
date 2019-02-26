@@ -50,7 +50,7 @@ Plug 'mileszs/ack.vim'
 Plug 'dyng/ctrlsf.vim'
 Plug 'tpope/vim-abolish'
 Plug 'justinmk/vim-sneak'
-Plug 'frazrepo/yankmatches'
+Plug 'frazrepo/vim-yankmatches'
 Plug 'osyo-manga/vim-over'
 
 " Code formatting
@@ -64,7 +64,7 @@ Plug 'mpyatishev/vim-sqlformat', { 'for' : 'sql' }
 Plug 'christoomey/vim-sort-motion'
 
 " Visual Comfort - Color Schemes
-Plug 'dracula/vim'
+" Plug 'dracula/vim'
 Plug 'frazrepo/vim-colorschemes'
 Plug 'itchyny/lightline.vim'
 Plug 'frazrepo/vim-rainbow', { 'on' : 'RainbowToggle' }
