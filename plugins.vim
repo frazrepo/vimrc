@@ -64,7 +64,6 @@ Plug 'mpyatishev/vim-sqlformat', { 'for' : 'sql' }
 Plug 'christoomey/vim-sort-motion'
 
 " Visual Comfort - Color Schemes
-" Plug 'dracula/vim'
 Plug 'frazrepo/vim-colorschemes'
 Plug 'itchyny/lightline.vim'
 Plug 'frazrepo/vim-rainbow', { 'on' : 'RainbowToggle' }
