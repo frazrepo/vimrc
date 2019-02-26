@@ -171,6 +171,7 @@ set synmaxcol=200
 if has("gui_running")
     color ayu
     " color dracula
+    " color codedark
 else
     color monokai
     " color anderson
