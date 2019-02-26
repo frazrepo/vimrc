@@ -21,15 +21,6 @@ set nocompatible
 " Disable startup message
 set shortmess=atI
 
-" Default register to clipboard
-" Conflict because all commands (d, c,..) use the default register
-" it is better to user <C-v> to paster clipboard register
-" if has('unnamedplus')
-"   set clipboard=unnamedplus
-" else
-"   set clipboard=unnamed
-" endif
-
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
 let mapleader = "\<Space>" 
@@ -158,6 +149,10 @@ set guitablabel=%N/\ %t\ %M
 set splitbelow
 set splitright
 
+" Insert mode cursor for terminal (xterm, bash, tmux,...)
+let &t_SI = "\e[6 q"
+let &t_EI = "\e[2 q"
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -190,6 +185,7 @@ if has("gui_running")
     set guifont=Consolas:h14:cANSI
   endif
 endif
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
@@ -254,9 +250,6 @@ vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
 nnoremap <Leader>fr :call VisualFindAndReplace()<CR>
 xnoremap <Leader>fr :call VisualFindAndReplaceWithSelection()<CR>
 
-" Insert mode cursor for terminal (xterm, bash, tmux,...)
-let &t_SI = "\e[6 q"
-let &t_EI = "\e[2 q"
 
 " VirtualEdit block allow selection everywhere in visual block mode
 set virtualedit=block
