@@ -3,6 +3,8 @@
 "       frazrepo
 "       https://github.com/frazrepo/vimrc
 "
+" Remarks : Plugins prefixed with frazrepo may contains custom modifications (bug fixes,..)
+"
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -63,11 +65,9 @@ Plug 'christoomey/vim-sort-motion'
 
 " Visual Comfort - Color Schemes
 Plug 'dracula/vim'
-Plug 'rafi/awesome-vim-colorschemes'
+Plug 'frazrepo/vim-colorschemes'
 Plug 'itchyny/lightline.vim'
 Plug 'frazrepo/vim-rainbow', { 'on' : 'RainbowToggle' }
-Plug 'gosukiwi/vim-atom-dark'
-Plug 'gilgigilgil/anderson.vim'
 Plug 'liuchengxu/vim-which-key'
 Plug 'kshenoy/vim-signature'
 Plug 'machakann/vim-highlightedyank'
