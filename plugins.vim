@@ -71,7 +71,7 @@ Plug 'liuchengxu/vim-which-key'
 Plug 'kshenoy/vim-signature'
 Plug 'machakann/vim-highlightedyank'
 Plug 'romainl/vim-cool'
-
+Plug 'frazrepo/vim-rotatescheme'
 " Tmux integration
 Plug 'christoomey/vim-tmux-navigator'
 

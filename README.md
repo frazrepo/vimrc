@@ -207,6 +207,10 @@ Remove bad formatting ^M
 
     Toggle coloring :RainbowToogle
 
+**vim-rotatescheme**
+
+    Rotate Forward/Backward : F10 / <S-F10>
+
 **vim-yankring**
 
     Cycle Paste : <c-p> and <c-n>
@@ -307,6 +311,7 @@ Regexp search/replace pattern
 - vim-polyglot : Languages Support
 - vim-rainbow : Color parentheses, brackets,...
 - vim-repeat : To repeat plugin command with dot (.)
+- vim-rotatescheme : Custom plugin to rotate a list of colorschemes
 - vim-schlepp : Drag selection in visual mode
 - vim-signature : Display marks
 - vim-signify : Git status
