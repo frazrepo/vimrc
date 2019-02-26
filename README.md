@@ -214,7 +214,14 @@ Remove bad formatting ^M
 
 **vim-sqlformat**
 
-    Formattting : select and just use gq
+    Formatting : select and just use gq
+
+**vim-signature**
+
+    Add mark : m{x}
+    Delete mark : dm{x}
+    Navigation between marks : (' or )'
+    Delete all marks : m<space>
 
 **vim-scripts/Tranpose**
 
