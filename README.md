@@ -200,7 +200,7 @@ Remove bad formatting ^M
 
     Files   : <c-t> (t to open file in tab)
     Buffers : <c-b>
-    MRU     : <c-m>
+    MRU     : <c-m> or ;m
     K       : Ag select words
 
 **vim-rainbow**
@@ -240,8 +240,9 @@ Remove bad formatting ^M
 
 **CtrlSF**
 
-    ff  : Find selected word 
-    F9 : Toggle CtrlSF result Window 
+    ff      : Find selected word 
+    F9      : Toggle CtrlSF result Window 
+    <C-f>f  : Prompt in command line to find a pattern
 
 **yankmatches**
 
@@ -254,13 +255,13 @@ Remove bad formatting ^M
 
 **custom text-objects**
 
-    Uri u , ciu, dau
-    Quotes q, ciq, daq
-    Comments c, cic, dac
-    Indents i, cii, dai
-    Targets cin(l)q, dai, ci,, ci=, ..
-    Line l , cil, yil
-    Entire e , yie, cie
+    Uri u       : ciu, dau
+    Quotes q    : ciq, daq
+    Comments c  : cic, dac
+    Indents i   : cii, dai
+    Targets     : cin(l)q, dai, ci,, ci=, ..
+    Line l      : cil, yil
+    Entire e    : yie, cie
 
 ## Custom Docs
 
