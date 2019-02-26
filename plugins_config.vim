@@ -13,7 +13,8 @@ let g:ale_enabled = 0
 """"""""""""""""""""""""""""""
 " => FZF MRU plugin
 """"""""""""""""""""""""""""""
-map <c-m> :FZFMru<CR>
+nnoremap <silent> ;m :FZFMru<CR>
+nnoremap <silent> <C-m> :FZFMru<CR>
 " Uncomment to list only files within the current directory
 " let g:fzf_mru_relative = 1
 
