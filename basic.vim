@@ -191,6 +191,13 @@ if has("gui_running")
   endif
 endif
 
+" Make Fonts bigger or smaller - from tpope vimrc
+command! -bar -nargs=0 Bigger  :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)+1','')
+command! -bar -nargs=0 Smaller :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)-1','')
+nnoremap <M-,>        :Smaller<CR>
+nnoremap <M-.>        :Bigger<CR>
+nnoremap <M-9>        :Smaller<CR>
+nnoremap <M-0>        :Bigger<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
@@ -382,6 +389,10 @@ nnoremap <leader>; mhA;<Esc>`h
 
 "Insert new line in normal mode quickly
 nnoremap <S-Enter> mao<Esc>`a
+nnoremap <M-o> mao<Esc>`a
+nnoremap <M-O> maO<Esc>`a
+inoremap <M-o>      <C-O>o
+inoremap <M-O>      <C-O>O
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Parenthesis/bracket

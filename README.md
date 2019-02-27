@@ -104,6 +104,17 @@ Toggle paste mode on and off:
     map <leader>pp :setlocal paste!<cr>
 
 
+### Editing mappings
+
+Insert ; at the end of a line
+
+    <leader>;
+
+Insert a new line above or below in normal mode
+
+    Below : Shift-Enter or <M-o> or )<space>
+    Above : <M-0> or (<space>
+
 ### Visual mode mappings
 
 Visual mode pressing `*` or `#` searches for the current selection:
@@ -147,6 +158,11 @@ Toggle QuickFix windows
 Remove bad formatting ^M
     
     <Leader>m
+
+Set font bigger or smaller
+    
+    Bigger : <M-0> or <M-.>
+    Smaller : <M-9> or <M-,>
 
 ### Plugins usage
 
