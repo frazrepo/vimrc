@@ -18,7 +18,7 @@ function! RotateColorScheme(forward)
   if (a:forward > 0)
     let  g:colors_index= (  g:colors_index+ 1 ) % len(s:choices)
   else
-    let  g:colors_index= (  g:colors_index? :g:colors_index  len(s:choices)) -1
+    let  g:colors_index= (  g:colors_index? g:colors_index: len(s:choices)) -1
   endif
   
   "Update colorscheme
