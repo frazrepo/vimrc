@@ -433,6 +433,15 @@ map <silent> <F8> :call <SID>ToggleQf()<cr>
 " Workaround to start visual block mode on terminal if C-v or C-q is not working
 command! VisualBlock execute "normal! \<C-v>"
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Help file speedups
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Help File speedups, <enter> to follow tag, delete (backspace) for back
+au filetype help nnoremap <buffer><cr> <c-]>
+au filetype help nnoremap <buffer><bs> <c-T>
+au filetype help nnoremap <buffer>q :q<CR>
+au filetype help set nonumber
+au filetype help wincmd _ " Maximize the help on open
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions
