@@ -380,6 +380,9 @@ endif
 " Quick append ; at the end of the line and keep the cursor position
 nnoremap <leader>; mhA;<Esc>`h
 
+"Insert new line in normal mode quickly
+nnoremap <S-Enter> mao<Esc>`a
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Parenthesis/bracket
 " Surround the visual selection in parenthesis/brackets/etc.:
