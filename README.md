@@ -282,50 +282,50 @@ Regexp search/replace pattern
 
 ## Plugins list
 
-- ack.vim : Search in files
-- ale : Linter
-- auto-pairs : () , {} ,[] , etc...
-- completor : Manage auto completion correctly
-- ctrlsf.vim  : Side searching
-- yankring: Enhance copy/paste experience
-- emmet-vim : Html editing
-- fzf / fzf.vim
-- goyo : Dependency for zenroom2
-- LargeFile : Handling large files
-- lightline : Lightweight status line 
-- fzfmru : Browse most recent files
-- nerdtree : File browser
-- tabular : Align lines bases on separator
-- utilsnips + vim-snippets : Snippets
-- vim-abolish : Search words, Coercion
-- vim-autoformat
-- vim-commentary
-- vim-cool : Enhance hlsearch experience
-- vim-exchange : Exchange in pair with a new operator cx
-- vim-fugitive : Git command inside vim
-- vim-hardtime : For practising hardmode (timer on hjkl and arrow keys)
-- vim-operator-user/vim-operator-replace : Custom operators
-- vim-move : Move lines or selections up and down using (ALT) jk keys
-- vim-obsession / vim-prosession : Autosave session
-- vim-over : Highlight buffer when operating from command line (s/, /, g/)
-- vim-polyglot : Languages Support
-- vim-rainbow : Color parentheses, brackets,...
-- vim-repeat : To repeat plugin command with dot (.)
-- vim-rotatescheme : Custom plugin to rotate a list of colorschemes
-- vim-schlepp : Drag selection in visual mode
-- vim-signature : Display marks
-- vim-signify : Git status
-- vim-sneak : Find text using two characters (line f but handle vertical positions)
-- vim-sort-motion : Add an operator gs to apply sort
-- vim-sqlformat : SQL formatting
-- vim-surround : Surround text
-- vim-textobj/targets.vim : Some text objects -  uri (u), quotes (q), comments (c), indents (i), line (l), entire buffer (e)
-- vim-tranpose : Tranpose lines, csv, words, ...
-- vim-unimpaired :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
-- vim-whichkey : Help remembering mapping
-- vim-wipeout : Close all hidden buffers
-- vim-zenroom2 (use goyo) : Zen mode editing
-- yankmatches : Copy or Delete search results
+- [ack.vim](https://github.com/mileszs/ack.vim) : Search in files
+- [ale](https://github.com/w0rp/ale) : Linter
+- [auto-pairs](https://github.com/jiangmiao/auto-pairs) : () , {} ,[] , etc...
+- [completor](https://github.com/maralla/completor.vim) : Manage auto completion correctly
+- [ctrlsf.vim](https://github.com/dyng/ctrlsf.vim) : Side searching
+- [yankring](https://github.com/vim-scripts/YankRing.vim/blob/master/plugin/yankring.vim): Enhance copy/paste experience
+- [emmet-vim](https://github.com/mattn/emmet-vim) : Html editing
+- [fzf / fzf.vim](https://github.com/junegunn/fzf.vim)
+- [goyo](https://github.com/junegunn/goyo.vim) : Dependency for zenroom2
+- [LargeFile](http://www.vim.org/scripts/script.php?script_id=1506) : Handling large files
+- [lightline](https://github.com/itchyny/lightline.vim) : Lightweight status line 
+- [fzfmru](https://github.com/pbogut/fzf-mru.vim) : Browse most recent files
+- [nerdtree](https://github.com/scrooloose/nerdtree) : File browser
+- [tabular](https://github.com/godlygeek/tabular) : Align lines bases on separator
+- [utilsnips + vim-snippets](https://github.com/SirVer/ultisnips) : Snippets
+- [vim-abolish](https://github.com/tpope/vim-abolish) : Search words, Coercion
+- [vim-autoformat](https://github.com/Chiel92/vim-autoformat)
+- [vim-commentary](https://github.com/tpope/vim-commentary)
+- [vim-cool](https://github.com/romainl/vim-cool) : Enhance hlsearch experience
+- [vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
+- [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
+- [vim-hardtime](https://github.com/takac/vim-hardtime) : For practising hardmode (timer on hjkl and arrow keys)
+- [vim-operator-user/vim-operator-replace](https://github.com/kana/vim-operator-replace) : Custom operators
+- [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys
+- [vim-obsession / vim-prosession](https://github.com/dhruvasagar/vim-prosession) : Autosave session
+- [vim-over](https://github.com/osyo-manga/vim-over) : Highlight buffer when operating from command line (s/, /, g/)
+- [vim-polyglot](https://github.com/sheerun/vim-polyglot) : Languages Support
+- [vim-rainbow](https://github.com/luochen1990/rainbow) : Color parentheses, brackets,...
+- [vim-repeat](https://github.com/tpope/vim-repeat) : To repeat plugin command with dot (.)
+- [vim-rotatescheme](https://github.com/frazrepo/vimrc/tree/master/plugins/vim-rotatescheme) : Custom plugin to rotate a list of colorschemes
+- [vim-schlepp](https://github.com/zirrostig/vim-schlepp) : Drag selection in visual mode
+- [vim-signature](https://github.com/kshenoy/vim-signature) : Display marks
+- [vim-signify](https://github.com/mhinz/vim-signify) : Git status
+- [vim-sneak](https://github.com/justinmk/vim-sneak) : Find text using two characters (line f but handle vertical positions)
+- [vim-sort-motion](https://github.com/christoomey/vim-sort-motion) : Add an operator gs to apply sort
+- [vim-sqlformat](https://github.com/mpyatishev/vim-sqlformat) : SQL formatting
+- [vim-surround](https://github.com/tpope/vim-surround) : Surround text
+- [vim-textobj](https://github.com/kana/vim-textobj-user/wiki) | [targets.vim](https://github.com/wellle/targets.vim) : Some text objects -  uri (u), quotes (q), comments (c), indents (i), line (l), entire buffer (e)
+- [vim-tranpose](https://github.com/salsifis/vim-transpose) : Tranpose lines, csv, words, ...
+- [vim-unimpaired](https://github.com/tpope/vim-unimpaired) :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
+- [vim-whichkey](https://github.com/liuchengxu/vim-which-key) : Help remembering mapping
+- [vim-wipeout](https://github.com/artnez/vim-wipeout) : Close all hidden buffers
+- [vim-zenroom2 (use goyo)](https://github.com/amix/vim-zenroom2) : Zen mode editing
+- [yankmatches](https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup/blob/master/plugin/yankmatches.vim) : Copy or Delete search results
 
 ## How to uninstall
 Just do following:
