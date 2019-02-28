@@ -216,7 +216,7 @@ Set font bigger or smaller
 
     Files   : <c-t> (t to open file in tab)
     Buffers : <c-b>
-    MRU     : <M-m> or U
+    MRU     : <M-m> or M
     K       : Ag select words
 
 **vim-rainbow**
