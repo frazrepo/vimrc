@@ -65,7 +65,6 @@ function! SearchWordWithAg()
     execute 'Ag' expand('<cword>')
 endfunction
 
-
 function! SearchVisualSelectionWithAg() range
   let old_reg = getreg('"')
   let old_regtype = getregtype('"')
@@ -131,7 +130,6 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 vmap Si S(i_<esc>f)
 au FileType mako vmap Si S"i${ _(<esc>2f"a) }<esc>
 
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => lightline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -162,7 +160,6 @@ let g:lightline = {
       \ 'separator': { 'left': " ", 'right': " " },
       \ 'subseparator': { 'left': " ", 'right': " " } 
       \ }
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-rainbow brackets
@@ -208,7 +205,6 @@ nnoremap <silent> <leader>z :Goyo<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Emmet plugin remap
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-
 let g:user_emmet_leader_key='<tab>'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -226,7 +222,6 @@ nmap     <C-F>f <Plug>CtrlSFPrompt
 vmap     <C-F>f <Plug>CtrlSFVwordPath
 vmap     <C-F>F <Plug>CtrlSFVwordExec
 nnoremap <F9> :CtrlSFToggle<CR>
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => whichkey help for leader key

@@ -47,6 +47,7 @@ set wildmenu
 if has("gui_running")
     set guioptions -=T
 endif
+
 " Ignore compiled files
 set wildignore=*.o,*~,*.pyc
 if has("win16") || has("win32")
@@ -171,10 +172,8 @@ set synmaxcol=200
 if has("gui_running")
     color ayu
     " color dracula
-    " color codedark
 else
     color monokai
-    " color anderson
 endif
 
 " Fonts Consolas
@@ -266,7 +265,6 @@ vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
 "Visual find and replace
 nnoremap <Leader>fr :call VisualFindAndReplace()<CR>
 xnoremap <Leader>fr :call VisualFindAndReplaceWithSelection()<CR>
-
 
 " VirtualEdit block allow selection everywhere in visual block mode
 set virtualedit=block
