@@ -395,8 +395,9 @@ if has("mac") || has("macunix")
   vmap <D-k> <M-k>
 endif
 
-" Quick append ; at the end of the line and keep the cursor position
-nnoremap <leader>; mhA;<Esc>`h
+" Quick append ; or :  at the end of the line and keep the cursor position
+nnoremap ,; mhA;<Esc>`h
+nnoremap ,: mhA:<Esc>`h
 
 "Insert new line in normal mode quickly
 nnoremap <S-Enter> mao<Esc>`a
