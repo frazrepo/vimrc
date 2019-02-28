@@ -13,7 +13,6 @@ let g:ale_enabled = 0
 """"""""""""""""""""""""""""""
 " => FZF MRU plugin
 """"""""""""""""""""""""""""""
-nnoremap <silent> ,m :FZFMru<CR>
 nnoremap <silent> U :FZFMru<CR>
 " <C-m> = <cr> changed to <M-m>
 nnoremap <silent> <M-m> :FZFMru<CR>
@@ -265,14 +264,6 @@ vmap <unique> <right> <Plug>SchleppRight
 let g:sneak#label = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => yankring
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-" Cause slowness on bigfile
-" let g:yankring_max_element_length = 0
-nnoremap <silent> <F3> :YRShow<cr>
-inoremap <silent> <F3> <ESC>:YRShow<cr>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-operator-replace
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 nmap cp <Plug>(operator-replace)
@@ -294,3 +285,5 @@ map )' ]'
 let g:yankstack_map_keys = 0
 nmap ,p <Plug>yankstack_substitute_older_paste
 nmap ,n <Plug>yankstack_substitute_newer_paste
+nnoremap <silent> <F3> :Yanks<cr>
+inoremap <silent> <F3> <ESC>:Yanks<cr>

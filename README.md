@@ -106,9 +106,9 @@ Toggle paste mode on and off:
 
 ### Editing mappings
 
-Insert ; at the end of a line
+Insert  ; or : at the end of a line
 
-    <leader>;
+    ,; or ,:
 
 Insert a new line above or below in normal mode
 
@@ -204,10 +204,6 @@ Set font bigger or smaller
     Default directory :      <leader>nn 
     Current file directory:  <leader>nf
 
-**fzfmru**
-
-    Recent files : <leader>f
-
 **vim-unimpaired**
 
     Map keys : ( and )
@@ -220,7 +216,7 @@ Set font bigger or smaller
 
     Files   : <c-t> (t to open file in tab)
     Buffers : <c-b>
-    MRU     : <c-m> or ,m
+    MRU     : <M-m> or U
     K       : Ag select words
 
 **vim-rainbow**
@@ -231,7 +227,7 @@ Set font bigger or smaller
 
     Rotate Forward/Backward : F10 / <S-F10>
 
-**vim-yankring**
+**vim-yankmatch**
 
     Cycle Paste : <c-p> and <c-n>
     Toggle YRShow  : F3
@@ -307,7 +303,7 @@ Regexp search/replace pattern
 - [auto-pairs](https://github.com/jiangmiao/auto-pairs) : () , {} ,[] , etc...
 - [completor](https://github.com/maralla/completor.vim) : Manage auto completion correctly
 - [ctrlsf.vim](https://github.com/dyng/ctrlsf.vim) : Side searching
-- [yankring](https://github.com/vim-scripts/YankRing.vim/blob/master/plugin/yankring.vim): Enhance copy/paste experience
+- [yankstack](https://github.com/maxbrunsfeld/vim-yankstack): Enhance copy/paste experience
 - [emmet-vim](https://github.com/mattn/emmet-vim) : Html editing
 - [fzf / fzf.vim](https://github.com/junegunn/fzf.vim)
 - [goyo](https://github.com/junegunn/goyo.vim) : Dependency for zenroom2
