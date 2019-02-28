@@ -341,15 +341,11 @@ map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
-" Experimental, cwd automatically for the current buffer
+" Experimental, CWD automatically for the current buffer
 augroup CwdBufferEnter
   autocmd!
   autocmd Filetype,BufEnter *  call ChangeCurrentWorkingDirectory()
 augroup END
-
-function! ChangeCurrentWorkingDirectory()
-  :cd %:p:h
-endfunction
 
 " Specify the behavior when switching between buffers 
 try
@@ -364,7 +360,6 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 
 " Tabulation Remap Shift + Tab
 nnoremap <S-Tab> <<
@@ -470,6 +465,7 @@ au filetype help wincmd _ " Maximize the help on open
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " Returns true if paste mode is enabled
 function! HasPaste()
     if &paste
@@ -503,6 +499,7 @@ function! CmdLine(str)
     call feedkeys(":" . a:str)
 endfunction 
 
+" Visual selection, find/replace
 function! VisualSelection(direction, extra_filter) range
     let l:saved_reg = @"
     execute "normal! vgvy"
@@ -528,6 +525,7 @@ function! VisualFindAndReplaceWithSelection() range
     :'<,'>OverCommandLine s/
 endfunction
 
+" Toogle quickfix windows
 function! s:ToggleQf()
   for buffer in tabpagebuflist()
     if bufname(buffer) == ''
@@ -539,6 +537,7 @@ function! s:ToggleQf()
 
   copen
 endfunction
+
 " Execute a macro over a visual range
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 
@@ -561,3 +560,8 @@ function! ListLeaders()
      silent! let lines = getline(1,"$")
 endfunction
 command! ListLeaders call ListLeaders()
+
+" Change Current Working Directory (CWD) to buffer directory
+function! ChangeCurrentWorkingDirectory()
+  :cd %:p:h
+endfunction
