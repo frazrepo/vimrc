@@ -28,7 +28,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
     Default GUI : auy (light theme), dracula (dark theme)
     Default Terminal : monokai (dark theme)
-    Dark theme : anderson, atom-dark256,codedark, minimalist, molokai, monokai(sublime text), papercolor, seoul, space-vim-dark
+    Dark theme : anderson, atom-dark256, codedark, minimalist, molokai, monokai(sublime text), papercolor, seoul, space-vim-dark
     Light theme : ayu (dark available), seoul256-light, pencil
 
 ### Normal mode mappings
@@ -155,6 +155,10 @@ Toggle QuickFix windows
     
     F8
 
+Rotate ColorSchemes
+    
+    F10
+
 Remove bad formatting ^M
     
     <Leader>m
@@ -209,14 +213,14 @@ Set font bigger or smaller
     Map keys : ( and )
     Switch between tabs   : (t, )t
     Switch between buffers: (b, )b
-    Toggle Options : yo[r,n,....]
+    Toggle Options : yo[r,n,w,x,....]
     Lines operations : (space, )space, 10)space, (e, )e
 
 **fzf**
 
     Files   : <c-t> (t to open file in tab)
     Buffers : <c-b>
-    MRU     : <c-m> or ;m
+    MRU     : <c-m> or ,m
     K       : Ag select words
 
 **vim-rainbow**
@@ -234,7 +238,7 @@ Set font bigger or smaller
 
 **vim-sqlformat**
 
-    Formatting : select and just use gq
+    Formatting : gq{motion} or {visual}gq
 
 **vim-signature**
 
@@ -258,7 +262,7 @@ Set font bigger or smaller
 
     Search : s{char}{char}
     Combine with Surround : z{char}{char} , Ex: yszab"
-    Next match : , ;
+    Next/Previous match :  ; / ,
 
 **ultisnips and vim-snippets**
 
