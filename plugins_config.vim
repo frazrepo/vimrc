@@ -285,3 +285,10 @@ let g:CoolTotalMatches = 1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 map (' ['
 map )' ]'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-yankstack
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+let g:yankstack_map_keys = 0
+nmap <C-p> <Plug>yankstack_substitute_older_paste
+nmap <C-n> <Plug>yankstack_substitute_newer_paste

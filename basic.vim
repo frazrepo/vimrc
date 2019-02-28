@@ -375,6 +375,7 @@ nnoremap c* *Ncgn
 nnoremap c# #NcgN
 
 " Quick yanking to the end of the line
+call yankstack#setup()
 nnoremap Y y$
 
 " Quick macro recording and replaying ,qq for recording, and Q for replaying
