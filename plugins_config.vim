@@ -48,6 +48,7 @@ let g:fzf_colors =
 " => fzf map to CTRL-T (like Resharper) / CTRL+P
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <silent> <c-t> :Files <C-R>=expand('%:h')<CR><CR>
+nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
 nnoremap <silent> <c-b> :Buffers<CR>
 " To ignore git files
 " Add this to ENV
@@ -290,5 +291,5 @@ map )' ]'
 " => vim-yankstack
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:yankstack_map_keys = 0
-nmap <C-p> <Plug>yankstack_substitute_older_paste
-nmap <C-n> <Plug>yankstack_substitute_newer_paste
+nmap ,p <Plug>yankstack_substitute_older_paste
+nmap ,n <Plug>yankstack_substitute_newer_paste
