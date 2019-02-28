@@ -2019,11 +2019,11 @@ function! s:YRMRUElemFormat( element, element_type )
         if (g:yankring_warn_on_truncate > 0)
             let bytes = len (a:element) - len(elem)
             if (bytes > 0)
-                call s:YRWarningMsg("Yankring truncated its element by ".
-                                        \ bytes.
-                                        \ " bytes due to a g:yankring_max_element_length of ".
-                                        \ g:yankring_max_element_length
-                                        \ )
+                " call s:YRWarningMsg("Yankring truncated its element by ".
+                "                         \ bytes.
+                "                         \ " bytes due to a g:yankring_max_element_length of ".
+                "                         \ g:yankring_max_element_length
+                "                         \ )
             endif
         endif
     endif
