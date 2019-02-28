@@ -192,8 +192,13 @@ if has("gui_running")
 endif
 
 " Make Fonts bigger or smaller - from tpope vimrc
-command! -bar -nargs=0 Bigger  :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)+1','')
-command! -bar -nargs=0 Smaller :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)-1','')
+if has("gui_win32")
+  command! -bar -nargs=0 Bigger  :let &guifont = substitute(&guifont,'\d\+','\=submatch(0)+1','')
+  command! -bar -nargs=0 Smaller :let &guifont = substitute(&guifont,'\d\+','\=submatch(0)-1','')
+else
+  command! -bar -nargs=0 Bigger  :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)+1','')
+  command! -bar -nargs=0 Smaller :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)-1','')
+endif
 nnoremap <M-,>        :Smaller<CR>
 nnoremap <M-.>        :Bigger<CR>
 nnoremap <M-9>        :Smaller<CR>
