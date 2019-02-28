@@ -341,6 +341,16 @@ map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
+" Experimental, cwd automatically for the current buffer
+augroup CwdBufferEnter
+  autocmd!
+  autocmd Filetype,BufEnter *  call ChangeCurrentWorkingDirectory()
+augroup END
+
+function! ChangeCurrentWorkingDirectory()
+  :cd %:p:h
+endfunction
+
 " Specify the behavior when switching between buffers 
 try
   set switchbuf=useopen,usetab,newtab
