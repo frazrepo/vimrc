@@ -400,6 +400,15 @@ endif
 nnoremap ,; mhA;<Esc>`h
 nnoremap ,: mhA:<Esc>`h
 
+" Quick tip in insert mode
+inoremap II <ESC>I
+inoremap AA <ESC>A
+inoremap OO <ESC>O
+inoremap CC <ESC>C
+inoremap SS <ESC>S
+inoremap DD <ESC>dd
+inoremap UU <ESC>u
+
 "Insert new line in normal mode quickly
 nnoremap <S-Enter> mao<Esc>`a
 nnoremap <M-o> mao<Esc>`a
