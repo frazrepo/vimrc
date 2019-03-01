@@ -17,3 +17,7 @@ source $HOME/.vim_runtime/mswin.vim
 " Menu
 source $HOME/.vim_runtime/menu.vim
 
+" Host specific vim 
+if filereadable(expand($HOME . '/.vimlocal'))
+    source $HOME/.vimlocal
+endif
