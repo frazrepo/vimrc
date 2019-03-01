@@ -258,6 +258,17 @@ vmap <unique> <right> <Plug>SchleppRight
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:sneak#label = 1
 
+" vim-sneak (redefine to avoid conflicts with yankstack)
+" 2-character Sneak (default)
+nmap s <Plug>Sneak_s
+nmap S <Plug>Sneak_S
+" visual-mode
+xmap s <Plug>Sneak_s
+xmap S <Plug>Sneak_S
+" operator-pending-mode
+omap s <Plug>Sneak_s
+omap S <Plug>Sneak_S
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-operator-replace
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
