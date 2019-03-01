@@ -18,6 +18,6 @@ source $HOME/.vim_runtime/mswin.vim
 source $HOME/.vim_runtime/menu.vim
 
 " Host specific vim 
-if filereadable(expand($HOME . '/.vimlocal'))
-    source $HOME/.vimlocal
+if filereadable(expand($HOME . '/.vimrc.local'))
+    source $HOME/.vimrc.local
 endif
