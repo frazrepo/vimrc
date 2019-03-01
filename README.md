@@ -110,6 +110,15 @@ Insert  ; or : at the end of a line
 
     ,; or ,:
 
+Quick tips in insert mode to emulate normal mode command
+
+    II like I
+    AA like A
+    SS like S
+    CC like C
+    DD like D
+    UU like U
+
 Insert a new line above or below in normal mode
 
     Below : Shift-Enter or <M-o> or )<space>
@@ -126,15 +135,6 @@ When you press `<leader>r` you can search and replace the selected text:
 
     vnoremap <silent> <leader>r :call VisualSelection('replace')<CR>
 
-Surround the visual selection in parenthesis/brackets/etc.:
-
-    vnoremap $1 <esc>`>a)<esc>`<i(<esc>
-    vnoremap $2 <esc>`>a]<esc>`<i[<esc>
-    vnoremap $3 <esc>`>a}<esc>`<i{<esc>
-    vnoremap $$ <esc>`>a"<esc>`<i"<esc>
-    vnoremap $q <esc>`>a'<esc>`<i'<esc>
-    vnoremap $e <esc>`>a"<esc>`<i"<esc>
-
 ### Command line mappings
 
 Write the file as sudo (works only on Unix). Super useful when you open a file and you don't have permissions to save your changes. [Vim tip](http://vim.wikia.com/wiki/Su-write):
@@ -143,14 +143,6 @@ Write the file as sudo (works only on Unix). Super useful when you open a file a
 
 ### Various mappings
 
-Open current buffer directory in windows explorer (Windows only)
-
-    F11
-
-Whichkey - Help remembering mapping with leader key
-    
-    F12
-
 Toggle QuickFix windows
     
     F8
@@ -158,6 +150,14 @@ Toggle QuickFix windows
 Rotate ColorSchemes
     
     F10
+
+Open current buffer directory in windows explorer (Windows only)
+
+    F11
+
+Whichkey - Help remembering mapping with leader key
+    
+    F12
 
 Remove bad formatting ^M
     
@@ -227,9 +227,9 @@ Set font bigger or smaller
 
     Rotate Forward/Backward : F10 / <S-F10>
 
-**vim-yankmatch**
+**vim-yankstack**
 
-    Cycle Paste : <c-p> and <c-n>
+    Cycle Paste : ,p and ,n
     Toggle YRShow  : F3
 
 **vim-sqlformat**
