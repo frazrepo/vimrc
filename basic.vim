@@ -300,6 +300,9 @@ map <C-k> <C-W>k
 map <C-h> <C-W>h
 map <C-l> <C-W>l
 
+" Center next macth
+nnoremap n nzz
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Buffers 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -403,6 +406,12 @@ nnoremap <M-o> mao<Esc>`a
 nnoremap <M-O> maO<Esc>`a
 inoremap <M-o>      <C-O>o
 inoremap <M-O>      <C-O>O
+
+"Quick beautiful paste hack
+nnoremap "p vi"p
+nnoremap 'p vi'p
+nnoremap (p vi(p
+nnoremap )p vi)p
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Parenthesis/bracket
