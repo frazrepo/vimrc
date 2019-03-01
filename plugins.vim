@@ -52,6 +52,7 @@ Plug 'tpope/vim-abolish'
 Plug 'justinmk/vim-sneak'
 Plug 'frazrepo/vim-yankmatches'
 Plug 'osyo-manga/vim-over'
+Plug 'unblevable/quick-scope'
 
 " Code formatting
 " Requires external formatter for each language

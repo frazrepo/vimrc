@@ -325,6 +325,7 @@ Regexp search/replace pattern
 - [vim-obsession / vim-prosession](https://github.com/dhruvasagar/vim-prosession) : Autosave session
 - [* vim-over](https://github.com/osyo-manga/vim-over) : Highlight buffer when operating from command line (s/, /, g/)
 - [vim-polyglot](https://github.com/sheerun/vim-polyglot) : Languages Support
+- [vim-quickscope](https://github.com/unblevable/quick-scope) : Highlight potential candidates for inline searching with f or t
 - [vim-rainbow](https://github.com/luochen1990/rainbow) : Color parentheses, brackets,...
 - [vim-repeat](https://github.com/tpope/vim-repeat) : To repeat plugin command with dot (.)
 - [vim-rotatescheme](https://github.com/frazrepo/vimrc/tree/master/plugins/vim-rotatescheme) : Custom plugin to rotate a list of colorschemes
