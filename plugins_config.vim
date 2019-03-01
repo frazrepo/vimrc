@@ -15,7 +15,6 @@ let g:ale_enabled = 0
 """"""""""""""""""""""""""""""
 " <C-m> = <cr> changed to <M-m>
 nnoremap <silent> <M-m> :FZFMru<CR>
-nnoremap <silent> M :FZFMru<CR>
 " Uncomment to list only files within the current directory
 " let g:fzf_mru_relative = 1
 
