@@ -317,13 +317,13 @@ Regexp search/replace pattern
 - [vim-autoformat](https://github.com/Chiel92/vim-autoformat)
 - [vim-commentary](https://github.com/tpope/vim-commentary)
 - [vim-cool](https://github.com/romainl/vim-cool) : Enhance hlsearch experience
-- [vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
+- [* vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
 - [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
 - [vim-hardtime](https://github.com/takac/vim-hardtime) : For practising hardmode (timer on hjkl and arrow keys)
-- [vim-operator-user/vim-operator-replace](https://github.com/kana/vim-operator-replace) : Custom operators
+- [* vim-operator-user/vim-operator-replace](https://github.com/kana/vim-operator-replace) : Custom operators
 - [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys
 - [vim-obsession / vim-prosession](https://github.com/dhruvasagar/vim-prosession) : Autosave session
-- [vim-over](https://github.com/osyo-manga/vim-over) : Highlight buffer when operating from command line (s/, /, g/)
+- [* vim-over](https://github.com/osyo-manga/vim-over) : Highlight buffer when operating from command line (s/, /, g/)
 - [vim-polyglot](https://github.com/sheerun/vim-polyglot) : Languages Support
 - [vim-rainbow](https://github.com/luochen1990/rainbow) : Color parentheses, brackets,...
 - [vim-repeat](https://github.com/tpope/vim-repeat) : To repeat plugin command with dot (.)
@@ -334,15 +334,17 @@ Regexp search/replace pattern
 - [vim-sneak](https://github.com/justinmk/vim-sneak) : Find text using two characters (line f but handle vertical positions)
 - [vim-sort-motion](https://github.com/christoomey/vim-sort-motion) : Add an operator gs to apply sort
 - [vim-sqlformat](https://github.com/mpyatishev/vim-sqlformat) : SQL formatting
-- [vim-surround](https://github.com/tpope/vim-surround) : Surround text
+- [* vim-surround](https://github.com/tpope/vim-surround) : Surround text
 - [vim-textobj](https://github.com/kana/vim-textobj-user/wiki) | [targets.vim](https://github.com/wellle/targets.vim) : Some text objects -  uri (u), quotes (q), comments (c), indents (i), line (l), entire buffer (e)
 - [vim-tranpose](https://github.com/salsifis/vim-transpose) : Tranpose lines, csv, words, ...
-- [vim-unimpaired](https://github.com/tpope/vim-unimpaired) :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
+- [* vim-unimpaired](https://github.com/tpope/vim-unimpaired) :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
 - [vim-whichkey](https://github.com/liuchengxu/vim-which-key) : Help remembering mapping
 - [vim-wipeout](https://github.com/artnez/vim-wipeout) : Close all hidden buffers
 - [vim-zenroom2 (use goyo)](https://github.com/amix/vim-zenroom2) : Zen mode editing
 - [yankmatches](https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup/blob/master/plugin/yankmatches.vim) : Copy or Delete search results
 
+[*] : A grade plugins, sharpen the saw
+  
 ## How to uninstall
 Just do following:
 * Remove `~/.vim_runtime`
