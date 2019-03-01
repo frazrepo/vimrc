@@ -292,3 +292,11 @@ nmap ,p <Plug>yankstack_substitute_older_paste
 nmap ,n <Plug>yankstack_substitute_newer_paste
 nnoremap <silent> <F3> :Yanks<cr>
 inoremap <silent> <F3> <ESC>:Yanks<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim hardtime for arrow keys only
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+" Disable only arrow keys
+let g:list_of_normal_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
+let g:list_of_visual_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
+let g:list_of_insert_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
