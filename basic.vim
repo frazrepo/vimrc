@@ -408,6 +408,8 @@ inoremap CC <ESC>C
 inoremap SS <ESC>S
 inoremap DD <ESC>dd
 inoremap UU <ESC>u
+"Delete word under cursor in insert mode
+inoremap <C-d> <ESC>diwi
 
 "Insert new line in normal mode quickly
 nnoremap <S-Enter> mao<Esc>`a
