@@ -15,6 +15,8 @@ let g:ale_enabled = 0
 """"""""""""""""""""""""""""""
 " <C-m> = <cr> changed to <M-m>
 nnoremap <silent> <M-m> :FZFMru<CR>
+"Fallback for terminal <M-m> not working
+nnoremap <silent> ,m :FZFMru<CR>
 " Uncomment to list only files within the current directory
 " let g:fzf_mru_relative = 1
 
