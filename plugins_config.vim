@@ -265,10 +265,10 @@ nmap s <Plug>Sneak_s
 nmap S <Plug>Sneak_S
 " visual-mode
 xmap s <Plug>Sneak_s
-xmap S <Plug>Sneak_S
+xmap Z <Plug>Sneak_S
 " operator-pending-mode
-omap s <Plug>Sneak_s
-omap S <Plug>Sneak_S
+omap z <Plug>Sneak_s
+omap Z <Plug>Sneak_S
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-operator-replace
