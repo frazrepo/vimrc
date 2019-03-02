@@ -323,7 +323,7 @@ Regexp search/replace pattern
 - [vim-abolish](https://github.com/tpope/vim-abolish) : Search words, Coercion
 - [vim-autoformat](https://github.com/Chiel92/vim-autoformat)
 - [vim-commentary](https://github.com/tpope/vim-commentary)
-- [vim-cool](https://github.com/romainl/vim-cool) : Enhance hlsearch experience
+- [* vim-cool](https://github.com/romainl/vim-cool) : Enhance hlsearch experience
 - [* vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
 - [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
 - [vim-hardtime](https://github.com/takac/vim-hardtime) : For practising hardmode (timer on hjkl and arrow keys)
@@ -351,7 +351,7 @@ Regexp search/replace pattern
 - [vim-zenroom2 (use goyo)](https://github.com/amix/vim-zenroom2) : Zen mode editing
 - [yankmatches](https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup/blob/master/plugin/yankmatches.vim) : Copy or Delete search results
 
-[*] : A grade plugins, sharpen the saw
+[*] : A grade plugins, "sharpen the saw" philosophy
   
 ## How to uninstall
 Just do following:
