@@ -51,6 +51,7 @@ let g:fzf_colors =
 nnoremap <silent> <c-t> :Files <C-R>=expand('%:h')<CR><CR>
 nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
 nnoremap <silent> <c-b> :Buffers<CR>
+nnoremap <silent> ,b :Buffers<CR>
 " To ignore git files
 " Add this to ENV
 " FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'

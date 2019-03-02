@@ -222,7 +222,7 @@ Set font bigger or smaller
 **fzf**
 
     Files   : <c-t> (t to open file in tab)
-    Buffers : <c-b>
+    Buffers : <c-b> or ,b
     MRU     : <M-m> or ,m
     K       : Ag select words
 
