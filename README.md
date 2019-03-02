@@ -124,6 +124,13 @@ Insert a new line above or below in normal mode
     Below : Shift-Enter or <M-o> or )<space>
     Above : <M-0> or (<space>
 
+Paste inner object quickly
+
+    "p for vi"p
+    'p for vi'p
+    (p for vi(p
+    )p for vi)p
+
 ### Visual mode mappings
 
 Visual mode pressing `*` or `#` searches for the current selection:
