@@ -25,7 +25,7 @@ nnoremap <silent> ,m :FZFMru<CR>
 """"""""""""""""""""""""""""""
 " This is the default extra key bindings
 let g:fzf_action = {
-  \ 't': 'tab split',
+  \ 'ctrl-t': 'tab split',
   \ 'ctrl-x': 'split',
   \ 'ctrl-v': 'vsplit' }
 
