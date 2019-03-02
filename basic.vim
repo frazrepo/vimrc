@@ -31,8 +31,8 @@ nmap <leader>w :w!<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Set 3 lines to the cursor - when moving vertically using j/k
-set so=3
+" Set 1 lines to the cursor - when moving vertically using j/k
+set so=1
 
 " Avoid garbled characters in Chinese language windows OS
 let $LANG='en' 
