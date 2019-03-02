@@ -278,9 +278,6 @@ set virtualedit=block
 vnoremap . :normal.<CR>
 
 " Keep selection in select mode after shifting
-" Tab not working with UltiSnips 
-" vmap <Tab> >gv
-" vmap <S-Tab> <gv
 " Indenting not working when the line starts with ##
 vnoremap > >gv
 vnoremap < <gv
@@ -413,6 +410,7 @@ inoremap CC <ESC>C
 inoremap SS <ESC>S
 inoremap DD <ESC>dd
 inoremap UU <ESC>u
+
 "Delete word under cursor in insert mode
 inoremap <C-d> <ESC>diwi
 
@@ -453,13 +451,6 @@ map <leader>q :e ~/buffer<cr>
 
 " Quickly open a markdown buffer for scribble
 map <leader>x :e ~/buffer.md<cr>
-
-" Swap paste mode to behave normally (ie cursor after pasted text)
-" Commented : Conflicts with YankRing mapping
-" noremap p gp
-" noremap P gP
-" noremap gp p
-" noremap gP P
 
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
