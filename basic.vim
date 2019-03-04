@@ -304,6 +304,7 @@ map <C-l> <C-W>l
 
 " Center next macth
 nnoremap n nzz
+nnoremap N Nzz
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Buffers 
@@ -368,10 +369,6 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Tabulation Remap Shift + Tab
-nnoremap <S-Tab> <<
-inoremap <S-Tab> <C-d>
 
 " Change word under cursor and dot repeat, really useful to edit quickly
 nnoremap c* *Ncgn
