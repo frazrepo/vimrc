@@ -296,3 +296,10 @@ inoremap <silent> <F3> <ESC>:Yanks<cr>
 let g:list_of_normal_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
 let g:list_of_visual_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
 let g:list_of_insert_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Vim-autopairs workarounf for â, î and û
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+let g:AutoPairsShortcutBackInsert=''
+let g:AutoPairsShortcutJump=''
+let g:AutoPairsMoveCharacter=''
