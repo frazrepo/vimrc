@@ -158,10 +158,6 @@ Rotate ColorSchemes
     
     F10
 
-Open current buffer directory in windows explorer (Windows only)
-
-    F11
-
 Whichkey - Help remembering mapping with leader key
     
     F12
@@ -194,6 +190,10 @@ Set font bigger or smaller
 
     Operator : cx{motion}
     Line : cxx
+
+**vim-gtfo**
+
+    Open Current buffer directory : gof or got
 
 **vim-operator-replace**
 
@@ -326,6 +326,7 @@ Regexp search/replace pattern
 - [* vim-cool](https://github.com/romainl/vim-cool) : Enhance hlsearch experience
 - [* vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
 - [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
+- [vim-gtfo](https://github.com/justinmk/vim-gtfo) : Go to File Manager or Terminal
 - [vim-hardtime](https://github.com/takac/vim-hardtime) : For practising hardmode (timer on hjkl and arrow keys)
 - [* vim-operator-user/vim-operator-replace](https://github.com/kana/vim-operator-replace) : Custom operators
 - [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys

@@ -86,6 +86,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'pbogut/fzf-mru.vim'
 Plug 'scrooloose/nerdtree' , { 'on': 'NERDTreeToggle'}
 Plug 'vim-scripts/LargeFile'
+Plug 'justinmk/vim-gtfo'
 
 " Snippet -  Code Generation - AutoCompletion
 Plug 'jiangmiao/auto-pairs'
