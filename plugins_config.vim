@@ -297,6 +297,9 @@ let g:list_of_normal_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
 let g:list_of_visual_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
 let g:list_of_insert_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
 
+" Alternative
+" https://irulan.net/in-defense-of-vim-arrow-keys/
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Vim-autopairs workarounf for â, î and û
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
