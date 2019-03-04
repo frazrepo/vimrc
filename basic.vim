@@ -243,10 +243,10 @@ set complete=.,w,b,u
 inoremap jj <Esc>
 inoremap jk <Esc>
 
-cnoremap jj <Esc>
+" cnoremap jj <Esc> not in command mode, useful for selection
 cnoremap jk <Esc>
 
-vnoremap jj <Esc>
+" vnoremap jj <Esc> not in visual mode, useful for selection
 vnoremap jk <Esc>
 
 """"""""""""""""""""""""""""""
