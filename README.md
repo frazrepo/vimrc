@@ -20,18 +20,22 @@ Just do a git rebase!
 
 And run install.sh (or install.bat) to update vimrc configuration file
 
-### Leader key
+## Cheat Sheet
+
+ - [Cheat Sheet for this vimrc](https://www.cheatography.com/fraz/cheat-sheets/vim-mappings/)
+
+## Leader key
 
     leader = <space>
 
-### Available color scheme
+## Available color scheme
 
     Default GUI : auy (light theme), dracula (dark theme)
     Default Terminal : monokai (dark theme)
     Dark theme : anderson, atom-dark256, codedark, minimalist, molokai, monokai(sublime text), papercolor, seoul, space-vim-dark
     Light theme : ayu (dark available), seoul256-light, pencil
 
-### Normal mode mappings
+## Normal mode mappings
 
 Fast saving of a buffer (`<leader>w`):
 
@@ -104,7 +108,7 @@ Toggle paste mode on and off:
     map <leader>pp :setlocal paste!<cr>
 
 
-### Editing mappings
+## Editing mappings
 
 Insert  ; or : at the end of a line
 
@@ -136,7 +140,7 @@ Equalize or Format entire document
 
     g= or gQ
 
-### Visual mode mappings
+## Visual mode mappings
 
 Visual mode pressing `*` or `#` searches for the current selection:
 
@@ -147,13 +151,13 @@ When you press `<leader>r` you can search and replace the selected text:
 
     vnoremap <silent> <leader>r :call VisualSelection('replace')<CR>
 
-### Command line mappings
+## Command line mappings
 
 Write the file as sudo (works only on Unix). Super useful when you open a file and you don't have permissions to save your changes. [Vim tip](http://vim.wikia.com/wiki/Su-write):
 
     :W 
 
-### Various mappings
+## Various mappings
 
 Toggle QuickFix windows
     
@@ -176,7 +180,7 @@ Set font bigger or smaller
     Bigger : <M-0> or <M-.>
     Smaller : <M-9> or <M-,>
 
-### Plugins usage
+## Plugins usage
 
 **Emmet**
 
