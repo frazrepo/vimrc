@@ -118,6 +118,7 @@ Quick tips in insert mode to emulate normal mode command
     CC like C
     DD like D
     UU like U
+    <C-d> Delete word under cursor
 
 Insert a new line above or below in normal mode
 
@@ -130,6 +131,10 @@ Paste inner object quickly
     'p for vi'p
     (p for vi(p
     )p for vi)p
+
+Equalize or Format entire document
+
+    g= or gQ
 
 ### Visual mode mappings
 
