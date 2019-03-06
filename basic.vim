@@ -412,9 +412,9 @@ inoremap UU <ESC>u
 inoremap <C-d> <ESC>diwi
 
 "Insert new line in normal mode quickly
-nnoremap <S-Enter> mao<Esc>`a
-nnoremap <M-o> mao<Esc>`a
-nnoremap <M-O> maO<Esc>`a
+nnoremap <S-Enter> mao<Esc>`aj
+nnoremap <M-o> mao<Esc>`aj
+nnoremap <M-O> maO<Esc>`ak
 inoremap <M-o>      <C-O>o
 inoremap <M-O>      <C-O>O
 
