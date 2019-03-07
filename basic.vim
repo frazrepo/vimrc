@@ -144,6 +144,7 @@ endif
 set linespace=8
 
 " List Chars
+set nolist
 set listchars=eol:$,tab:>-,trail:.,extends:>,precedes:<
 set showbreak=\\ "
 
@@ -303,8 +304,11 @@ map <C-h> <C-W>h
 map <C-l> <C-W>l
 
 " Center next macth
-nnoremap n nzz
-nnoremap N Nzz
+nnoremap <silent> n nzz
+nnoremap <silent> N Nzz
+nnoremap <silent> * *zz
+nnoremap <silent> # #zz
+nnoremap <silent> g* g*zz
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Buffers 
