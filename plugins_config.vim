@@ -165,11 +165,7 @@ let g:rainbow_active = 0
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => ultisnips and vim-snippets configuration
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsListSnippets ="<c-tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
@@ -306,3 +302,42 @@ let g:list_of_insert_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
 let g:AutoPairsShortcutBackInsert=''
 let g:AutoPairsShortcutJump=''
 let g:AutoPairsMoveCharacter=''
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Vim-completor and ultisnips integration
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+if has('python') || has('python3')
+	let g:UltiSnipsExpandTrigger = '<tab>'
+	let g:UltiSnipsJumpForwardTrigger = '<tab>'
+
+	" Completor and ultisnips to reuse TAB key
+	fun! Tab_Or_Complete() "{{{
+		call UltiSnips#ExpandSnippet()
+		if g:ulti_expand_res == 0
+			if pumvisible()
+				return "\<C-n>"
+			else
+				call UltiSnips#JumpForwards()
+				if g:ulti_jump_forwards_res == 0
+					" If completor is not open and we are in the middle of typing a word then
+					" `tab` opens completor menu.
+					let inp_str = strpart( getline('.'), col('.')-3, 2 )
+					if col('.')>1 && (inp_str =~ '^\w$' || inp_str =~ '\%(->\)\|\%(.\w\)\|\%(\w\.\)\|\%(./\)')
+						return "\<C-R>=completor#do('complete')\<CR>"
+					else
+						return "\<TAB>"
+					endif
+				endif
+			endif
+		endif
+		return ""
+	endf "}}}
+
+	au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=Tab_Or_Complete()<cr>"
+
+	" should be together if auto trigger is off
+	let g:completor_complete_options = "menuone,preview"
+	let g:completor_min_chars = 1
+	let g:completor_auto_trigger = 0
+
+endif
