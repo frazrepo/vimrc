@@ -346,6 +346,7 @@ Regexp search/replace pattern
 - [vim-rainbow](https://github.com/luochen1990/rainbow) : Color parentheses, brackets,...
 - [vim-repeat](https://github.com/tpope/vim-repeat) : To repeat plugin command with dot (.)
 - [vim-rotatescheme](https://github.com/frazrepo/vimrc/tree/master/plugins/vim-rotatescheme) : Custom plugin to rotate a list of colorschemes
+- [vim-sandwich](https://github.com/machakann/vim-sandwich) : Surround texts with delimiters
 - [vim-schlepp](https://github.com/zirrostig/vim-schlepp) : Drag selection in visual mode
 - [vim-signature](https://github.com/kshenoy/vim-signature) : Display marks
 - [vim-signify](https://github.com/mhinz/vim-signify) : Git status
