@@ -84,8 +84,8 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 let g:ctrlsf_populate_qflist = 1
 
-nnoremap <silent> ff :call SearchWordWithCtrlSf()<CR>
-vnoremap <silent> ff :call SearchVisualSelectionWithCtrlSf()<CR>
+nnoremap <silent> <leader>f :call SearchWordWithCtrlSf()<CR>
+vnoremap <silent> <leader>f :call SearchVisualSelectionWithCtrlSf()<CR>
 
 function! SearchWordWithCtrlSf()
    execute 'CtrlSF' expand('<cword>')
@@ -341,3 +341,7 @@ if has('python') || has('python3')
 	let g:completor_auto_trigger = 0
 
 endif
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-quickscope
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']

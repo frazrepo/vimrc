@@ -110,10 +110,6 @@ Toggle paste mode on and off:
 
 ## Editing mappings
 
-Insert  ; or : at the end of a line
-
-    ,; or ,:
-
 Quick tips in insert mode to emulate normal mode command
 
     II like I
@@ -282,7 +278,7 @@ Set font bigger or smaller
 
 **CtrlSF**
 
-    ff      : Find selected word 
+    <leader>f      : Find selected word 
     F9      : Toggle CtrlSF result Window 
     <C-f>f  : Prompt in command line to find a pattern
 
