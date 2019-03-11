@@ -204,12 +204,12 @@ Set font bigger or smaller
 
     Operator : {"register}cp{motion}
 
-**vim-sandwich**
+**vim-sandwich with surroung mappings**
 
-    Replace: sr"(
-    Add : sa{motion}", yss" (for line)
-    Delete :  sd", sdb , dss (for line) 
-    Visual Mode : Vsa"
+    Replace: cs, css (detect surrounding)
+    Add : ys{motion}", yss" (for line)
+    Delete :  ds" , dss (for line) 
+    Visual Mode : S
 
 **nerdtree**
 
