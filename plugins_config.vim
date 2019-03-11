@@ -345,3 +345,8 @@ endif
 " => vim-quickscope
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-sandwich to simulate surround mappings
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+runtime macros/sandwich/keymap/surround.vim

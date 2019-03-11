@@ -90,7 +90,6 @@ Plug 'justinmk/vim-gtfo'
 
 " Snippet -  Code Generation - AutoCompletion
 Plug 'jiangmiao/auto-pairs'
-Plug 'tpope/vim-surround'
 Plug 'machakann/vim-sandwich'
 Plug 'mattn/emmet-vim'
 Plug 'tpope/vim-commentary'

@@ -204,12 +204,12 @@ Set font bigger or smaller
 
     Operator : {"register}cp{motion}
 
-**vim-surround**
+**vim-sandwich**
 
-    Change: cs"', cst"
-    Add : ysiw], ysim<em>
-    Delete :  ds", ds{
-    Visual Mode : select and then S" or S'    
+    Replace: sr"(
+    Add : sa{motion}", yss" (for line)
+    Delete :  sd", sdb , dss (for line) 
+    Visual Mode : Vsa"
 
 **nerdtree**
 
@@ -349,7 +349,6 @@ Regexp search/replace pattern
 - [vim-sneak](https://github.com/justinmk/vim-sneak) : Find text using two characters (line f but handle vertical positions)
 - [vim-sort-motion](https://github.com/christoomey/vim-sort-motion) : Add an operator gs to apply sort
 - [vim-sqlformat](https://github.com/mpyatishev/vim-sqlformat) : SQL formatting
-- [* vim-surround](https://github.com/tpope/vim-surround) : Surround text
 - [vim-textobj](https://github.com/kana/vim-textobj-user/wiki) | [targets.vim](https://github.com/wellle/targets.vim) : Some text objects -  uri (u), quotes (q), comments (c), indents (i), line (l), entire buffer (e)
 - [vim-tranpose](https://github.com/salsifis/vim-transpose) : Tranpose lines, csv, words, ...
 - [* vim-unimpaired](https://github.com/tpope/vim-unimpaired) :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
