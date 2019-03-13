@@ -333,6 +333,10 @@ map <leader>h :bprevious<cr>
 " Backspace to navigate to alternate buffer
 nnoremap <bs> <c-^>
 
+" Edit quickly with the current buffer path
+cnoremap %% <c-r>=expand("%:p:h")<cr>/ 
+map <leader>e :edit <c-r>=expand("%:p:h")<cr>/
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Tabs
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
