@@ -428,6 +428,10 @@ inoremap {, {<CR>},<C-c>O
 inoremap [; [<CR>];<C-c>O
 inoremap [, [<CR>],<C-c>O
 
+" Marks keekjumps for azerty keyboard
+nnoremap mù m`
+nnoremap ùù ``
+
 " Delete trailing white space on save, useful for some filetypes ;)
 fun! CleanExtraSpaces()
     let save_cursor = getpos(".")
@@ -490,11 +494,6 @@ function! <SID>BufcloseCloseIt()
     let l:currentBufNum = bufnr("%")
     let l:alternateBufNum = bufnr("#")
 
-    if buflisted(l:alternateBufNum)
-        buffer #
-    else
-        bnext
-    endif
 
     if bufnr("%") == l:currentBufNum
         new
