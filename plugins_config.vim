@@ -286,17 +286,6 @@ nnoremap <silent> <F3> :Yanks<cr>
 inoremap <silent> <F3> <ESC>:Yanks<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim hardtime for arrow keys only
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-" Disable only arrow keys
-let g:list_of_normal_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
-let g:list_of_visual_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
-let g:list_of_insert_keys = ["<UP>", "<DOWN>", "<LEFT>", "<RIGHT>"]
-
-" Alternative
-" https://irulan.net/in-defense-of-vim-arrow-keys/
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Vim-autopairs workarounf for â, î and û
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:AutoPairsShortcutBackInsert=''
