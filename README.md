@@ -44,7 +44,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<C-leader>       | ?                             |
 | \<leader>fr       | Find/Replace highlighted text |
 | \<leader><leader> | noh                           |
-| \<leader>m        | Remove bad formatting ^M      |
+| \<leader>m        | Remove bad formatting M      |
 
 **Move between Windows**
 | Mapping | Action |
