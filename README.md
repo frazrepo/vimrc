@@ -268,7 +268,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | Tranpose            |        |
 | TranposeWords       |        |
 | TranposeTab         |        |
-| TranposeCSV         |        |
+| TranposeCSV   ,     |        |
 | TranposeInteractive |        |
 
 **sort-motion**
@@ -361,7 +361,6 @@ Regexp search/replace pattern
 - [* vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
 - [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
 - [vim-gtfo](https://github.com/justinmk/vim-gtfo) : Go to File Manager or Terminal
-- [vim-hardtime](https://github.com/takac/vim-hardtime) : For practising hardmode (timer on hjkl and arrow keys)
 - [* vim-operator-user/vim-operator-replace](https://github.com/kana/vim-operator-replace) : Custom operators
 - [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys
 - [vim-obsession / vim-prosession](https://github.com/dhruvasagar/vim-prosession) : Autosave session
