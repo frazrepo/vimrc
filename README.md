@@ -210,88 +210,124 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 **vim-unimpaired**
 
-    Map keys               : ( and )
-    Switch between tabs    : (t, )t
-    Switch between buffers : (b, )b
-    Toggle Options         : yo[r,n,w,x,....]
-    Lines operations       : (space, )space, 10)space, (e, )e
+| Mapping                          | Action                 |
+| ---                              | ---                    |
+| ( and )                          | Map keys               |
+| (t, )t                           | Switch between tabs    |
+| (b, )b                           | Switch between buffers |
+| yo[r,n,w,x,....]                 | Toggle Options         |
+| (space, )space, 10)space, (e, )e | Lines operations       |
 
 **fzf**
 
-    Files   : <c-t> (t to open file in tab)
-    Buffers : <c-b> or ,b
-    MRU     : <M-m> or ,m
-    K       : Ag select words
+| Mapping         | Action                        |
+| ---             | ---                           |
+| \<c-t>          | Files (t to open file in tab) |
+| \<c-b> or ,b    | Buffers                       |
+| \<M-m> or ,m    | MRU                           |
+| Ag select words | K                             |
 
 **vim-rainbow**
 
-    Toggle coloring :RainbowToogle
+| Mapping       | Action          |
+| ---           | ---             |
+| RainbowToogle | Toggle coloring |
 
 **vim-rotatescheme**
 
-    Rotate Forward/Backward : F10 / <S-F10>
+| Mapping       | Action                  |
+| ---           | ---                     |
+| F10 / <S-F10> | Rotate Forward/Backward |
 
 **vim-yankstack**
 
-    Cycle Paste : ,p and ,n
-    Toggle YRShow  : F3
+| Mapping   | Action        |
+| ---       | ---           |
+| ,p and ,n | Cycle Paste   |
+| F3        | Toggle YRShow |
 
 **vim-sqlformat**
 
-    Formatting : gq{motion} or {visual}gq
+| Mapping                | Action        |
+| ---                    | ---           |
+| gq{motion} or {visual} | gq Formatting |
 
 **vim-signature**
 
-    Add(Toggle) mark : ma, mb, ...
-    Navigation between marks : (' or )'
-    Delete all marks : m<space>
+| Mapping      | Action                   |
+| ---          | ---                      |
+| ma, mb, . .. | Add(Toggle) mark         |
+| (' or )'     | Navigation between marks |
+| m<space>     | Delete all marks         |
 
 **vim-scripts/Tranpose**
 
-    Commands : Tranpose, TranposeWords, TranposeTab, TranposeCSV, TranposeInteractive
+| Mapping             | Action |
+| ---                 | ---    |
+| Tranpose            |        |
+| TranposeWords       |        |
+| TranposeTab         |        |
+| TranposeCSV         |        |
+| TranposeInteractive |        |
 
 **sort-motion**
 
-    Sorting : gs(motion) [ Ex: gs3j, gsi(,...]
+| Mapping    | Action      |
+| ---        | ---         |
+| gs{motion} | gs3j, gsi(, |
 
 **goyo and zenroom for markdown**
 
-    Zen mode : <leader>z
+| Mapping   | Action   |
+| ---       | ---      |
+| <leader>z | Zen mode |
 
 **vim-sneak**
 
-    Search : s{char}{char}
-    Combine with Surround : z{char}{char} , Ex: yszab"
-    Next/Previous match :  ; / ,
+| Mapping       | Action                             |
+| ---           | ---                                |
+| s{char}{char} | Search                             |
+| z{char}{char} | Ex : yszab"  Combine with Surround |
+| ; / ,         | Next/Previous match                |
 
 **ultisnips and vim-snippets**
 
-    Activation : <tab>
+| Mapping | Action     |
+| ---     | ---        |
+| \<tab>   | Activation |
 
 **CtrlSF**
 
-    <leader>f      : Find selected word 
-    F9      : Toggle CtrlSF result Window 
-    <C-f>f  : Prompt in command line to find a pattern
+| Mapping   | Action                                   |
+| ---       | ---                                      |
+| \<leader>f | Find selected word                       |
+| F9        | Toggle CtrlSF result Window              |
+| \<C-f>f   | Prompt in command line to find a pattern |
 
 **yankmatches**
 
-    ym / YM : Yank highlighted search lines  (YM for inverse) 
-    dm / DM : Delete highlighteed search line (DM for inverse)
+| Mapping | Action                                           |
+| ---     | ---                                              |
+| ym / YM | Yank highlighted search lines  (YM for inverse)  |
+| dm / DM | Delete highlighteed search line (DM for inverse) |
 
 **zirrostig/vim-schlepp**
 
-    up/down/left/right : After a selection in visual mode, drag using arrow key
+| Mapping            | Action                                                 |
+| ---                | ---                                                    |
+| up/down/left/right | After a selection in visual mode, drag using arrow key |
 
 **custom text-objects**
 
-    Uri u       : ciu, dau
-    Quotes q    : ciq, daq
-    Comments c  : cic, dac
-    Indents i   : cii, dai
-    Targets     : cin(l)q, dai, ci,, ci=, ..
-    Line l      : cil, yil
-    Entire e    : yie, cie
+| Mapping                    | Action     |
+| ---                        | ---        |
+| ciu, dau                   | Uri u      |
+| ciq, daq                   | Quotes q   |
+| cic, dac                   | Comments c |
+| cii, dai                   | Indents i  |
+| cin(l)q, dai, ci,, ci=, .. | Targets    |
+| cil, yil                   | Line l     |
+| yie, cie                   | Entire e   |
 
 ## Custom Docs
 
