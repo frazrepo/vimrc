@@ -36,141 +36,105 @@ And run install.sh (or install.bat) to update vimrc configuration file
     Light theme : ayu (dark available), seoul256-light, pencil
 
 ## Normal mode mappings
-|Mapping        |  Action       |
-|---	        |---	        |
-| \<leader>w    | Save buffer   | 
-| \<leader>     | /             | 
-| \<C-leader>   | ?             | 
-| \<leader>fr   | Find/Replace highlighted text             | 
-    
-Disable highlights when you press `<leader><space>`:
-    
-    map <silent> <leader><space> :noh<cr>
+**General**
+| Mapping           | Action                        |
+| ---               | ---                           |
+| \<leader>w        | Save buffer                   |
+| \<leader>         | /                             |
+| \<C-leader>       | ?                             |
+| \<leader>fr       | Find/Replace highlighted text |
+| \<leader><leader> | noh                           |
+| \<leader>m        | Remove bad formatting ^M      |
 
-Smart way to move between windows (`<ctrl>j` etc.):
-    
-    map <C-j> <C-W>j
-    map <C-k> <C-W>k
-    map <C-h> <C-W>h
-    map <C-l> <C-W>l
+**Move between Windows**
+| Mapping | Action |
+| ---     | ---    |
+| \<C-j>  | Down   |
+| \<C-k>  | Up     |
+| \<C-h>  | Left   |
+| \<C-l>  | Right  |
 
-Useful mappings for managing buffers :
+**Buffers**
+| Mapping     | Action                     |
+| ---         | ---                        |
+| \<leader>bn | New buffer                 |
+| \<leader>bd | Close buffer               |
+| \<leader>ba | Close all buffers          |
+| \<leader>bw | Wipeout all hidden buffers |
+| \<bs>f      | Navigate alternate buffer  |
+| \<leader>h  | Navigate left              |
+| \<leader>l  | Navigate right             |
+| \<leader>hn | New buffer left above      |
+| \<leader>ln | New buffer right below     |
+| \<leader>kn | New buffer up              |
+| \<leader>jn | New buffer down            |
+| \<leader>q  | Scratch                    |
+| \<leader>x  | Scratch Markdown           |
+| \<leader>pp | Toggle paste mode          |
 
-    " New buffer
-     <leader>bn
-
-    " Close current buffer
-    <leader>bd
-    
-    " Close all buffers
-    <leader>ba
-    
-    " Wipeout all hidden buffers
-    <leader>bw
-
-    " Navigate alternate buffer
-    <bs>
-
-    " Navigate left and right buffer
-    <leader>h, <leader>l
-    
-Useful mappings for managing tabs:
-    
-    gt or (ngt) : Go to tab or Go to nth tab
-    <leader>tn :tabnew<cr>
-    <leader>to :tabonly<cr>
-    <leader>tc :tabclose<cr>
-    <leader>tm :tabmove 
-    <leader>tl or <leader><bs> : alternate tab 
-    
-    " Opens a new tab with the current buffer's path
-    " Super useful when editing files in the same directory
-    map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
-
-Quickly open an empty buffer in all direction:	
-    
-    nnoremap <Leader>hn :leftabove  vnew<CR>
-    nnoremap <Leader>ln :rightbelow vnew<CR>
-    nnoremap <Leader>kn :leftabove  new<CR>
-    nnoremap <Leader>jn :rightbelow new<CR>
-
-Quickly open a buffer for scripbble:
-    
-    map <leader>q :e ~/buffer<cr>
-    map <leader>x :e ~/buffer.md<cr>
-
-Toggle paste mode on and off:
-    
-    map <leader>pp :setlocal paste!<cr>
-
+**Tabs**
+| Mapping     | Action                                |
+| ---         | ---                                   |
+| gt          | Go to tab                             |
+| \<leader>tn | New tab                               |
+| \<leader>to | Tab Only                              |
+| \<leader>tc | Close tab                             |
+| \<leader>tm | Move tab                              |
+| \<leader>tl | Alternate tab                         |
+| \<leader>ts | Alternate tab                         |
+| \<leader>te | Edit new tab in current buffer's path |
 
 ## Editing mappings
 
-Quick tips in insert mode to emulate normal mode command
+**Quick tips in insert mode to emulate normal mode command**
 
-    II like I
-    AA like A
-    SS like S
-    CC like C
-    DD like D
-    UU like U
-    <C-d> Delete word under cursor
+| Mapping | Action                   |
+| ---     | ---                      |
+| II      | like I                   |
+| AA      | like A                   |
+| SS      | like S                   |
+| CC      | like C                   |
+| DD      | like D                   |
+| UU      | like U                   |
+| \<C-d>   | Delete word under cursor |
+| \<M-o>   | Insert new line below    |
+| \<M-O>   | Insert new line above    |
 
-Insert a new line above or below in normal mode
+**Paste inner object quickly**
 
-    Below : Shift-Enter or <M-o> or )<space>
-    Above : <M-0> or (<space>
+| Mapping | Action   |
+| ---     | ---      |
+| "p      | for vi"p |
+| 'p      | for vi'p |
+| (p      | for vi(p |
+| )p      | for vi)p |
 
-Paste inner object quickly
-
-    "p for vi"p
-    'p for vi'p
-    (p for vi(p
-    )p for vi)p
-
-Equalize or Format entire document
-
-    g= or gQ
+**Formatting**
+| Mapping | Action                   |
+| ---     | ---                      |
+| g=      | Equalize entire document |
+| gQ      | Format entire document   |
 
 ## Visual mode mappings
-
-Visual mode pressing `*` or `#` searches for the current selection:
-
-    vnoremap <silent> * :call VisualSelection('f')<CR>
-    vnoremap <silent> # :call VisualSelection('b')<CR>
-
-When you press `<leader>r` you can search and replace the selected text:
-
-    vnoremap <silent> <leader>r :call VisualSelection('replace')<CR>
+| Mapping    | Action                            |
+| ---        | ---                               |
+| *          | Search current selection          |
+| #          | Search current selection backward |
+| \<leader>r | Replace visual selection          |
 
 ## Command line mappings
-
-Write the file as sudo (works only on Unix). Super useful when you open a file and you don't have permissions to save your changes. [Vim tip](http://vim.wikia.com/wiki/Su-write):
-
-    :W 
+| Mapping    | Action                            |
+| ---        | ---                               |
+| :W          |Write sudo|
 
 ## Various mappings
-
-Toggle QuickFix windows
-    
-    F8
-
-Rotate ColorSchemes
-    
-    F10
-
-Whichkey - Help remembering mapping with leader key
-    
-    F12
-
-Remove bad formatting ^M
-    
-    <Leader>m
-
-Set font bigger or smaller
-    
-    Bigger : <M-0> or <M-.>
-    Smaller : <M-9> or <M-,>
+| Mapping    | Action                            |
+| ---        | ---                               |
+| F8 |Toggle quickfix window|
+| F10 |Rotate colorschemes|
+| F12 |Whichkey mapping|
+| \<M-0> |Set font bigger (gui only)|
+| \<M-9> |Set font smaller (gui only)|
 
 ## Plugins usage
 
