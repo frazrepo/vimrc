@@ -396,10 +396,6 @@ map 0 ^
 nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
 
-" Quick append ; or :  at the end of the line and keep the cursor position
-nnoremap ,; mhA;<Esc>`h
-nnoremap ,: mhA:<Esc>`h
-
 " Quick tip in insert mode
 inoremap II <ESC>I
 inoremap AA <ESC>A
