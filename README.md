@@ -36,7 +36,9 @@ And run install.sh (or install.bat) to update vimrc configuration file
     Light theme : ayu (dark available), seoul256-light, pencil
 
 ## Normal mode mappings
+
 **General**
+
 | Mapping           | Action                        |
 | ---               | ---                           |
 | \<leader>w        | Save buffer                   |
@@ -44,9 +46,10 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<C-leader>       | ?                             |
 | \<leader>fr       | Find/Replace highlighted text |
 | \<leader><leader> | noh                           |
-| \<leader>m        | Remove bad formatting M      |
+| \<leader>m        | Remove bad formatting M       |
 
 **Move between Windows**
+
 | Mapping | Action |
 | ---     | ---    |
 | \<C-j>  | Down   |
@@ -55,6 +58,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<C-l>  | Right  |
 
 **Buffers**
+
 | Mapping     | Action                     |
 | ---         | ---                        |
 | \<leader>bn | New buffer                 |
@@ -73,6 +77,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<leader>pp | Toggle paste mode          |
 
 **Tabs**
+
 | Mapping     | Action                                |
 | ---         | ---                                   |
 | gt          | Go to tab                             |
@@ -110,6 +115,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | )p      | for vi)p |
 
 **Formatting**
+
 | Mapping | Action                   |
 | ---     | ---                      |
 | g=      | Equalize entire document |
