@@ -28,7 +28,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
     leader = <space>
 
-## Available color scheme
+## Rotatable color schemes
 
     Default GUI : auy (light theme), dracula (dark theme)
     Default Terminal : monokai (dark theme)
@@ -36,17 +36,13 @@ And run install.sh (or install.bat) to update vimrc configuration file
     Light theme : ayu (dark available), seoul256-light, pencil
 
 ## Normal mode mappings
-
-Fast saving of a buffer (`<leader>w`):
-
-    nmap <leader>w :w!<cr>
+|Mapping        |  Action       |
+|---	        |---	        |
+| \<leader>w    | Save buffer   | 
+| \<leader>     | /             | 
+| \<C-leader>   | ?             | 
+| \<leader>fr   | Find/Replace highlighted text             | 
     
-Map `<Space>` to `/` (search) and `<Ctrl>+<Space>` to `?` (backwards search):
-    
-    map <space> /
-    map <c-space> ?
-    map <leader>fr : FindReplace with highlighted text (vim-over)
-
 Disable highlights when you press `<leader><space>`:
     
     map <silent> <leader><space> :noh<cr>
