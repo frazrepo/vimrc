@@ -244,7 +244,6 @@ set complete=.,w,b,u
 """"""""""""""""""""""""""""""
 " capslock to esc
 " use this command on linux system : setxkbmap -option caps:swapescape
-inoremap jj <Esc>
 inoremap jk <Esc>
 
 " cnoremap jj <Esc> not in command mode, useful for selection
@@ -395,13 +394,6 @@ map 0 ^
 nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
 
-if has("mac") || has("macunix")
-  nmap <D-j> <M-j>
-  nmap <D-k> <M-k>
-  vmap <D-j> <M-j>
-  vmap <D-k> <M-k>
-endif
-
 " Quick append ; or :  at the end of the line and keep the cursor position
 nnoremap ,; mhA;<Esc>`h
 nnoremap ,: mhA:<Esc>`h
@@ -419,7 +411,6 @@ inoremap UU <ESC>u
 inoremap <C-d> <ESC>diwi
 
 "Insert new line in normal mode quickly
-nnoremap <S-Enter> mao<Esc>`aj
 nnoremap <M-o> mao<Esc>`aj
 nnoremap <M-O> maO<Esc>`ak
 inoremap <M-o>      <C-O>o
