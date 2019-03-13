@@ -46,7 +46,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<C-leader>       | ?                             |
 | \<leader>fr       | Find/Replace highlighted text |
 | \<leader><leader> | noh                           |
-| \<leader>m        | Remove bad formatting M       |
+| \<leader>m        | Remove bad formatting ^M      |
 
 **Move between Windows**
 
@@ -65,7 +65,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<leader>bd | Close buffer               |
 | \<leader>ba | Close all buffers          |
 | \<leader>bw | Wipeout all hidden buffers |
-| \<bs>f      | Navigate alternate buffer  |
+| \<bs>       | Navigate alternate buffer  |
 | \<leader>h  | Navigate left              |
 | \<leader>l  | Navigate right             |
 | \<leader>hn | New buffer left above      |
@@ -146,49 +146,75 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 **Emmet**
 
-    Generation: <tab>,
+| Mapping          | Action                 | 
+| ---              | ---                    |
+| \<tab>,          | Generate emmet         | 
 
 **Tabular**
 
-    :Tab(ularize) /(separator) (Eg :Tab /=)
+| Mapping          | Action                 |
+| ---              | ---                    |
+| :Tab(ularize) /= | Align selection with = |
 
 **vim-abolish**
-
-    Search Command: Subvert
-    Coercion :  Press crs (coerce to snake_case). MixedCase (crm), camelCase (crc), snake_case (crs), UPPER_CASE (cru), dash-case (cr-), dot.case (cr.), space case (cr<space>), and Title Case (crt)
+| Mapping   | Action               |
+| ---       | ---                  |
+| Subvert   | Search Command       |
+| crs       | Coerce to snake_case |
+| crm       | Coerce to MixedCase  |
+| crc       | Coerce to CamelCase  |
+| cru       | Coerce to UPPER_CASE |
+| cr-       | Coerce to dash-case  |
+| cr.       | Coerce to dot-case   |
+| cr<space> | Coerce to space case |
+| crt       | Coerce to Title Case |
 
 **vim-exchange**
 
-    Operator : cx{motion}
-    Line : cxx
-
-**vim-gtfo**
-
-    Open Current buffer directory : gof or got
+| Mapping       | Action                              |
+| ---           | ---                                 |
+| cx{to-motion} | Exchange with text object or motion |
+| cxx           | Exchange lines                      |
 
 **vim-operator-replace**
 
-    Operator : {"register}cp{motion}
+| Mapping       | Action                              |
+| ---           | ---                                 |
+| {"reg}cp{to-motion} |Paste register content on text object or motion|
 
 **vim-sandwich with surroung mappings**
 
-    Replace: cs, css (detect surrounding)
-    Add : ys{motion}", yss" (for line)
-    Delete :  ds" , dss (for line) 
-    Visual Mode : S
+| Mapping     | Action                                      |
+| ---         | ---                                         |
+| cs"=        | Change surround                             |
+| css         | Change surround on line (detect surrouding) |
+| ys{motion}" | Add surround                                |
+| yss"        | Add surround on line                        |
+| ds"         | Delete surround                             |
+| dss         | Delete surround on line                     |
+| S"          | Add surround on visual selection            |
+
+**vim-gtfo**
+
+| Mapping | Action                                    |
+| ---     | ---                                       |
+| gof     | Open current buffer directory             |
+| got     | Open current buffer directory on terminal |
 
 **nerdtree**
 
-    Default directory :      <leader>nn 
-    Current file directory:  <leader>nf
+| Mapping     | Action                        |
+| ---         | ---                           |
+| \<leader>nn | Open current buffer directory |
+| \<leader>nf | Open current buffer directory |
 
 **vim-unimpaired**
 
-    Map keys : ( and )
-    Switch between tabs   : (t, )t
-    Switch between buffers: (b, )b
-    Toggle Options : yo[r,n,w,x,....]
-    Lines operations : (space, )space, 10)space, (e, )e
+    Map keys               : ( and )
+    Switch between tabs    : (t, )t
+    Switch between buffers : (b, )b
+    Toggle Options         : yo[r,n,w,x,....]
+    Lines operations       : (space, )space, 10)space, (e, )e
 
 **fzf**
 
