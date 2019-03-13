@@ -157,6 +157,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | :Tab(ularize) /= | Align selection with = |
 
 **vim-abolish**
+
 | Mapping   | Action               |
 | ---       | ---                  |
 | Subvert   | Search Command       |
