@@ -110,6 +110,9 @@ endif
 " Add a bit extra margin to the left
 set foldcolumn=1
 
+" foldmethod manual
+set foldmethod=manual 
+
 " Dealing with special chars
 set encoding=utf-8
 " set fileencoding=utf-8
