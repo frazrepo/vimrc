@@ -396,10 +396,6 @@ map 0 ^
 nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
 
-" Quick append ; or :  ati the end of the line and keep the cursor position
-nnoremap ,; mhA;<Esc>`h
-nnoremap ,: mhA:<Esc>`h
-
 "Delete word under cursor in insert mode
 inoremap <C-d> <ESC>diwi
 
