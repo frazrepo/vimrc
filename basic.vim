@@ -177,7 +177,8 @@ if has("gui_running")
     color ayu
     " color dracula
 else
-    color monokai
+    " color monokai
+    color apprentice
 endif
 
 " Fonts Consolas
