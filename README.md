@@ -91,16 +91,10 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 ## Editing mappings
 
-**Quick tips in insert mode to emulate normal mode command**
+**Quick tips in insert mode**
 
 | Mapping | Action                   |
 | ---     | ---                      |
-| II      | like I                   |
-| AA      | like A                   |
-| SS      | like S                   |
-| CC      | like C                   |
-| DD      | like D                   |
-| UU      | like U                   |
 | \<C-d>   | Delete word under cursor |
 | \<M-o>   | Insert new line below    |
 | \<M-O>   | Insert new line above    |
@@ -329,6 +323,13 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | cin(l)q, dai, ci,, ci=, .. | Targets    |
 | cil, yil                   | Line l     |
 | yie, cie                   | Entire e   |
+
+**Miscellaneous Commands**
+
+| Mapping       | Action          |
+| ---           | ---             |
+| ListLeaders | Show all leader mappings |
+| VisualBlock | Activate visual block mode |
 
 ## Custom Docs
 
