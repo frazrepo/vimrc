@@ -144,11 +144,12 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | ---              | ---                    |
 | \<tab>,          | Generate emmet         | 
 
-**Tabular**
+**vim-lion**
 
 | Mapping          | Action                 |
 | ---              | ---                    |
-| :Tab(ularize) /= | Align selection with = |
+| gl{to-m}=| Right Align with = |
+| gL{to-m}=| Left Align with = |
 
 **vim-abolish**
 
@@ -353,7 +354,6 @@ Regexp search/replace pattern
 - [lightline](https://github.com/itchyny/lightline.vim) : Lightweight status line 
 - [fzfmru](https://github.com/pbogut/fzf-mru.vim) : Browse most recent files
 - [nerdtree](https://github.com/scrooloose/nerdtree) : File browser
-- [tabular](https://github.com/godlygeek/tabular) : Align lines bases on separator
 - [utilsnips + vim-snippets](https://github.com/SirVer/ultisnips) : Snippets
 - [vim-abolish](https://github.com/tpope/vim-abolish) : Search words, Coercion
 - [vim-autoformat](https://github.com/Chiel92/vim-autoformat)
@@ -362,6 +362,7 @@ Regexp search/replace pattern
 - [* vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
 - [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
 - [vim-gtfo](https://github.com/justinmk/vim-gtfo) : Go to File Manager or Terminal
+- [vim-lion](https://github.com/tommcdo/vim-lion) : Align text (like tabular)
 - [* vim-operator-user/vim-operator-replace](https://github.com/kana/vim-operator-replace) : Custom operators
 - [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys
 - [vim-obsession / vim-prosession](https://github.com/dhruvasagar/vim-prosession) : Autosave session

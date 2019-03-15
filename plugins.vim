@@ -57,7 +57,7 @@ Plug 'unblevable/quick-scope'
 " Code formatting
 " Requires external formatter for each language
 Plug 'Chiel92/vim-autoformat'
-Plug 'godlygeek/tabular'
+Plug 'tommcdo/vim-lion'
 " Requires pip install sqlparse or pip3 install sqlparse
 Plug 'mpyatishev/vim-sqlformat', { 'for' : 'sql' }
 
