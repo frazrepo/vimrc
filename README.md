@@ -23,6 +23,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 ## Cheat Sheet
 
  - [Cheat Sheet for this vimrc](https://www.cheatography.com/fraz/cheat-sheets/vim-mappings/)
+ - [Muscle Memory Cheat](https://www.cheatography.com/fraz/cheat-sheets/vim-muscle-memory/)
 
 ## Leader key
 
