@@ -30,6 +30,10 @@ INTRODUCTION                                    *fz-regexp*
 >
   :10,20g/^/ mo 10
 <
+3. Reverse the order of all lines
+>
+  :g/^/m0 
+<
 4. Delete all lines not matching a pattern        *fz-regexp-4*
 >
   :g!/foo/d  or :v/foo/d
