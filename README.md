@@ -218,8 +218,8 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | Mapping         | Action                        |
 | ---             | ---                           |
 | \<c-t>          | Files (t to open file in tab) |
-| \<c-b> or ,b    | Buffers                       |
-| \<M-m> or ,m    | MRU                           |
+| \<leader>bb    | Buffers                       |
+| \<leader>u    | MRU                           |
 | Ag select words | K                             |
 
 **vim-rainbow**

@@ -13,10 +13,7 @@ let g:ale_enabled = 0
 """"""""""""""""""""""""""""""
 " => FZF MRU plugin
 """"""""""""""""""""""""""""""
-" <C-m> = <cr> changed to <M-m>
-nnoremap <silent> <M-m> :FZFMru<CR>
-"Fallback for terminal <M-m> not working
-nnoremap <silent> ,m :FZFMru<CR>
+nnoremap <silent> <leader>u :FZFMru<CR>
 " Uncomment to list only files within the current directory
 " let g:fzf_mru_relative = 1
 
@@ -50,8 +47,7 @@ let g:fzf_colors =
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <silent> <c-t> :Files <C-R>=expand('%:h')<CR><CR>
 nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
-nnoremap <silent> <c-b> :Buffers<CR>
-nnoremap <silent> ,b :Buffers<CR>
+nnoremap <silent> <leader>bb :Buffers<CR>
 " To ignore git files
 " Add this to ENV
 " FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
