@@ -43,8 +43,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | Mapping           | Action                        |
 | ---               | ---                           |
 | \<leader>w        | Save buffer                   |
-| \<leader>         | /                             |
-| \<C-leader>       | ?                             |
 | \<leader>fr       | Find/Replace highlighted text |
 | \<leader><leader> | noh                           |
 | \<leader>m        | Remove bad formatting ^M      |

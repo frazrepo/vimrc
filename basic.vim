@@ -281,9 +281,6 @@ vnoremap < <gv
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
-nnoremap <space> /\v
-nnoremap <c-space> ?\v
 
 " Search using magic regex
 nnoremap / /\v
