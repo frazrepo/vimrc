@@ -175,7 +175,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping       | Action                              |
 | ---           | ---                                 |
-| {"reg}cp{to-motion} |Paste register content on text object or motion|
+| {"reg}gr{to-motion} |Paste register content on text object or motion|
 
 **vim-sandwich with surroung mappings**
 
