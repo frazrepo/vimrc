@@ -361,6 +361,7 @@ Regexp search/replace pattern
 - [* vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
 - [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
 - [vim-gtfo](https://github.com/justinmk/vim-gtfo) : Go to File Manager or Terminal
+- [vim-gutentag](https://github.com/ludovicchabant/vim-gutentags) : Tag generation and nagivation
 - [vim-lion](https://github.com/tommcdo/vim-lion) : Align text (like tabular)
 - [* vim-operator-user/vim-operator-replace](https://github.com/kana/vim-operator-replace) : Custom operators
 - [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys
