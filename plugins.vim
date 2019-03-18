@@ -68,7 +68,6 @@ Plug 'christoomey/vim-sort-motion'
 Plug 'frazrepo/vim-colorschemes'
 Plug 'itchyny/lightline.vim'
 Plug 'frazrepo/vim-rainbow', { 'on' : 'RainbowToggle' }
-Plug 'liuchengxu/vim-which-key'
 Plug 'kshenoy/vim-signature'
 Plug 'machakann/vim-highlightedyank'
 Plug 'romainl/vim-cool'
