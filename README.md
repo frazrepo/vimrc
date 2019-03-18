@@ -96,6 +96,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | ---     | ---                      |
 | \<M-o>   | Insert new line below    |
 | \<M-O>   | Insert new line above    |
+| \<C-Space>   |  Autocompletion |
 
 **Paste inner object quickly**
 
