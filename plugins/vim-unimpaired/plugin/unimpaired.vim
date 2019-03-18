@@ -316,11 +316,15 @@ function! s:setup_paste() abort
   augroup END
 endfunction
 
+function! s:updateLocalPaste()
+  :setlocal paste!
+endfunction
 nnoremap <silent> <Plug>unimpairedPaste :call <SID>setup_paste()<CR>
 
 call s:map('n', '[op', ':call <SID>setup_paste()<CR>O', '<silent>')
 call s:map('n', ']op', ':call <SID>setup_paste()<CR>o', '<silent>')
-call s:map('n', 'yop', ':call <SID>setup_paste()<CR>0C', '<silent>')
+call s:map('n', 'yop', ':call <SID>updateLocalPaste()<CR>', '<silent>')
+" call s:map('n', 'yop', ':call <SID>setup_paste()<CR>0C', '<silent>')
 
 " Section: Put
 
