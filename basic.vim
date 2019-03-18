@@ -246,13 +246,6 @@ set complete=.,w,b,u
 inoremap jk <Esc>
 
 """"""""""""""""""""""""""""""
-" => Map for VIM Interface
-""""""""""""""""""""""""""""""
-
-" Toggle show/hide invisible chars
-nnoremap <leader>I :set list!<cr>
-
-""""""""""""""""""""""""""""""
 " => Visual mode related
 """"""""""""""""""""""""""""""
 " Visual mode pressing * or # searches for the current selection
