@@ -381,9 +381,6 @@ map 0 ^
 nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
 
-"Delete word under cursor in insert mode
-inoremap <C-d> <ESC>diwi
-
 "Insert new line in normal mode quickly
 nnoremap <M-o> mao<Esc>`aj
 nnoremap <M-O> maO<Esc>`ak

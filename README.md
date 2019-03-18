@@ -94,7 +94,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping | Action                   |
 | ---     | ---                      |
-| \<C-d>   | Delete word under cursor |
 | \<M-o>   | Insert new line below    |
 | \<M-O>   | Insert new line above    |
 
