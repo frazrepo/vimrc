@@ -424,6 +424,9 @@ map <leader>q :e ~/buffer<cr>
 " Quickly open a markdown buffer for scribble
 map <leader>x :e ~/buffer.md<cr>
 
+" Quickly open a sql buffer for scribble
+map <leader>s :e ~/buffer.sql<cr>
+
 " Toogle quickfix windows
 map <silent> <F8> :call <SID>ToggleQf()<cr>
 
