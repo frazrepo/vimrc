@@ -293,14 +293,3 @@ let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 runtime macros/sandwich/keymap/surround.vim
 
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-scratch
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:scratch_persistence_file = $HOME.'/scratch.vim'
-let g:scratch_no_mappings = 1
-
-nmap ga <plug>(scratch-insert-reuse)
-nmap gA <plug>(scratch-insert-clear)
-xmap ga <plug>(scratch-selection-reuse)
-xmap gA <plug>(scratch-selection-clear)
