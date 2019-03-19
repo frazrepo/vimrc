@@ -98,11 +98,7 @@ set tm=500
 
 " Properly disable sound on errors on MacVim and gVim
 if has("gui_running")
-  if has("gui_macvim")
-    autocmd GUIEnter * set vb t_vb=
-  elseif has("gui_win32")
-    autocmd GUIEnter * set vb t_vb=
-  endif
+  autocmd GUIEnter * set vb t_vb=
 endif
 
 " Add a bit extra margin to the left
