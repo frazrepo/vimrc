@@ -33,7 +33,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
     Default GUI : auy (light theme), dracula (dark theme)
     Default Terminal : monokai (dark theme)
-    Dark theme : anderson, atom-dark256, apprentice, codedark, minimalist, molokai, monokai(sublime text), papercolor, seoul, space-vim-dark
+    Dark theme : anderson, atom-dark256, apprentice, codedark, minimalist, molokai, monokai(sublime text), nord, papercolor, seoul, space-vim-dark
     Light theme : ayu (dark available), seoul256-light, pencil
 
 ## Normal mode mappings

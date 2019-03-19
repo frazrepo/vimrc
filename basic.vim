@@ -550,7 +550,7 @@ catch
 endtry
 endfunction
 
-" AutoSave Scracth buffer
+" AutoSave Scratch buffer
 function! s:save_buffer() abort
   if empty(&buftype) && !empty(bufname(''))
     let l:savemarks = {
