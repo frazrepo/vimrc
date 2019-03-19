@@ -37,8 +37,6 @@ set so=1
 " Avoid garbled characters in Chinese language windows OS
 let $LANG='en' 
 set langmenu=en
-source $VIMRUNTIME/delmenu.vim
-source $VIMRUNTIME/menu.vim
 
 " Turn on the Wild menu
 set wildmenu
@@ -177,7 +175,6 @@ if has("gui_running")
     color ayu
     " color dracula
 else
-    " color monokai
     color apprentice
 endif
 
@@ -241,8 +238,7 @@ set complete=.,w,b,u
 """"""""""""""""""""""""""""""
 " => Mode related
 """"""""""""""""""""""""""""""
-" capslock to esc
-" use this command on linux system : setxkbmap -option caps:swapescape
+" Map jk to ESC in insert mode 
 inoremap jk <Esc>
 
 """"""""""""""""""""""""""""""
@@ -419,7 +415,6 @@ inoremap <expr> <C-Space> pumvisible() \|\| &omnifunc == '' ?
             \ "\<lt>C-x>\<lt>C-o><c-r>=pumvisible() ?" .
             \ "\"\\<lt>c-n>\\<lt>c-p>\\<lt>c-n>\" :" .
             \ "\" \\<lt>bs>\\<lt>C-n>\"\<CR>"
-imap <C-@> <C-Space>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Misc
@@ -465,14 +460,6 @@ endfun
 if has("autocmd")
     autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
 endif
-
-" Returns true if paste mode is enabled
-function! HasPaste()
-    if &paste
-        return 'PASTE MODE  '
-    endif
-    return ''
-endfunction
 
 " Don't close window, when deleting a buffer
 command! Bclose call <SID>BufcloseCloseIt()
