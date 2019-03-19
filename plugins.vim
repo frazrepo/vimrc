@@ -112,6 +112,9 @@ Plug 'sheerun/vim-polyglot'
 "Code navigation - Install ctags for host OS
 Plug 'ludovicchabant/vim-gutentags'
 
+"Miscellaneous
+Plug 'mtth/scratch.vim'
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugs End
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
