@@ -549,3 +549,25 @@ try
 catch
 endtry
 endfunction
+
+" AutoSave Scracth buffer
+function! s:save_buffer() abort
+  if empty(&buftype) && !empty(bufname(''))
+    let l:savemarks = {
+          \ "'[": getpos("'["),
+          \ "']": getpos("']")
+          \ }
+
+    silent! update
+
+    for [l:key, l:value] in items(l:savemarks)
+      call setpos(l:key, l:value)
+    endfor
+  endif
+endfunction
+
+augroup save_buffer
+  autocmd!
+  autocmd InsertLeave,TextChanged buffer.* nested call s:save_buffer()
+  autocmd FocusGained,BufEnter,CursorHold buffer.* silent! checktime
+augroup end
