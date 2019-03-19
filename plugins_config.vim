@@ -167,7 +167,7 @@ let g:UltiSnipsListSnippets ="<c-tab>"
 let g:UltiSnipsEditSplit="vertical"
 
 " Add custom directories for snippets
-let g:UltiSnipsSnippetDirectories = [$HOME.'/.vim_runtime/plugins/frazrepo-snippets', 'UltiSnips']
+let g:UltiSnipsSnippetDirectories = [$HOME.'/.vim_runtime/plugins/vim-snippets/UltiSnips', 'UltiSnips', $HOME.'/.vim_runtime/plugins/frazrepo-snippets']
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim unimpaired (> and < conflict with visual indentation)
