@@ -418,8 +418,8 @@ inoremap <expr> <C-Space> pumvisible() \|\| &omnifunc == '' ?
 " Remove the Windows ^M - when the encodings gets messed up
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
-" Quickly open a buffer for scribble
-map <leader>q :e ~/buffer<cr>
+" Quickly open a txt buffer for scribble
+map <leader>q :e ~/buffer.txt<cr>
 
 " Quickly open a markdown buffer for scribble
 map <leader>x :e ~/buffer.md<cr>
