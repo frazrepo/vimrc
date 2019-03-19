@@ -171,9 +171,9 @@ set synmaxcol=200
 " ColorScheme dracula for GUI and atom for terminal
 if has("gui_running")
     color ayu
-    " color dracula
+    " nord, dracula
 else
-    color nord
+    color apprentice
 endif
 
 " Fonts Consolas
