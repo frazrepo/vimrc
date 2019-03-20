@@ -421,10 +421,10 @@ inoremap <expr> <C-Space> pumvisible() \|\| &omnifunc == '' ?
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
 " Quickly open a txt buffer for scribble
-map <leader>q :e ~/buffer.txt<cr>
+map <leader>x :e ~/buffer.txt<cr>
 
 " Quickly open a markdown buffer for scribble
-map <leader>x :e ~/buffer.md<cr>
+map <leader>q :e ~/buffer.md<cr>
 
 " Quickly open a sql buffer for scribble
 map <leader>s :e ~/buffer.sql<cr>
