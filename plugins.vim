@@ -32,11 +32,11 @@ Plug 'vim-scripts/Transpose'
 Plug 'frazrepo/vim-yankstack'
 
 " Text Objects, Motions and Operators
-Plug 'glts/vim-textobj-comment'
 Plug 'jceb/vim-textobj-uri'
 Plug 'kana/vim-textobj-user'
 Plug 'kana/vim-textobj-entire'
 Plug 'kana/vim-textobj-line'
+Plug 'coderifous/textobj-word-column.vim'
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'wellle/targets.vim'
 Plug 'matze/vim-move'

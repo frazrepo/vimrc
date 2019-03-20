@@ -318,7 +318,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | ---                        | ---        |
 | ciu, dau                   | Uri u      |
 | ciq, daq                   | Quotes q   |
-| cic, dac                   | Comments c |
+| vic, vac, viC, vaC         | Columns c |
 | cii, dai                   | Indents i  |
 | cin(l)q, dai, ci,, ci=, .. | Targets    |
 | cil, yil                   | Line l     |
@@ -379,7 +379,7 @@ Regexp search/replace pattern
 - [vim-sneak](https://github.com/justinmk/vim-sneak) : Find text using two characters (line f but handle vertical positions)
 - [vim-sort-motion](https://github.com/christoomey/vim-sort-motion) : Add an operator gs to apply sort
 - [vim-sqlformat](https://github.com/mpyatishev/vim-sqlformat) : SQL formatting
-- [vim-textobj](https://github.com/kana/vim-textobj-user/wiki) | [targets.vim](https://github.com/wellle/targets.vim) : Some text objects -  uri (u), quotes (q), comments (c), indents (i), line (l), entire buffer (e)
+- [vim-textobj](https://github.com/kana/vim-textobj-user/wiki) | [targets.vim](https://github.com/wellle/targets.vim) : Some text objects -  uri (u), quotes (q), columns (c), indents (i), line (l), entire buffer (e)
 - [vim-tranpose](https://github.com/salsifis/vim-transpose) : Tranpose lines, csv, words, ...
 - [* vim-unimpaired](https://github.com/tpope/vim-unimpaired) :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
 - [vim-wipeout](https://github.com/artnez/vim-wipeout) : Close all hidden buffers
