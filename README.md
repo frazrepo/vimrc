@@ -46,6 +46,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<leader>fr       | Find/Replace highlighted text |
 | \<leader><leader> | noh                           |
 | \<leader>m        | Remove bad formatting ^M      |
+| \<leader>i        | Search using Ilist            |
 
 **Move between Windows**
 
@@ -369,6 +370,7 @@ Regexp search/replace pattern
 - [* vim-over](https://github.com/osyo-manga/vim-over) : Highlight buffer when operating from command line (s/, /, g/)
 - [vim-polyglot](https://github.com/sheerun/vim-polyglot) : Languages Support
 - [vim-quickscope](https://github.com/unblevable/quick-scope) : Highlight potential candidates for inline searching with f or t
+- [vim-qlist](https://github.com/romainl/vim-qlist) : Enhances ilist and dlist
 - [vim-rainbow](https://github.com/luochen1990/rainbow) : Color parentheses, brackets,...
 - [vim-repeat](https://github.com/tpope/vim-repeat) : To repeat plugin command with dot (.)
 - [vim-rotatescheme](https://github.com/frazrepo/vimrc/tree/master/plugins/vim-rotatescheme) : Custom plugin to rotate a list of colorschemes
