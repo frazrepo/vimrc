@@ -238,7 +238,7 @@ vmap <unique> <right> <Plug>SchleppRight
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-sneak
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:sneak#label = 1
+" let g:sneak#label = 1
 
 " vim-sneak (redefine to avoid conflicts with yankstack)
 " 2-character Sneak (default)
