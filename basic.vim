@@ -270,7 +270,6 @@ vnoremap < <gv
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Search using magic regex
-nnoremap <C-Space> /\v
 nnoremap / /\v
 nnoremap ? ?\v
 
