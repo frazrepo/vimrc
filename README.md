@@ -73,7 +73,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<leader>kn | New buffer up              |
 | \<leader>jn | New buffer down            |
 | \<leader>x  | Scratch txt                | 
-| \<leader>q  | Scratch Markdown           |
+| \<leader>d  | Scratch Markdown           |
 | \<leader>s  | Scratch SQL                | 
 
 **Tabs**

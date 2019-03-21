@@ -424,7 +424,7 @@ noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 map <leader>x :e ~/buffer.txt<cr>
 
 " Quickly open a markdown buffer for scribble
-map <leader>q :e ~/buffer.md<cr>
+map <leader>d :e ~/buffer.md<cr>
 
 " Quickly open a sql buffer for scribble
 map <leader>s :e ~/buffer.sql<cr>
