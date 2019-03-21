@@ -111,7 +111,7 @@ Plug 'amix/vim-zenroom2', { 'for' : 'markdown' }
 Plug 'sheerun/vim-polyglot'
 
 "Code navigation - Install ctags for host OS
-Plug 'ludovicchabant/vim-gutentags'
+" Plug 'ludovicchabant/vim-gutentags'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugs End
