@@ -281,3 +281,8 @@ runtime macros/sandwich/keymap/surround.vim
 " => vim-qlist
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 nnoremap <leader>i :Ilist<space>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-over
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+let g:over#command_line#substitute#replace_pattern_visually = 1
