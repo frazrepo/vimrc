@@ -255,8 +255,8 @@ map )' ]'
 " => vim-yankstack
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:yankstack_map_keys = 0
-nmap ,p <Plug>yankstack_substitute_older_paste
-nmap ,n <Plug>yankstack_substitute_newer_paste
+nmap !p <Plug>yankstack_substitute_older_paste
+nmap !n <Plug>yankstack_substitute_newer_paste
 nnoremap <silent> <F3> :Yanks<cr>
 inoremap <silent> <F3> <ESC>:Yanks<cr>
 
