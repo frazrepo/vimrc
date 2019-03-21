@@ -278,14 +278,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | ---       | ---      |
 | <leader>z | Zen mode |
 
-**vim-sneak**
-
-| Mapping       | Action                             |
-| ---           | ---                                |
-| s{char}{char} | Search                             |
-| z{char}{char} | Ex : yszab"  Combine with Surround |
-| ; / ,         | Next/Previous match                |
-
 **ultisnips and vim-snippets**
 
 | Mapping | Action     |
@@ -378,7 +370,6 @@ Regexp search/replace pattern
 - [vim-schlepp](https://github.com/zirrostig/vim-schlepp) : Drag selection in visual mode
 - [vim-signature](https://github.com/kshenoy/vim-signature) : Display marks
 - [vim-signify](https://github.com/mhinz/vim-signify) : Git status
-- [vim-sneak](https://github.com/justinmk/vim-sneak) : Find text using two characters (line f but handle vertical positions)
 - [vim-sort-motion](https://github.com/christoomey/vim-sort-motion) : Add an operator gs to apply sort
 - [vim-sqlformat](https://github.com/mpyatishev/vim-sqlformat) : SQL formatting
 - [vim-textobj](https://github.com/kana/vim-textobj-user/wiki) | [targets.vim](https://github.com/wellle/targets.vim) : Some text objects -  uri (u), quotes (q), columns (c), indents (i), line (l), entire buffer (e)
