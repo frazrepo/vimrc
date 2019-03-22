@@ -4,6 +4,12 @@
 "       https://github.com/frazrepo/vimrc
 "
 " Debug : vim --startuptime vim.log
+"
+" To start vim without using this .vimrc file, use:
+"     vim -u NORC
+"
+" To start vim without loading any .vimrc or plugins, use:
+"     vim -u NONE
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

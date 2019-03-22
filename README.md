@@ -80,7 +80,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping     | Action                                |
 | ---         | ---                                   |
-| gt          | Go to tab                             |
 | \<leader>tn | New tab                               |
 | \<leader>to | Tab Only                              |
 | \<leader>tc | Close tab                             |
@@ -183,7 +182,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | Mapping     | Action                                      |
 | ---         | ---                                         |
 | cs"=        | Change surround                             |
-| css         | Change surround on line (detect surrouding) |
+| css"         | Change surround on line (detect surrouding) |
 | ys{motion}" | Add surround                                |
 | yss"        | Add surround on line                        |
 | ds"         | Delete surround                             |
@@ -386,7 +385,11 @@ Just do following:
 * Remove `~/.vim_runtime`
 * Remove any lines that reference `.vim_runtime` in your `~/.vimrc`
 
-## Inspiration
-* [https://github.com/amix/vimrc](https://github.com/amix/vimrc)
-* [https://github.com/nvie/vimrc/blob/master/vimrc](https://github.com/nvie/vimrc/blob/master/vimrc)
-* [https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup](https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup)
+## Resources
+* [Tim Pope's vimrc](https://github.com/tpope/tpope/blob/master/.vimrc)
+* [Gary Bernhardt's vimrc](https://github.com/garybernhardt/dotfiles/blob/master/.vimrc)
+* [Vincent Driessen's vimrc](https://github.com/nvie/vimrc/blob/master/vimrc)
+* [Toran Billups's vimrc](https://github.com/toranb/dotfiles/blob/master/vimrc)
+* [Damian Conway's vim setup](https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup)
+* [amix's vimrc](https://github.com/amix/vimrc)
+* [vimrcfu](https://vimrcfu.com/)
