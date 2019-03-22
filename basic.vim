@@ -271,6 +271,9 @@ vnoremap . :normal.<CR>
 vnoremap > >gv
 vnoremap < <gv
 
+" Reselect last insertext
+nnoremap gV `[v`]
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -283,8 +286,8 @@ nnoremap ? ?\v
 map <silent> <leader><space> :noh<cr>
 
 " Smart way to move between windows
-map <C-j> <C-W>j
-map <C-k> <C-W>k
+" map <C-j> <C-W>j
+" map <C-k> <C-W>k
 map <C-h> <C-W>h
 map <C-l> <C-W>l
 
@@ -409,6 +412,12 @@ nnoremap ùù ``
 map H ^
 map L $
 
+" Fast motion - Experimental
+" nnoremap <c-j> 5j
+" nnoremap <c-k> 5k
+" xnoremap <c-j> 5j
+" xnoremap <c-k> 5k
+
 " Do not track every j and k motion in jumplist  
 nnoremap <expr> k (v:count > 1 ? "m'" . v:count : '') . 'k'
 nnoremap <expr> j (v:count > 1 ? "m'" . v:count : '') . 'j'
@@ -426,6 +435,9 @@ cnoremap $T <CR>:T''<cr>
 cnoremap $m <CR>:m''<cr>
 cnoremap $M <CR>:M''<cr>
 cnoremap $d <CR>:d<cr>``
+
+" Insert line break
+nnoremap <NL> i<CR><ESC>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Misc
