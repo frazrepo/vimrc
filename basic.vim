@@ -286,9 +286,7 @@ nnoremap ? ?\v
 " Disable highlight when <leader><space> is pressed
 map <silent> <leader><space> :noh<cr>
 
-" Smart way to move between windows
-" map <C-j> <C-W>j
-" map <C-k> <C-W>k
+" Smart way to move between windows horizontally
 map <C-h> <C-W>h
 map <C-l> <C-W>l
 
@@ -415,7 +413,6 @@ inoremap [, [<CR>],<C-c>O
 " Experimental H and L
 map H ^
 map L $
-
 
 " Do not track every j and k motion in jumplist  
 nnoremap <expr> k (v:count > 1 ? "m'" . v:count : '') . 'k'
