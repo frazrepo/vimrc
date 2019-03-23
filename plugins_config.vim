@@ -104,9 +104,11 @@ function! SearchVisualSelectionWithCtrlSf() range
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 let g:NERDTreeWinPos = "left"
 let g:NERDTreeQuitOnOpen= 1
+
 " Show hidden files, too
 let NERDTreeShowFiles=1
 let NERDTreeShowHidden=1
+
 " Don't display these kinds of files
 let NERDTreeIgnore=[ '\.pyc$', '\.pyo$', '\.py\$class$', '\.obj$',
             \ '\.o$', '\.so$', '\.egg$', '^\.git$', '__pycache__', '\.DS_Store' ]
@@ -114,6 +116,7 @@ let g:NERDTreeWinSize=35
 map <leader>nn :NERDTreeToggle<cr>
 map <leader>nb :NERDTreeFromBookmark<Space>
 map <leader>nf :NERDTreeFind<cr>
+
 " Store the bookmarks file
 let NERDTreeBookmarksFile=expand("~/.vim/NERDTreeBookmarks")
 " Show the bookmarks table on startup

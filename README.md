@@ -73,7 +73,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<leader>kn | New buffer up              |
 | \<leader>jn | New buffer down            |
 | \<leader>x  | Scratch txt                | 
-| \<leader>d:  | Scratch Markdown           |
+| \<leader>d:  | Scratch Markdown          |
 | \<leader>s  | Scratch SQL                | 
 
 **Tabs**
@@ -92,11 +92,11 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 **Quick tips in insert mode**
 
-| Mapping | Action                   |
-| ---     | ---                      |
-| \<M-o>   | Insert new line below    |
-| \<M-O>   | Insert new line above    |
-| \<C-Space>   |  Autocompletion |
+| Mapping      | Action                   |
+| ---          | ---                      |
+| \<M-o>       | Insert new line below    |
+| \<M-O>       | Insert new line above    |
+| \<C-Space>   |  Autocompletion          |
 
 **Paste inner object quickly**
 
@@ -129,11 +129,11 @@ And run install.sh (or install.bat) to update vimrc configuration file
 ## Various mappings
 | Mapping    | Action                            |
 | ---        | ---                               |
-| F8 |Toggle quickfix window|
-| F10 |Rotate colorschemes|
-| F12 |Whichkey mapping|
-| \<M-0> |Set font bigger (gui only)|
-| \<M-9> |Set font smaller (gui only)|
+| F8         |Toggle quickfix window             |
+| F10        |Rotate colorschemes                |
+| F12        |Whichkey mapping                   |
+| \<M-0>     |Set font bigger (gui only)         |
+| \<M-9>     |Set font smaller (gui only)        |
 
 ## Plugins usage
 
@@ -147,8 +147,8 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping          | Action                 |
 | ---              | ---                    |
-| gl{to-m}=| Right Align with = |
-| gL{to-m}=| Left Align with = |
+| gl{to-m}=        | Right Align with =     |
+| gL{to-m}=        | Left Align with =      |
 
 **vim-abolish**
 
@@ -182,7 +182,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | Mapping     | Action                                      |
 | ---         | ---                                         |
 | cs"=        | Change surround                             |
-| css"         | Change surround on line (detect surrouding) |
+| css"        | Change surround on line (detect surrouding) |
 | ys{motion}" | Add surround                                |
 | yss"        | Add surround on line                        |
 | ds"         | Delete surround                             |
@@ -218,8 +218,8 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | Mapping         | Action                        |
 | ---             | ---                           |
 | \<c-t>          | Files (t to open file in tab) |
-| \<leader>bb    | Buffers                       |
-| \<leader>u    | MRU                           |
+| \<leader>bb     | Buffers                       |
+| \<leader>u      | MRU                           |
 | Ag select words | K                             |
 
 **vim-rainbow**
@@ -279,15 +279,15 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 **ultisnips and vim-snippets**
 
-| Mapping | Action     |
-| ---     | ---        |
+| Mapping  | Action     |
+| ---      | ---        |
 | \<tab>   | Activation |
 
 **CtrlSF**
 
 | Mapping   | Action                                   |
 | ---       | ---                                      |
-| \<leader>f | Find selected word                       |
+| \<leader>f| Find selected word                       |
 | F9        | Toggle CtrlSF result Window              |
 | \<C-f>f   | Prompt in command line to find a pattern |
 
@@ -310,7 +310,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | ---                        | ---        |
 | ciu, dau                   | Uri u      |
 | ciq, daq                   | Quotes q   |
-| vic, vac, viC, vaC         | Columns c |
+| vic, vac, viC, vaC         | Columns c  |
 | cii, dai                   | Indents i  |
 | cin(l)q, dai, ci,, ci=, .. | Targets    |
 | cil, yil                   | Line l     |
@@ -318,10 +318,10 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 **Miscellaneous Commands**
 
-| Mapping       | Action          |
-| ---           | ---             |
-| ListLeaders | Show all leader mappings |
-| VisualBlock | Activate visual block mode |
+| Mapping       | Action                     |
+| ---           | ---                        |
+| ListLeaders   | Show all leader mappings   |
+| VisualBlock   | Activate visual block mode |
 
 ## Custom Docs
 
