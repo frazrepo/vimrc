@@ -6,19 +6,19 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
-" => ALE linting plugin, disable by default
+" => ALE linting plugin, disable by default {{{1
 """"""""""""""""""""""""""""""
 let g:ale_enabled = 0
 
 """"""""""""""""""""""""""""""
-" => FZF MRU plugin
+" => FZF MRU plugin {{{1
 """"""""""""""""""""""""""""""
 nnoremap <silent> <leader>u :FZFMru<CR>
 " Uncomment to list only files within the current directory
 " let g:fzf_mru_relative = 1
 
 """"""""""""""""""""""""""""""
-" => fzf plugin
+" => fzf plugin {{{1
 """"""""""""""""""""""""""""""
 " This is the default extra key bindings
 let g:fzf_action = {
@@ -43,7 +43,7 @@ let g:fzf_colors =
   \ 'header':  ['fg', 'Comment'] }
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => fzf map to CTRL-T (like Resharper) / CTRL+P
+" => fzf map to CTRL-T (like Resharper) / CTRL+P {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <silent> <c-t> :Files <C-R>=expand('%:h')<CR><CR>
 nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
@@ -53,7 +53,7 @@ nnoremap <silent> <leader>bb :Buffers<CR>
 " FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => FZF Ag
+" => FZF Ag {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <silent> <leader>/ :execute 'Ag ' . input('Ag/')<CR>
 nnoremap <silent> K :call SearchWordWithAg()<CR>
@@ -76,7 +76,7 @@ function! SearchVisualSelectionWithAg() range
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => CtrlSF
+" => CtrlSF {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 let g:ctrlsf_populate_qflist = 1
 
@@ -100,7 +100,7 @@ function! SearchVisualSelectionWithCtrlSf() range
  endfunction
   
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => NerdTree
+" => NerdTree {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 let g:NERDTreeWinPos = "left"
 let g:NERDTreeQuitOnOpen= 1
@@ -125,7 +125,7 @@ let NERDTreeShowBookmarks=1
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => lightline
+" => lightline {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Show on multiple screen not on single screen
 set laststatus=2
@@ -156,13 +156,13 @@ let g:lightline = {
       \ }
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-rainbow brackets
+" => vim-rainbow brackets {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 " Set this to 1 if you want to activate by default  , or active by typing the :RainbowToggle command
 let g:rainbow_active = 0
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => ultisnips and vim-snippets configuration
+" => ultisnips and vim-snippets configuration {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:UltiSnipsListSnippets ="<c-tab>"
 
@@ -173,7 +173,7 @@ let g:UltiSnipsEditSplit="vertical"
 let g:UltiSnipsSnippetDirectories = [$HOME.'/.vim_runtime/plugins/vim-snippets/UltiSnips', $HOME.'/.vim_runtime/plugins/frazrepo-snippets']
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim unimpaired (> and < conflict with visual indentation)
+" => vim unimpaired (> and < conflict with visual indentation) {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 nmap ( [
 nmap ) ]
@@ -183,7 +183,7 @@ xmap ( [
 xmap ) ]
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Goyo and zenroom2
+" => Goyo and zenroom2 {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 " Default 80%
 let g:goyo_width=100
@@ -193,12 +193,12 @@ let g:goyo_height=90
 nnoremap <silent> <leader>z :Goyo<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Emmet plugin remap
+" => Emmet plugin remap {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:user_emmet_leader_key='<tab>'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => ctrlsf Side Search
+" => ctrlsf Side Search {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:ctrlsf_auto_close = {
     \ "normal" : 0,
@@ -214,24 +214,24 @@ vmap     <C-F>F <Plug>CtrlSFVwordExec
 nnoremap <F9> :CtrlSFToggle<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-markdown
+" => vim-markdown {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:vim_markdown_folding_disabled = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Ack.vim to use ag
+" => Ack.vim to use ag {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 if executable('ag') 
     let g:ackprg = 'ag --vimgrep' 
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Wipeout
+" => Wipeout {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 map <leader>bw :Wipeout<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-schlep to drag in visual mode
+" => vim-schlep to drag in visual mode {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 vmap <unique> <up>    <Plug>SchleppUp
 vmap <unique> <down>  <Plug>SchleppDown
@@ -239,23 +239,23 @@ vmap <unique> <left>  <Plug>SchleppLeft
 vmap <unique> <right> <Plug>SchleppRight
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-operator-replace
+" => vim-operator-replace {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 nmap gr <Plug>(operator-replace)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-cool
+" => vim-cool {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:CoolTotalMatches = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-signature for easier marks navigation on azerty keyboard 
+" => vim-signature for easier marks navigation on azerty keyboard  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 map (' ['
 map )' ]'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-yankstack
+" => vim-yankstack {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:yankstack_map_keys = 0
 nmap !p <Plug>yankstack_substitute_older_paste
@@ -264,28 +264,28 @@ nnoremap <silent> <F3> :Yanks<cr>
 inoremap <silent> <F3> <ESC>:Yanks<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Vim-autopairs workarounf for â, î and û
+" => Vim-autopairs workarounf for â, î and û {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:AutoPairsShortcutBackInsert=''
 let g:AutoPairsShortcutJump=''
 let g:AutoPairsMoveCharacter=''
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-quickscope
+" => vim-quickscope {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-sandwich to simulate surround mappings
+" => vim-sandwich to simulate surround mappings {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 runtime macros/sandwich/keymap/surround.vim
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-qlist
+" => vim-qlist {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 nnoremap <leader>i :Ilist<space>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-over
+" => vim-over {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:over#command_line#substitute#replace_pattern_visually = 1

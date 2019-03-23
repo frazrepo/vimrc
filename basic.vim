@@ -13,7 +13,7 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => General
+" => General {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Sets how many lines of history VIM has to remember
 set history=1000
@@ -35,7 +35,7 @@ let mapleader = "\<Space>"
 nmap <leader>w :w!<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => VIM user interface
+" => VIM user interface {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set 1 lines to the cursor - when moving vertically using j/k
 set so=1
@@ -166,7 +166,7 @@ let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Colors and Fonts
+" => Colors and Fonts {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Activate by default dracula theme
@@ -209,7 +209,7 @@ nnoremap <M-9>        :Smaller<CR>
 nnoremap <M-0>        :Bigger<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Files, backups and undo
+" => Files, backups and undo {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Turn backup off, since most stuff is in SVN, git et.c anyway...
 set nobackup
@@ -217,7 +217,7 @@ set nowb
 set noswapfile
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Text, tab and indent related
+" => Text, tab and indent related {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Use spaces instead of tabs
 set expandtab
@@ -241,13 +241,13 @@ set wrap "Wrap lines
 set complete=.,w,b,u
 
 """"""""""""""""""""""""""""""
-" => Mode related
+" => Mode related {{{1
 """"""""""""""""""""""""""""""
 " Map jk to ESC in insert mode 
 inoremap jk <Esc>
 
 """"""""""""""""""""""""""""""
-" => Visual mode related
+" => Visual mode related {{{1
 """"""""""""""""""""""""""""""
 " Visual mode pressing * or # searches for the current selection
 " Super useful! From an idea by Michael Naumann
@@ -276,7 +276,7 @@ vnoremap < <gv
 nnoremap gV `[v`]
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Moving around, tabs, windows and buffers
+" => Moving around, tabs, windows and buffers {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Search using magic regex
@@ -304,7 +304,7 @@ xnoremap <c-j> 5j
 xnoremap <c-k> 5k
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Buffers 
+" => Buffers  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Creating splits with empty buffers in all directions
 nnoremap <Leader>hn :leftabove  vnew<CR>
@@ -329,7 +329,7 @@ cnoremap %% <c-r>=expand("%:p:h")<cr>/
 map <leader>e :edit <c-r>=expand("%:p:h")<cr>/
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Tabs
+" => Tabs {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Useful mappings for managing tabs
@@ -368,7 +368,7 @@ endtry
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" =>  Editing Mappings
+" => Editing Mappings {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Change word under cursor and dot repeat, really useful to edit quickly
@@ -433,7 +433,7 @@ cnoremap $M <CR>:M''<cr>
 cnoremap $d <CR>:d<cr>``
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" =>  Azerty keyboard optimizations
+" => Azerty keyboard optimizations {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "Map some keys for azerty keyboard
 map µ # 
@@ -444,7 +444,7 @@ nnoremap mù m`
 nnoremap ùù ``
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Misc
+" => Misc {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Remove the Windows ^M - when the encodings gets messed up
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
@@ -465,7 +465,7 @@ map <silent> <F8> :call <SID>ToggleQf()<cr>
 command! VisualBlock execute "normal! \<C-v>"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Help file speedups
+" => Help file speedups {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Help File speedups, <enter> to follow tag, delete (backspace) for back
 au filetype help nnoremap <buffer><cr> <c-]>
@@ -475,7 +475,7 @@ au filetype help set nonumber
 au filetype help wincmd _ " Maximize the help on open
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Helper functions
+" => Helper functions {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Delete trailing white space on save, useful for some filetypes ;)
@@ -600,3 +600,7 @@ augroup save_buffer
   autocmd InsertLeave,TextChanged buffer.* nested call s:save_buffer()
   autocmd FocusGained,BufEnter,CursorHold buffer.* silent! checktime
 augroup end
+" }}}
+
+
+"vim:set foldmethod=marker
