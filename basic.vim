@@ -299,6 +299,12 @@ nnoremap <silent> * *zz
 nnoremap <silent> # #zz
 nnoremap <silent> g* g*zz
 
+" Move faster vertically
+nnoremap <c-j> 5j
+nnoremap <c-k> 5k
+xnoremap <c-j> 5j
+xnoremap <c-k> 5k
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Buffers 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -410,11 +416,6 @@ inoremap [, [<CR>],<C-c>O
 map H ^
 map L $
 
-" Fast motion - Experimental
-" nnoremap <c-j> 5j
-" nnoremap <c-k> 5k
-" xnoremap <c-j> 5j
-" xnoremap <c-k> 5k
 
 " Do not track every j and k motion in jumplist  
 nnoremap <expr> k (v:count > 1 ? "m'" . v:count : '') . 'k'
