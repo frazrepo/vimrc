@@ -58,7 +58,7 @@ vmap <S-Insert>		<C-V>
 noremap <C-Q>		<C-V>
 
 " Use CTRL-S for saving, also in Insert mode
-noremap <C-S>		:update<CR>
+noremap <C-S>		     :update<CR>
 vnoremap <C-S>		<C-C>:update<CR>
 inoremap <C-S>		<C-O>:update<CR>
 
