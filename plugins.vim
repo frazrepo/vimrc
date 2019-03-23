@@ -71,8 +71,6 @@ Plug 'kshenoy/vim-signature'
 Plug 'machakann/vim-highlightedyank'
 Plug 'romainl/vim-cool'
 Plug 'frazrepo/vim-rotatescheme'
-" Tmux integration
-Plug 'christoomey/vim-tmux-navigator'
 
 " Git integration
 Plug 'tpope/vim-fugitive'

@@ -46,8 +46,6 @@ set langmenu=en
 source $VIMRUNTIME/delmenu.vim
 source $VIMRUNTIME/menu.vim
 
-"Map some keys for azerty keyboard
-map µ # 
 
 " Turn on the Wild menu
 set wildmenu
@@ -407,9 +405,6 @@ inoremap {, {<CR>},<C-c>O
 inoremap [; [<CR>];<C-c>O
 inoremap [, [<CR>],<C-c>O
 
-" Marks keekjumps for azerty keyboard
-nnoremap mù m`
-nnoremap ùù ``
 
 " Experimental H and L
 map H ^
@@ -438,6 +433,17 @@ cnoremap $T <CR>:T''<cr>
 cnoremap $m <CR>:m''<cr>
 cnoremap $M <CR>:M''<cr>
 cnoremap $d <CR>:d<cr>``
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" =>  Azerty keyboard optimizations
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"Map some keys for azerty keyboard
+map µ # 
+map ² . 
+
+" Marks keekjumps for azerty keyboard
+nnoremap mù m`
+nnoremap ùù ``
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Misc
