@@ -46,6 +46,9 @@ set langmenu=en
 source $VIMRUNTIME/delmenu.vim
 source $VIMRUNTIME/menu.vim
 
+"Map some keys for azerty keyboard
+map µ # 
+
 " Turn on the Wild menu
 set wildmenu
 
