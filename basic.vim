@@ -169,6 +169,10 @@ set splitright
 let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
 
+"ColorColumn at 80 Experimental
+set colorcolumn=80
+highlight ColorColumn ctermbg=0 guibg=lightgrey
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -355,7 +359,7 @@ map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
-" Experimental, CWD automatically for the current buffer
+" CWD automatically for the current buffer
 augroup CwdBufferEnter
   autocmd!
   autocmd Filetype,BufEnter *  call ChangeCurrentWorkingDirectory()
@@ -405,7 +409,7 @@ nnoremap 'p vi'p
 nnoremap (p vi(p
 nnoremap )p vi)p
 
-" Auto-Expand (experimental)
+" Auto-Expand 
 inoremap (; (<CR>);<C-c>O
 inoremap (, (<CR>),<C-c>O
 inoremap {; {<CR>};<C-c>O
@@ -414,7 +418,7 @@ inoremap [; [<CR>];<C-c>O
 inoremap [, [<CR>],<C-c>O
 
 
-" Experimental H and L
+" H and L
 map H ^
 map L $
 
@@ -429,7 +433,7 @@ inoremap <expr> <C-Space> pumvisible() \|\| &omnifunc == '' ?
             \ "\"\\<lt>c-n>\\<lt>c-p>\\<lt>c-n>\" :" .
             \ "\" \\<lt>bs>\\<lt>C-n>\"\<CR>"
 
-" Experimental command range after a search with / or ?
+" Command range after a search with / or ?
 cnoremap $t <CR>:t''<cr>
 cnoremap $T <CR>:T''<cr>
 cnoremap $m <CR>:m''<cr>
