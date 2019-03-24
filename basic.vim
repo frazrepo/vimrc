@@ -448,7 +448,7 @@ nnoremap mù m`
 nnoremap ùù ``
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Misc {{{1
+" => Miscellaneous {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Remove the Windows ^M - when the encodings gets messed up
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
