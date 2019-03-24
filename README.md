@@ -40,13 +40,14 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 **General**
 
-| Mapping           | Action                        |
-| ---               | ---                           |
-| \<leader>w        | Save buffer                   |
-| \<leader>fr       | Find/Replace highlighted text |
-| \<leader><leader> | noh                           |
-| \<leader>m        | Remove bad formatting ^M      |
-| \<leader>i        | Search using Ilist            |
+| Mapping           | Action                                 |
+| ---               | ---                                    |
+| \<leader>w        | Save buffer                            |
+| :W                | Save as sudo (linux)                   |
+| \<leader>fr       | Find/Replace highlighted text          |
+| \<leader><leader> | noh                                    |
+| \<leader>m        | Remove bad formatting ^M               |
+| \<leader>i        | Search using Ilist                     |
 
 **Move between Windows**
 
