@@ -50,7 +50,6 @@ set langmenu=en
 source $VIMRUNTIME/delmenu.vim
 source $VIMRUNTIME/menu.vim
 
-
 " Turn on the Wild menu
 set wildmenu
 
@@ -447,7 +446,7 @@ cnoremap $d <CR>:d<cr>``
 map µ # 
 map ² . 
 
-" Marks keekjumps for azerty keyboard
+" Marks keepjumps for azerty keyboard
 nnoremap mù m`
 nnoremap ùù ``
 
@@ -608,8 +607,6 @@ augroup save_buffer
   autocmd InsertLeave,TextChanged buffer.* nested call s:save_buffer()
   autocmd FocusGained,BufEnter,CursorHold buffer.* silent! checktime
 augroup end
-" }}}
-
 
 " Experimental Vertical Motion using g "
 " https://gist.github.com/romainl/047aca21e338df7ccf771f96858edb86 
@@ -652,5 +649,7 @@ endfunction
 nnoremap <F12> :g//#<Left><Left>
 " map '<CR>' in command-line mode to execute the function above
 cnoremap <expr> <CR> CCR()
+
+" }}}
 
 "vim:set foldmethod=marker
