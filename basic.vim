@@ -611,4 +611,23 @@ augroup end
 " }}}
 
 
+" Experimental Vertical Motion using g "
+" https://gist.github.com/romainl/047aca21e338df7ccf771f96858edb86 
+function! CCR()
+    " grab the current command-line
+    let cmdline = getcmdline()
+    
+    " does it end with '#' or 'number' or one of its abbreviations?
+    if cmdline =~ '\v\C/(#|nu|num|numb|numbe|number)$'
+        " press '<CR>' then ':' to enter command-line mode
+        return "\<CR>:"
+    else
+        " press '<CR>'
+        return "\<CR>"
+    endif
+endfunction
+nnoremap <F12> :g//#<Left><Left>
+" map '<CR>' in command-line mode to execute the function above
+cnoremap <expr> <CR> CCR()
+
 "vim:set foldmethod=marker
