@@ -53,8 +53,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping | Action |
 | ---     | ---    |
-| \<C-j>  | Down   |
-| \<C-k>  | Up     |
 | \<C-h>  | Left   |
 | \<C-l>  | Right  |
 
