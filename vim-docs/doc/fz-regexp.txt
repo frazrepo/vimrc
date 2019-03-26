@@ -29,7 +29,7 @@ XX.Ressources                                     |fz-regexp-XX|
 <
 3. Reverse the order of the lines from 10 to 20   *fz-regexp-3*
 >
-  :10,20g/^/ mo 10
+  :10,20g/^/mo 10
 <
 3. Reverse the order of all lines
 >
