@@ -14,6 +14,7 @@ INTRODUCTION                                    *fz-regexp*
 9. Search and replace in files                    |fz-regexp-9|
 10.Sort lines inside block of {} , like in css    |fz-regexp-10|
 11. Substitute with contents of register          |fz-regexp-11|
+12. Miscellaneous g command                  |fz-regexp-12|
 XX.Ressources                                     |fz-regexp-XX|
 
 
@@ -68,5 +69,20 @@ XX.Ressources                                     |fz-regexp-XX|
 >
   :s/pattern/<c-r>a/g
 <
+12. Miscellaneous g commands                      *fz-regexp-12*
+>
+  " Duplicate every line
+  :g/^/t. 
+
+  " Copy line matching pattern to EOF
+  :g/pattern/t$ 
+
+  " perform a substitute on every other line
+  :g/^/ if line('.')%2|s/^/zz / 
+
+  " Save results to a register a (append)
+  :g/pattern/y A
+<
+
 XX.Ressources                                     *fz-regexp-XX*
  - http://zzapper.co.uk/vimtips.html
