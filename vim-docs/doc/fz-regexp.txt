@@ -3,7 +3,7 @@ Generation : `helptags ~/.vim_runtime/vim-docs/doc/`
 
 INTRODUCTION                                    *fz-regexp*
 
-1. Delete any empty lines                         |fz-regexp-1|  
+1. Delete any empty lines                         |fz-regexp-1|
 2. Reduce multiples blank lines to a single blank |fz-regexp-2|
 3. Reverse the order of the lines from 10 to 20   |fz-regexp-3|
 4. Delete all lines not matching a pattern        |fz-regexp-4|
@@ -18,7 +18,7 @@ INTRODUCTION                                    *fz-regexp*
 
 ==============================================================================
 
-1. Delete any empty lines                         *fz-regexp-1*  
+1. Delete any empty lines                         *fz-regexp-1*
 >
     :g/^$/d
 <
@@ -28,11 +28,11 @@ INTRODUCTION                                    *fz-regexp*
 <
 3. Reverse the order of the lines from 10 to 20   *fz-regexp-3*
 >
-  :10,20g/^/ mo 10
+  :10,20g/^/mo 10
 <
 3. Reverse the order of all lines
 >
-  :g/^/m0 
+  :g/^/m0
 <
 4. Delete all lines not matching a pattern        *fz-regexp-4*
 >
