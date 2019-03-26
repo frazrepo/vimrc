@@ -389,9 +389,6 @@ nnoremap Y y$
 " Quick macro recording and replaying ,qq for recording, and Q for replaying
 nnoremap Q @q
 
-" Remap VIM 0 to first non-blank character
-map 0 ^
-
 " Indent/Format All documents using = or gq
 nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
