@@ -14,7 +14,7 @@ INTRODUCTION                                    *fz-regexp*
 9. Search and replace in files                    |fz-regexp-9|
 10.Sort lines inside block of {} , like in css    |fz-regexp-10|
 11. Substitute with contents of register          |fz-regexp-11|
-12. Miscellaneous g command                  |fz-regexp-12|
+12. Miscellaneous g command                       |fz-regexp-12|
 XX.Ressources                                     |fz-regexp-XX|
 
 
