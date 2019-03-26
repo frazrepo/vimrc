@@ -313,12 +313,6 @@ xnoremap <c-k> 5k
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Buffers  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Creating splits with empty buffers in all directions
-nnoremap <Leader>hn :leftabove  vnew<CR>
-nnoremap <Leader>ln :rightbelow vnew<CR>
-nnoremap <Leader>kn :leftabove  new<CR>
-nnoremap <Leader>jn :rightbelow new<CR>
-
 " Close the current buffer
 map <leader>bd :Bclose<cr>:tabclose<cr>gT
 
@@ -414,7 +408,7 @@ inoremap [; [<CR>];<C-c>O
 inoremap [, [<CR>],<C-c>O
 
 
-" H and L
+" H and L (experimental)
 map H ^
 map L $
 
@@ -426,7 +420,6 @@ nnoremap <expr> j (v:count > 1 ? "m'" . v:count : '') . 'j'
 nnoremap <expr> { len(getline(line('.') - 1)) > 0 ? '{+' : '{-'
 nnoremap <expr> } len(getline(line('.') + 1)) > 0 ? '}-' : '}+'
 
-  
 " Ctrl-Space for completions. 
 inoremap <expr> <C-Space> pumvisible() \|\| &omnifunc == '' ?
             \ "\<lt>C-n>" :

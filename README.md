@@ -69,10 +69,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<bs>       | Navigate alternate buffer  |
 | \<leader>h  | Navigate left              |
 | \<leader>l  | Navigate right             |
-| \<leader>hn | New buffer left above      |
-| \<leader>ln | New buffer right below     |
-| \<leader>kn | New buffer up              |
-| \<leader>jn | New buffer down            |
 | \<leader>x  | Scratch txt                | 
 | \<leader>d:  | Scratch Markdown          |
 | \<leader>s  | Scratch SQL                | 
