@@ -425,6 +425,11 @@ map L $
 nnoremap <expr> k (v:count > 1 ? "m'" . v:count : '') . 'k'
 nnoremap <expr> j (v:count > 1 ? "m'" . v:count : '') . 'j'
 
+" Better Paragraph motions
+nnoremap <expr> { len(getline(line('.') - 1)) > 0 ? '{+' : '{-'
+nnoremap <expr> } len(getline(line('.') + 1)) > 0 ? '}-' : '}+'
+
+  
 " Ctrl-Space for completions. 
 inoremap <expr> <C-Space> pumvisible() \|\| &omnifunc == '' ?
             \ "\<lt>C-n>" :
