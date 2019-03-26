@@ -3,7 +3,7 @@ Generation : `helptags ~/.vim_runtime/vim-docs/doc/`
 
 INTRODUCTION                                    *fz-regexp*
 
-1. Delete any empty lines                         |fz-regexp-1|  
+1. Delete any empty lines                         |fz-regexp-1|
 2. Reduce multiples blank lines to a single blank |fz-regexp-2|
 3. Reverse the order of the lines from 10 to 20   |fz-regexp-3|
 4. Delete all lines not matching a pattern        |fz-regexp-4|
@@ -13,12 +13,13 @@ INTRODUCTION                                    *fz-regexp*
 8. Transpose a line with separator ; to columns   |fz-regexp-8|
 9. Search and replace in files                    |fz-regexp-9|
 10.Sort lines inside block of {} , like in css    |fz-regexp-10|
-11.Ressources                                     |fz-regexp-11|
+11. Substitute with contents of register          |fz-regexp-11|
+XX.Ressources                                     |fz-regexp-XX|
 
 
 ==============================================================================
 
-1. Delete any empty lines                         *fz-regexp-1*  
+1. Delete any empty lines                         *fz-regexp-1*
 >
     :g/^$/d
 <
@@ -32,7 +33,7 @@ INTRODUCTION                                    *fz-regexp*
 <
 3. Reverse the order of all lines
 >
-  :g/^/m0 
+  :g/^/m0
 <
 4. Delete all lines not matching a pattern        *fz-regexp-4*
 >
@@ -63,5 +64,9 @@ INTRODUCTION                                    *fz-regexp*
 >
   :g/{$/+,/^}/-sort
 <
-11.Ressources                                     *fz-regexp-11*
+11. Substitute with contents of register          *fz-regexp-11*
+>
+  :s/pattern/<c-r>a/g
+<
+XX.Ressources                                     *fz-regexp-XX*
  - http://zzapper.co.uk/vimtips.html
