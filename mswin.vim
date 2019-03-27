@@ -51,6 +51,8 @@ if 1
     exe 'vnoremap <script> <C-V> ' . paste#paste_cmd['v']
 endif
 
+map <leader>y "*y
+
 imap <S-Insert>		<C-V>
 vmap <S-Insert>		<C-V>
 
