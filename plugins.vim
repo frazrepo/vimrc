@@ -122,4 +122,7 @@ Plug 'majutsushi/tagbar'
 
 call plug#end()
 
-" vim:set  foldmethod=marker
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Modeline
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim: fdm=marker
