@@ -399,9 +399,8 @@ inoremap <M-O>      <C-O>O
 nnoremap <A-Down> yyp
 
 " H and L Begin/End on homerow
-nnoremap <silent> H :call FirstCharOrFirstCol()<cr>
-nnoremap <silent> L :call LastCharOrLastCol()<cr>
-
+nnoremap H ^
+nnoremap L $
 
 "Quick beautiful paste hack
 nnoremap "p vi"p
@@ -555,25 +554,6 @@ function! s:ToggleQf()
   endfor
 
   copen
-endfunction
-
-"First Char or First Column
-function! FirstCharOrFirstCol()
-  let currentCol = virtcol('.')
-  normal ^
-  let firstChar = virtcol('.')
-  if currentCol <= firstChar
-    normal 0
-  endif
-endfunction
-
-function! LastCharOrLastCol()
-  let currentCol = virtcol('.')
-  normal g_
-  let lastChar = virtcol('.')
-  if currentCol >= lastChar
-    normal $
-  endif
 endfunction
 
 " Execute a macro over a visual range
