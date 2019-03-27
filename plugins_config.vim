@@ -76,30 +76,6 @@ function! SearchVisualSelectionWithAg() range
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => CtrlSF {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-let g:ctrlsf_populate_qflist = 1
-
-nnoremap <silent> <leader>F :call SearchWordWithCtrlSf()<CR>
-vnoremap <silent> <leader>F :call SearchVisualSelectionWithCtrlSf()<CR>
-
-function! SearchWordWithCtrlSf()
-   execute 'CtrlSF' expand('<cword>')
-endfunction
-
-function! SearchVisualSelectionWithCtrlSf() range
-    let old_reg = getreg('"')
-    let old_regtype = getregtype('"')
-    let old_clipboard = &clipboard
-    set clipboard&
-    normal! ""gvy
-    let selection = getreg('"')
-    call setreg('"', old_reg, old_regtype)
-    let &clipboard = old_clipboard
-    execute 'CtrlSF' selection
- endfunction
-  
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => NerdTree {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 let g:NERDTreeWinPos = "left"
@@ -198,7 +174,7 @@ nnoremap <silent> <leader>z :Goyo<cr>
 let g:user_emmet_leader_key='<tab>'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => ctrlsf Side Search {{{1
+" => CTRLSF Side Search {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:ctrlsf_auto_close = {
     \ "normal" : 0,
@@ -213,6 +189,30 @@ vmap     <C-F>f <Plug>CtrlSFVwordPath
 vmap     <C-F>F <Plug>CtrlSFVwordExec
 nnoremap <F9> :CtrlSFToggle<CR>
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => CtrlSF Quick Search {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
+let g:ctrlsf_populate_qflist = 1
+
+nnoremap <silent> <leader>F :call SearchWordWithCtrlSf()<CR>
+vnoremap <silent> <leader>F :call SearchVisualSelectionWithCtrlSf()<CR>
+
+function! SearchWordWithCtrlSf()
+   execute 'CtrlSF' expand('<cword>')
+endfunction
+
+function! SearchVisualSelectionWithCtrlSf() range
+    let old_reg = getreg('"')
+    let old_regtype = getregtype('"')
+    let old_clipboard = &clipboard
+    set clipboard&
+    normal! ""gvy
+    let selection = getreg('"')
+    call setreg('"', old_reg, old_regtype)
+    let &clipboard = old_clipboard
+    execute 'CtrlSF' selection
+ endfunction
+  
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-markdown {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
