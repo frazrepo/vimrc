@@ -80,8 +80,8 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 let g:ctrlsf_populate_qflist = 1
 
-nnoremap <silent> <leader>f :call SearchWordWithCtrlSf()<CR>
-vnoremap <silent> <leader>f :call SearchVisualSelectionWithCtrlSf()<CR>
+nnoremap <silent> <leader>F :call SearchWordWithCtrlSf()<CR>
+vnoremap <silent> <leader>F :call SearchVisualSelectionWithCtrlSf()<CR>
 
 function! SearchWordWithCtrlSf()
    execute 'CtrlSF' expand('<cword>')

@@ -376,8 +376,10 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 nnoremap c* *Ncgn
 nnoremap c# #NcgN
 
-" Quick yanking to the end of the line
+" Need to do this here
 call yankstack#setup()
+
+" Quick yanking to the end of the line
 nnoremap Y y$
 
 " Quick macro recording and replaying ,qq for recording, and Q for replaying
@@ -636,7 +638,7 @@ function! CCR()
         return "\<CR>"
     endif
 endfunction
-nnoremap <F12> :g//#<Left><Left>
+nnoremap <leader>f :g//#<Left><Left>
 " map '<CR>' in command-line mode to execute the function above
 cnoremap <expr> <CR> CCR()
 

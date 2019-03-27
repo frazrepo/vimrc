@@ -47,7 +47,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<leader>fr       | Find/Replace highlighted text          |
 | \<leader><leader> | noh                                    |
 | \<leader>m        | Remove bad formatting ^M               |
-| \<leader>i        | Search using Ilist                     |
+| \<leader>f        | Search current buffer using Ilist                     |
 
 **Move between Windows**
 
@@ -282,7 +282,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping   | Action                                   |
 | ---       | ---                                      |
-| \<leader>f| Find selected word                       |
+| \<leader>F| Find selected word                       |
 | F9        | Toggle CtrlSF result Window              |
 | \<C-f>f   | Prompt in command line to find a pattern |
 
