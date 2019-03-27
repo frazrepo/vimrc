@@ -395,6 +395,9 @@ nnoremap <M-O> maO<Esc>`ak
 inoremap <M-o>      <C-O>o
 inoremap <M-O>      <C-O>O
 
+"Duplicates lines
+nnoremap <A-Down> yyp
+
 "Quick beautiful paste hack
 nnoremap "p vi"p
 nnoremap 'p vi'p
