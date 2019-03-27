@@ -395,8 +395,12 @@ nnoremap <M-O> maO<Esc>`ak
 inoremap <M-o>      <C-O>o
 inoremap <M-O>      <C-O>O
 
-"Duplicates lines
+"Duplicate lines
 nnoremap <A-Down> yyp
+
+" H and L Begin/End on homerow
+map H ^
+map L $
 
 "Quick beautiful paste hack
 nnoremap "p vi"p
