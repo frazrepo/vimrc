@@ -32,7 +32,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 ## Rotatable color schemes
 
     Default GUI : auy (light theme), dracula (dark theme)
-    Default Terminal : monokai (dark theme)
+    Default Terminal : apprentice (dark theme)
     Dark theme : anderson, atom-dark256, apprentice, codedark, minimalist, molokai, monokai(sublime text), nord, papercolor, seoul, space-vim-dark
     Light theme : ayu (dark available), seoul256-light, pencil
 
@@ -299,6 +299,11 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | ---                | ---                                                    |
 | up/down/left/right | After a selection in visual mode, drag using arrow key |
 
+**vim-gutentags and tagbar**
+| Mapping            | Action           |
+| ---                | ---              |
+| F11                |  Toogle tagBar   |
+
 **custom text-objects**
 
 | Mapping                    | Action     |
@@ -349,6 +354,7 @@ Regexp search/replace pattern
 - [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
 - [vim-gtfo](https://github.com/justinmk/vim-gtfo) : Go to File Manager or Terminal
 - [vim-gutentag](https://github.com/ludovicchabant/vim-gutentags) : Tag generation and nagivation
+- [tagbar](https://github.com/majutsushi/tagbar) : Tagbar
 - [vim-lion](https://github.com/tommcdo/vim-lion) : Align text (like tabular)
 - [* vim-operator-user/vim-operator-replace](https://github.com/kana/vim-operator-replace) : Custom operators
 - [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys

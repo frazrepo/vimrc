@@ -289,3 +289,8 @@ nnoremap <leader>i :Ilist<space>
 " => vim-over {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:over#command_line#substitute#replace_pattern_visually = 1
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => tagbar  {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+nmap <F11> :TagbarToggle<CR>
