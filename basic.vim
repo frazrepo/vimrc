@@ -407,6 +407,7 @@ nnoremap "p vi"p
 nnoremap 'p vi'p
 nnoremap (p vi(p
 nnoremap )p vi)p
+nnoremap <leader>p a<space><esc>p
 
 " Auto-Expand 
 inoremap (; (<CR>);<C-c>O
