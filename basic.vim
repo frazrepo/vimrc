@@ -42,7 +42,7 @@ command W w !sudo tee % > /dev/null
 " => VIM user interface {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set 1 lines to the cursor - when moving vertically using j/k
-set so=1
+set scrolloff=1
 
 " Avoid garbled characters in Chinese language windows OS
 let $LANG='en' 
@@ -73,7 +73,7 @@ set ruler
 set cmdheight=1
 
 " A buffer becomes hidden when it is abandoned
-set hid
+set hidden
 
 " Configure backspace so it acts as it should act
 set backspace=eol,start,indent
@@ -125,13 +125,13 @@ set encoding=utf-8
 
 " Activate mouse
 set mouse=a
-set nu
 
 " Make the keyboard fast
 set ttyfast
 set timeout timeoutlen=1000 ttimeoutlen=50
 
 " Default relativenumber
+set number
 set relativenumber
 
 " Maximized window on start
@@ -237,7 +237,7 @@ set shiftwidth=4
 set tabstop=4
 
 " Linebreak on 500 characters
-set lbr
+set linebreak
 set tw=500
 
 set ai "Auto indent
@@ -290,10 +290,13 @@ nnoremap gV `[v`]
 nnoremap / /\v
 nnoremap ? ?\v
 
-"Search Replace Beautiful hack
+" Search Replace with * or # pattern
 nnoremap <leader>r :%s///g<Left><Left>
 nnoremap <leader>rc :%s///gc<Left><Left><Left>
 
+" Search current buffer using g and show line number
+nnoremap <leader>f :g//#<Left><Left>
+ 
 " Disable highlight when <space><space> is pressed
 map <silent> <space><space> :noh<cr>
 
@@ -452,6 +455,7 @@ cnoremap $d <CR>:d<cr>``
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Azerty keyboard optimizations {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 "Map some keys for azerty keyboard
 map µ # 
 map ² . 
@@ -463,6 +467,7 @@ nnoremap ùù ``
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Miscellaneous {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " Remove the Windows ^M - when the encodings gets messed up
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
@@ -656,7 +661,6 @@ function! CCR()
         return "\<CR>"
     endif
 endfunction
-nnoremap <leader>f :g//#<Left><Left>
 " map '<CR>' in command-line mode to execute the function above
 cnoremap <expr> <CR> CCR()
 
