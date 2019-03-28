@@ -290,6 +290,10 @@ nnoremap gV `[v`]
 nnoremap / /\v
 nnoremap ? ?\v
 
+"Search Replace Beautiful hack
+nnoremap <leader>r :%s///g<Left><Left>
+nnoremap <leader>rc :%s///gc<Left><Left><Left>
+
 " Disable highlight when <leader><space> is pressed
 map <silent> <leader><space> :noh<cr>
 
