@@ -18,7 +18,7 @@ nnoremap <silent> <leader>u :FZFMru<CR>
 " let g:fzf_mru_relative = 1
 
 """"""""""""""""""""""""""""""
-" => fzf plugin {{{1
+" => FZF plugin {{{1
 """"""""""""""""""""""""""""""
 " This is the default extra key bindings
 let g:fzf_action = {
@@ -26,7 +26,7 @@ let g:fzf_action = {
   \ 'ctrl-x': 'split',
   \ 'ctrl-v': 'vsplit' }
 
-" Customize fzf colors to match your color scheme
+" Customize FZF colors to match your color scheme
 let g:fzf_colors =
 \ { 'fg':      ['fg', 'Normal'],
   \ 'bg':      ['bg', 'Normal'],
@@ -43,7 +43,7 @@ let g:fzf_colors =
   \ 'header':  ['fg', 'Comment'] }
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => fzf map to CTRL-T (like Resharper) / CTRL+P {{{1
+" => FZF map to CTRL-T (like Resharper) / CTRL+P {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <silent> <c-t> :Files <C-R>=expand('%:h')<CR><CR>
 nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
