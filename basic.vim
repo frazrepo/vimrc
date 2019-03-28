@@ -411,6 +411,9 @@ nnoremap )p vi)p
 " Put a space before pasting
 nnoremap <leader>p a<space><esc>p
 
+" Enhance paste in visual mode to replace many times with the yank register
+xnoremap <silen> p p:if v:register == '"'<Bar>let @@=@0<Bar>endif<CR>
+
 " Auto-Expand 
 inoremap (; (<CR>);<C-c>O
 inoremap (, (<CR>),<C-c>O
