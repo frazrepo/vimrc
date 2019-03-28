@@ -294,8 +294,8 @@ nnoremap ? ?\v
 nnoremap <leader>r :%s///g<Left><Left>
 nnoremap <leader>rc :%s///gc<Left><Left><Left>
 
-" Disable highlight when <leader><space> is pressed
-map <silent> <leader><space> :noh<cr>
+" Disable highlight when <space><space> is pressed
+map <silent> <space><space> :noh<cr>
 
 " Smart way to move between windows horizontally
 map <C-h> <C-W>h
@@ -317,6 +317,7 @@ xnoremap <c-k> 5k
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Buffers  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " Close the current buffer
 map <leader>bd :Bclose<cr>:tabclose<cr>gT
 
