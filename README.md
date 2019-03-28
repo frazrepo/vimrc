@@ -58,18 +58,18 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 **Buffers**
 
-| Mapping     | Action                     |
-| ---         | ---                        |
-| \<leader>bn | New buffer                 |
-| \<leader>bd | Close buffer               |
-| \<leader>ba | Close all buffers          |
-| \<leader>bw | Wipeout all hidden buffers |
-| \<bs>       | Navigate alternate buffer  |
-| \<leader>h  | Navigate left              |
-| \<leader>l  | Navigate right             |
-| \<leader>x  | Scratch txt                | 
-| \<leader>d:  | Scratch Markdown          |
-| \<leader>s  | Scratch SQL                | 
+| Mapping      | Action                         |
+| ---          | ---                            |
+| \<leader>bn  | New buffer                     |
+| \<leader>bd  | Close buffer                   |
+| \<leader>ba  | Close all buffers              |
+| \<leader>bw  | Wipeout all hidden buffers     |
+| \<bs>        | Navigate alternate buffer      |
+| \<Left>      | Navigate previous              |
+| \<Right>     | Navigate next                  |
+| \<leader>x   | Scratch txt                    | 
+| \<leader>d:  | Scratch Markdown               |
+| \<leader>s   | Scratch SQL                    | 
 
 **Tabs**
 

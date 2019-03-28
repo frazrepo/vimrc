@@ -319,8 +319,8 @@ map <leader>bd :Bclose<cr>:tabclose<cr>gT
 " Useful mapping for managing  buffers
 map <leader>bn :enew<cr>
 map <leader>ba :bufdo bd<cr>
-map <leader>l :bnext<cr>
-map <leader>h :bprevious<cr>
+nnoremap <Right> :bnext<cr>
+nnoremap <Left> :bprevious<cr>
 
 " Backspace to navigate to alternate buffer
 nnoremap <bs> <c-^>
