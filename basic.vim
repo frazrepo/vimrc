@@ -407,6 +407,8 @@ nnoremap "p vi"p
 nnoremap 'p vi'p
 nnoremap (p vi(p
 nnoremap )p vi)p
+
+" Put a space before pasting
 nnoremap <leader>p a<space><esc>p
 
 " Auto-Expand 
