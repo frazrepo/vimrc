@@ -101,7 +101,7 @@ let NERDTreeShowBookmarks=1
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => lightline {{{1
+" => Lightline {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Show on multiple screen not on single screen
 set laststatus=2

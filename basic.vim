@@ -27,15 +27,14 @@ set nocompatible
 " Disable startup message
 set shortmess=atI
 
-" With a map leader it's possible to do extra key combinations
-" like <leader>w saves the current file
+" Space as a Leader key
 let mapleader = "\<Space>" 
 
 " Fast saving
 nmap <leader>w :w!<cr>
 
 " :W sudo saves the file 
-" (useful for handling the permission-denied error)
+" (useful for handling the permission-denied error on Linux)
 command W w !sudo tee % > /dev/null
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -182,10 +181,10 @@ syntax on
 " And optimize performance for longlines
 set synmaxcol=200
 
-" ColorScheme dracula for GUI and atom for terminal
+" ColorScheme ayu for GUI and apprentice for terminal
 if has("gui_running")
     color ayu
-    " nord, dracula
+    " Alternative : nord, dracula
 else
     color apprentice
 endif
@@ -218,6 +217,7 @@ nnoremap <M-0>        :Bigger<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " Turn backup off, since most stuff is in SVN, git et.c anyway...
 set nobackup
 set nowb
@@ -226,6 +226,7 @@ set noswapfile
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text, tab and indent related {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " Use spaces instead of tabs
 set expandtab
 
@@ -250,12 +251,14 @@ set complete=.,w,b,u
 """"""""""""""""""""""""""""""
 " => Mode related {{{1
 """"""""""""""""""""""""""""""
+
 " Map jk to ESC in insert mode 
 inoremap jk <Esc>
 
 """"""""""""""""""""""""""""""
 " => Visual mode related {{{1
 """"""""""""""""""""""""""""""
+
 " Visual mode pressing * or # searches for the current selection
 " Super useful! From an idea by Michael Naumann
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
@@ -416,7 +419,7 @@ nnoremap 'p vi'p
 nnoremap (p vi(p
 nnoremap )p vi)p
 
-" Put a space before pasting
+" Put a space before pasting, useful for character wise pasting
 nnoremap <leader>p a<space><esc>p
 
 " Enhance paste in visual mode to replace many times with the yank register
@@ -438,7 +441,7 @@ nnoremap <expr> j (v:count > 1 ? "m'" . v:count : '') . 'j'
 nnoremap <expr> { len(getline(line('.') - 1)) > 0 ? '{+' : '{-'
 nnoremap <expr> } len(getline(line('.') + 1)) > 0 ? '}-' : '}+'
 
-" Ctrl-Space for completions. 
+" Ctrl-Space for completions (experimental)
 inoremap <expr> <C-Space> pumvisible() \|\| &omnifunc == '' ?
             \ "\<lt>C-n>" :
             \ "\<lt>C-x>\<lt>C-o><c-r>=pumvisible() ?" .
@@ -460,7 +463,7 @@ cnoremap $d <CR>:d<cr>``
 map µ # 
 map ² . 
 
-" Marks keepjumps for azerty keyboard
+" Marks keepjumps 
 nnoremap mù m`
 nnoremap ùù ``
 
@@ -489,6 +492,7 @@ command! VisualBlock execute "normal! \<C-v>"
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Help file speedups {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " Help File speedups, <enter> to follow tag, delete (backspace) for back
 au filetype help nnoremap <buffer><cr> <c-]>
 au filetype help nnoremap <buffer><bs> <c-T>
