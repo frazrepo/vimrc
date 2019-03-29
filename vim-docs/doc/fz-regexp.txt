@@ -15,6 +15,7 @@ INTRODUCTION                                    *fz-regexp*
 10.Sort lines inside block of {} , like in css    |fz-regexp-10|
 11. Substitute with contents of register          |fz-regexp-11|
 12. Miscellaneous g command                       |fz-regexp-12|
+13. Swap columns in a csv file                    |fz-regexp-13|
 XX.Ressources                                     |fz-regexp-XX|
 
 
@@ -84,5 +85,10 @@ XX.Ressources                                     |fz-regexp-XX|
   :g/pattern/y A
 <
 
+13. Swap columns in a csv file                    *fz-regexp-13*
+>
+  " Swap column1,column2
+  :%s/\(.*,\)\(.*,\)/\2\1
+<
 XX.Ressources                                     *fz-regexp-XX*
  - http://zzapper.co.uk/vimtips.html
