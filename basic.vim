@@ -330,6 +330,8 @@ map <leader>bd :Bclose<cr>:tabclose<cr>gT
 " Useful mapping for managing  buffers
 map <leader>bn :enew<cr>
 map <leader>ba :bufdo bd<cr>
+
+" Experimental buffers navigation
 nnoremap <Right> :bnext<cr>
 nnoremap <Left> :bprevious<cr>
 
