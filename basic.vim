@@ -331,9 +331,9 @@ map <leader>bd :Bclose<cr>:tabclose<cr>gT
 map <leader>bn :enew<cr>
 map <leader>ba :bufdo bd<cr>
 
-" Experimental buffers navigation
-nnoremap <Right> :bnext<cr>
-nnoremap <Left> :bprevious<cr>
+" Buffers navigation
+map <leader>l :bnext<cr>
+map <leader>h :bprevious<cr>
 
 " Backspace to navigate to alternate buffer
 nnoremap <bs> <c-^>
