@@ -112,8 +112,10 @@ Plug 'sheerun/vim-polyglot'
 
 "Code navigation - Install ctags for host OS {{{1
 " On Linux do a chmod +x ./plat/update_tags.sh
-" Plug 'ludovicchabant/vim-gutentags'
-" Plug 'majutsushi/tagbar'
+if executable('ctags')
+    Plug 'ludovicchabant/vim-gutentags'
+    Plug 'majutsushi/tagbar'
+endif
 " }}}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
