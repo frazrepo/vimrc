@@ -129,9 +129,9 @@ set mouse=a
 set ttyfast
 set timeout timeoutlen=1000 ttimeoutlen=50
 
-" Default relativenumber
+" Number
 set number
-set relativenumber
+" set relativenumber
 
 " Maximized window on start
 if has("gui_running")
