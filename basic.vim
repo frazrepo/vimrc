@@ -448,13 +448,6 @@ inoremap <expr> <C-Space> pumvisible() \|\| &omnifunc == '' ?
             \ "\"\\<lt>c-n>\\<lt>c-p>\\<lt>c-n>\" :" .
             \ "\" \\<lt>bs>\\<lt>C-n>\"\<CR>"
 
-" Command range after a search with / or ?
-cnoremap $t <CR>:t''<cr>
-cnoremap $T <CR>:T''<cr>
-cnoremap $m <CR>:m''<cr>
-cnoremap $M <CR>:M''<cr>
-cnoremap $d <CR>:d<cr>``
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Azerty keyboard optimizations {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
