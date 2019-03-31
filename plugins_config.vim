@@ -141,9 +141,9 @@ let g:rainbow_active = 0
 " => ultisnips and vim-snippets configuration {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:UltiSnipsListSnippets ="<c-tab>"
-let g:UltiSnipsExpandTrigger = "<c-j>"
-let g:UltiSnipsJumpForwardTrigger = "<c-j>"
-let g:UltiSnipsJumpBackwardTrigger = "<c-k>"
+let g:UltiSnipsExpandTrigger = "<Tab>"
+let g:UltiSnipsJumpForwardTrigger = "<C-j>"
+let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
@@ -309,22 +309,28 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Completor  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-function! Tab_Or_Complete() abort
-  " If completor is already open the `tab` cycles through suggested completions.
-  if pumvisible()
-    return "\<C-N>"
-  " If completor is not open and we are in the middle of typing a word then
-  " `tab` opens completor menu.
-  elseif col('.')>1 && strpart( getline('.'), col('.')-2, 3 ) =~ '^\w'
-    return "\<C-R>=completor#do('complete')\<CR>"
-  else
-    " If we aren't typing a word and we press `tab` simply do the normal `tab`
-    " action.
-    return "\<Tab>"
-  endif
-endfunction
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+fun! Tab_Or_Complete() "{{{
+		call UltiSnips#ExpandSnippet()
+		if g:ulti_expand_res == 0
+			if pumvisible()
+				return "\<C-n>"
+			else
+				call UltiSnips#JumpForwards()
+				if g:ulti_jump_forwards_res == 0
+					" If completor is not open and we are in the middle of typing a word then
+					" `tab` opens completor menu.
+					let inp_str = strpart( getline('.'), col('.')-3, 2 )
+					if col('.')>1 && (inp_str =~ '^\w$' || inp_str =~ '\%(->\)\|\%(.\w\)\|\%(\w\.\)\|\%(./\)')
+						return "\<C-R>=completor#do('complete')\<CR>"
+					else
+						return "\<TAB>"
+					endif
+				endif
+			endif
+		endif
+		return ""
+	endf "}}}
+	au InsertEnter * exec "inoremap <silent> <Tab> <C-R>=Tab_Or_Complete()<cr>"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
