@@ -215,6 +215,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<c-t>          | Files (t to open file in tab) |
 | \<leader>bb     | Buffers                       |
 | \<leader>u      | MRU                           |
+| \<leader>t      | Tags                           |
 | Ag select words | K                             |
 
 **vim-rainbow**
