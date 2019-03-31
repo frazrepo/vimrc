@@ -173,7 +173,9 @@ nnoremap <silent> <leader>z :Goyo<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Emmet plugin remap {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:user_emmet_leader_key='<tab>'
+" Keep default leader <C-y> 
+" Performance pbm when setting tab or <C-j> (ultisnips map)
+" let g:user_emmet_leader_key='<tab>'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => CTRLSF Side Search {{{1
