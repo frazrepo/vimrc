@@ -49,6 +49,9 @@ set langmenu=en
 source $VIMRUNTIME/delmenu.vim
 source $VIMRUNTIME/menu.vim
 
+" Spell checking to fr
+" setlocal nospell spelllang=fr
+
 " Turn on the Wild menu
 set wildmenu
 
