@@ -462,6 +462,15 @@ map ² .
 nnoremap mù m`
 nnoremap ùù ``
 
+" Map ALT Key in terminal
+" https://vi.stackexchange.com/questions/2350/how-to-map-alt-key
+if &term =~ 'xterm' && !has("gui_running")
+  " Tell vim what escape sequence to expect
+  execute "set <A-k>=\ek"
+  execute "set <A-j>=\ej"
+  execute "set <A-o>=\eo"
+endif
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Miscellaneous {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
