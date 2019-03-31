@@ -446,13 +446,6 @@ nnoremap <expr> j (v:count > 1 ? "m'" . v:count : '') . 'j'
 nnoremap <expr> { len(getline(line('.') - 1)) > 0 ? '{+' : '{-'
 nnoremap <expr> } len(getline(line('.') + 1)) > 0 ? '}-' : '}+'
 
-" Ctrl-Space for completions (experimental)
-inoremap <expr> <C-Space> pumvisible() \|\| &omnifunc == '' ?
-            \ "\<lt>C-n>" :
-            \ "\<lt>C-x>\<lt>C-o><c-r>=pumvisible() ?" .
-            \ "\"\\<lt>c-n>\\<lt>c-p>\\<lt>c-n>\" :" .
-            \ "\" \\<lt>bs>\\<lt>C-n>\"\<CR>"
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Azerty keyboard optimizations {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

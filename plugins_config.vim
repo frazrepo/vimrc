@@ -141,7 +141,9 @@ let g:rainbow_active = 0
 " => ultisnips and vim-snippets configuration {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:UltiSnipsListSnippets ="<c-tab>"
-
+let g:UltiSnipsExpandTrigger = "<c-j>"
+let g:UltiSnipsJumpForwardTrigger = "<c-j>"
+let g:UltiSnipsJumpBackwardTrigger = "<c-k>"
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
@@ -296,6 +298,26 @@ let g:over#command_line#substitute#replace_pattern_visually = 1
 if executable('ctags')
   nmap <F11> :TagbarToggle<CR>
 endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Completor  {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+function! Tab_Or_Complete() abort
+  " If completor is already open the `tab` cycles through suggested completions.
+  if pumvisible()
+    return "\<C-N>"
+  " If completor is not open and we are in the middle of typing a word then
+  " `tab` opens completor menu.
+  elseif col('.')>1 && strpart( getline('.'), col('.')-2, 3 ) =~ '^\w'
+    return "\<C-R>=completor#do('complete')\<CR>"
+  else
+    " If we aren't typing a word and we press `tab` simply do the normal `tab`
+    " action.
+    return "\<Tab>"
+  endif
+endfunction
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
