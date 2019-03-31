@@ -43,9 +43,8 @@ let g:fzf_colors =
   \ 'header':  ['fg', 'Comment'] }
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => FZF map to CTRL-T (like Resharper) / CTRL+P {{{1
+" => FZF map {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-nnoremap <silent> <c-t> :Files <C-R>=expand('%:h')<CR><CR>
 nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
 nnoremap <silent> <leader>bb :Buffers<CR>
 nnoremap <silent> <leader>t :Tags<CR>

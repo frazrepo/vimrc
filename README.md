@@ -212,7 +212,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping         | Action                        |
 | ---             | ---                           |
-| \<c-t>          | Files (t to open file in tab) |
+| \<c-p>          | Files (t to open file in tab) |
 | \<leader>bb     | Buffers                       |
 | \<leader>u      | MRU                           |
 | \<leader>t      | Tags                           |
