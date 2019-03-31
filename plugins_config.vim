@@ -177,6 +177,11 @@ nnoremap <silent> <leader>z :Goyo<cr>
 " Performance pbm when setting tab or <C-j> (ultisnips map)
 let g:user_emmet_leader_key=','
 
+" Working tab completion mapping for emmet
+" Todo :integration with ultisnips and vim completor
+" let g:user_emmet_expandabbr_key='<Tab>'
+" imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => CTRLSF Side Search {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
