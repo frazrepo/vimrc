@@ -277,7 +277,9 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping  | Action     |
 | ---      | ---        |
-| \<C-j>   | Activation |
+| \<Tab>   | Expand |
+| \<C-j>   | Jump forward |
+| \<C-k>   | Jump backward |
 
 **CtrlSF**
 
