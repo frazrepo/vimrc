@@ -462,6 +462,9 @@ map ² .
 nnoremap mù m`
 nnoremap ùù ``
 
+" For Tags navigation - <C-$> doesn't work yet
+nmap <F12> <C-]>
+
 " Map ALT Key in terminal
 " https://vi.stackexchange.com/questions/2350/how-to-map-alt-key
 if &term =~ 'xterm' && !has("gui_running")
