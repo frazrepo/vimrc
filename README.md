@@ -126,7 +126,8 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | ---        | ---                               |
 | F8         |Toggle quickfix window             |
 | F10        |Rotate colorschemes                |
-| F12        |Tag navigation |
+| F11        |Tagbar Toggle                      |
+| F12        |Tag navigation                     |
 | \<M-0>     |Set font bigger (gui only)         |
 | \<M-9>     |Set font smaller (gui only)        |
 
@@ -136,7 +137,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping          | Action                 | 
 | ---              | ---                    |
-| \,,          | Generate emmet         | 
+| \,,              | Generate emmet         | 
 
 **vim-lion**
 
