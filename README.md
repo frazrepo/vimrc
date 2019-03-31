@@ -136,7 +136,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping          | Action                 | 
 | ---              | ---                    |
-| \<C-y>,          | Generate emmet         | 
+| \,,          | Generate emmet         | 
 
 **vim-lion**
 
