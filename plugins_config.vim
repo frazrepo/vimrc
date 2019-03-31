@@ -142,8 +142,6 @@ let g:rainbow_active = 0
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:UltiSnipsListSnippets ="<c-tab>"
 let g:UltiSnipsExpandTrigger = "<c-j>"
-" Experimental C-Space instead of C-j
-let g:UltiSnipsExpandTrigger = "<c-space>"
 let g:UltiSnipsJumpForwardTrigger = "<c-j>"
 let g:UltiSnipsJumpBackwardTrigger = "<c-k>"
 " If you want :UltiSnipsEdit to split your window.
