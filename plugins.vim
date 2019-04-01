@@ -91,7 +91,7 @@ Plug 'romainl/vim-qlist'
 " Snippet -  Code Generation - AutoCompletion {{{1
 Plug 'jiangmiao/auto-pairs'
 Plug 'machakann/vim-sandwich'
-Plug 'mattn/emmet-vim' , { 'for': 'html'}
+Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
 Plug 'tpope/vim-commentary'
 Plug 'maralla/completor.vim'
 Plug 'SirVer/ultisnips'
