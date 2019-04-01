@@ -425,7 +425,12 @@ nnoremap (p vi(p
 nnoremap )p vi)p
 
 " Put a space before pasting, useful for character wise pasting
-nnoremap <leader>p a<space><esc>p
+" nnoremap <leader>p a<space><esc>p
+" Experimental paste from yank register and from system register
+noremap <leader>y "+y
+noremap <leader>p "+p
+xnoremap ,p "0p
+nnoremap ,p "0p
 
 " Enhance paste in visual mode to replace many times with the yank register
 xnoremap <silent> p p:if v:register == '"'<Bar>let @@=@0<Bar>endif<CR>
