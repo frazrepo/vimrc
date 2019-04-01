@@ -427,8 +427,14 @@ nnoremap )p vi)p
 " Put a space before pasting, useful for character wise pasting
 " nnoremap <leader>p a<space><esc>p
 " Experimental paste from yank register and from system register
-noremap <leader>y "+y
-noremap <leader>p "+p
+nnoremap <leader>y "+y
+xnoremap <leader>y "+y
+nmap <leader>Y "+Y
+
+nnoremap <leader>p "+p
+nnoremap <leader>P "+P
+xnoremap <leader>p "+p
+
 xnoremap ,p "0p
 nnoremap ,p "0p
 
