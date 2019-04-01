@@ -630,6 +630,14 @@ augroup save_buffer
   autocmd FocusGained,BufEnter,CursorHold buffer.* silent! checktime
 augroup end
 
+" Sort lines by width"
+function! SortByWidth() range
+    silent! execute a:firstline . "," . a:lastline . 's/^\(.*\)$/\=strdisplaywidth( submatch(0) ) . " " . submatch(0)/'
+    silent! execute a:firstline . "," . a:lastline . 'sort n'
+    silent! execute a:firstline . "," . a:lastline . 's/^\d\+\s//'
+endfunction
+command! -range=%  SortByWidth <line1>,<line2>call SortByWidth()
+
 " Experimental Vertical Motion using g "
 " https://gist.github.com/romainl/047aca21e338df7ccf771f96858edb86 
 function! CCR()
