@@ -110,15 +110,10 @@ set visualbell
 set t_vb=
 set tm=500
 
-" Properly disable sound on errors on MacVim and gVim
-if has("gui_running")
-  autocmd GUIEnter * set vb t_vb=
-endif
-
 " Add a bit extra margin to the left
 set foldcolumn=1
 
-" foldmethod manual
+" Foldmethod manual
 set foldmethod=manual 
 
 " Dealing with special chars
@@ -132,7 +127,7 @@ set mouse=a
 set ttyfast
 set timeout timeoutlen=1000 ttimeoutlen=50
 
-" Number
+" Number - No Default relative number
 set number
 " set relativenumber
 
@@ -411,7 +406,7 @@ nnoremap <M-O> maO<Esc>`ak
 inoremap <M-o>      <C-O>o
 inoremap <M-O>      <C-O>O
 
-"Duplicate lines
+"Duplicate lines (Experimental)
 nnoremap <A-Down> yyp
 
 " H and L Begin/End on homerow
@@ -424,8 +419,6 @@ nnoremap 'p vi'p
 nnoremap (p vi(p
 nnoremap )p vi)p
 
-" Put a space before pasting, useful for character wise pasting
-" nnoremap <leader>p a<space><esc>p
 " Experimental paste from yank register and from system register
 nnoremap <leader>y "+y
 xnoremap <leader>y "+y
@@ -440,14 +433,6 @@ nnoremap ,p "0p
 
 " Enhance paste in visual mode to replace many times with the yank register
 xnoremap <silent> p p:if v:register == '"'<Bar>let @@=@0<Bar>endif<CR>
-
-" Auto-Expand 
-inoremap (; (<CR>);<C-c>O
-inoremap (, (<CR>),<C-c>O
-inoremap {; {<CR>};<C-c>O
-inoremap {, {<CR>},<C-c>O
-inoremap [; [<CR>];<C-c>O
-inoremap [, [<CR>],<C-c>O
 
 " Do not track every j and k motion in jumplist  
 nnoremap <expr> k (v:count > 1 ? "m'" . v:count : '') . 'k'
@@ -515,7 +500,7 @@ au filetype help set nonumber
 au filetype help wincmd _ " Maximize the help on open
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Helper functions {{{1
+" => Helper functions and Commands {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Delete trailing white space on save, useful for some filetypes ;)

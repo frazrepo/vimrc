@@ -20,9 +20,6 @@ behave mswin
 " backspace and cursor keys wrap to previous/next line
 set backspace=indent,eol,start whichwrap+=<,>,[,]
 
-" backspace in Visual mode deletes selection
-vnoremap <BS> d
-
 if has("clipboard")
     " CTRL-X and SHIFT-Del are Cut
     vnoremap <C-X> "+x
@@ -51,7 +48,6 @@ if 1
     exe 'vnoremap <script> <C-V> ' . paste#paste_cmd['v']
 endif
 
-map <leader>y "+y
 
 imap <S-Insert>		<C-V>
 vmap <S-Insert>		<C-V>
@@ -74,11 +70,6 @@ endif
 noremap <C-Z> u
 inoremap <C-Z> <C-O>u
 
-
-" CTRL-Y is Redo (although not repeat); not in cmdline though
-" No need to map this, C-R already do this
-" noremap <C-Y> <C-R>
-" inoremap <C-Y> <C-O><C-R>
 
 " CTRL-A is Select all
 noremap <C-A> gggH<C-O>G
