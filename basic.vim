@@ -435,8 +435,12 @@ nnoremap ,p "0p
 xnoremap <silent> p p:if v:register == '"'<Bar>let @@=@0<Bar>endif<CR>
 
 " Do not track every j and k motion in jumplist  
-nnoremap <expr> k (v:count > 1 ? "m'" . v:count : '') . 'k'
-nnoremap <expr> j (v:count > 1 ? "m'" . v:count : '') . 'j'
+nnoremap <expr> k (v:count > 1 ? "m'" . v:count : '') . 'gk'
+nnoremap <expr> j (v:count > 1 ? "m'" . v:count : '') . 'gj'
+
+" Toogle gj gk and j k
+nnoremap gj j 
+nnoremap gk k 
 
 " Better Paragraph motions
 nnoremap <expr> { len(getline(line('.') - 1)) > 0 ? '{+' : '{-'
@@ -469,6 +473,10 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Miscellaneous {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" For autocompletion
+inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
+inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
 
 " Remove the Windows ^M - when the encodings gets messed up
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
