@@ -141,7 +141,6 @@ let g:rainbow_active = 0
 " => ultisnips and vim-snippets configuration {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:UltiSnipsListSnippets ="<c-tab>"
-let g:UltiSnipsExpandTrigger = "<Tab>"
 let g:UltiSnipsJumpForwardTrigger = "<C-j>"
 let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
 " If you want :UltiSnipsEdit to split your window.
@@ -309,9 +308,23 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Completor  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-fun! Tab_Or_Complete() "{{{
+
+function! s:IsEmmetInstalled()
+  return hasmapto('<plug>(emmet-move-next)', 'i') &&
+        \ hasmapto('<plug>(emmet-move-prev)', 'i') &&
+        \ hasmapto('<plug>(emmet-expand-abbr)', 'i')
+endfunction
+
+fun! TabOrComplete() "{{{
 		call UltiSnips#ExpandSnippet()
 		if g:ulti_expand_res == 0
+      if s:IsEmmetInstalled()
+        if emmet#isExpandable()
+            " Todo : Not working correctly, expand only the last one
+            call feedkeys(",,")
+            return ""
+        endif
+      endif
 			if pumvisible()
 				return "\<C-n>"
 			else
@@ -330,7 +343,7 @@ fun! Tab_Or_Complete() "{{{
 		endif
 		return ""
 	endf "}}}
-	au InsertEnter * exec "inoremap <silent> <Tab> <C-R>=Tab_Or_Complete()<cr>"
+	au InsertEnter * exec "inoremap <silent> <Tab> <C-R>=TabOrComplete()<cr>"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
