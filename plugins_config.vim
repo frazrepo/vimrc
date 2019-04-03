@@ -335,6 +335,8 @@ fun! TabOrComplete() "{{{
 					let inp_str = strpart( getline('.'), col('.')-3, 2 )
 					if col('.')>1 && (inp_str =~ '^\w$' || inp_str =~ '\%(->\)\|\%(.\w\)\|\%(\w\.\)\|\%(./\)')
 						return "\<C-R>=completor#do('complete')\<CR>"
+            " Uncomment here to return to vanilla completion
+            " return "\<C-n>"
 					else
 						return "\<TAB>"
 					endif
