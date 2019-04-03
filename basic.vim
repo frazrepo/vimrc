@@ -129,6 +129,7 @@ set timeout timeoutlen=1000 ttimeoutlen=50
 
 " Number - No Default relative number
 set number
+" RelativeNumber cause slowness on large file
 " set relativenumber
 
 " Maximized window on start
