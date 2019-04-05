@@ -405,8 +405,9 @@ nnoremap gQ mmgggqG`m
 nnoremap <M-o> mao<Esc>`aj
 nnoremap <M-O> maO<Esc>`ak
 
-"Duplicate lines (Experimental)
-nnoremap <A-Down> yyp
+" Navigating quickfix (Experimental)
+nnoremap <A-Down> :cnext<Cr>
+nnoremap <A-Up> :cprevious<Cr>
 
 " H and L Begin/End on homerow
 nnoremap H ^
