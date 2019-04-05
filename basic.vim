@@ -35,7 +35,7 @@ nmap <leader>w :w!<cr>
 
 " :W sudo saves the file 
 " (useful for handling the permission-denied error on Linux)
-command W w !sudo tee % > /dev/null
+command! W w !sudo tee % > /dev/null
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface {{{1
@@ -148,7 +148,7 @@ if has("gui_running")
 endif
 
 " Linespace
-set linespace=8
+set linespace=4
 
 " List Chars
 set nolist
@@ -292,7 +292,7 @@ nnoremap gV `[v`]
 nnoremap / /\v
 nnoremap ? ?\v
 
-" Search Replace with * or # pattern
+" Search/Replace and Search/Replace with confirmation with * or # pattern
 nnoremap <leader>r :%s///g<Left><Left>
 nnoremap <leader>rc :%s///gc<Left><Left><Left>
 
@@ -322,6 +322,18 @@ xnoremap <c-k> 5k
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Buffers  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Return to last edit position when opening files (You want this!)
+au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+" CWD automatically for the current buffer
+augroup CwdBufferEnter
+  autocmd!
+  autocmd Filetype,BufEnter *  call ChangeCurrentWorkingDirectory()
+augroup END
+
+" Switch CWD to the directory of the open buffer
+map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
 " Close the current buffer
 map <leader>bd :Bclose<cr>:tabclose<cr>gT
@@ -361,24 +373,12 @@ au TabLeave * let g:lasttab = tabpagenr()
 " Super useful when editing files in the same directory
 map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 
-" Switch CWD to the directory of the open buffer
-map <leader>cd :cd %:p:h<cr>:pwd<cr>
-
-" CWD automatically for the current buffer
-augroup CwdBufferEnter
-  autocmd!
-  autocmd Filetype,BufEnter *  call ChangeCurrentWorkingDirectory()
-augroup END
-
 " Specify the behavior when switching between buffers 
 try
   set switchbuf=useopen,usetab,newtab
   set stal=2
 catch
 endtry
-
-" Return to last edit position when opening files (You want this!)
-au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing Mappings {{{1
@@ -404,8 +404,6 @@ nnoremap gQ mmgggqG`m
 "Insert new line in normal mode quickly
 nnoremap <M-o> mao<Esc>`aj
 nnoremap <M-O> maO<Esc>`ak
-inoremap <M-o>      <C-O>o
-inoremap <M-O>      <C-O>O
 
 "Duplicate lines (Experimental)
 nnoremap <A-Down> yyp
