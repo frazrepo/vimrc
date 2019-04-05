@@ -167,7 +167,7 @@ let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
 
 "ColorColumn at 80 Experimental
-set colorcolumn=80
+" set colorcolumn=80
 highlight ColorColumn ctermbg=0 guibg=lightgrey
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -198,7 +198,7 @@ if has("gui_running")
   elseif has("gui_macvim")
     set guifont=Menlo\ Regular:h14
   elseif has("gui_win32")
-    set guifont=Consolas:h18:cANSI
+    set guifont=Consolas:h15:cANSI
   endif
 endif
 
