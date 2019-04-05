@@ -47,7 +47,7 @@ let g:fzf_colors =
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
 nnoremap <silent> <leader>bb :Buffers<CR>
-nnoremap <silent> <leader>; :Buffers<CR>
+nnoremap <silent> <leader>, :Buffers<CR>
 nnoremap <silent> <leader>t :Tags<CR>
 " To ignore git files
 " Add this to ENV
