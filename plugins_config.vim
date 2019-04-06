@@ -242,10 +242,10 @@ map <leader>bw :Wipeout<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-schlep to drag in visual mode {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-vmap <unique> <up>    <Plug>SchleppUp
-vmap <unique> <down>  <Plug>SchleppDown
-vmap <unique> <left>  <Plug>SchleppLeft
-vmap <unique> <right> <Plug>SchleppRight
+vmap  <up>    <Plug>SchleppUp
+vmap  <down>  <Plug>SchleppDown
+vmap  <left>  <Plug>SchleppLeft
+vmap  <right> <Plug>SchleppRight
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-operator-replace {{{1
