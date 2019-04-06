@@ -431,6 +431,11 @@ xnoremap <leader>p "+p
 xnoremap ,p "0p
 nnoremap ,p "0p
 
+" Use CTRL-S for saving, also in Insert mode
+noremap <C-S>		     :update<CR>
+vnoremap <C-S>		<C-C>:update<CR>
+inoremap <C-S>		<C-O>:update<CR>
+
 " Enhance paste in visual mode to replace many times with the yank register
 xnoremap <silent> p p:if v:register == '"'<Bar>let @@=@0<Bar>endif<CR>
 
