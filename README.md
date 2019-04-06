@@ -73,25 +73,17 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 **Tabs**
 
-| Mapping     | Action                                |
-| ---         | ---                                   |
-| \<leader>tn | New tab                               |
-| \<leader>to | Tab Only                              |
-| \<leader>tc | Close tab                             |
-| \<leader>tm | Move tab                              |
-| \<leader>tl | Alternate tab                         |
-| \<leader>ts | Alternate tab                         |
-| \<leader>te | Edit new tab in current buffer's path |
+| Mapping       | Action                                |
+| ---           | ---                                   |
+| \<leader>tn   | New tab                               |
+| \<leader>to   | Tab Only                              |
+| \<leader>tc   | Close tab                             |
+| \<leader>tm   | Move tab                              |
+| \<leader>tl   | Alternate tab                         |
+| \<leader><bs> | Alternate tab                         |
+| \<leader>te   | Edit new tab in current buffer's path |
 
 ## Editing mappings
-
-**Quick tips in insert mode**
-
-| Mapping      | Action                   |
-| ---          | ---                      |
-| \<M-o>       | Insert new line below    |
-| \<M-O>       | Insert new line above    |
-| \<C-Space>   |  Autocompletion          |
 
 **Paste inner object quickly**
 
@@ -101,6 +93,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | 'p      | for vi'p |
 | (p      | for vi(p |
 | )p      | for vi)p |
+| ,p      | "0p      |
 
 **Formatting**
 
@@ -117,9 +110,9 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<leader>r | Replace visual selection          |
 
 ## Command line mappings
-| Mapping    | Action                            |
-| ---        | ---                               |
-| :W          |Write sudo|
+| Mapping     | Action                            |
+| ---         | ---                               |
+| :W          |Write sudo                         |
 
 ## Various mappings
 | Mapping    | Action                            |

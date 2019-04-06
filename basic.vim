@@ -132,20 +132,6 @@ set number
 " RelativeNumber cause slowness on large file
 " set relativenumber
 
-" Maximized window on start
-if has("gui_running")
-  if has("gui_gtk3")
-    set lines=535 columns=1366
-    " set lines=768 columns=1366 " cause bug infinite max size not supported on linux, all fonts and linespace not working
-    " http://ubuntuguide.net/get-gvim-start-in-maximized-window-in-ubuntu-gnome
-  elseif has("gui_macvim")
-    set lines=768 columns=1366
-  elseif has("gui_win32")
-    " set lines=768 columns=1366
-    " For french keyboard
-    autocmd GUIEnter * :simalt ~n
-  endif
-endif
 
 " Linespace
 set linespace=4
@@ -188,16 +174,25 @@ else
     color apprentice
 endif
 
-" Fonts Consolas
+" Maximized window on start and Font Size
+" For Ubuntu :
+" 1. Windows Size
+" set lines=768 columns=1366 " cause bug infinite max size not supported on linux, all fonts and linespace not working
+" http://ubuntuguide.net/get-gvim-start-in-maximized-window-in-ubuntu-gnome
+" 2. Font Installation
+" Install fonts on Ubuntu
+" sudo apt-get install fonts-inconsolata
+" sudo fc-cache -fv
+
 if has("gui_running")
   if has("gui_gtk2") || has("gui_gtk3") 
-   " Install fonts on Ubuntu
-   " sudo apt-get install fonts-inconsolata
-   " sudo fc-cache -fv
+    set lines=535 columns=1366
     set guifont=Inconsolata\ 16
   elseif has("gui_macvim")
+    set lines=768 columns=1366
     set guifont=Menlo\ Regular:h14
   elseif has("gui_win32")
+    autocmd GUIEnter * :simalt ~n
     set guifont=Consolas:h15:cANSI
   endif
 endif
