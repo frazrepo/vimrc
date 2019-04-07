@@ -349,6 +349,15 @@ fun! TabOrComplete() "{{{
 	au InsertEnter * exec "inoremap <silent> <Tab> <C-R>=TabOrComplete()<cr>"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-rooter  {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+let g:rooter_patterns = ['.vimroot', '.git/', '.python-version']
+
+augroup vimrc_rooter
+    autocmd VimEnter * :Rooter
+augroup END
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim: fdm=marker

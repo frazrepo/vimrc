@@ -363,6 +363,7 @@ Regexp search/replace pattern
 - [vim-qlist](https://github.com/romainl/vim-qlist) : Enhances ilist and dlist
 - [vim-rainbow](https://github.com/luochen1990/rainbow) : Color parentheses, brackets,...
 - [vim-repeat](https://github.com/tpope/vim-repeat) : To repeat plugin command with dot (.)
+- [vim-rooter](https://github.com/airblade/vim-rooter) : Change dir to root project directory
 - [vim-rotatescheme](https://github.com/frazrepo/vimrc/tree/master/plugins/vim-rotatescheme) : Custom plugin to rotate a list of colorschemes
 - [vim-sandwich](https://github.com/machakann/vim-sandwich) : Surround texts with delimiters
 - [vim-schlepp](https://github.com/zirrostig/vim-schlepp) : Drag selection in visual mode

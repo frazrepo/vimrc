@@ -14,7 +14,6 @@ if !has("nvim")
     packadd! matchit
 endif
 
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Vim Plug plugins declaration
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -83,6 +82,7 @@ Plug 'mhinz/vim-signify'
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'pbogut/fzf-mru.vim'
+Plug 'airblade/vim-rooter'
 Plug 'scrooloose/nerdtree' , { 'on': 'NERDTreeToggle'}
 Plug 'vim-scripts/LargeFile'
 Plug 'justinmk/vim-gtfo'
