@@ -358,6 +358,16 @@ augroup vimrc_rooter
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-autoformat to use gq command  {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+function! AutoFormat()
+  :Autoformat
+endfunction
+
+" For SQL
+au FileType sql setlocal formatexpr=AutoFormat()
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim: fdm=marker

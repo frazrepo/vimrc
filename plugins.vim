@@ -56,11 +56,9 @@ Plug 'osyo-manga/vim-over'
 Plug 'unblevable/quick-scope'
 
 " Code formatting {{{1
-" Requires external formatter for each language
+" Requires external formatter for each language :sqlformat, gofmt, ...
 Plug 'Chiel92/vim-autoformat'
 Plug 'tommcdo/vim-lion'
-" Requires pip install sqlparse or pip3 install sqlparse
-Plug 'mpyatishev/vim-sqlformat', { 'for' : 'sql' }
 
 " Sorting {{{1
 Plug 'christoomey/vim-sort-motion'
