@@ -383,9 +383,6 @@ endtry
 nnoremap c* *Ncgn
 nnoremap c# #NcgN
 
-" Need to do this here
-call yankstack#setup()
-
 " Quick yanking to the end of the line
 nnoremap Y y$
 
