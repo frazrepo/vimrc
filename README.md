@@ -117,6 +117,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 ## Various mappings
 | Mapping    | Action                            |
 | ---        | ---                               |
+| F3         |Autoformat             |
 | F8         |Toggle quickfix window             |
 | F10        |Rotate colorschemes                |
 | F11        |Tagbar Toggle                      |
@@ -291,6 +292,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | up/down/left/right | After a selection in visual mode, drag using arrow key |
 
 **vim-gutentags and tagbar**
+
 | Mapping            | Action           |
 | ---                | ---              |
 | F11                |  Toogle tagBar   |
