@@ -358,6 +358,8 @@ endfunction
 " For SQL
 au FileType sql setlocal formatexpr=AutoFormat()
 
+noremap <F3> :Autoformat<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

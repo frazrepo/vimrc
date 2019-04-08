@@ -228,7 +228,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping                | Action                            |
 | ---                    | ---                               |
-| :Autoformat            | Format entire buffer or selection |
+| :Autoformat or F3      | Format entire buffer or selection |
 | gq{motion} or {visual} | gq Formatting for sql                     |
 
 **vim-signature**
