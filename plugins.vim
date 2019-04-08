@@ -68,7 +68,6 @@ Plug 'itchyny/lightline.vim'
 Plug 'frazrepo/vim-rainbow', { 'on' : 'RainbowToggle' }
 Plug 'kshenoy/vim-signature'
 Plug 'machakann/vim-highlightedyank'
-Plug 'romainl/vim-cool'
 Plug 'frazrepo/vim-rotatescheme'
 
 " Git integration {{{1

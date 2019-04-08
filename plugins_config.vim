@@ -253,11 +253,6 @@ vmap  <right> <Plug>SchleppRight
 nmap gr <Plug>(operator-replace)
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-cool {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:CoolTotalMatches = 1
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-signature for easier marks navigation on azerty keyboard  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 map (' ['
