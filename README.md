@@ -231,11 +231,12 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | !p and !n | Cycle Paste   |
 | F3        | Toggle YRShow |
 
-**vim-sqlformat**
+**vim-autoformat and vim-sqlformat**
 
-| Mapping                | Action        |
-| ---                    | ---           |
-| gq{motion} or {visual} | gq Formatting |
+| Mapping                | Action                            |
+| ---                    | ---                               |
+| :Autoformat            | Format entire buffer or selection |
+| gq{motion} or {visual} | gq Formatting                     |
 
 **vim-signature**
 
