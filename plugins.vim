@@ -31,7 +31,6 @@ Plug 'w0rp/ale', { 'on' : 'ALEToggle' }
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-unimpaired'
 Plug 'vim-scripts/Transpose'
-Plug 'frazrepo/vim-yankstack'
 
 " Text Objects, Motions and Operators {{{1
 Plug 'jceb/vim-textobj-uri'

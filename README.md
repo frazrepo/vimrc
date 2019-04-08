@@ -224,13 +224,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | ---           | ---                     |
 | F10 / <S-F10> | Rotate Forward/Backward |
 
-**vim-yankstack**
-
-| Mapping   | Action        |
-| ---       | ---           |
-| !p and !n | Cycle Paste   |
-| F3        | Toggle YRShow |
-
 **vim-autoformat**
 
 | Mapping                | Action                            |
@@ -336,7 +329,6 @@ Regexp search/replace pattern
 - [auto-pairs](https://github.com/jiangmiao/auto-pairs) : () , {} ,[] , etc...
 - [completor](https://github.com/maralla/completor.vim) : Manage auto completion correctly
 - [ctrlsf.vim](https://github.com/dyng/ctrlsf.vim) : Side searching
-- [yankstack](https://github.com/maxbrunsfeld/vim-yankstack): Enhance copy/paste experience
 - [emmet-vim](https://github.com/mattn/emmet-vim) : Html editing
 - [fzf / fzf.vim](https://github.com/junegunn/fzf.vim)
 - [goyo](https://github.com/junegunn/goyo.vim) : Dependency for zenroom2
