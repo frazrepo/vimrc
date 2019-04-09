@@ -46,12 +46,6 @@ command! W w !sudo tee % > /dev/null
 " Set 1 lines to the cursor - when moving vertically using j/k
 set scrolloff=1
 
-" Avoid garbled characters in Chinese language windows OS
-let $LANG='en' 
-set langmenu=en
-source $VIMRUNTIME/delmenu.vim
-source $VIMRUNTIME/menu.vim
-
 " Spell checking to fr
 " setlocal nospell spelllang=fr
 
@@ -60,13 +54,14 @@ set wildmenu
 
 " Do no display toolbar to have more text by default 
 if has("gui_running")
+    " Hide toolbar
     set guioptions -=T
-    " menu
-    " set guioptions -=m
-    " right scrollbar
-    set guioptions -=r
-    " left scrollbar
-    set guioptions -=L
+    " Hide menu
+    set guioptions -=m
+    " Hide right scrollbar
+    " set guioptions -=r
+    " Hide left scrollbar
+    " set guioptions -=L
 endif
 
 " Ignore compiled files
