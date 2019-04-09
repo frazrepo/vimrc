@@ -33,6 +33,9 @@ let mapleader = "\<Space>"
 " Fast saving
 nmap <leader>w :w!<cr>
 
+" Default to system clipboard
+set clipboard^=unnamed,unnamedplus
+
 " :W sudo saves the file 
 " (useful for handling the permission-denied error on Linux)
 command! W w !sudo tee % > /dev/null
