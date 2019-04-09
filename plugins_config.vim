@@ -338,8 +338,8 @@ fun! TabOrComplete() "{{{
 " => vim-rooter  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:rooter_patterns = ['.vimroot', '.git/', '.python-version']
-
 augroup vimrc_rooter
+    autocmd!
     autocmd VimEnter * :Rooter
 augroup END
 
@@ -354,6 +354,13 @@ endfunction
 au FileType sql setlocal formatexpr=AutoFormat()
 
 noremap <F3> :Autoformat<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => netrw configuration {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+let g:netrw_banner=0
+let g:netrw_winsize=15
+let g:netrw_liststyle=3
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
