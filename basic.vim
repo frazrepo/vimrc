@@ -58,6 +58,12 @@ set wildmenu
 " Do no display toolbar to have more text by default 
 if has("gui_running")
     set guioptions -=T
+    " menu
+    " set guioptions -=m
+    " right scrollbar
+    set guioptions -=r
+    " left scrollbar
+    set guioptions -=L
 endif
 
 " Ignore compiled files
