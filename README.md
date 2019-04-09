@@ -350,7 +350,6 @@ Regexp search/replace pattern
 - [vim-lion](https://github.com/tommcdo/vim-lion) : Align text (like tabular)
 - [* vim-operator-user/vim-operator-replace](https://github.com/kana/vim-operator-replace) : Custom operators
 - [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys
-- [vim-obsession / vim-prosession](https://github.com/dhruvasagar/vim-prosession) : Autosave session
 - [* vim-over](https://github.com/osyo-manga/vim-over) : Highlight buffer when operating from command line (s/, /, g/)
 - [vim-polyglot](https://github.com/sheerun/vim-polyglot) : Languages Support
 - [vim-quickscope](https://github.com/unblevable/quick-scope) : Highlight potential candidates for inline searching with f or t

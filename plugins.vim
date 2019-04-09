@@ -94,8 +94,6 @@ Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
 " Session management {{{1
-Plug 'tpope/vim-obsession'
-Plug 'dhruvasagar/vim-prosession'
 Plug 'artnez/vim-wipeout'
 Plug 'frazrepo/vim-autosave'
 

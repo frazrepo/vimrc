@@ -10,9 +10,6 @@ source $HOME/.vim_runtime/plugins.vim
 source $HOME/.vim_runtime/basic.vim
 source $HOME/.vim_runtime/plugins_config.vim
 
-" Menu
-source $HOME/.vim_runtime/menu.vim
-
 " Host specific vim 
 if filereadable(expand($HOME . '/.vimrc.local'))
     source $HOME/.vimrc.local
