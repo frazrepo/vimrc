@@ -24,6 +24,9 @@ set undolevels=1000
 " Filetype
 set nocompatible 
 
+" Do not show mode (displayed by lightline already)
+set noshowmode
+
 " Disable startup message
 set shortmess=atI
 
