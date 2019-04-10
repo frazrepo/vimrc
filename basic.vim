@@ -295,9 +295,10 @@ nnoremap / /\v
 nnoremap ? ?\v
 
 " Search/Replace and Search/Replace with confirmation with * or # pattern
-nnoremap <leader>r :%s///g<Left><Left>
+" nnoremap <leader>r :%s///g<Left><Left>
+nnoremap <leader>r :OverCommandLine%s///g<Left><Left>
 nnoremap <leader>rc :%s///gc<Left><Left><Left>
-
+    
 " Search current buffer using g and show line number
 nnoremap <leader>f :g//#<Left><Left>
  
