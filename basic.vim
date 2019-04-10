@@ -415,15 +415,7 @@ nnoremap 'p vi'p
 nnoremap (p vi(p
 nnoremap )p vi)p
 
-" Experimental paste from yank register and from system register
-nnoremap <leader>y "+y
-xnoremap <leader>y "+y
-nmap <leader>Y "+Y
-
-nnoremap <leader>p "+p
-nnoremap <leader>P "+P
-xnoremap <leader>p "+p
-
+" Experimental paste from yank register 
 xnoremap ,p "0p
 nnoremap ,p "0p
 
