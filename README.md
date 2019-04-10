@@ -211,7 +211,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<leader>bb     | Buffers                       |
 | \<leader>u      | MRU                           |
 | \<leader>t      | Tags                           |
-| Ag select words | K                             |
 
 **vim-rainbow**
 
@@ -274,7 +273,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping   | Action                                   |
 | ---       | ---                                      |
-| \<leader>F| Find selected word                       |
+| K | Find selected word                       |
 | F9        | Toggle CtrlSF result Window              |
 | \<C-f>f   | Prompt in command line to find a pattern |
 

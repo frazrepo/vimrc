@@ -54,29 +54,6 @@ nnoremap <silent> <leader>t :Tags<CR>
 " FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => FZF Ag {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-nnoremap <silent> <leader>/ :execute 'Ag ' . input('Ag/')<CR>
-nnoremap <silent> K :call SearchWordWithAg()<CR>
-vnoremap <silent> K :call SearchVisualSelectionWithAg()<CR>
-
-function! SearchWordWithAg()
-    execute 'Ag' expand('<cword>')
-endfunction
-
-function! SearchVisualSelectionWithAg() range
-  let old_reg = getreg('"')
-  let old_regtype = getregtype('"')
-  let old_clipboard = &clipboard
-  set clipboard&
-  normal! ""gvy
-  let selection = getreg('"')
-  call setreg('"', old_reg, old_regtype)
-  let &clipboard = old_clipboard
-  execute 'Ag' selection
-endfunction
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => NerdTree {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 let g:NERDTreeWinPos = "left"
@@ -203,8 +180,8 @@ nnoremap <F9> :CtrlSFToggle<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 let g:ctrlsf_populate_qflist = 1
 
-nnoremap <silent> <leader>F :call SearchWordWithCtrlSf()<CR>
-vnoremap <silent> <leader>F :call SearchVisualSelectionWithCtrlSf()<CR>
+nnoremap <silent> K :call SearchWordWithCtrlSf()<CR>
+vnoremap <silent> K :call SearchVisualSelectionWithCtrlSf()<CR>
 
 function! SearchWordWithCtrlSf()
    execute 'CtrlSF' expand('<cword>')
