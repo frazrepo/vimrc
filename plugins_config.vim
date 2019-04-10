@@ -179,6 +179,7 @@ nnoremap <F9> :CtrlSFToggle<CR>
 " => CtrlSF Quick Search {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 let g:ctrlsf_populate_qflist = 1
+let g:ctrlsf_ignore_dir = ['tags']
 
 nnoremap <silent> K :call SearchWordWithCtrlSf()<CR>
 vnoremap <silent> K :call SearchVisualSelectionWithCtrlSf()<CR>
