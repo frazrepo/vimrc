@@ -205,13 +205,6 @@ function! SearchVisualSelectionWithCtrlSf() range
 let g:vim_markdown_folding_disabled = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Ack.vim to use ag {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-if executable('ag') 
-    let g:ackprg = 'ag --vimgrep' 
-endif
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Wipeout {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 map <leader>bw :Wipeout<cr>
