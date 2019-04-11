@@ -342,6 +342,7 @@ Regexp search/replace pattern
 - [vim-commentary](https://github.com/tpope/vim-commentary)
 - [* vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
 - [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
+- [vim-grepper](https://github.com/mhinz/vim-grepper) : Another grep command
 - [vim-gtfo](https://github.com/justinmk/vim-gtfo) : Go to File Manager or Terminal
 - [vim-gutentag](https://github.com/ludovicchabant/vim-gutentags) : Tag generation and nagivation
 - [tagbar](https://github.com/majutsushi/tagbar) : Tagbar
