@@ -276,6 +276,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | K | Find selected word                       |
 | F9        | Toggle CtrlSF result Window              |
 | \<C-f>f   | Prompt in command line to find a pattern |
+| \<C-f>f %   | For current buffer |
 
 **yankmatches**
 
