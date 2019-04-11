@@ -47,7 +47,6 @@ Plug 'kana/vim-operator-user'
 Plug 'kana/vim-operator-replace'
 
 " Code Searching {{{1
-Plug 'mhinz/vim-grepper'
 Plug 'dyng/ctrlsf.vim'
 Plug 'tpope/vim-abolish'
 Plug 'frazrepo/vim-yankmatches'
