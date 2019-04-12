@@ -175,10 +175,16 @@ set synmaxcol=200
 
 " ColorScheme ayu for GUI and apprentice for terminal
 if has("gui_running")
+  if frazutils#HasColorscheme('ayu')
     color ayu
+  else
+    color desert
+  endif
     " Alternative : nord, dracula
 else
+  if frazutils#HasColorscheme('apprentice')
     color apprentice
+  endif
 endif
 
 " Maximized window on start and Font Size
