@@ -171,6 +171,7 @@ let g:ctrlsf_default_root = 'project'
 let g:ctrlsf_default_view_mode = 'compact'
 
 nmap     <C-F>f <Plug>CtrlSFPrompt
+nmap     <C-F>b :CtrlSF  %<Left><Left>
 vmap     <C-F>f <Plug>CtrlSFVwordPath
 vmap     <C-F>F <Plug>CtrlSFVwordExec
 nnoremap <F9> :CtrlSFToggle<CR>
