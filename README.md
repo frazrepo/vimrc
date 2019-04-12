@@ -73,15 +73,15 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 **Tabs**
 
-| Mapping       | Action                                |
-| ---           | ---                                   |
-| \<leader>tn   | New tab                               |
-| \<leader>to   | Tab Only                              |
-| \<leader>tc   | Close tab                             |
-| \<leader>tm   | Move tab                              |
-| \<leader>tl   | Alternate tab                         |
+| Mapping        | Action                                |
+| ---            | ---                                   |
+| \<leader>tn    | New tab                               |
+| \<leader>to    | Tab Only                              |
+| \<leader>tc    | Close tab                             |
+| \<leader>tm    | Move tab                              |
+| \<leader>tl    | Alternate tab                         |
 | \<leader>\<bs> | Alternate tab                         |
-| \<leader>te   | Edit new tab in current buffer's path |
+| \<leader>te    | Edit new tab in current buffer's path |
 
 ## Editing mappings
 
@@ -226,9 +226,9 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 **vim-autoformat**
 
-| Mapping                | Action                            |
-| ---                    | ---                               |
-| :Autoformat or F3      | Format entire buffer or selection |
+| Mapping                | Action                                    |
+| ---                    | ---                                       |
+| :Autoformat or F3      | Format entire buffer or selection         |
 | gq{motion} or {visual} | gq Formatting for sql                     |
 
 **vim-signature**
@@ -263,20 +263,20 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 **ultisnips and vim-snippets**
 
-| Mapping  | Action     |
-| ---      | ---        |
-| \<Tab>   | Expand |
-| \<C-j>   | Jump forward |
+| Mapping  | Action        |
+| ---      | ---           |
+| \<Tab>   | Expand        |
+| \<C-j>   | Jump forward  |
 | \<C-k>   | Jump backward |
 
 **CtrlSF**
 
 | Mapping   | Action                                   |
 | ---       | ---                                      |
-| K | Find selected word                       |
+| K         | Find selected word                       |
 | F9        | Toggle CtrlSF result Window              |
 | \<C-f>f   | Prompt in command line to find a pattern |
-| \<C-f>b   | For current buffer |
+| \<C-f>b   | For current buffer                       |
 
 **yankmatches**
 
