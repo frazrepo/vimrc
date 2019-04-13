@@ -181,7 +181,7 @@ endfunction
 
 " ColorScheme ayu for GUI and apprentice for terminal
 if has("gui_running")
-  if HasColorscheme('aayu')
+  if HasColorscheme('ayu')
     color ayu
     " Alternative : nord, dracula
   else
