@@ -51,6 +51,7 @@ Plug 'tpope/vim-abolish'
 Plug 'frazrepo/vim-yankmatches'
 Plug 'osyo-manga/vim-over'
 Plug 'unblevable/quick-scope'
+Plug 'haya14busa/incsearch.vim'
 
 " Code formatting {{{1
 " Requires external formatter for each language :sqlformat, gofmt, ...

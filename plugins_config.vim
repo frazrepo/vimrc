@@ -200,6 +200,13 @@ function! SearchVisualSelectionWithCtrlSf() range
     let &clipboard = old_clipboard
     execute 'CtrlSF' selection
  endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => incsearch (experimental) {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+map /  <Plug>(incsearch-forward)
+map ?  <Plug>(incsearch-bhttps://github.com/haya14busa/incsearch.vimackward)
+map g/ <Plug>(incsearch-stay)
  
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-markdown {{{1
