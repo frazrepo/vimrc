@@ -298,6 +298,9 @@ vnoremap < <gv
 " Reselect last insertext
 nnoremap gV `[v`]
 
+" Reselect last pasted text
+nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
