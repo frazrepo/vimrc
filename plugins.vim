@@ -33,7 +33,6 @@ Plug 'tpope/vim-unimpaired'
 Plug 'vim-scripts/Transpose'
 
 " Text Objects, Motions and Operators {{{1
-Plug 'jceb/vim-textobj-uri'
 Plug 'kana/vim-textobj-user'
 Plug 'kana/vim-textobj-entire'
 Plug 'kana/vim-textobj-line'

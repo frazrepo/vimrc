@@ -301,7 +301,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping                    | Action     |
 | ---                        | ---        |
-| ciu, dau                   | Uri u      |
 | ciq, daq                   | Quotes q   |
 | vic, vac, viC, vaC         | Columns c  |
 | cii, dai                   | Indents i  |
@@ -362,7 +361,7 @@ Regexp search/replace pattern
 - [vim-signature](https://github.com/kshenoy/vim-signature) : Display marks
 - [vim-signify](https://github.com/mhinz/vim-signify) : Git status
 - [vim-sort-motion](https://github.com/christoomey/vim-sort-motion) : Add an operator gs to apply sort
-- [vim-textobj](https://github.com/kana/vim-textobj-user/wiki) | [targets.vim](https://github.com/wellle/targets.vim) : Some text objects -  uri (u), quotes (q), columns (c), indents (i), line (l), entire buffer (e)
+- [vim-textobj](https://github.com/kana/vim-textobj-user/wiki) | [targets.vim](https://github.com/wellle/targets.vim) : Some text objects - quotes (q), columns (c), indents (i), line (l), entire buffer (e)
 - [vim-tranpose](https://github.com/salsifis/vim-transpose) : Tranpose lines, csv, words, ...
 - [* vim-unimpaired](https://github.com/tpope/vim-unimpaired) :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
 - [vim-wipeout](https://github.com/artnez/vim-wipeout) : Close all hidden buffers
