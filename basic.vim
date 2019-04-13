@@ -419,6 +419,11 @@ nnoremap gQ mmgggqG`m
 nnoremap <M-o> mao<Esc>`aj
 nnoremap <M-O> maO<Esc>`ak
 nnoremap <cr> o<esc>
+" GVIm only
+nnoremap <S-CR> i<CR><Esc> 
+" Needed for CLI VIm 
+" (Note: ^[0M was created with Ctrl+V Shift+Enter, don't type it directly)
+" nnoremap ^[0M i<CR><Esc>   
 
 " Navigating quickfix (Experimental)
 nnoremap <A-Down> :cnext<Cr>
