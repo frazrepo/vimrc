@@ -173,16 +173,22 @@ syntax on
 " And optimize performance for longlines
 set synmaxcol=200
 
+" Check colorScheme function
+function! HasColorscheme(name)
+    let pat = 'colors/'.a:name.'.vim'
+    return !empty(globpath(&rtp, pat))
+endfunction
+
 " ColorScheme ayu for GUI and apprentice for terminal
 if has("gui_running")
-  if frazutils#HasColorscheme('ayu')
+  if HasColorscheme('aayu')
     color ayu
+    " Alternative : nord, dracula
   else
     color desert
   endif
-    " Alternative : nord, dracula
 else
-  if frazutils#HasColorscheme('apprentice')
+  if HasColorscheme('apprentice')
     color apprentice
   endif
 endif
@@ -608,25 +614,25 @@ endfunction
 
 " List all leader mappings
 function! ListLeaders()
-     silent! redir @a
-     silent! nmap <LEADER>
-     silent! redir END
-     silent! new
-     silent! put! a
-     silent! g/^s*$/d
-     silent! %s/^.*,//
-     silent! normal ggVg
-     silent! sort
-     silent! let lines = getline(1,"$")
+  silent! redir @a
+  silent! nmap <LEADER>
+  silent! redir END
+  silent! new
+  silent! put! a
+  silent! g/^s*$/d
+  silent! %s/^.*,//
+  silent! normal ggVg
+  silent! sort
+  silent! let lines = getline(1,"$")
 endfunction
 command! ListLeaders call ListLeaders()
 
 " Change Current Working Directory (CWD) to buffer directory
 function! ChangeCurrentWorkingDirectory()
-try
-  :cd %:p:h
-catch
-endtry
+  try
+    :cd %:p:h
+  catch
+  endtry
 endfunction
 
 " AutoSave Scratch buffer
