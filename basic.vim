@@ -396,6 +396,8 @@ endtry
 " Change word under cursor and dot repeat, really useful to edit quickly
 nnoremap c* *Ncgn
 nnoremap c# #NcgN
+nnoremap cg* g*Ncgn
+nnoremap cg# g#NcgN
 
 " Quick yanking to the end of the line
 nnoremap Y y$
