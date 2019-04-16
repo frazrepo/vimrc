@@ -75,9 +75,6 @@ else
     set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
 endif
 
-"Always show current position
-set ruler
-
 " Height of the command bar
 set cmdheight=1
 
@@ -669,6 +666,9 @@ function! SortByWidth() range
     silent! execute a:firstline . "," . a:lastline . 's/^\d\+\s//'
 endfunction
 command! -range=%  SortByWidth <line1>,<line2>call SortByWidth()
+
+"  Clean all register
+command! WipeReg for i in range(34,122) | silent! call setreg(nr2char(i), []) | endfor 
 
 " Experimental Vertical Motion using g "
 " https://gist.github.com/romainl/047aca21e338df7ccf771f96858edb86 

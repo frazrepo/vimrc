@@ -314,6 +314,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | ListLeaders   | Show all leader mappings   |
 | VisualBlock   | Activate visual block mode |
 | SortByWitdh   | Sort lines by width |
+| WipeReg   | Clean all registers |
 
 ## Custom Docs
 
