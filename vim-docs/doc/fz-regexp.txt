@@ -16,6 +16,7 @@ INTRODUCTION                                    *fz-regexp*
 11. Substitute with contents of register          |fz-regexp-11|
 12. Miscellaneous g command                       |fz-regexp-12|
 13. Swap columns in a csv file                    |fz-regexp-13|
+14. Yank or Delete all matches lines              |fz-regexp-14|
 XX.Ressources                                     |fz-regexp-XX|
 
 
@@ -73,13 +74,13 @@ XX.Ressources                                     |fz-regexp-XX|
 12. Miscellaneous g commands                      *fz-regexp-12*
 >
   " Duplicate every line
-  :g/^/t. 
+  :g/^/t.
 
   " Copy line matching pattern to EOF
-  :g/pattern/t$ 
+  :g/pattern/t$
 
   " perform a substitute on every other line
-  :g/^/ if line('.')%2|s/^/zz / 
+  :g/^/ if line('.')%2|s/^/zz /
 
   " Save results to a register a (append)
   :g/pattern/y A
@@ -90,5 +91,15 @@ XX.Ressources                                     |fz-regexp-XX|
   " Swap column1,column2
   :%s/\(.*,\)\(.*,\)/\2\1
 <
+
+14. Yank or Delete all matches lines              *fz-regexp-14*
+>
+  " Clear register a and then yank all matched patterns
+  qaq:g/pattern/y A
+
+  " Delete all matches patterns (v for reverse)
+  :g/pattern/d
+<
+
 XX.Ressources                                     *fz-regexp-XX*
  - http://zzapper.co.uk/vimtips.html
