@@ -259,11 +259,15 @@ set wrap "Wrap lines
 set complete=.,w,b,u
 
 """"""""""""""""""""""""""""""
-" => Mode related {{{1
+" => Insert Mode related {{{1
 """"""""""""""""""""""""""""""
 
 " Map jk to ESC in insert mode 
 inoremap jk <Esc>
+
+" CTRL-U in insert mode deletes a lot.	Use CTRL-G u to first break undo,
+" so that you can undo CTRL-U after inserting a line break.
+inoremap <C-U> <C-G>u<C-U>
 
 """"""""""""""""""""""""""""""
 " => Visual mode related {{{1
@@ -520,6 +524,7 @@ elseif executable('ack')
     set grepprg=ack\ --nogroup\ --nocolor\ --ignore-case\ --column
     set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Help file speedups {{{1
