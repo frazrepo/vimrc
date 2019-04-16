@@ -92,10 +92,6 @@ Plug 'maralla/completor.vim'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
-" Session management {{{1
-Plug 'artnez/vim-wipeout'
-Plug 'frazrepo/vim-autosave'
-
 "  Zen Mode for writing text {{{1
 Plug 'junegunn/goyo.vim', { 'for' : 'markdown' }
 Plug 'amix/vim-zenroom2', { 'for' : 'markdown' }

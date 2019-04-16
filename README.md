@@ -63,7 +63,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<leader>bn  | New buffer                     |
 | \<leader>bd  | Close buffer                   |
 | \<leader>ba  | Close all buffers              |
-| \<leader>bw  | Wipeout all hidden buffers     |
 | \<bs>        | Navigate alternate buffer      |
 | \<leader>h   | Navigate previous              |
 | \<leader>l   | Navigate next                  |
@@ -365,7 +364,6 @@ Regexp search/replace pattern
 - [vim-textobj](https://github.com/kana/vim-textobj-user/wiki) | [targets.vim](https://github.com/wellle/targets.vim) : Some text objects - quotes (q), columns (c), indents (i), line (l), entire buffer (e)
 - [vim-tranpose](https://github.com/salsifis/vim-transpose) : Tranpose lines, csv, words, ...
 - [* vim-unimpaired](https://github.com/tpope/vim-unimpaired) :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
-- [vim-wipeout](https://github.com/artnez/vim-wipeout) : Close all hidden buffers
 - [vim-zenroom2 (use goyo)](https://github.com/amix/vim-zenroom2) : Zen mode editing
 - [yankmatches](https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup/blob/master/plugin/yankmatches.vim) : Copy or Delete search results
 
