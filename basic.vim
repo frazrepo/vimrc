@@ -136,6 +136,8 @@ set number
 " RelativeNumber cause slowness on large file
 " set relativenumber
 
+" Automatically reload file on change without asking
+set autoread
 
 " Linespace
 set linespace=4
