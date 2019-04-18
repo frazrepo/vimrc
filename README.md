@@ -78,7 +78,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<leader>to    | Tab Only                              |
 | \<leader>tc    | Close tab                             |
 | \<leader>tm    | Move tab                              |
-| \<leader>tl    | Alternate tab                         |
 | \<leader>\<bs> | Alternate tab                         |
 | \<leader>te    | Edit new tab in current buffer's path |
 
