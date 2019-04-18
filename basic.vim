@@ -677,6 +677,22 @@ command! -range=%  SortByWidth <line1>,<line2>call SortByWidth()
 "  Clean all register
 command! WipeReg for i in range(34,122) | silent! call setreg(nr2char(i), []) | endfor 
 
+" https://gist.github.com/romainl/047aca21e338df7ccf771f96858edb86 
+function! CCR()
+    let cmdline = getcmdline()
+    if cmdline =~ '\v\C/(#|nu|num|numb|numbe|number)$'
+        " like :g//# but prompts for a command
+        return "\<CR>:"
+    elseif cmdline =~ '\v\C^(dli|il)'
+        " like :dlist or :ilist but prompts for a count for :djump or :ijump
+        return "\<CR>:" . cmdline[0] . "j  " . split(cmdline, " ")[1] . "\<S-Left>\<Left>"
+    else
+        return "\<CR>"
+    endif
+endfunction
+" map '<CR>' in command-line mode to execute the function above
+cnoremap <expr> <CR> CCR()
+
 " }}}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
