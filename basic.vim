@@ -139,6 +139,11 @@ set number
 " Automatically reload file on change without asking
 set autoread
 
+" Join option
+if v:version > 703 || v:version == 703 && has("patch541")
+  set formatoptions+=j " Delete comment character when joining commented lines
+endif
+
 " Linespace
 set linespace=4
 
