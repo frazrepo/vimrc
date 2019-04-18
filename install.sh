@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo "Installing vimrc file.."
 option=$1
 userdir=~
 userConfig=$userdir/.vimrc
@@ -13,9 +12,15 @@ minVimrcfile=minimal-vimrc
 if [ $userConfig ]; then
     cp  $userConfig $backupConfig
 fi
-if [ $option = "m"] then
+
+[ -z $option ] && option="full"
+
+if [ $option == "m" ]
+then
+    echo "Installing minimal vimrc file.."
     cp  $minVimrcfile $userConfig
 else
+    echo "Installing vimrc file.."
     cp  $vimrcfile $userConfig
 fi
 
