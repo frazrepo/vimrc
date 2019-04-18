@@ -46,7 +46,6 @@ let g:fzf_colors =
 " => FZF map {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
-nnoremap <silent> <leader>bb :Buffers<CR>
 nnoremap <silent> <leader>, :Buffers<CR>
 nnoremap <silent> <leader>t :Tags<CR>
 " To ignore git files
@@ -204,8 +203,9 @@ function! SearchVisualSelectionWithCtrlSf() range
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => incsearch (experimental) {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+" https://github.com/haya14busa/incsearch.vimackward
 map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-bhttps://github.com/haya14busa/incsearch.vimackward)
+map ?  <Plug>(incsearch-b)
 map g/ <Plug>(incsearch-stay)
  
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

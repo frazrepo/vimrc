@@ -183,8 +183,6 @@ if has("gui_running")
   if HasColorscheme('ayu')
     color ayu
     " Alternative : nord, dracula
-  else
-    color desert
   endif
 else
   if HasColorscheme('apprentice')
