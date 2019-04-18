@@ -330,13 +330,6 @@ au FileType sql setlocal formatexpr=AutoFormat()
 noremap <F3> :Autoformat<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => netrw configuration {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:netrw_banner=0
-let g:netrw_winsize=15
-let g:netrw_liststyle=3
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => yankmatches {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:YankMatches#ClipboardRegister='+'
