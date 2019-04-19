@@ -24,9 +24,6 @@ call plug#begin('~/.vim_runtime/plugins')
 " Plugs Start
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Dependencies {{{1
-Plug 'w0rp/ale', { 'on' : 'ALEToggle' }
-
 " Code Editing {{{1
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-unimpaired'

@@ -324,7 +324,6 @@ Regexp search/replace pattern
 
 ## Plugins list
 
-- [ale](https://github.com/w0rp/ale) : Linter
 - [auto-pairs](https://github.com/jiangmiao/auto-pairs) : () , {} ,[] , etc...
 - [completor](https://github.com/maralla/completor.vim) : Manage auto completion correctly
 - [ctrlsf.vim](https://github.com/dyng/ctrlsf.vim) : Side searching
