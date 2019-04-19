@@ -15,7 +15,7 @@ fi
 
 [ -z $option ] && option="full"
 
-if [ $option == "m" ]
+if [ $option == "-m" ]
 then
     echo "Installing minimal vimrc file.."
     cp  $minVimrcfile $userConfig

@@ -14,7 +14,7 @@ if exist %userConfig% (
     copy /y  "%userConfig%" "%backupConfig%"
 )
 
-if "%1" == "m" (
+if "%1" == "/m" (
     echo "Installing minimal vimrc file.."
     copy /y "%minVimrcfile%" "%userConfig%"
 ) else (
