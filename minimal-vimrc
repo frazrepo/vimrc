@@ -507,6 +507,9 @@ elseif executable('ack')
     set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
 
+"Cheap Recent files
+nnoremap <leader>u :bro ol<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => netrw configuration {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
