@@ -510,6 +510,9 @@ endif
 "Cheap Recent files
 nnoremap <leader>u :bro ol<CR>
 
+"Cheap buffer switching
+nnoremap <leader>, :ls<CR>:b<Space>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => netrw configuration {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
