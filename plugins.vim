@@ -95,7 +95,7 @@ Plug 'honza/vim-snippets'
 Plug 'junegunn/goyo.vim', { 'for' : 'markdown' }
 Plug 'amix/vim-zenroom2', { 'for' : 'markdown' }
 
-" Languages {{{1
+" Languages (Cause Slowness) {{{1
 " Plug 'sheerun/vim-polyglot'
 
 "Code navigation - Install ctags for host OS {{{1
