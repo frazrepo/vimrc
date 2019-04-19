@@ -71,7 +71,6 @@ Plug 'frazrepo/vim-rotatescheme'
 
 " Git integration {{{1
 Plug 'tpope/vim-fugitive'
-Plug 'mhinz/vim-signify'
 
 " File management, searching {{{1
 Plug 'junegunn/fzf'
@@ -97,7 +96,7 @@ Plug 'junegunn/goyo.vim', { 'for' : 'markdown' }
 Plug 'amix/vim-zenroom2', { 'for' : 'markdown' }
 
 " Languages {{{1
-Plug 'sheerun/vim-polyglot'
+" Plug 'sheerun/vim-polyglot'
 
 "Code navigation - Install ctags for host OS {{{1
 " On Linux do a chmod +x ./plat/update_tags.sh
