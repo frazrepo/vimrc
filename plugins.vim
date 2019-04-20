@@ -39,8 +39,7 @@ Plug 'wellle/targets.vim'
 Plug 'matze/vim-move'
 Plug 'zirrostig/vim-schlepp'
 Plug 'tommcdo/vim-exchange'
-Plug 'kana/vim-operator-user'
-Plug 'kana/vim-operator-replace'
+Plug 'vim-scripts/ReplaceWithRegister'
 
 " Code Searching {{{1
 Plug 'dyng/ctrlsf.vim'

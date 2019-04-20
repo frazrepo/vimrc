@@ -159,11 +159,12 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | cx{to-motion} | Exchange with text object or motion |
 | cxx           | Exchange lines                      |
 
-**vim-operator-replace**
+**ReplaceWithRegister**
 
 | Mapping       | Action                              |
 | ---           | ---                                 |
 | {"reg}gr{to-motion} |Paste register content on text object or motion|
+| {"reg}{motion}grr |Paste register content on lines|
 
 **vim-sandwich with surroung mappings**
 
@@ -345,7 +346,7 @@ Regexp search/replace pattern
 - [incsearch](https://github.com/haya14busa/incsearch.vim) : Improved incremental searching
 - [tagbar](https://github.com/majutsushi/tagbar) : Tagbar
 - [vim-lion](https://github.com/tommcdo/vim-lion) : Align text (like tabular)
-- [* vim-operator-user/vim-operator-replace](https://github.com/kana/vim-operator-replace) : Custom operators
+- [* ReplaceWithRegister](https://github.com/vim-scripts/ReplaceWithRegister) : Custom operator gr to replace with register content
 - [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys
 - [* vim-over](https://github.com/osyo-manga/vim-over) : Highlight buffer when operating from command line (s/, /, g/)
 - [vim-polyglot](https://github.com/sheerun/vim-polyglot) : Languages Support

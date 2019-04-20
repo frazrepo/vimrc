@@ -217,11 +217,6 @@ vmap  <left>  <Plug>SchleppLeft
 vmap  <right> <Plug>SchleppRight
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-operator-replace {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-nmap gr <Plug>(operator-replace)
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-signature for easier marks navigation on azerty keyboard  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 map (' ['
