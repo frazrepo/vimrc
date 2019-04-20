@@ -26,7 +26,7 @@ set undolevels=1000
 set nocompatible 
 
 " Do not show mode (displayed by lightline already)
-set noshowmode
+" set noshowmode
 
 " Disable startup message
 set shortmess=atI
@@ -213,24 +213,19 @@ nnoremap <M-9>        :Smaller<CR>
 nnoremap <M-0>        :Bigger<CR>
 
 "Statusline
-set laststatus=2
-set statusline=
-set statusline+=%2*\ %l
-set statusline+=\ %*
-set statusline+=%1*\ ‹‹
-set statusline+=%1*\ %f\ %*
-set statusline+=%1*\ ››
-set statusline+=%1*\ %m
-set statusline+=%3*\ %F
-set statusline+=%=
-set statusline+=%3*\ ‹‹
-set statusline+=%3*\ %{strftime('%R',getftime(expand('%')))}
-set statusline+=%3*\ ::
-set statusline+=%3*\ %n
-set statusline+=%3*\ ››\ %*
-hi User1 guifg=#FFFFFF guibg=#191f26 gui=BOLD
+set statusline =%2*\ %t       "tail of the filename
+set statusline+=%2*\ [%{strlen(&fenc)?&fenc:'none'}, "file encoding
+set statusline+=%2*\ %{&ff}] "file format
+set statusline+=%2*\ %h      "help file flag
+set statusline+=%2*\ %m      "modified flag
+set statusline+=%2*\ %r      "read only flag
+set statusline+=%2*\ %y      "filetype
+set statusline+=%2*\ %=      "left/right separator
+set statusline+=%2*\ %c,     "cursor column
+set statusline+=%2*\ %l/%L   "cursor line/total lines
+set statusline+=\ %P    "percent through file
+set laststatus =2
 hi User2 guifg=#000000 guibg=#959ca6
-hi User3 guifg=#000000 guibg=#4cbf99
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo {{{1
