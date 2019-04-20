@@ -418,6 +418,7 @@ nnoremap Y y$
 
 " Quick macro recording and replaying ,qq for recording, and Q for replaying
 nnoremap Q @q
+xnoremap Q :normal @q<cr>
 
 " Indent/Format All documents using = or gq
 nnoremap g= mmgg=G`m
