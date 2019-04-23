@@ -532,6 +532,9 @@ nnoremap <leader>u :bro ol<CR>
 "Cheap buffer switching
 nnoremap <leader>, :ls<CR>:b<Space>
 
+" Cheap ctrl+p
+nnoremap <C-p> :find *
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => netrw configuration {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
