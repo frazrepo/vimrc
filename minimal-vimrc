@@ -210,20 +210,22 @@ endif
 nnoremap <M-9>        :Smaller<CR>
 nnoremap <M-0>        :Bigger<CR>
 
-"Statusline
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Statusline {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " :h mode() to see all modes
 let g:currentmode={
-    \ 'n'      : 'N ',
+    \ 'n'      : 'NORMAL ',
     \ 'no'     : 'N·Operator Pending ',
-    \ 'v'      : 'V ',
-    \ 'V'      : 'V·Line ',
-    \ '\<C-V>' : 'V·Block ',
+    \ 'v'      : 'VISUAL ',
+    \ 'V'      : 'Visual·Line ',
+    \ '\<C-V>' : 'Visual·Block ',
     \ 's'      : 'Select ',
     \ 'S'      : 'S·Line ',
     \ '\<C-S>' : 'S·Block ',
-    \ 'i'      : 'I ',
-    \ 'R'      : 'R ',
+    \ 'i'      : 'INSERT ',
+    \ 'R'      : 'REPLACE ',
     \ 'Rv'     : 'V·Replace ',
     \ 'c'      : 'Command ',
     \ 'cv'     : 'Vim Ex ',
@@ -260,8 +262,8 @@ endfunction
 set laststatus=2
 set statusline=
 " set statusline+=%{ChangeStatuslineColor()}
-set statusline+=%2*\ %{toupper(g:currentmode[mode()])}
-set statusline =%2*\ %t       "tail of the filename
+set statusline+=%1*\ %{toupper(g:currentmode[mode()])}
+set statusline+=%2*\ %t       "tail of the filename
 set statusline+=%2*\ %h      "help file flag
 set statusline+=%2*\ %y      "filetype
 set statusline+=%2*\ %m      "modified flag
@@ -270,6 +272,7 @@ set statusline+=%*
 set statusline+=%2*\ %=      "left/right separator
 set statusline+=%3*\ %3p%%\      "percent through file
 set statusline+=%4*\ %3l:%-3c   "cursor line/cursor column
+hi User1 guifg=#000000 guibg=#8ac6f2
 hi User2 guifg=#000000 guibg=#808080
 hi User3 guifg=#000000 guibg=#969696
 hi User4 guifg=#000000 guibg=#a8a8a8
