@@ -339,6 +339,7 @@ Regexp search/replace pattern
 - [vim-abolish](https://github.com/tpope/vim-abolish) : Search words, Coercion
 - [vim-autoformat](https://github.com/Chiel92/vim-autoformat)
 - [vim-commentary](https://github.com/tpope/vim-commentary)
+- [vim-dirvish](https://github.com/justinmk/vim-dirvish)
 - [* vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
 - [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
 - [vim-gtfo](https://github.com/justinmk/vim-gtfo) : Go to File Manager or Terminal
