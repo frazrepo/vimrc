@@ -211,19 +211,68 @@ nnoremap <M-9>        :Smaller<CR>
 nnoremap <M-0>        :Bigger<CR>
 
 "Statusline
+
+" :h mode() to see all modes
+let g:currentmode={
+    \ 'n'      : 'N ',
+    \ 'no'     : 'N·Operator Pending ',
+    \ 'v'      : 'V ',
+    \ 'V'      : 'V·Line ',
+    \ '\<C-V>' : 'V·Block ',
+    \ 's'      : 'Select ',
+    \ 'S'      : 'S·Line ',
+    \ '\<C-S>' : 'S·Block ',
+    \ 'i'      : 'I ',
+    \ 'R'      : 'R ',
+    \ 'Rv'     : 'V·Replace ',
+    \ 'c'      : 'Command ',
+    \ 'cv'     : 'Vim Ex ',
+    \ 'ce'     : 'Ex ',
+    \ 'r'      : 'Prompt ',
+    \ 'rm'     : 'More ',
+    \ 'r?'     : 'Confirm ',
+    \ '!'      : 'Shell ',
+    \ 't'      : 'Terminal '
+    \}
+" Automatically change the statusline color depending on mode
+function! ChangeStatuslineColor()
+  if (mode() =~# '\v(n|no)')
+    exe 'hi! StatusLine ctermfg=008'
+  elseif (mode() =~# '\v(v|V)' || g:currentmode[mode()] ==# 'V·Block' || get(g:currentmode, mode(), '') ==# 't')
+    exe 'hi! StatusLine ctermfg=005'
+  elseif (mode() ==# 'i')
+    exe 'hi! StatusLine ctermfg=004'
+  else
+    exe 'hi! StatusLine ctermfg=006'
+  endif
+  return ''
+endfunction
+
+function! GitInfo()
+  let git = fugitive#head()
+  if git != ''
+    return '> '.fugitive#head()
+  else
+    return ''
+endfunction
+
+
+set laststatus=2
+set statusline=
+" set statusline+=%{ChangeStatuslineColor()}
+set statusline+=%2*\ %{toupper(g:currentmode[mode()])}
 set statusline =%2*\ %t       "tail of the filename
-set statusline+=%2*\ [%{strlen(&fenc)?&fenc:'none'}, "file encoding
-set statusline+=%2*\ %{&ff}] "file format
 set statusline+=%2*\ %h      "help file flag
+set statusline+=%2*\ %y      "filetype
 set statusline+=%2*\ %m      "modified flag
 set statusline+=%2*\ %r      "read only flag
-set statusline+=%2*\ %y      "filetype
+set statusline+=%*
 set statusline+=%2*\ %=      "left/right separator
-set statusline+=%2*\ %c,     "cursor column
-set statusline+=%2*\ %l/%L   "cursor line/total lines
-set statusline+=\ %P    "percent through file
-set laststatus =2
-hi User2 guifg=#000000 guibg=#959ca6
+set statusline+=%3*\ %3p%%\      "percent through file
+set statusline+=%4*\ %3l:%-3c   "cursor line/cursor column
+hi User2 guifg=#000000 guibg=#808080
+hi User3 guifg=#000000 guibg=#969696
+hi User4 guifg=#000000 guibg=#a8a8a8
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo {{{1
