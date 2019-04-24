@@ -236,42 +236,38 @@ let g:currentmode={
     \ '!'      : 'Shell ',
     \ 't'      : 'Terminal '
     \}
+
 " Automatically change the statusline color depending on mode
 function! ChangeStatuslineColor()
   if (mode() =~# '\v(n|no)')
-    exe 'hi! StatusLine ctermfg=008'
+    exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
   elseif (mode() =~# '\v(v|V)' || g:currentmode[mode()] ==# 'V·Block' || get(g:currentmode, mode(), '') ==# 't')
-    exe 'hi! StatusLine ctermfg=005'
+    exe 'hi! StatusLine ctermfg=005 guifg=#000000 guibg=#f2c68a gui=NONE cterm=None'
   elseif (mode() ==# 'i')
-    exe 'hi! StatusLine ctermfg=004'
+    exe 'hi! StatusLine ctermfg=004 guifg=#000000 guibg=#95e454 gui=NONE cterm=None'
   else
-    exe 'hi! StatusLine ctermfg=006'
+    exe 'hi! StatusLine ctermfg=006 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
   endif
   return ''
 endfunction
 
-function! GitInfo()
-  let git = fugitive#head()
-  if git != ''
-    return '> '.fugitive#head()
-  else
-    return ''
-endfunction
-
+"Default
+exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
 
 set laststatus=2
 set statusline=
-" set statusline+=%{ChangeStatuslineColor()}
-set statusline+=%1*\ %{toupper(g:currentmode[mode()])}
-set statusline+=%2*\ %t       "tail of the filename
-set statusline+=%2*\ %h      "help file flag
-set statusline+=%2*\ %y      "filetype
-set statusline+=%2*\ %m      "modified flag
-set statusline+=%2*\ %r      "read only flag
+set statusline+=%{ChangeStatuslineColor()}
+set statusline+=%0*\ %{toupper(g:currentmode[mode()])}
+set statusline+=%2*\ %t          "tail of the filename
+set statusline+=%2*\ %h          "help file flag
+set statusline+=%2*\ %y          "filetype
+set statusline+=%2*\ %m          "modified flag
+set statusline+=%2*\ %r          "read only flag
 set statusline+=%*
-set statusline+=%2*\ %=      "left/right separator
+set statusline+=%2*\ %=          "left/right separator
 set statusline+=%3*\ %3p%%\      "percent through file
-set statusline+=%4*\ %3l:%-3c   "cursor line/cursor column
+set statusline+=%4*\ %3l:%-3c    "cursor line/cursor column
+hi User0 guifg=#000000 guibg=#8ac6f2
 hi User1 guifg=#000000 guibg=#8ac6f2
 hi User2 guifg=#000000 guibg=#808080
 hi User3 guifg=#000000 guibg=#969696
