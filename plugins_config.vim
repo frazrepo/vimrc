@@ -9,8 +9,6 @@
 " => FZF MRU plugin {{{1
 """"""""""""""""""""""""""""""
 nnoremap <silent> <leader>u :FZFMru<CR>
-" Uncomment to list only files within the current directory
-" let g:fzf_mru_relative = 1
 
 """"""""""""""""""""""""""""""
 " => FZF plugin {{{1
@@ -43,9 +41,6 @@ let g:fzf_colors =
 nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
 nnoremap <silent> <leader>, :Buffers<CR>
 nnoremap <silent> <leader>t :Tags<CR>
-" To ignore git files
-" Add this to ENV
-" FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => NerdTree {{{1
@@ -145,13 +140,7 @@ nnoremap <silent> <leader>z :Goyo<cr>
 " => Emmet plugin remap {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 " Default leader <C-y> 
-" Performance pbm when setting tab or <C-j> (ultisnips map)
 let g:user_emmet_leader_key=','
-
-" Working tab completion mapping for emmet
-" Todo :integration with ultisnips and vim completor
-" let g:user_emmet_expandabbr_key='<Tab>'
-" imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => CTRLSF Side Search {{{1

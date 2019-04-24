@@ -61,10 +61,6 @@ if has("gui_running")
     set guioptions -=T
     " Hide menu
     set guioptions -=m
-    " Hide right scrollbar
-    " set guioptions -=r
-    " Hide left scrollbar
-    " set guioptions -=L
 endif
 
 " Ignore compiled files
@@ -105,6 +101,7 @@ set magic
 
 " Show matching brackets when text indicator is over them
 set showmatch 
+
 " How many tenths of a second to blink when matching brackets
 set mat=2
 
@@ -122,7 +119,6 @@ set foldmethod=manual
 
 " Dealing with special chars
 set encoding=utf-8
-" set fileencoding=utf-8
 
 " Activate mouse
 set mouse=a
@@ -131,10 +127,8 @@ set mouse=a
 set ttyfast
 set timeout timeoutlen=1000 ttimeoutlen=50
 
-" Number - No Default relative number
+" Number - No Default relative number (cause slowness)
 set number
-" RelativeNumber cause slowness on large file
-" set relativenumber
 
 " Automatically reload file on change without asking
 set autoread
@@ -169,7 +163,6 @@ highlight ColorColumn ctermbg=0 guibg=lightgrey
 
 "Performance : Do not load menu
 let did_install_default_menus=1
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts {{{1
