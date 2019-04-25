@@ -62,10 +62,6 @@ if has("gui_running")
     set guioptions -=T
     " Hide menu
     set guioptions -=m
-    " Hide right scrollbar
-    " set guioptions -=r
-    " Hide left scrollbar
-    " set guioptions -=L
 endif
 
 " Ignore compiled files
@@ -177,15 +173,6 @@ set synmaxcol=200
 
 
 " Maximized window on start and Font Size
-" For Ubuntu :
-" 1. Windows Size
-" set lines=768 columns=1366 " cause bug infinite max size not supported on linux, all fonts and linespace not working
-" http://ubuntuguide.net/get-gvim-start-in-maximized-window-in-ubuntu-gnome
-" 2. Font Installation
-" Install fonts on Ubuntu
-" sudo apt-get install fonts-inconsolata
-" sudo fc-cache -fv
-
 if has("gui_running")
   if has("gui_gtk2") || has("gui_gtk3") 
     set lines=535 columns=1366
@@ -601,6 +588,49 @@ au filetype help nnoremap <buffer><bs> <c-T>
 au filetype help nnoremap <buffer>q :q<CR>
 au filetype help set nonumber
 au filetype help wincmd _ " Maximize the help on open
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Text-Objects {{{1
+" https://gist.github.com/romainl/c0a8b57a36aec71a986f1120e1931f20
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 24 simple text-objects
+" ----------------------
+" i_ i. i: i, i; i| i/ i\ i* i+ i- i#
+" a_ a. a: a, a; a| a/ a\ a* a+ a- a#
+for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', '#' ]
+	execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
+	execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
+	execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
+	execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
+endfor
+
+" line text-objects
+" -----------------
+" il al
+xnoremap il g_o^
+onoremap il :normal vil<CR>
+xnoremap al $o0
+onoremap al :normal val<CR>
+
+" number text-objects (integer and float)
+" ---------------------------------------
+" in an
+function! VisualNumber()
+	call search('\d\([^0-9\.]\|$\)', 'cW')
+	normal v
+	call search('\(^\|[^0-9\.]\d\)', 'becW')
+endfunction
+xnoremap in :<C-u>call VisualNumber()<CR>
+onoremap in :normal vin<CR>
+
+" buffer(entire) text-objects
+" -------------------
+" ie ae
+" xnoremap ie :<C-u>let z = @/\|1;/^./kz<CR>G??<CR>:let @/ = z<CR>V'z "not working
+xnoremap ie GoggV
+onoremap ie :normal vie<CR>
+xnoremap ae GoggV
+onoremap ae :normal vae<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions and Commands {{{1
