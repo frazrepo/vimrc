@@ -208,7 +208,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping       | Action          |
 | ---           | ---             |
-| RainbowToogle | Toggle coloring |
+| RainbowToggle | Toggle coloring |
 
 **vim-rotatescheme**
 
@@ -287,7 +287,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping            | Action           |
 | ---                | ---              |
-| F11                |  Toogle tagBar   |
+| F11                |  Toggle tagBar   |
 
 **custom text-objects**
 
@@ -372,5 +372,4 @@ Just do following:
 * [Vincent Driessen's vimrc](https://github.com/nvie/vimrc/blob/master/vimrc)
 * [Toran Billups's vimrc](https://github.com/toranb/dotfiles/blob/master/vimrc)
 * [Damian Conway's vim setup](https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup)
-* [amix's vimrc](https://github.com/amix/vimrc)
 * [vimrcfu](https://vimrcfu.com/)
