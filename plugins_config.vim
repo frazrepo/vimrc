@@ -168,9 +168,9 @@ function! SearchVisualSelectionWithCtrlSf() range
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => incsearch (experimental) {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-" https://github.com/haya14busa/incsearch.vimackward
+" https://github.com/haya14busa/incsearch.vim
 map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-b)
+map ?  <Plug>(incsearch-backward)
 map g/ <Plug>(incsearch-stay)
  
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
