@@ -548,6 +548,21 @@ au filetype help set nonumber
 au filetype help wincmd _ " Maximize the help on open
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Text-Objects {{{1
+" https://gist.github.com/romainl/c0a8b57a36aec71a986f1120e1931f20
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" number text-objects (integer and float)
+" ---------------------------------------
+" in an
+function! VisualNumber()
+	call search('\d\([^0-9\.]\|$\)', 'cW')
+	normal v
+	call search('\(^\|[^0-9\.]\d\)', 'becW')
+endfunction
+xnoremap in :<C-u>call VisualNumber()<CR>
+onoremap in :normal vin<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions and Commands {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
