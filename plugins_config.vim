@@ -43,34 +43,10 @@ nnoremap <silent> <leader>, :Buffers<CR>
 nnoremap <silent> <leader>t :Tags<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => NerdTree {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-let g:NERDTreeWinPos = "left"
-let g:NERDTreeQuitOnOpen= 1
-
-" Show hidden files, too
-let NERDTreeShowFiles=1
-let NERDTreeShowHidden=1
-
-" Don't display these kinds of files
-let NERDTreeIgnore=[ '\.pyc$', '\.pyo$', '\.py\$class$', '\.obj$',
-            \ '\.o$', '\.so$', '\.egg$', '^\.git$', '__pycache__', '\.DS_Store' ]
-let g:NERDTreeWinSize=35
-map <leader>nn :NERDTreeToggle<cr>
-map <leader>nb :NERDTreeFromBookmark<Space>
-map <leader>nf :NERDTreeFind<cr>
-
-" Store the bookmarks file
-let NERDTreeBookmarksFile=expand("~/.vim/NERDTreeBookmarks")
-" Show the bookmarks table on startup
-let NERDTreeShowBookmarks=1
-" Close vim when the last window is nerdtree
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Dirvish {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 map <leader>v :Dirvish<cr>
+map <leader>nn :Dirvish<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Lightline {{{1

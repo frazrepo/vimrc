@@ -185,13 +185,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | gof     | Open current buffer directory             |
 | got     | Open current buffer directory on terminal |
 
-**nerdtree**
-
-| Mapping     | Action                        |
-| ---         | ---                           |
-| \<leader>nn | Open current buffer directory |
-| \<leader>nf | Open current buffer directory |
-
 **vim-unimpaired**
 
 | Mapping                          | Action                 |
@@ -334,7 +327,6 @@ Regexp search/replace pattern
 - [LargeFile](http://www.vim.org/scripts/script.php?script_id=1506) : Handling large files
 - [lightline](https://github.com/itchyny/lightline.vim) : Lightweight status line 
 - [fzfmru](https://github.com/pbogut/fzf-mru.vim) : Browse most recent files
-- [nerdtree](https://github.com/scrooloose/nerdtree) : File browser
 - [utilsnips + vim-snippets](https://github.com/SirVer/ultisnips) : Snippets
 - [vim-abolish](https://github.com/tpope/vim-abolish) : Search words, Coercion
 - [vim-autoformat](https://github.com/Chiel92/vim-autoformat)
