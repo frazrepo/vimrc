@@ -304,6 +304,11 @@ nnoremap gV `[v`]
 " Reselect last pasted text
 nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
 
+"Cycle visual mode
+xnoremap <expr> v 
+              \ (mode() ==# 'v' ? "\<C-V>"
+              \ : mode() ==# 'V' ? 'v' : 'V')
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
