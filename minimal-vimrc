@@ -3,14 +3,6 @@
 " Maintainer: 
 "       frazrepo
 "       https://github.com/frazrepo/vimrc
-"
-" Debug : vim --startuptime vim.log
-"
-" To start vim without using this .vimrc file, use:
-"     vim -u NORC
-"
-" To start vim without loading any .vimrc or plugins, use:
-"     vim -u NONE
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -568,7 +560,7 @@ nnoremap <leader>, :ls<CR>:b<Space>
 nnoremap <C-p> :find *
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => netrw configuration {{{1
+" => Netrw configuration {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:netrw_banner=0
 let g:netrw_winsize=15
