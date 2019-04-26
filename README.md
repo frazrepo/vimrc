@@ -115,7 +115,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 ## Various mappings
 | Mapping    | Action                            |
 | ---        | ---                               |
-| F3         |Autoformat             |
 | F4         |UndoTreeToggle             |
 | F8         |Toggle quickfix window             |
 | F10        |Rotate colorschemes                |
@@ -216,13 +215,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | Mapping       | Action                  |
 | ---           | ---                     |
 | F10 / <S-F10> | Rotate Forward/Backward |
-
-**vim-autoformat**
-
-| Mapping                | Action                                    |
-| ---                    | ---                                       |
-| :Autoformat or F3      | Format entire buffer or selection         |
-| gq{motion} or {visual} | gq Formatting for sql                     |
 
 **vim-signature**
 
@@ -331,7 +323,6 @@ Regexp search/replace pattern
 - [utilsnips + vim-snippets](https://github.com/SirVer/ultisnips) : Snippets
 - [Undotree](https://github.com/mbbill/undotree): Undo tree history
 - [vim-abolish](https://github.com/tpope/vim-abolish) : Search words, Coercion
-- [vim-autoformat](https://github.com/Chiel92/vim-autoformat)
 - [vim-commentary](https://github.com/tpope/vim-commentary)
 - [vim-dirvish](https://github.com/justinmk/vim-dirvish)
 - [* vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx

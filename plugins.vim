@@ -50,8 +50,6 @@ Plug 'unblevable/quick-scope'
 Plug 'haya14busa/incsearch.vim'
 
 " Code formatting {{{1
-" Requires external formatter for each language :sqlformat, gofmt, ...
-Plug 'Chiel92/vim-autoformat'
 Plug 'tommcdo/vim-lion'
 
 " Sorting {{{1

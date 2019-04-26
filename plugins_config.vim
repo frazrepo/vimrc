@@ -286,13 +286,13 @@ augroup END
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-autoformat to use gq command  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-function! AutoFormat()
-  :Autoformat
-endfunction
+" function! AutoFormat()
+"   :Autoformat
+" endfunction
 
-" For SQL
-au FileType sql setlocal formatexpr=AutoFormat()
-noremap <F3> :Autoformat<CR>
+" " For SQL
+" au FileType sql setlocal formatexpr=AutoFormat()
+" noremap <F3> :Autoformat<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => yankmatches {{{1
