@@ -30,9 +30,6 @@ Plug 'tpope/vim-unimpaired'
 Plug 'vim-scripts/Transpose'
 
 " Text Objects, Motions and Operators {{{1
-Plug 'kana/vim-textobj-user'
-Plug 'kana/vim-textobj-entire'
-Plug 'kana/vim-textobj-line'
 Plug 'coderifous/textobj-word-column.vim'
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'wellle/targets.vim'

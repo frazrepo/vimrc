@@ -611,7 +611,7 @@ for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', 
 	execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
 endfor
 
-" line text-objects
+" Line text-object
 " -----------------
 " il al
 xnoremap il g_o0
@@ -619,7 +619,7 @@ onoremap il :<C-u>normal vil<CR>
 xnoremap al $o0
 onoremap al :<C-u>normal val<CR>
 
-" number text-objects (integer and float)
+" Number text-object (integer and float)
 " ---------------------------------------
 " in an
 function! VisualNumber()
@@ -630,7 +630,7 @@ endfunction
 xnoremap in :<C-u>call VisualNumber()<CR>
 onoremap in :<C-u>normal vin<CR>
 
-" buffer(entire) text-objects
+" buffer(entire) text-object
 " -------------------
 " ie ae
 xnoremap ie GoggV
@@ -638,7 +638,7 @@ onoremap ie :<C-u>normal vie<CR>
 xnoremap ae GoggV
 onoremap ae :<C-u>normal vae<CR>
 
-
+" Comment text-object
 " includes comment markers 
 xnoremap a? ?<C-r>=split(&commentstring, "%s")[0]<CR><CR>o/<C-r>=split(&commentstring, "%s")[1]<CR><CR> 
 onoremap a? :<C-u>normal va?<CR> 

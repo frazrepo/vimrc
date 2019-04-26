@@ -556,7 +556,16 @@ au filetype help wincmd _ " Maximize the help on open
 " => Text-Objects {{{1
 " https://gist.github.com/romainl/c0a8b57a36aec71a986f1120e1931f20
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" number text-objects (integer and float)
+
+" Line text-object
+" -----------------
+" il al
+xnoremap il g_o0
+onoremap il :<C-u>normal vil<CR>
+xnoremap al $o0
+onoremap al :<C-u>normal val<CR>
+
+" Number text-object (integer and float)
 " ---------------------------------------
 " in an
 function! VisualNumber()
@@ -565,7 +574,24 @@ function! VisualNumber()
 	call search('\(^\|[^0-9\.]\d\)', 'becW')
 endfunction
 xnoremap in :<C-u>call VisualNumber()<CR>
-onoremap in :normal vin<CR>
+onoremap in :<C-u>normal vin<CR>
+
+" Buffer(entire) text-object
+" -------------------
+" ie ae
+xnoremap ie GoggV
+onoremap ie :<C-u>normal vie<CR>
+xnoremap ae GoggV
+onoremap ae :<C-u>normal vae<CR>
+
+" Comment text-object
+" includes comment markers 
+xnoremap a? ?<C-r>=split(&commentstring, "%s")[0]<CR><CR>o/<C-r>=split(&commentstring, "%s")[1]<CR><CR> 
+onoremap a? :<C-u>normal va?<CR> 
+" excludes comment markers 
+xnoremap i? ?<C-r>=split(&commentstring, "%s")[0]<CR>?+<CR>o/<C-r>=split(&commentstring, "%s")[1]<CR>/-<CR> 
+onoremap i? :<C-u>normal vi?<CR>
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions and Commands {{{1
