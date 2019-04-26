@@ -638,14 +638,6 @@ onoremap ie :<C-u>normal vie<CR>
 xnoremap ae GoggV
 onoremap ae :<C-u>normal vae<CR>
 
-" Comment text-object
-" includes comment markers 
-xnoremap a? ?<C-r>=split(&commentstring, "%s")[0]<CR><CR>o/<C-r>=split(&commentstring, "%s")[1]<CR><CR> 
-onoremap a? :<C-u>normal va?<CR> 
-" excludes comment markers 
-xnoremap i? ?<C-r>=split(&commentstring, "%s")[0]<CR>?+<CR>o/<C-r>=split(&commentstring, "%s")[1]<CR>/-<CR> 
-onoremap i? :<C-u>normal vi?<CR>
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions and Commands {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
