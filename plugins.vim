@@ -27,7 +27,7 @@ call plug#begin('~/.vim_runtime/plugins')
 " Code Editing {{{1
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-unimpaired'
-Plug 'vim-scripts/Transpose'
+Plug 'vim-scripts/Transpose', { 'on': ['Transpose','TransposeWords','TransposeCSV','TransposeTab','TransposeInteractive']}
 
 " Text Objects, Motions and Operators {{{1
 Plug 'coderifous/textobj-word-column.vim'
