@@ -95,7 +95,7 @@ Plug 'amix/vim-zenroom2', { 'for' : 'markdown' }
 Plug 'sheerun/vim-polyglot'
 
 " Undo
-Plug 'mbbill/undotree'
+Plug 'mbbill/undotree', { 'on' : 'UndotreeToggle' }
 
 "Code navigation {{{1
 " On Linux do a chmod +x ./plat/update_tags.sh
