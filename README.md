@@ -116,6 +116,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | Mapping    | Action                            |
 | ---        | ---                               |
 | F3         |Autoformat             |
+| F4         |UndoTreeToggle             |
 | F8         |Toggle quickfix window             |
 | F10        |Rotate colorschemes                |
 | F11        |Tagbar Toggle                      |
@@ -328,6 +329,7 @@ Regexp search/replace pattern
 - [lightline](https://github.com/itchyny/lightline.vim) : Lightweight status line 
 - [fzfmru](https://github.com/pbogut/fzf-mru.vim) : Browse most recent files
 - [utilsnips + vim-snippets](https://github.com/SirVer/ultisnips) : Snippets
+- [Undotree](https://github.com/mbbill/undotree): Undo tree history
 - [vim-abolish](https://github.com/tpope/vim-abolish) : Search words, Coercion
 - [vim-autoformat](https://github.com/Chiel92/vim-autoformat)
 - [vim-commentary](https://github.com/tpope/vim-commentary)

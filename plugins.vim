@@ -94,6 +94,9 @@ Plug 'amix/vim-zenroom2', { 'for' : 'markdown' }
 " Languages {{{1
 Plug 'sheerun/vim-polyglot'
 
+" Undo
+Plug 'mbbill/undotree'
+
 "Code navigation {{{1
 " On Linux do a chmod +x ./plat/update_tags.sh
 " Install ctags for host OS 
