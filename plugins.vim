@@ -97,7 +97,7 @@ Plug 'mbbill/undotree', { 'on' : 'UndotreeToggle' }
 " Install ctags for host OS 
 if executable('ctags')
     Plug 'ludovicchabant/vim-gutentags'
-    Plug 'majutsushi/tagbar'
+    Plug 'majutsushi/tagbar' , { 'on' : 'TagbarToggle'}
 endif
 " }}}
 
