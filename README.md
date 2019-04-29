@@ -318,7 +318,6 @@ Regexp search/replace pattern
 - [emmet-vim](https://github.com/mattn/emmet-vim) : Html editing
 - [fzf / fzf.vim](https://github.com/junegunn/fzf.vim)
 - [goyo](https://github.com/junegunn/goyo.vim) : Dependency for zenroom2
-- [LargeFile](http://www.vim.org/scripts/script.php?script_id=1506) : Handling large files
 - [lightline](https://github.com/itchyny/lightline.vim) : Lightweight status line 
 - [neoformat](https://github.com/sbdchd/neoformat): Various formatters for many languages
 - [fzfmru](https://github.com/pbogut/fzf-mru.vim) : Browse most recent files

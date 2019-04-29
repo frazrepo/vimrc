@@ -69,7 +69,6 @@ Plug 'junegunn/fzf.vim'
 Plug 'pbogut/fzf-mru.vim'
 Plug 'airblade/vim-rooter'
 Plug 'justinmk/vim-dirvish'
-Plug 'vim-scripts/LargeFile'
 Plug 'justinmk/vim-gtfo'
 Plug 'romainl/vim-qlist'
 
