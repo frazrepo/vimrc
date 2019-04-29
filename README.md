@@ -319,6 +319,7 @@ Regexp search/replace pattern
 - [goyo](https://github.com/junegunn/goyo.vim) : Dependency for zenroom2
 - [LargeFile](http://www.vim.org/scripts/script.php?script_id=1506) : Handling large files
 - [lightline](https://github.com/itchyny/lightline.vim) : Lightweight status line 
+- [neoformat](https://github.com/sbdchd/neoformat): Various formatters for many languages
 - [fzfmru](https://github.com/pbogut/fzf-mru.vim) : Browse most recent files
 - [utilsnips + vim-snippets](https://github.com/SirVer/ultisnips) : Snippets
 - [Undotree](https://github.com/mbbill/undotree): Undo tree history

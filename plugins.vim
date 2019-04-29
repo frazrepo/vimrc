@@ -86,8 +86,9 @@ Plug 'honza/vim-snippets'
 Plug 'junegunn/goyo.vim', { 'for' : 'markdown' }
 Plug 'amix/vim-zenroom2', { 'for' : 'markdown' }
 
-" Languages {{{1
+" Languages - Formatters {{{1
 Plug 'sheerun/vim-polyglot'
+Plug 'sbdchd/neoformat'
 
 " Undo
 Plug 'mbbill/undotree', { 'on' : 'UndotreeToggle' }
