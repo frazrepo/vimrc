@@ -284,15 +284,10 @@ augroup vimrc_rooter
 augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-autoformat to use gq command  {{{1
+" => neoformat  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-" function! AutoFormat()
-"   :Autoformat
-" endfunction
-
-" " For SQL
-" au FileType sql setlocal formatexpr=AutoFormat()
-" noremap <F3> :Autoformat<CR>
+noremap <F3> :Neoformat<CR>
+let g:neoformat_try_formatprg = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => yankmatches {{{1
