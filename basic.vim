@@ -481,6 +481,7 @@ map ² .
 " Marks keepjumps 
 nnoremap mù m`
 nnoremap ùù ``
+nnoremap ' `
 
 " For Tags navigation - <C-$> doesn't work yet
 nmap <F12> <C-]>
