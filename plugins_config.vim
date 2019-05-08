@@ -167,14 +167,6 @@ function! SearchVisualSelectionWithCtrlSf() range
  endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => incsearch (experimental) {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-" https://github.com/haya14busa/incsearch.vim
-map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-backward)
-map g/ <Plug>(incsearch-stay)
- 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-markdown {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:vim_markdown_folding_disabled = 1

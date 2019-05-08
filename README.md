@@ -330,7 +330,6 @@ Regexp search/replace pattern
 - [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
 - [vim-gtfo](https://github.com/justinmk/vim-gtfo) : Go to File Manager or Terminal
 - [vim-gutentag](https://github.com/ludovicchabant/vim-gutentags) : Tag generation and nagivation
-- [incsearch](https://github.com/haya14busa/incsearch.vim) : Improved incremental searching
 - [tagbar](https://github.com/majutsushi/tagbar) : Tagbar
 - [vim-lion](https://github.com/tommcdo/vim-lion) : Align text (like tabular)
 - [* ReplaceWithRegister](https://github.com/vim-scripts/ReplaceWithRegister) : Custom operator gr to replace with register content
