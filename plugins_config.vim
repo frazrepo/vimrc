@@ -180,12 +180,6 @@ vmap  <left>  <Plug>SchleppLeft
 vmap  <right> <Plug>SchleppRight
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-signature for easier marks navigation on azerty keyboard  {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-map (' ['
-map )' ]'
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Vim-autopairs workarounf for â, î and û {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:AutoPairsShortcutBackInsert=''

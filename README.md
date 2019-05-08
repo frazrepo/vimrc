@@ -344,7 +344,6 @@ Regexp search/replace pattern
 - [vim-rotatescheme](https://github.com/frazrepo/vimrc/tree/master/plugins/vim-rotatescheme) : Custom plugin to rotate a list of colorschemes
 - [vim-sandwich](https://github.com/machakann/vim-sandwich) : Surround texts with delimiters
 - [vim-schlepp](https://github.com/zirrostig/vim-schlepp) : Drag selection in visual mode
-- [vim-signature](https://github.com/kshenoy/vim-signature) : Display marks
 - [vim-sort-motion](https://github.com/christoomey/vim-sort-motion) : Add an operator gs to apply sort
 - [targets.vim](https://github.com/wellle/targets.vim) : Some text objects - quotes (q), columns (c), indents (i), line (l), entire buffer (e)
 - [vim-tranpose](https://github.com/salsifis/vim-transpose) : Tranpose lines, csv, words, ...

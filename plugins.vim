@@ -53,11 +53,10 @@ Plug 'christoomey/vim-sort-motion'
 
 " Visual Comfort - Color Schemes {{{1
 Plug 'frazrepo/vim-colorschemes'
+Plug 'frazrepo/vim-rotatescheme'
 Plug 'itchyny/lightline.vim'
 Plug 'frazrepo/vim-rainbow', { 'on' : 'RainbowToggle' }
-Plug 'kshenoy/vim-signature'
 Plug 'machakann/vim-highlightedyank'
-Plug 'frazrepo/vim-rotatescheme'
 
 " Git integration {{{1
 Plug 'tpope/vim-fugitive'
