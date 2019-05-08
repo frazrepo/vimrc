@@ -498,10 +498,6 @@ nnoremap <expr> j (v:count > 1 ? "m'" . v:count : '') . 'gj'
 nnoremap gj j 
 nnoremap gk k 
 
-" Better Paragraph motions
-nnoremap <expr> { len(getline(line('.') - 1)) > 0 ? '{+' : '{-'
-nnoremap <expr> } len(getline(line('.') + 1)) > 0 ? '}-' : '}+'
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Azerty keyboard optimizations {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
