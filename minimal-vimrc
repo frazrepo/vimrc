@@ -20,8 +20,8 @@ set undolevels=1000
 " Filetype
 set nocompatible 
 
-" Do not show mode (displayed by lightline already)
-" set noshowmode
+" Do not show mode (displayed by statusline already)
+set noshowmode
 
 " Disable startup message
 set shortmess=atI
@@ -248,11 +248,11 @@ set statusline+=%{ChangeStatuslineColor()}
 set statusline+=%0*\ %{toupper(g:currentmode[mode()])}
 set statusline+=%2*\ %t          "tail of the filename
 set statusline+=%2*\ %h          "help file flag
-set statusline+=%2*\ %y          "filetype
 set statusline+=%2*\ %m          "modified flag
 set statusline+=%2*\ %r          "read only flag
 set statusline+=%*
 set statusline+=%2*\ %=          "left/right separator
+set statusline+=%2*\ %y\           "filetype
 set statusline+=%3*\ %3p%%\      "percent through file
 set statusline+=%4*\ %3l:%-3c    "cursor line/cursor column
 hi User0 guifg=#000000 guibg=#8ac6f2
