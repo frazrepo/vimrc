@@ -441,10 +441,10 @@ nnoremap H ^
 nnoremap L $
 
 "Quick beautiful paste hack
-nnoremap "p vi"p
-nnoremap 'p vi'p
-nnoremap (p vi(p
-nnoremap )p vi)p
+nnoremap "p vi""0p
+nnoremap 'p vi'"0p
+nnoremap (p vi("0p
+nnoremap )p vi)"0p
 
 " Experimental paste from yank register 
 xnoremap ,p "0p
