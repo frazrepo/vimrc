@@ -33,3 +33,13 @@ au BufNewFile,BufRead   *.psm1  set ft=ps1
 au BufNewFile,BufRead   *.pssc  set ft=ps1
   augroup end
 endif
+
+if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'typescript') == -1
+  augroup filetypedetect
+  " typescript, from typescript.vim in leafgarland/typescript-vim
+" use `set filetype` to override default filetype=xml for *.ts files
+autocmd BufNewFile,BufRead *.ts  set filetype=typescript
+" use `setfiletype` to not override any other plugins like ianks/vim-tsx
+autocmd BufNewFile,BufRead *.tsx setfiletype typescript
+  augroup end
+endif
