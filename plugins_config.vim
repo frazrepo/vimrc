@@ -46,7 +46,6 @@ nnoremap <silent> <leader>t :Tags<CR>
 " => Dirvish {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 map <leader>v :Dirvish<cr>
-map <leader>nn :Dirvish<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Lightline {{{1
@@ -226,23 +225,9 @@ let g:move_auto_indent = 0
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Completor  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-
-function! s:IsEmmetInstalled()
-  return hasmapto('<plug>(emmet-move-next)', 'i') &&
-        \ hasmapto('<plug>(emmet-move-prev)', 'i') &&
-        \ hasmapto('<plug>(emmet-expand-abbr)', 'i')
-endfunction
-
 fun! TabOrComplete() "{{{
 		call UltiSnips#ExpandSnippet()
 		if g:ulti_expand_res == 0
-      if s:IsEmmetInstalled()
-        if emmet#isExpandable()
-            " Todo : Not working correctly, expand only the last one
-            call feedkeys(",,")
-            return ""
-        endif
-      endif
 			if pumvisible()
 				return "\<C-n>"
 			else
