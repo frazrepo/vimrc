@@ -1,7 +1,6 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Maintainer: 
-"       frazrepo
-"       https://github.com/frazrepo/vimrc
+" Maintainer: frazrepo
+" https://github.com/frazrepo/vimrc
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
