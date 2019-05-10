@@ -14,6 +14,7 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " Sets how many lines of history VIM has to remember
 set history=1000
 
@@ -75,9 +76,9 @@ endif
 " Ignore compiled files
 set wildignore=*.o,*~,*.pyc
 if has("win32") || has("win64")
-    set wildignore+=.git\*,.hg\*,.svn\*
+    set wildignore+=.git\*
 else
-    set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/.DS_Store
+    set wildignore+=*/.git/*
 endif
 
 " Height of the command bar
