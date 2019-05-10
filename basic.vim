@@ -386,7 +386,6 @@ map <leader>h :bprevious<cr>
 nnoremap <bs> <c-^>
 
 " Edit quickly with the current buffer path
-cnoremap %% <c-r>=expand("%:p:h")<cr>/ 
 map <leader>e :edit <c-r>=expand("%:p:h")<cr>/
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -502,6 +501,9 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Miscellaneous {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Expand %% to current path in command line mode
+cnoremap %% <c-r>=expand("%:p:h")<cr>/ 
 
 " For autocompletion
 inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
