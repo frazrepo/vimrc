@@ -1,7 +1,6 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Maintainer: 
-"       frazrepo
-"       https://github.com/frazrepo/vimrc
+" Maintainer: frazrepo
+" https://github.com/frazrepo/vimrc
 "
 " Debug : vim --startuptime vim.log
 "
@@ -427,8 +426,6 @@ nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
 
 "Insert new line in normal mode quickly
-nnoremap <M-o> mao<Esc>`aj
-nnoremap <M-O> maO<Esc>`ak
 nnoremap <cr> o<esc>
 nnoremap <S-CR> i<CR><Esc> 
 

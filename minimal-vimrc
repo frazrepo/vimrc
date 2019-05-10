@@ -1,13 +1,13 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Minimal vimrc
-" Maintainer: 
-"       frazrepo
-"       https://github.com/frazrepo/vimrc
+" Maintainer: frazrepo
+" https://github.com/frazrepo/vimrc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " runtimepath
 set rtp+=$HOME/.vim_runtime
 
@@ -459,8 +459,6 @@ nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
 
 "Insert new line in normal mode quickly
-nnoremap <M-o> mao<Esc>`aj
-nnoremap <M-O> maO<Esc>`ak
 nnoremap <cr> o<esc>
 nnoremap <S-CR> i<CR><Esc> 
 
