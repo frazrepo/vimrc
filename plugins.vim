@@ -78,10 +78,6 @@ Plug 'maralla/completor.vim'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
-"  Zen Mode for writing text {{{1
-Plug 'junegunn/goyo.vim', { 'for' : 'markdown' }
-Plug 'amix/vim-zenroom2', { 'for' : 'markdown' }
-
 " Languages - Formatters {{{1
 Plug 'sheerun/vim-polyglot'
 Plug 'sbdchd/neoformat'

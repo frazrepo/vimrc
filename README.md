@@ -77,7 +77,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<leader>tn    | New tab                               |
 | \<leader>to    | Tab Only                              |
 | \<leader>tc    | Close tab                             |
-| \<leader>tm    | Move tab                              |
 | \<leader>\<bs> | Alternate tab                         |
 | \<leader>te    | Edit new tab in current buffer's path |
 
@@ -87,10 +86,10 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping | Action   |
 | ---     | ---      |
-| "p      | for vi"p |
-| 'p      | for vi'p |
-| (p      | for vi(p |
-| )p      | for vi)p |
+| "p      | for vi""0p |
+| 'p      | for vi'"0p |
+| (p      | for vi("0p |
+| )p      | for vi)"0p |
 | ,p      | "0p      |
 
 **Formatting**
@@ -241,12 +240,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | ---        | ---         |
 | gs{motion} | gs3j, gsi(, |
 
-**goyo and zenroom for markdown**
-
-| Mapping   | Action   |
-| ---       | ---      |
-| <leader>z | Zen mode |
-
 **ultisnips and vim-snippets**
 
 | Mapping  | Action        |
@@ -317,7 +310,6 @@ Regexp search/replace pattern
 - [ctrlsf.vim](https://github.com/dyng/ctrlsf.vim) : Side searching
 - [emmet-vim](https://github.com/mattn/emmet-vim) : Html editing
 - [fzf / fzf.vim](https://github.com/junegunn/fzf.vim)
-- [goyo](https://github.com/junegunn/goyo.vim) : Dependency for zenroom2
 - [lightline](https://github.com/itchyny/lightline.vim) : Lightweight status line 
 - [neoformat](https://github.com/sbdchd/neoformat): Various formatters for many languages
 - [fzfmru](https://github.com/pbogut/fzf-mru.vim) : Browse most recent files
@@ -348,7 +340,6 @@ Regexp search/replace pattern
 - [targets.vim](https://github.com/wellle/targets.vim) : Some text objects - quotes (q), columns (c), indents (i), line (l), entire buffer (e)
 - [vim-tranpose](https://github.com/salsifis/vim-transpose) : Tranpose lines, csv, words, ...
 - [* vim-unimpaired](https://github.com/tpope/vim-unimpaired) :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
-- [vim-zenroom2 (use goyo)](https://github.com/amix/vim-zenroom2) : Zen mode editing
 - [yankmatches](https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup/blob/master/plugin/yankmatches.vim) : Copy or Delete search results
 
 [*] : A grade plugins, "sharpen the saw" philosophy
