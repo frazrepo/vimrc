@@ -307,6 +307,8 @@ vnoremap . :normal.<CR>
 " Indenting not working when the line starts with ##
 vnoremap > >gv
 vnoremap < <gv
+nnoremap < <<
+nnoremap > >>
 
 " Reselect last insertext
 nnoremap gV `[v`]
