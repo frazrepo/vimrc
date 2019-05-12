@@ -93,7 +93,7 @@ let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
 let g:UltiSnipsEditSplit="vertical"
 
 " Add custom directories for snippets
-let g:UltiSnipsSnippetDirectories = [$HOME.'/.vim_runtime/plugins/vim-snippets/UltiSnips', $HOME.'/.vim_runtime/plugins/frazrepo-snippets']
+let g:UltiSnipsSnippetDirectories = [$HOME.'/.vim_runtime/plugins/vim-snippets/UltiSnips']
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim unimpaired  {{{1
