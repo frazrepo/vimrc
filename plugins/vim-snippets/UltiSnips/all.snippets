@@ -25,10 +25,10 @@ snip += box[3]`
 $0
 endsnippet
 
-snippet bbox "A nice box over the full width" b
+snippet bbox "A nice box over 71 columns" b
 `!p
 if not snip.c:
-	width = int(vim.eval("&textwidth - (virtcol('.') == 1 ? 0 : virtcol('.'))")) or 71
+	width = 71
 box = make_box(len(t[1]), width)
 snip.rv = box[0]
 snip += box[1]
