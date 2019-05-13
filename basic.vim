@@ -713,6 +713,18 @@ command! -range=%  SortByWidth <line1>,<line2>call SortByWidth()
 "  Clean all register
 command! WipeReg for i in range(34,122) | silent! call setreg(nr2char(i), []) | endfor 
 
+" RemoveTrailingSpaces
+function! s:RemoveTrailingSpaces()
+    let user_gdefault = &gdefault
+    try
+        set nogdefault
+        silent! %s/\s\+$
+    finally
+        let &gdefault = user_gdefault
+    endtry
+endfunction
+command! RemoveTrailingSpaces call s:RemoveTrailingSpaces()
+
 " https://gist.github.com/romainl/047aca21e338df7ccf771f96858edb86 
 function! CCR()
     let cmdline = getcmdline()
