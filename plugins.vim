@@ -85,7 +85,7 @@ Plug 'sbdchd/neoformat'
 " Undo
 Plug 'mbbill/undotree', { 'on' : 'UndotreeToggle' }
 
-" Scratch
+" Scratch (Experimental)
 Plug 'frazrepo/scratch'
 
 "Code navigation {{{1

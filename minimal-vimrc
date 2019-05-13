@@ -595,7 +595,7 @@ let g:netrw_winsize=15
 let g:netrw_liststyle=3
 let g:netrw_browse_split = 4
 let g:netrw_altv = 1
-" Mapping like nerdtree
+" Mapping like dirvish
 map <leader>v :Vexplore %:p:h<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
