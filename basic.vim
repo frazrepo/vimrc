@@ -667,8 +667,7 @@ function! ListLeaders()
   silent! put! a
   silent! g/^s*$/d
   silent! %s/^.*,//
-  silent! normal ggVg
-  silent! sort
+  silent! %sort
   silent! let lines = getline(1,"$")
 endfunction
 command! ListLeaders call ListLeaders()
