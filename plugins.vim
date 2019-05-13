@@ -85,6 +85,9 @@ Plug 'sbdchd/neoformat'
 " Undo
 Plug 'mbbill/undotree', { 'on' : 'UndotreeToggle' }
 
+" Scratch
+Plug 'frazrepo/scratch'
+
 "Code navigation {{{1
 " On Linux do a chmod +x ./plat/update_tags.sh
 " Install ctags for host OS 
