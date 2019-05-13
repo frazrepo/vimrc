@@ -37,7 +37,7 @@ let g:fzf_colors =
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => FZF map {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-nnoremap <silent> <c-p> :Files <C-R>=expand('%:h')<CR><CR>
+nnoremap <silent> <c-p> :Files<CR>
 nnoremap <silent> <leader>, :Buffers<CR>
 nnoremap <silent> <leader>t :Tags<CR>
 
@@ -242,11 +242,8 @@ fun! TabOrComplete() "{{{
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-rooter  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:rooter_patterns = ['.vimroot', '.git/', '.python-version']
-augroup vimrc_rooter
-    autocmd!
-    autocmd VimEnter * :Rooter
-augroup END
+let g:rooter_silent_chdir = 1
+let g:rooter_change_directory_for_non_project_files = 'current'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => neoformat  {{{1

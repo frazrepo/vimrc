@@ -362,11 +362,12 @@ xnoremap <c-k> 5k
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
-" CWD automatically for the current buffer
-augroup CwdBufferEnter
-  autocmd!
-  autocmd Filetype,BufEnter *  call ChangeCurrentWorkingDirectory()
-augroup END
+" Not needed CWD automatically for the current buffer
+" vim-rooter already handles this
+" augroup CwdBufferEnter
+"   autocmd!
+"   autocmd Filetype,BufEnter *  call ChangeCurrentWorkingDirectory()
+" augroup END
 
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
