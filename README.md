@@ -330,6 +330,7 @@ Regexp search/replace pattern
 - [vim-polyglot](https://github.com/sheerun/vim-polyglot) : Languages Support
 - [vim-quickscope](https://github.com/unblevable/quick-scope) : Highlight potential candidates for inline searching with f or t
 - [vim-qlist](https://github.com/romainl/vim-qlist) : Enhances ilist and dlist
+- [vim-qf](https://github.com/romainl/vim-qf) : Quickfix management, filtering,...
 - [vim-rainbow](https://github.com/luochen1990/rainbow) : Color parentheses, brackets,...
 - [vim-repeat](https://github.com/tpope/vim-repeat) : To repeat plugin command with dot (.)
 - [vim-rooter](https://github.com/airblade/vim-rooter) : Change dir to root project directory
