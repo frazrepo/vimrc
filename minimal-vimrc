@@ -218,6 +218,8 @@ function! StatuslineMode()
     return "VISUAL"
   elseif l:mode==#"V"
     return "V-LINE"
+  elseif l:mode==#"\<C-v>"
+    return "V-BLOCK"
   elseif l:mode==#"i"
     return "INSERT"
   elseif l:mode==#"R"
