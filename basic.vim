@@ -308,9 +308,6 @@ vnoremap < <gv
 " Reselect last insertext
 nnoremap gV `[v`]
 
-" Reselect last pasted text
-nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
-
 "Cycle visual mode
 xnoremap <expr> v 
               \ (mode() ==# 'v' ? "\<C-V>"
