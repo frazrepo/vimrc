@@ -214,8 +214,10 @@ function! StatuslineMode()
   let l:mode=mode()
   if l:mode==#"n"
     return "NORMAL"
-  elseif l:mode==?"v"
+  elseif l:mode==#"v"
     return "VISUAL"
+  elseif l:mode==#"V"
+    return "V-LINE"
   elseif l:mode==#"i"
     return "INSERT"
   elseif l:mode==#"R"
@@ -251,9 +253,7 @@ exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
 set laststatus=2
 set statusline=
 set statusline+=%{ChangeStatuslineColor()}
-" set statusline+=%0*\ %{mode()}
 set statusline+=%0*\ %{StatuslineMode()}
-" set statusline+=%0*\ %{toupper(g:currentmode[mode()])}
 set statusline+=%2*\ %t          "tail of the filename
 set statusline+=%2*\ %h          "help file flag
 set statusline+=%2*\ %m          "modified flag
