@@ -485,9 +485,9 @@ nnoremap 'p vi'"0p
 nnoremap (p vi("0p
 nnoremap )p vi)"0p
 
-" Experimental paste from yank register 
-xnoremap ,p "0p
-nnoremap ,p "0p
+" Paste from yank register 
+xnoremap <leader>p "0p
+nnoremap <leader>p "0p
 
 " Use CTRL-S for saving, also in Insert mode
 noremap <C-S>		     :update<CR>
