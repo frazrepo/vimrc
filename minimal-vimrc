@@ -58,9 +58,6 @@ command! W w !sudo tee % > /dev/null
 " Set 1 lines to the cursor - when moving vertically using j/k
 set scrolloff=1
 
-" Spell checking to fr
-" setlocal nospell spelllang=fr
-
 " Turn on the Wild menu
 set wildmenu
 

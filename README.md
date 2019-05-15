@@ -66,6 +66,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<bs>        | Navigate alternate buffer      |
 | \<leader>h   | Navigate previous              |
 | \<leader>l   | Navigate next                  |
+| \<leader>e   | Edit in current buffer's path                    | 
 | \<leader>x   | Scratch txt                    | 
 | \<leader>d:  | Scratch Markdown               |
 | \<leader>s   | Scratch SQL                    | 
@@ -90,7 +91,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | 'p      | for vi'"0p |
 | (p      | for vi("0p |
 | )p      | for vi)"0p |
-| ,p      | "0p      |
+| \<leader>p      | "0p      |
 
 **Formatting**
 
@@ -200,7 +201,8 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | Mapping         | Action                        |
 | ---             | ---                           |
 | \<c-p>          | Files (t to open file in tab) |
-| \<leader>bb     | Buffers                       |
+| \<leader>,     | Buffers                       |
+| \<leader>;     | Lines                       |
 | \<leader>u      | MRU                           |
 | \<leader>t      | Tags                           |
 

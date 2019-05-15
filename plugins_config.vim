@@ -39,6 +39,7 @@ let g:fzf_colors =
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <silent> <c-p> :Files<CR>
 nnoremap <silent> <leader>, :Buffers<CR>
+nnoremap <silent> <leader>; :Lines<CR>
 nnoremap <silent> <leader>t :Tags<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
