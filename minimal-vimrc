@@ -210,36 +210,33 @@ nnoremap <M-0>        :Bigger<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " :h mode() to see all modes
-function! StatuslineMode()
-  let l:mode=mode()
-  if l:mode==#"n"
-    return "NORMAL"
-  elseif l:mode==#"v"
-    return "VISUAL"
-  elseif l:mode==#"V"
-    return "V-LINE"
-  elseif l:mode==#"\<C-v>"
-    return "V-BLOCK"
-  elseif l:mode==#"i"
-    return "INSERT"
-  elseif l:mode==#"R"
-    return "REPLACE"
-  elseif l:mode==?"s"
-    return "SELECT"
-  elseif l:mode==#"t"
-    return "TERMINAL"
-  elseif l:mode==#"c"
-    return "COMMAND"
-  elseif l:mode==#"!"
-    return "SHELL"
-  endif
-endfunction
+let g:currentmode={
+    \ 'n'      : 'NORMAL ',
+    \ 'no'     : 'N·Operator Pending ',
+    \ 'v'      : 'VISUAL ',
+    \ 'V'      : 'V·Line ',
+    \ "\<C-V>" : 'V·Block ',
+    \ 's'      : 'Select ',
+    \ 'S'      : 'S·Line ',
+    \ '\<C-S>' : 'S·Block ',
+    \ 'i'      : 'INSERT ',
+    \ 'R'      : 'REPLACE ',
+    \ 'Rv'     : 'V·Replace ',
+    \ 'c'      : 'Command ',
+    \ 'cv'     : 'Vim Ex ',
+    \ 'ce'     : 'Ex ',
+    \ 'r'      : 'Prompt ',
+    \ 'rm'     : 'More ',
+    \ 'r?'     : 'Confirm ',
+    \ '!'      : 'Shell ',
+    \ 't'      : 'Terminal '
+    \}
 
 " Automatically change the statusline color depending on mode
 function! ChangeStatuslineColor()
   if (mode() =~# '\v(n|no)')
     exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
-  elseif (mode() =~# '\v(v|V)') 
+  elseif (mode() =~# '\v(v|V)' || g:currentmode[mode()] ==# 'V·Block' || get(g:currentmode, mode(), '') ==# 't')
     exe 'hi! StatusLine ctermfg=005 guifg=#000000 guibg=#f2c68a gui=NONE cterm=None'
   elseif (mode() ==# 'i')
     exe 'hi! StatusLine ctermfg=004 guifg=#000000 guibg=#95e454 gui=NONE cterm=None'
@@ -255,7 +252,7 @@ exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
 set laststatus=2
 set statusline=
 set statusline+=%{ChangeStatuslineColor()}
-set statusline+=%0*\ %{StatuslineMode()}
+set statusline+=%0*\ %{toupper(g:currentmode[mode()])}
 set statusline+=%2*\ %t          "tail of the filename
 set statusline+=%2*\ %h          "help file flag
 set statusline+=%2*\ %m          "modified flag
