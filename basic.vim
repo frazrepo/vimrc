@@ -372,6 +372,7 @@ map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
 " Close the current buffer
 map <leader>bd :bd<cr>
+map <leader>! :bd!<cr>
 
 " Useful mapping for managing  buffers
 map <leader>bn :enew<cr>
