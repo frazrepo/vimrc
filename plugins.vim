@@ -60,7 +60,7 @@ Plug 'machakann/vim-highlightedyank'
 " Git integration {{{1
 Plug 'tpope/vim-fugitive'
 
-" File management, searching {{{1
+" File management, searching, quickfix {{{1
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'pbogut/fzf-mru.vim'
