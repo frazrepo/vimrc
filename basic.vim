@@ -360,13 +360,6 @@ xnoremap <c-k> 5k
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
-" Not needed CWD automatically for the current buffer
-" vim-rooter already handles this
-" augroup CwdBufferEnter
-"   autocmd!
-"   autocmd Filetype,BufEnter *  call ChangeCurrentWorkingDirectory()
-" augroup END
-
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
@@ -396,7 +389,6 @@ map <leader>e :edit <c-r>=expand("%:p:h")<cr>/
 map <leader>tn :tabnew<cr>
 map <leader>to :tabonly<cr>
 map <leader>tc :tabclose<cr>
-map <leader>tm :tabmove 
 
 " Let 'tl' toggle between this and the last accessed tab
 let g:lasttab = 1
@@ -437,7 +429,6 @@ nnoremap gQ mmgggqG`m
 
 "Insert new line in normal mode quickly
 nnoremap <cr> o<esc>
-nnoremap <S-CR> i<CR><Esc> 
 
 " Navigating quickfix (Experimental)
 nnoremap <A-Down> :cnext<Cr>
