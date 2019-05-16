@@ -202,9 +202,10 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | ---             | ---                           |
 | \<c-p>          | Files (t to open file in tab) |
 | \<leader>,     | Buffers                       |
-| \<leader>;     | Lines                       |
+| \<leader>;     | BLines                       |
 | \<leader>u      | MRU                           |
 | \<leader>t      | Tags                           |
+| \<leader>co      | Commands                           |
 
 **vim-rainbow**
 
