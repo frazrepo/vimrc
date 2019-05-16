@@ -167,7 +167,7 @@ vmap  <down>  <Plug>SchleppDown
 vmap  <left>  <Plug>SchleppLeft
 vmap  <right> <Plug>SchleppRight
 
-vmap <unique> D <Plug>SchleppDup
+vmap D <Plug>SchleppDup
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Vim-autopairs workarounf for â, î and û {{{1
