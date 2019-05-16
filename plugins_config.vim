@@ -135,8 +135,8 @@ nnoremap <F9> :CtrlSFToggle<CR>
 let g:ctrlsf_populate_qflist = 1
 let g:ctrlsf_ignore_dir = ['tags']
 
-nnoremap <silent> K :call SearchWordWithCtrlSf()<CR>
-vnoremap <silent> K :call SearchVisualSelectionWithCtrlSf()<CR>
+nnoremap <silent> <leader>* :call SearchWordWithCtrlSf()<CR>
+vnoremap <silent> <leader>* :call SearchVisualSelectionWithCtrlSf()<CR>
 
 function! SearchWordWithCtrlSf()
    execute 'CtrlSF' expand('<cword>')

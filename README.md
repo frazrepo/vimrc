@@ -217,7 +217,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping       | Action                  |
 | ---           | ---                     |
-| F10 / <S-F10> | Rotate Forward/Backward |
+| F10 / \<S-F10> | Rotate Forward/Backward |
 
 **vim-signature**
 
@@ -255,7 +255,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping   | Action                                   |
 | ---       | ---                                      |
-| K         | Find selected word                       |
+| \<leader>*         | Find selected word                       |
 | F9        | Toggle CtrlSF result Window              |
 | \<leader>/| Prompt or Exec in Visual Mode |
 
