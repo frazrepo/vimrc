@@ -124,8 +124,8 @@ let g:ctrlsf_auto_close = {
 let g:ctrlsf_default_root = 'project'
 let g:ctrlsf_default_view_mode = 'compact'
 
-nmap     <C-F>f <Plug>CtrlSFPrompt
-vmap     <C-F>f <Plug>CtrlSFVwordPath
+nmap     <leader>/ <Plug>CtrlSFPrompt
+vmap     <leader>/ <Plug>CtrlSFVwordExec
 nnoremap <F9> :CtrlSFToggle<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

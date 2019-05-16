@@ -38,7 +38,7 @@ Plug 'tommcdo/vim-exchange'
 Plug 'vim-scripts/ReplaceWithRegister'
 
 " Code Searching {{{1
-Plug 'dyng/ctrlsf.vim', { 'on': ['CtrlSF']}
+Plug 'dyng/ctrlsf.vim'
 Plug 'tpope/vim-abolish'
 Plug 'frazrepo/vim-yankmatches'
 Plug 'osyo-manga/vim-over'

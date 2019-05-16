@@ -256,8 +256,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | ---       | ---                                      |
 | K         | Find selected word                       |
 | F9        | Toggle CtrlSF result Window              |
-| \<C-f>f   | Prompt in command line to find a pattern |
-| \<C-f>b   | For current buffer                       |
+| \<leader>/| Prompt or Exec in Visual Mode |
 
 **yankmatches**
 
@@ -271,6 +270,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | Mapping            | Action                                                 |
 | ---                | ---                                                    |
 | up/down/left/right | After a selection in visual mode, drag using arrow key |
+| D | Duplicate in Visual Mode|
 
 **vim-gutentags and tagbar**
 
@@ -297,6 +297,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | VisualBlock   | Activate visual block mode |
 | SortByWitdh   | Sort lines by width |
 | WipeReg   | Clean all registers |
+| RemoveTrailingSpaces | Remove spaces |  
 
 ## Custom Docs
 
