@@ -224,7 +224,7 @@ function! Tab_Or_Complete() abort
     return "\<C-N>"
   " If completor is not open and we are in the middle of typing a word then
   " `tab` opens completor menu.
-  elseif col('.')>1 && strpart( getline('.'), col('.')-2, 3 ) =~ '^\w'
+  elseif col('.')>1 && strpart( getline('.'), col('.')-2, 3 ) =~ '^[[:keyword:][:ident:]]'
     return "\<C-R>=completor#do('complete')\<CR>"
   else
     " If we aren't typing a word and we press `tab` simply do the normal `tab`
@@ -255,3 +255,64 @@ let g:completor_complete_options = 'menuone,noselect,preview'
 
 If you explicitly set `completeopt` completor will **not** use this value for complete
 options.
+
+#### Completor Actions
+
+* Jump to definition `completor#do('definition')`
+* Show documentation `completor#do('doc')`
+* Format code `completor#do('format')`
+* Hover info (lsp hover) `completor#do('hover')`
+
+```vim
+noremap <silent> <leader>d :call completor#do('definition')<CR>
+noremap <silent> <leader>c :call completor#do('doc')<CR>
+noremap <silent> <leader>f :call completor#do('format')<CR>
+noremap <silent> <leader>s :call completor#do('hover')<CR>
+```
+
+#### Golang practices (without using lsp)
+
+Use *guru* for jumping to definition:
+
+```vim
+let g:completor_go_guru_binary = 'guru'
+```
+
+Use *goimports* to format code:
+
+```vim
+let g:completor_go_gofmt_binary = 'goimports'
+```
+
+Format file after write to buffer:
+
+```vim
+autocmd BufWritePost *.go :call completor#do('format')
+```
+
+#### c/c++ practices (without using lsp)
+
+Jump to completion placeholder:
+
+```vim
+map <c-\> <Plug>CompletorCppJumpToPlaceholder
+imap <c-\> <Plug>CompletorCppJumpToPlaceholder
+```
+
+Disable completion placeholder:
+
+```vim
+let g:completor_clang_disable_placeholders = 1
+```
+
+#### Enable LSP
+
+```vim
+let g:completor_filetype_map = {}
+" Enable lsp for go by using gopls
+let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}
+" Enable lsp for rust by using rls
+let g:completor_filetype_map.rust = {'ft': 'lsp', 'cmd': 'rls'}
+" Enable lsp for c by using clangd
+let g:completor_filetype_map.c = {'ft': 'lsp', 'cmd': 'clangd-7'}
+```
