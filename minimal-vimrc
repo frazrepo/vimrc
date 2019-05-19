@@ -529,6 +529,11 @@ endif
 " Expand %% to current path in command line mode
 cnoremap %% <c-r>=expand("%:p:h")<cr>/ 
 
+" Map for navigating search (/?) result
+set wildcharm=<C-z>
+cnoremap <expr> <Tab> getcmdtype() =~ '[\/?]' ? "<C-g>" : "<C-z>" 
+cnoremap <expr> <S-Tab> getcmdtype() =~ '[\/?]' ? "<C-t>" : "<S-Tab>" 
+
 " For autocompletion
 inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
 inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
