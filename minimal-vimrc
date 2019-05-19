@@ -332,6 +332,9 @@ xnoremap <Leader>fr :<C-u>'<,'>s/
 " When you press `<leader>r` you can search and replace the selected text:
 vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
 
+" Search in the buffer
+nnoremap <leader>i :ilist<space>/
+
 " VirtualEdit block allow selection everywhere in visual block mode
 set virtualedit=block
 
@@ -543,6 +546,9 @@ cnoremap <expr> <S-Tab> getcmdtype() =~ '[\/?]' ? "<C-t>" : "<S-Tab>"
 " For autocompletion
 inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
 inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
+
+" <TAB>: minimal tab completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 " Remove the Windows ^M - when the encodings gets messed up
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
