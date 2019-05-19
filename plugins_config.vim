@@ -241,6 +241,11 @@ fun! TabOrComplete() "{{{
 	endf "}}}
 	au InsertEnter * exec "inoremap <silent> <Tab> <C-R>=TabOrComplete()<cr>"
 
+"LSP Activation (not working ?)
+let g:completor_filetype_map = {}
+" Enable lsp for go by using gopls
+let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-rooter  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
