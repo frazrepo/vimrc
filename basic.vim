@@ -88,6 +88,9 @@ set hidden
 set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
 
+" Defaut global replace
+set gdefault
+
 " Ignore case when searching
 set ignorecase
 
