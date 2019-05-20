@@ -31,9 +31,6 @@ if has('persistent_undo')
     set undofile
 endif
 
-" Filetype
-set nocompatible 
-
 " Do not show mode (displayed by lightline already)
 set noshowmode
 

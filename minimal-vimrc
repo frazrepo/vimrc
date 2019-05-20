@@ -9,7 +9,7 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " runtimepath
-set rtp+=$HOME/.vim_runtime
+" set rtp+=$HOME/.vim_runtime
 
 " Sets how many lines of history VIM has to remember
 set history=1000
@@ -27,9 +27,6 @@ if has('persistent_undo')
     set undofile
 endif
 
-" Filetype
-set nocompatible 
-
 " Do not show mode (displayed by statusline already)
 set noshowmode
 
@@ -44,9 +41,6 @@ nmap <leader>w :w!<cr>
 
 " Default to system clipboard
 set clipboard^=unnamed,unnamedplus
-
-" ftplugin
-filetype plugin indent on
 
 " :W sudo saves the file 
 " (useful for handling the permission-denied error on Linux)
