@@ -24,10 +24,10 @@ set undolevels=1000
 " Persistent undo : Keep undo history across sessions by storing it in a file
 if has('persistent_undo')
     " Create dir
-    let myUndoDir = expand("$HOME/.vim/undodir")
-    call system('mkdir ' . myUndoDir)
+    let undoDir = expand("$HOME/.vim/undodir")
+    call system('mkdir ' . undoDir)
     "Set vim variables
-    let &undodir=myUndoDir
+    let &undodir=undoDir
     set undofile
 endif
 

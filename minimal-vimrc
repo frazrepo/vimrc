@@ -8,9 +8,6 @@
 " => General {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" runtimepath
-" set rtp+=$HOME/.vim_runtime
-
 " Sets how many lines of history VIM has to remember
 set history=1000
 
@@ -20,10 +17,10 @@ set undolevels=1000
 " Persistent undo : Keep undo history across sessions by storing it in a file
 if has('persistent_undo')
     " Create dir
-    let myUndoDir = expand("$HOME/.vim/undodir")
-    call system('mkdir ' . myUndoDir)
+    let undoDir = expand("$HOME/.vim/undodir")
+    call system('mkdir ' . undoDir)
     "Set vim variables
-    let &undodir=myUndoDir
+    let &undodir=undoDir
     set undofile
 endif
 
@@ -577,21 +574,6 @@ elseif executable('ack')
     set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
 
-"Cheap Recent files
-nnoremap <leader>u :bro ol<CR>
-
-"Cheap buffer switching
-nnoremap <leader>, :ls<CR>:b<Space>
-
-" Cheap ctrl+p (Warning : too slow on big project)
-set path=.,**
-nnoremap <C-p> :find *
-nnoremap ,f :find *
-nnoremap ,F :find <C-R>=expand('%:p:h').'/**/*'<CR>
-nnoremap ,s :sfind *
-nnoremap ,S :sfind <C-R>=expand('%:p:h').'/**/*'<CR>
-nnoremap ,v :vert sfind *
-nnoremap ,V :vert sfind <C-R>=expand('%:p:h').'/**/*'<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Netrw configuration {{{1
@@ -601,8 +583,6 @@ let g:netrw_winsize=15
 let g:netrw_liststyle=3
 let g:netrw_browse_split = 4
 let g:netrw_altv = 1
-" Mapping like dirvish
-map <leader>v :Vexplore %:p:h<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Help file speedups {{{1
@@ -658,7 +638,7 @@ xnoremap ae GoggV
 onoremap ae :<C-u>normal vae<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Plugins Replacement {{{1
+" => Plugins Replacement for minimal vimrc {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim-move
 nnoremap <A-j> :m .+1<CR>==
@@ -679,6 +659,25 @@ function! s:FilterQuickfixList(bang, pattern)
   call setqflist(filter(getqflist(), "bufname(v:val['bufnr']) " . cmp . " a:pattern"))
 endfunction
 command! -bang -nargs=1 -complete=file QFilter call s:FilterQuickfixList(<bang>0, <q-args>)
+
+"Cheap MRU files
+nnoremap <leader>u :bro ol<CR>
+
+"Cheap buffer switching
+nnoremap <leader>, :ls<CR>:b<Space>
+
+" Cheap ctrl+p (Warning : too slow on big project)
+set path=.,**
+nnoremap <C-p> :find *
+nnoremap ,f :find *
+nnoremap ,F :find <C-R>=expand('%:p:h').'/**/*'<CR>
+nnoremap ,s :sfind *
+nnoremap ,S :sfind <C-R>=expand('%:p:h').'/**/*'<CR>
+nnoremap ,v :vert sfind *
+nnoremap ,V :vert sfind <C-R>=expand('%:p:h').'/**/*'<CR>
+
+" Mapping like dirvish
+map <leader>v :Vexplore %:p:h<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions and Commands {{{1
