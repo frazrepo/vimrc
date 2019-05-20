@@ -78,9 +78,6 @@ else
     set wildignore+=*/.git/*
 endif
 
-" Height of the command bar
-set cmdheight=1
-
 " A buffer becomes hidden when it is abandoned
 set hidden
 
