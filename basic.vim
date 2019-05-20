@@ -156,9 +156,6 @@ set nolist
 set listchars=eol:$,tab:>-,trail:.,extends:>,precedes:<
 set showbreak=\\ "
 
-" Tab title
-set guitablabel=%N/\ %t\ %M
-
 " Split mode
 set splitbelow
 set splitright
@@ -317,7 +314,7 @@ xnoremap <expr> v
               \ : mode() ==# 'V' ? 'v' : 'V')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Moving around, tabs, windows and buffers {{{1
+" => Moving , Searching {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Search using magic regex
@@ -395,13 +392,6 @@ au TabLeave * let g:lasttab = tabpagenr()
 " Opens a new tab with the current buffer's path
 " Super useful when editing files in the same directory
 map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
-
-" Specify the behavior when switching between buffers 
-try
-  set switchbuf=useopen,usetab,newtab
-  set stal=2
-catch
-endtry
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing Mappings {{{1
