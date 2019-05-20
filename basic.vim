@@ -62,13 +62,8 @@ set scrolloff=1
 " Turn on the Wild menu
 set wildmenu
 
-" Do no display toolbar to have more text by default 
-if has("gui_running")
-    " Hide toolbar
-    set guioptions -=T
-    " Hide menu
-    set guioptions -=m
-endif
+" Do not source menu.vim, for performance
+set guioptions=M
 
 " Ignore compiled files
 set wildignore=*.o,*~,*.pyc
