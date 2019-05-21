@@ -118,6 +118,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | F3         |Neoformat             |
 | F4         |UndoTreeToggle             |
 | F8         |Toggle quickfix window             |
+| F9         |Toggle CtrlSF|
 | F10        |Rotate colorschemes                |
 | F11        |Tagbar Toggle                      |
 | F12        |Tag navigation                     |
