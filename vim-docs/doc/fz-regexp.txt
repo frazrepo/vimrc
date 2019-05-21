@@ -25,6 +25,7 @@ XX.Ressources                                     |fz-regexp-XX|
 1. Delete any empty lines                         *fz-regexp-1*
 >
     :g/^$/d
+    :g/^\s*$/d
 <
 2. Reduce multiples blank lines to a single blank *fz-regexp-2*
 >
@@ -99,6 +100,9 @@ XX.Ressources                                     |fz-regexp-XX|
 
   " Delete all matches patterns (v for reverse)
   :g/pattern/d
+
+  " Fast Delete all matches patterns (v for reverse)
+  :g/pattern/"_d
 <
 
 XX.Ressources                                     *fz-regexp-XX*
