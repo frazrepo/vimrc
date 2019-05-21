@@ -46,6 +46,26 @@ set clipboard^=unnamed,unnamedplus
 " (useful for handling the permission-denied error on Linux)
 command! W w !sudo tee % > /dev/null
 
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Plugins (experimental) {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Default vim directory : .vim or vimfiles(for Windows)
+
+" if empty(glob('~/vimfiles/autoload/plug.vim'))
+"   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+"     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+"   autocmd VimEnter * PlugInstall
+" endif
+
+" call plug#begin('~/vimfiles/bundle')
+"   Plug 'frazrepo/vim-colorschemes'
+" call plug#end()
+
+" color apprentice
+
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
