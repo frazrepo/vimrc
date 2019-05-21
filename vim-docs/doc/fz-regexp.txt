@@ -102,4 +102,4 @@ XX.Ressources                                     |fz-regexp-XX|
 <
 
 XX.Ressources                                     *fz-regexp-XX*
- - http://zzapper.co.uk/vimtips.html
+  - See also |fz-vimtips|
