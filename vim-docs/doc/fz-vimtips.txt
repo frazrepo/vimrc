@@ -151,7 +151,7 @@ SUBSTITUTION                                              *vimtips-substitution*
 %s#><\([^/]\)#>\r<\1#g      : split jumbled up XML file into one tag per line [N]
 
 " VIM Power Substitute
-:'a,'bg/fred/s/dick/joe/igc : VERY USEFUL
+:'a,'bg/fred/s/jack/joe/igc : VERY USEFUL
 
 " duplicating columns
 :%s= [^ ]\+$=&&=            : duplicate end column
@@ -258,7 +258,7 @@ SUBSTITUTION                                              *vimtips-substitution*
 GLOBAL COMMAND                                          *vimtips-global-command*
 
 :g/gladiolli/#              : display with line numbers (YOU WANT THIS!)
-:g/fred.*joe.*dick/         : display all lines fred,joe & dick
+:g/fred.*joe.*jack/         : display all lines fred,joe & jack
 :g/\<fred\>/                : display all lines fred but not freddy
 :g/^\s*$/d                  : delete all blank lines
 :g!/^dd/d                   : delete lines not containing string
