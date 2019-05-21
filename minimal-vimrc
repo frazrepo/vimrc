@@ -677,6 +677,10 @@ nnoremap ,V :vert sfind <C-R>=expand('%:p:h').'/**/*'<CR>
 " Mapping like dirvish
 map <leader>v :Vexplore %:p:h<cr>
 
+" Scratch buffer
+command! Scratch vnew | setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile
+nnoremap <leader>bs :Scratch<cr>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions and Commands {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
