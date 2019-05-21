@@ -408,6 +408,8 @@ nnoremap gQ mmgggqG`m
 
 "Insert new line in normal mode quickly
 nnoremap <cr> o<esc>
+nnoremap <C-cr> O<esc>
+nnoremap <NL> O<esc>
 
 " Navigating quickfix (Experimental)
 nnoremap <A-Down> :cnext<Cr>
