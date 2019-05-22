@@ -55,6 +55,7 @@ set scrolloff=1
 
 " Turn on the Wild menu
 set wildmenu
+set wildmode=longest:full,full
 
 " Do not source menu.vim, for performance
 " set guioptions=M
@@ -62,9 +63,9 @@ set wildmenu
 " Ignore compiled files
 set wildignore=*.o,*~,*.pyc
 if has("win32") || has("win64")
-    set wildignore+=.git\*
+    set wildignore+=.git\*,node_modules\*
 else
-    set wildignore+=*/.git/*
+    set wildignore+=*/.git/*,*/node_modules/*
 endif
 
 " A buffer becomes hidden when it is abandoned

@@ -66,6 +66,7 @@ set scrolloff=1
 
 " Turn on the Wild menu
 set wildmenu
+set wildmode=longest:full,full
 
 " Do not source menu.vim, for performance
 set guioptions=M
