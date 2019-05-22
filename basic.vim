@@ -718,9 +718,15 @@ cnoremap <expr> <CR> CCR()
 "Templates (Experimental)
 augroup Templates
   autocmd!
-  autocmd BufNewFile *.sh silent! 0r $HOME/.vim_runtime/templates/skeleton.sh
+  autocmd BufNewFile *.sh silent! :call ReadTemplate(expand("%:e"))
 " au BufNewFile * silent! 0r ~/.vim/templates/%:e.tpl
 augroup END
+
+function! ReadTemplate(extension)
+  let s:templateFile = $HOME . '/.vim_runtime/templates/' . a:extension . '.tpl'
+  0r $HOME/.vim_runtime/templates/sh.tpl
+  :normal! o
+endfunction
 
 
 " }}}
