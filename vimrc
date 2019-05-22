@@ -3,7 +3,7 @@
 set rtp+=$HOME/.vim_runtime
 
 " Custom documentations
-set rtp+=$HOME/.vim_runtime/vim-docs/
+set rtp+=$HOME/.vim_runtime/doc/
 
 " Plugins
 source $HOME/.vim_runtime/plugins.vim
