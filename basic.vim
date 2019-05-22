@@ -154,9 +154,6 @@ let &t_EI = "\e[2 q"
 " set colorcolumn=80
 highlight ColorColumn ctermbg=0 guibg=lightgrey
 
-"Performance : Do not load menu
-let did_install_default_menus=1
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
