@@ -25,14 +25,8 @@ set history=1000
 set undolevels=1000
 
 " Persistent undo : Keep undo history across sessions by storing it in a file
-if has('persistent_undo')
-    " Create dir
-    let undoDir = expand("$HOME/.vim/undodir")
-    call system('mkdir ' . undoDir)
-    "Set vim variables
-    let &undodir=undoDir
-    set undofile
-endif
+set undodir=$HOME/.vim/undodir
+set undofile
 
 " Do not show mode (displayed by lightline already)
 set noshowmode
