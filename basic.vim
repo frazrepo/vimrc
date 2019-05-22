@@ -714,6 +714,14 @@ endfunction
 " map '<CR>' in command-line mode to execute the function above
 cnoremap <expr> <CR> CCR()
 
+
+"Templates (Experimental)
+augroup Templates
+  autocmd!
+  autocmd BufNewFile *.sh 0r $HOME/.vim_runtime/templates/skeleton.sh
+augroup END
+
+
 " }}}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
