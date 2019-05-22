@@ -63,7 +63,7 @@ set scrolloff=1
 set wildmenu
 
 " Do not source menu.vim, for performance
-set guioptions=M
+" set guioptions=M
 
 " Ignore compiled files
 set wildignore=*.o,*~,*.pyc
