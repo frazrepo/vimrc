@@ -718,7 +718,7 @@ cnoremap <expr> <CR> CCR()
 "Templates (Experimental)
 augroup Templates
   autocmd!
-  autocmd BufNewFile *.sh silent! :call ReadTemplate(expand("%:e"))
+  autocmd BufNewFile * silent! :call ReadTemplate(expand("%:e"))
 augroup END
 
 function! ReadTemplate(extension)
