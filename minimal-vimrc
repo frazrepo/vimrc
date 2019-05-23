@@ -326,18 +326,7 @@ vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
 " Search in the buffer
 " nnoremap <leader>i :ilist<space>/
 nnoremap <leader>i :execute "vimgrep /" . expand("<cword>") . "/j %" <Bar> cw<CR>
-vnoremap <leader>i :<C-u>call DoVimGrep()<cr>
-function! DoVimGrep() abort
-  try
-    let a_save = @a
-    silent! normal! gv"ay
-    let vs = @a
-    execute "vimgrep /" . vs . "/j %"
-    :cw
-  finally
-    let @a = a_save
-  endtry
-endfunction
+vnoremap <silent> <leader>i :<C-u>call VisualSelection('', '')<CR>:vimgrep/<C-R>=@/<CR>/j %<CR>:cw<cr>
 
 " VirtualEdit block allow selection everywhere in visual block mode
 set virtualedit=block
