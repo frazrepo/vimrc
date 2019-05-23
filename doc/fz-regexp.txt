@@ -1,5 +1,5 @@
 *fz-regexp.txt*    Common search regexp for vim    Last Changed: 2019 Jan 21
-Generation : `helptags ~/.vim_runtime/vim-docs/doc/`
+Generation : 'helptags ~/.vim_runtime/doc/'
 
 INTRODUCTION                                    *fz-regexp*
 
@@ -17,6 +17,7 @@ INTRODUCTION                                    *fz-regexp*
 12. Miscellaneous g command                       |fz-regexp-12|
 13. Swap columns in a csv file                    |fz-regexp-13|
 14. Yank or Delete all matches lines              |fz-regexp-14|
+15. Generating sequence number                    |fz-regexp-15|
 XX.Ressources                                     |fz-regexp-XX|
 
 
@@ -103,6 +104,13 @@ XX.Ressources                                     |fz-regexp-XX|
 
   " Fast Delete all matches patterns (v for reverse)
   :g/pattern/"_d
+<
+
+15. Generating sequence number                    *fz-regexp-15*
+
+>
+  " Increment number by 5, insert [number]- at the start"
+  :let i=1 | g/^/s/^/\=i . "-"/ | let i+=5
 <
 
 XX.Ressources                                     *fz-regexp-XX*

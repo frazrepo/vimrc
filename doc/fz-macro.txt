@@ -1,5 +1,5 @@
 *fz-macro.txt*    Macro tips    Last Changed:  2019 Jan 30
-Generation : `helptags ~/.vim_runtime/vim-docs/doc/`
+Generation : `helptags ~/.vim_runtime/doc/`
 
 INTRODUCTION                                    *fz-macro*
 
