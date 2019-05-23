@@ -327,18 +327,13 @@ vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
 " nnoremap <leader>i :ilist<space>/
 nnoremap <leader>i :execute "vimgrep /" . expand("<cword>") . "/j %" <Bar> cw<CR>
 vnoremap <leader>i :<C-u>call DoVimGrep()<cr>
-" Todo: Refactor
 function! DoVimGrep() abort
-  let vs = GetVisualSelection()
-  execute "vimgrep /" . vs . "/j %"
-  :cw
-endfunction
-
-function! GetVisualSelection() abort
   try
     let a_save = @a
     silent! normal! gv"ay
-    return @a
+    let vs = @a
+    execute "vimgrep /" . vs . "/j %"
+    :cw
   finally
     let @a = a_save
   endtry
