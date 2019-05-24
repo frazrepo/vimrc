@@ -264,6 +264,11 @@ let g:neoformat_try_formatprg = 1
 let g:YankMatches#ClipboardRegister='+'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Highlightedyank {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+let g:highlightedyank_highlight_duration = 200
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Scratch {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 nnoremap <leader>bs :Scratch<cr>
