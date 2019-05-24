@@ -685,7 +685,7 @@ command! Scratch vnew | setlocal nobuflisted buftype=nofile bufhidden=wipe noswa
 nnoremap <leader>bs :Scratch<cr>
 
 " Yankmatches/ DeleteMatches
-nnoremap <silent> ym qaq:g/<C-R>//yank A<CR>:let @*=@a<CR>
+nnoremap <silent> ym qxq:g/<C-R>//yank X<CR>:let @*=@x<CR>
 nnoremap <silent> dm :g/<C-R>//d<CR>
 
 
