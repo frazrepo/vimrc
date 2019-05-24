@@ -305,8 +305,9 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 Regexp search/replace pattern
 
-    :helptags fz-regexp
-    :helptags fz-macro
+    :h fz-regexp
+    :h fz-macro
+    :h fz-vimtips
 
 ## Plugins list
 
