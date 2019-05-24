@@ -1,3 +1,9 @@
+"Init autocommand"
+augroup filetypedetect
+  autocmd!
+augroup end
+
+"DockerFile"
 if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dockerfile') == -1
   augroup filetypedetect
       " dockerfile, from Dockerfile.vim in ekalinin/Dockerfile.vim
@@ -9,6 +15,7 @@ if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dockerfile') ==
   augroup end
 endif
 
+"DockerFile"
 if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dockerfile') == -1
   augroup filetypedetect
       " dockerfile, from docker-compose.vim in ekalinin/Dockerfile.vim
@@ -17,6 +24,7 @@ if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dockerfile') ==
   augroup end
 endif
 
+"Powershell"
 if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'powershell') == -1
   augroup filetypedetect
         " powershell, from ps1.vim in PProvost/vim-ps1
@@ -34,6 +42,7 @@ if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'powershell') ==
   augroup end
 endif
 
+"Typescript"
 if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'typescript') == -1
   augroup filetypedetect
       " typescript, from typescript.vim in leafgarland/typescript-vim
@@ -45,6 +54,7 @@ if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'typescript') ==
 endif
 
 
+"Smali"
 if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'smali') == -1
   augroup filetypedetect
       autocmd BufRead,BufNewfile *.smali set filetype=smali
