@@ -684,6 +684,11 @@ map <leader>v :Vexplore %:p:h<cr>
 command! Scratch vnew | setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile
 nnoremap <leader>bs :Scratch<cr>
 
+" Yankmatches/ DeleteMatches
+nnoremap <silent> ym qaq:g/<C-R>//yank A<CR>:let @*=@a<CR>
+nnoremap <silent> dm :g/<C-R>//d<CR>
+
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions and Commands {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
