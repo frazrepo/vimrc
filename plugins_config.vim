@@ -266,7 +266,7 @@ let g:YankMatches#ClipboardRegister='+'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Highlightedyank {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:highlightedyank_highlight_duration = 200
+let g:highlightedyank_highlight_duration = 300
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Scratch {{{1
