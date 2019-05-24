@@ -333,7 +333,6 @@ Regexp search/replace pattern
 - [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys
 - [* vim-over](https://github.com/osyo-manga/vim-over) : Highlight buffer when operating from command line (s/, /, g/)
 - [vim-polyglot](https://github.com/sheerun/vim-polyglot) : Languages Support
-- [vim-quickscope](https://github.com/unblevable/quick-scope) : Highlight potential candidates for inline searching with f or t
 - [vim-qlist](https://github.com/romainl/vim-qlist) : Enhances ilist and dlist
 - [vim-qf](https://github.com/romainl/vim-qf) : Quickfix management, filtering,...
 - [vim-rainbow](https://github.com/luochen1990/rainbow) : Color parentheses, brackets,...

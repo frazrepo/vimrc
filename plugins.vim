@@ -42,7 +42,6 @@ Plug 'dyng/ctrlsf.vim' , { 'on' : ['CtrlSF', '<Plug>CtrlSFPrompt', '<Plug>CtrlSF
 Plug 'tpope/vim-abolish'
 Plug 'frazrepo/vim-yankmatches'
 Plug 'osyo-manga/vim-over'
-Plug 'unblevable/quick-scope'
 
 " Code formatting {{{1
 Plug 'tommcdo/vim-lion'
