@@ -456,7 +456,6 @@ if &term =~ 'xterm' && !has("gui_running")
   " Tell vim what escape sequence to expect
   execute "set <A-k>=\ek"
   execute "set <A-j>=\ej"
-  execute "set <A-o>=\eo"
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -485,13 +484,9 @@ inoremap <silent> ,u <C-x><C-u>
 " Remove the Windows ^M - when the encodings gets messed up
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
-" Quickly open a txt buffer for scribble
+" Quickly open a txt, markdown and sql buffer for scribble
 map <leader>x :e ~/buffer.txt<cr>
-
-" Quickly open a markdown buffer for scribble
 map <leader>d :e ~/buffer.md<cr>
-
-" Quickly open a sql buffer for scribble
 map <leader>s :e ~/buffer.sql<cr>
 
 " Toogle quickfix windows
