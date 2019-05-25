@@ -1,8 +1,3 @@
-"Init autocommand"
-augroup filetypedetect
-  autocmd!
-augroup end
-
 "DockerFile"
 if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'dockerfile') == -1
   augroup filetypedetect
