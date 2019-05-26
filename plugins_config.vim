@@ -179,7 +179,7 @@ let g:AutoPairsMoveCharacter=''
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => pear-tree {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-"Toggle with A-P mapping
+"Toggle with Alt-P mapping
 let g:peartree_is_enable=1
 function! TogglePearTree()
   if g:peartree_is_enable
@@ -190,7 +190,8 @@ function! TogglePearTree()
     let g:peartree_is_enable=1
   endif
 endfunction
-nnoremap <A-p> :call TogglePearTree()<CR>
+nnoremap <buffer> <silent> <M-p> :call TogglePearTree()<CR>
+inoremap <buffer> <silent> <M-p> <C-O>:call TogglePearTree()<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-quickscope {{{1
