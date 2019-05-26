@@ -177,6 +177,22 @@ let g:AutoPairsShortcutJump=''
 let g:AutoPairsMoveCharacter=''
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => pear-tree {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+"Toggle with A-P mapping
+let g:peartree_is_enable=1
+function! TogglePearTree()
+  if g:peartree_is_enable
+    PearTreeDisable
+    let g:peartree_is_enable=0
+  else
+    PearTreeEnable
+    let g:peartree_is_enable=1
+  endif
+endfunction
+nnoremap <A-p> :call TogglePearTree()<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-quickscope {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
