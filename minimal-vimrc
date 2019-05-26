@@ -643,11 +643,11 @@ vnoremap <A-j> :m '>+1<CR>gv=gv
 vnoremap <A-k> :m '<-2<CR>gv=gv
 
 " Search in files (ctrlsf)
-nnoremap <leader>* :execute "vimgrep /" . expand("<cword>") . "/j %" <Bar> cw<CR>
+nnoremap <leader>* :execute "grep " . expand("<cword>") . " **/*" <Bar> cw<CR>
+vnoremap <silent> <leader>* :<C-u>call VisualSelection('', '')<CR>:grep <C-R>=@/<CR> **/*<CR>:cw<cr>
 
-"grep usage using ag (grepprg)
-":grep foo /dir/*.sql w
-nnoremap <leader>g :execute "grep " . expand("<cword>") . " **/*" <Bar> cw<CR>
+":grep foo /dir/*.sql 
+nnoremap <leader>/ :grep 
 
 " Filter Quickfix list
 function! s:FilterQuickfixList(bang, pattern)

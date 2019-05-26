@@ -138,7 +138,7 @@ nnoremap <silent> <leader>* :call SearchWordWithCtrlSf()<CR>
 vnoremap <silent> <leader>* :call SearchVisualSelectionWithCtrlSf()<CR>
 
 function! SearchWordWithCtrlSf()
-   execute 'CtrlSF ' . expand('<cword>') . ' **/*.*'
+   execute 'CtrlSF ' . expand('<cword>') . ' **/*'
 endfunction
 
 function! SearchVisualSelectionWithCtrlSf() range
@@ -150,7 +150,7 @@ function! SearchVisualSelectionWithCtrlSf() range
     let selection = getreg('"')
     call setreg('"', old_reg, old_regtype)
     let &clipboard = old_clipboard
-    execute 'CtrlSF ' . selection  . ' **/*.*'
+    execute 'CtrlSF ' . selection  . ' **/*'
  endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
