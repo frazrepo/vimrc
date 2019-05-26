@@ -1,0 +1,145 @@
+*fztips.txt*    Common tips for vim    Last Changed: 2019 Jan 21
+Generation : 'helptags ~/.vim_runtime/doc/'
+
+INTRODUCTION                                    *fztips*
+
+1. Delete any empty lines                         |fztips-1|
+2. Reduce multiples blank lines to a single blank |fztips-2|
+3. Reverse the order of the lines from 10 to 20   |fztips-3|
+4. Delete all lines not matching a pattern        |fztips-4|
+5. Find this or that                              |fztips-5|
+6. Find this and that                             |fztips-6|
+7. Change whole word foo to bar                   |fztips-7|
+8. Transpose a line with separator ; to columns   |fztips-8|
+9. Search and replace in files                    |fztips-9|
+10.Sort lines inside block of {} , like in css    |fztips-10|
+11. Substitute with contents of register          |fztips-11|
+12. Miscellaneous g command                       |fztips-12|
+13. Swap columns in a csv file                    |fztips-13|
+14. Yank or Delete all matches lines              |fztips-14|
+15. Generating sequence number                    |fztips-15|
+16. Apply macro to all lines                      |fztips-16|
+17. Apply macro to range of lines                 |fztips-17|
+18. Apply macro to a pattern off lines            |fztips-18|
+19. Apply macro to visual selection of lines      |fztips-19|
+
+XX.Ressources                                     |fztips-XX|
+
+
+==============================================================================
+
+1. Delete any empty lines                         *fztips-1*
+>
+    :g/^$/d
+    :g/^\s*$/d
+<
+2. Reduce multiples blank lines to a single blank *fztips-2*
+>
+  :g/^$/,/./-j
+<
+3. Reverse the order of the lines from 10 to 20   *fztips-3*
+>
+  :10,20g/^/mo 10
+<
+3. Reverse the order of all lines
+>
+  :g/^/m0
+<
+4. Delete all lines not matching a pattern        *fztips-4*
+>
+  :g!/foo/d  or :v/foo/d
+<
+5. Find this or that                              *fztips-5*
+>
+  /this\|that
+<
+6. Find this and that                             *fztips-6*
+>
+  /.*this\&.*that
+<
+7. Change whole word foo to bar                   *fztips-7*
+>
+  :%s/\<foo\>/bar/gc
+<
+8. Transpose a line with separator ; to columns   *fztips-8*
+>
+  :%s/;/;\r/g
+<
+9. Search and replace in files                    *fztips-9*
+>
+  :Ack pattern
+  :cfdo s/foo/bar/g | update
+<
+10.Sort lines inside block of {} , like in css    *fztips-10*
+>
+  :g/{$/+,/^}/-sort
+<
+11. Substitute with contents of register          *fztips-11*
+>
+  :s/pattern/<c-r>a/g
+<
+12. Miscellaneous g commands                      *fztips-12*
+>
+  " Duplicate every line
+  :g/^/t.
+
+  " Copy line matching pattern to EOF
+  :g/pattern/t$
+
+  " perform a substitute on every other line
+  :g/^/ if line('.')%2|s/^/zz /
+
+  " Save results to a register a (append)
+  :g/pattern/y A
+<
+
+13. Swap columns in a csv file                    *fztips-13*
+>
+  " Swap column1,column2
+  :%s/\(.*,\)\(.*,\)/\2\1
+<
+
+14. Yank or Delete all matches lines              *fztips-14*
+>
+  " Clear register a and then yank all matched patterns
+  qaq:g/pattern/y A
+
+  " Delete all matches patterns (v for reverse)
+  :g/pattern/d
+
+  " Fast Delete all matches patterns (v for reverse)
+  :g/pattern/"_d
+<
+
+15. Generating sequence number                    *fztips-15*
+
+>
+  " Increment number by 5, insert [number]- at the start"
+  :let i=1 | g/^/s/^/\=i . "-"/ | let i+=5
+  :let i=1 | g/^/put!=i let i+=5
+<
+
+
+16. Apply macro to all lines                     *fztips-16*
+>
+    :%norm! @a
+<
+
+17. Apply macro to range of lines                *fztips-17*
+>
+    :5,10norm! @a
+    :5,$norm! @a
+<
+
+18. Apply macro to a pattern of lines            *fztips-18*
+>
+    :g/pattern/normal! @a
+<
+
+19. Apply macro to visual selection of lines     *fztips-19*
+>
+    :'<,'>norm! @a
+<
+
+XX.Ressources                                     *fztips-XX*
+  - See also |fz-vimtips|

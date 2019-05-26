@@ -1,4 +1,4 @@
-*fz-vimtips*            For Vim version 8.1           Last change: 2019 May 21
+*fzvimtips*            For Vim version 8.1           Last change: 2019 May 21
 Generation : 'helptags ~/.vim_runtime/doc/'
 
 Abbreviations & maps                                     |vimtips-abbreviations|
