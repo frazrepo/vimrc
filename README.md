@@ -318,6 +318,7 @@ Regexp search/replace pattern
 - [fzf / fzf.vim](https://github.com/junegunn/fzf.vim)
 - [lightline](https://github.com/itchyny/lightline.vim) : Lightweight status line 
 - [neoformat](https://github.com/sbdchd/neoformat): Various formatters for many languages
+- [pear-tree](https://github.com/tmsvg/pear-tree) : Auto close pairs (parenthses, quotes, ...)
 - [fzfmru](https://github.com/pbogut/fzf-mru.vim) : Browse most recent files
 - [utilsnips + vim-snippets](https://github.com/SirVer/ultisnips) : Snippets
 - [Undotree](https://github.com/mbbill/undotree): Undo tree history
