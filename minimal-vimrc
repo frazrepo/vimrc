@@ -683,6 +683,13 @@ nnoremap <leader>bs :Scratch<cr>
 nnoremap <silent> ym qxq:g/<C-R>//yank X<CR>:let @*=@x<CR>
 nnoremap <silent> dm :g/<C-R>//d<CR>
 
+" gtfo
+nnoremap gof :call CopyFilePath()<CR>
+function! CopyFilePath()
+  let @+=expand('%:p:h')
+  let @*=expand('%:p:h')
+  echo "File path copied to system clipboard"
+endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions and Commands {{{1
