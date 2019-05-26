@@ -563,18 +563,11 @@ map <silent> <F8> :call <SID>ToggleQf()<cr>
 " Workaround to start visual block mode on terminal if C-v or C-q is not working
 command! VisualBlock execute "normal! \<C-v>"
 
-" grepprg to ag, rg or ack
+" grepprg to ag
 if executable('ag')
     set grepprg=ag\ --vimgrep
     set grepformat=%f:%l:%c:%m,%f:%l:%m
-elseif executable('rg')
-    set grepprg=rg\ --vimgrep
-    set grepformat=%f:%l:%c:%m
-elseif executable('ack')
-    set grepprg=ack\ --nogroup\ --nocolor\ --ignore-case\ --column
-    set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Netrw configuration {{{1
@@ -652,7 +645,21 @@ vnoremap <A-k> :m '<-2<CR>gv=gv
 " Search in files (ctrlsf)
 nnoremap <leader>* :execute "vimgrep /" . expand("<cword>") . "/j **" <Bar> cw<CR>
 nnoremap <leader>g :execute "vimgrep /" . expand("<cword>") . "/j %" <Bar> cw<CR>
-" nnoremap <leader>* :silent execute "grep! -R " . shellescape(expand("<cWORD>")) . " ."<cr>:copen<cr>
+
+" Experimental Grep/LGrep
+function! Grep(args)
+	let args = split(a:args, ' ')
+	return system(join(['ag --vimgrep', shellescape(args[0]), get(args, 1, '')], ' '))
+endfunction
+
+command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<q-args>)
+command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<q-args>)
+
+augroup quickfix
+	autocmd!
+	autocmd QuickFixCmdPost cgetexpr cwindow
+	autocmd QuickFixCmdPost lgetexpr lwindow
+augroup END
 
 " Filter Quickfix list
 function! s:FilterQuickfixList(bang, pattern)

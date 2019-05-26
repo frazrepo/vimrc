@@ -495,15 +495,9 @@ map <silent> <F8> :call <SID>ToggleQf()<cr>
 " Workaround to start visual block mode on terminal if C-v or C-q is not working
 command! VisualBlock execute "normal! \<C-v>"
 
-" grepprg to ag, rg or ack
+" grepprg to ag
 if executable('ag')
     set grepprg=ag\ --vimgrep
-    set grepformat=%f:%l:%c:%m,%f:%l:%m
-elseif executable('rg')
-    set grepprg=rg\ --vimgrep
-    set grepformat=%f:%l:%c:%m
-elseif executable('ack')
-    set grepprg=ack\ --nogroup\ --nocolor\ --ignore-case\ --column
     set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
 
