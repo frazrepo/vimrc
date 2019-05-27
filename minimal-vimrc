@@ -69,11 +69,11 @@ set wildmenu
 set wildmode=longest:full,full
 
 " Ignore compiled files
-set wildignore=*.o,*~,*.pyc
+set wildignore=*.o,*~,*.pyc,tags
 if has("win32") || has("win64")
-    set wildignore+=.git\*
+    set wildignore+=.git\*,node_modules\*
 else
-    set wildignore+=*/.git/*
+    set wildignore+=*/.git/*,*/node_modules/*,*/dist/*
 endif
 
 " A buffer becomes hidden when it is abandoned
