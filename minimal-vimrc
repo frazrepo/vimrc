@@ -648,6 +648,7 @@ vnoremap <silent> <leader>* :<C-u>call VisualSelection('', '')<CR>:grep <C-R>=@/
 
 ":grep foo /dir/*.sql 
 nnoremap <leader>/ :grep 
+vnoremap <leader>/ :<C-u>call VisualSelection('', '')<CR>:grep <C-R>=@/<CR> **/*
 
 " Filter Quickfix list
 function! s:FilterQuickfixList(bang, pattern)
