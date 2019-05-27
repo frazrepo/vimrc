@@ -272,7 +272,6 @@ let g:rooter_change_directory_for_non_project_files = 'current'
 " => neoformat  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 noremap <F3> :Neoformat<CR>
-let g:neoformat_try_formatprg = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => yankmatches {{{1

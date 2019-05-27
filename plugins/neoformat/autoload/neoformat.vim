@@ -232,7 +232,6 @@ function! s:generate_cmd(definition, filetype) abort
         let args_expanded = add(args_expanded, s:expand_fully(a))
     endfor
 
-    call neoformat#utils#log('args expanded: ' . args_expanded )
     let no_append = get(a:definition, 'no_append', 0)
     let using_stdin = get(a:definition, 'stdin', 0)
     let using_stderr = get(a:definition, 'stderr', 0)
