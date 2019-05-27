@@ -633,18 +633,9 @@ function! fzf#vim#buffers(...)
   return s:fzf('buffers', {
   \ 'source':  map(s:buflisted_sorted(), 's:format_buffer(v:val)'),
   \ 'sink*':   s:function('s:bufopen'),
-  \ 'options': ['+m', '-x', '--tiebreak=index', '--ansi', '-d', '\t', '-n', '2,1..2', '--prompt', 'Buf> ', '--query', query]
+  \ 'options': ['+m', '-x', '--tiebreak=index', '--header-lines=1', '--ansi', '-d', '\t', '-n', '2,1..2', '--prompt', 'Buf> ', '--query', query]
   \}, args)
 endfunction
-" function! fzf#vim#buffers(...)
-"   let [query, args] = (a:0 && type(a:1) == type('')) ?
-"         \ [a:1, a:000[1:]] : ['', a:000]
-"   return s:fzf('buffers', {
-"   \ 'source':  map(s:buflisted_sorted(), 's:format_buffer(v:val)'),
-"   \ 'sink*':   s:function('s:bufopen'),
-"   \ 'options': ['+m', '-x', '--tiebreak=index', '--header-lines=1', '--ansi', '-d', '\t', '-n', '2,1..2', '--prompt', 'Buf> ', '--query', query]
-"   \}, args)
-" endfunction
 
 " ------------------------------------------------------------------
 " Ag / Rg
@@ -812,7 +803,7 @@ function! s:tags_sink(lines)
         let relpath = parts[1][:-2]
         let abspath = relpath =~ (s:is_win ? '^[A-Z]:\' : '^/') ? relpath : join([base, relpath], '/')
         call s:open(cmd, expand(abspath, 1))
-        execute excmd
+        silent execute excmd
         call add(qfl, {'filename': expand('%'), 'lnum': line('.'), 'text': getline('.')})
       catch /^Vim:Interrupt$/
         break
@@ -905,7 +896,7 @@ function! s:command_sink(lines)
   endif
   let cmd = matchstr(a:lines[1], s:nbs.'\zs\S*\ze'.s:nbs)
   if empty(a:lines[0])
-    call feedkeys(':'.cmd.(a:lines[1][0] == '!' ? '' : ' '))
+    call feedkeys(':'.cmd.(a:lines[1][0] == '!' ? '' : ' '), 'n')
   else
     execute cmd
   endif
