@@ -57,9 +57,6 @@ set scrolloff=1
 set wildmenu
 set wildmode=longest:full,full
 
-" Do not source menu.vim, for performance
-" set guioptions=M
-
 " Ignore compiled files
 set wildignore=*.o,*~,*.pyc,tags
 if has("win32") || has("win64")
