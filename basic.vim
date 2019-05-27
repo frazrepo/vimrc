@@ -634,14 +634,6 @@ function! ListLeaders()
 endfunction
 command! ListLeaders call ListLeaders()
 
-" Change Current Working Directory (CWD) to buffer directory
-function! ChangeCurrentWorkingDirectory()
-  try
-    :cd %:p:h
-  catch
-  endtry
-endfunction
-
 " AutoSave Scratch buffer
 function! s:SaveBuffer() abort
   if empty(&buftype) && !empty(bufname(''))
