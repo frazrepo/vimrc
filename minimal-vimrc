@@ -648,8 +648,8 @@ nnoremap <leader>* :execute "grep " . expand("<cword>") . " **/*" <Bar> cw<CR>
 vnoremap <silent> <leader>* :<C-u>call VisualSelection('', '')<CR>:grep <C-R>=@/<CR> **/*<CR>:cw<cr>
 
 ":grep foo /dir/*.sql 
-nnoremap <leader>/ :grep 
-vnoremap <leader>/ :<C-u>call VisualSelection('', '')<CR>:grep <C-R>=@/<CR> **/*
+nnoremap <leader>/ :grep <C-R>=' **/*.'. expand('%:p:e')<CR><C-Left><Left>
+vnoremap <leader>/ :<C-u>call VisualSelection('', '')<CR>:grep <C-R>=@/<CR> **/*.<C-R>=expand('%:p:e')<CR>
 
 " Filter Quickfix list
 function! s:FilterQuickfixList(bang, pattern)
