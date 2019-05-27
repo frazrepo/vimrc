@@ -169,13 +169,6 @@ vmap  <right> <Plug>SchleppRight
 vmap D <Plug>SchleppDup
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Vim-autopairs workarounf for â, î and û {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:AutoPairsShortcutBackInsert=''
-let g:AutoPairsShortcutJump=''
-let g:AutoPairsMoveCharacter=''
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => pear-tree {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 "Toggle with Alt-P mapping
@@ -267,7 +260,7 @@ let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}
 " => vim-rooter  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:rooter_silent_chdir = 1
-let g:rooter_change_directory_for_non_project_files = 'current'
+let g:rooter_change_directory_for_non_project_files = ''
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => neoformat  {{{1
