@@ -520,6 +520,7 @@ endif
 
 " Expand %% to current path in command line mode
 cnoremap %% <c-r>=expand("%:p:h")<cr>/ 
+cnoremap :: <c-r>=expand("%")<cr> 
 
 " Map for navigating search (/?) result
 set wildcharm=<C-z>
