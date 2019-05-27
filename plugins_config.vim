@@ -260,6 +260,7 @@ let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}
 " => vim-rooter  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:rooter_silent_chdir = 1
+let g:rooter_patterns = ['global.json', '.git/']
 let g:rooter_change_directory_for_non_project_files = ''
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
