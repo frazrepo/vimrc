@@ -5,11 +5,6 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
-" => FZF MRU plugin {{{1
-""""""""""""""""""""""""""""""
-nnoremap <silent> <leader>u :FZFMru<CR>
-
-""""""""""""""""""""""""""""""
 " => FZF plugin {{{1
 """"""""""""""""""""""""""""""
 " This is the default extra key bindings
@@ -42,6 +37,7 @@ nnoremap <silent> <leader>, :Buffers<CR>
 nnoremap <silent> <leader>; :BLines<CR>
 nnoremap <silent> <leader>t :Tags<CR>
 nnoremap <silent> <leader>co :Commands<CR>
+nnoremap <silent> <leader>u :FZFMru<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Dirvish {{{1
@@ -82,7 +78,8 @@ let g:lightline = {
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-rainbow brackets {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-" Set this to 1 if you want to activate by default  , or active by typing the :RainbowToggle command
+" Set this to 1 if you want to activate by default  
+" , or active by typing the :RainbowToggle command
 let g:rainbow_active = 0
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -91,6 +88,7 @@ let g:rainbow_active = 0
 let g:UltiSnipsListSnippets ="<c-tab>"
 let g:UltiSnipsJumpForwardTrigger = "<C-j>"
 let g:UltiSnipsJumpBackwardTrigger = "<C-k>"
+
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
 
@@ -132,7 +130,7 @@ nnoremap <F9> :CtrlSFToggle<CR>
 " => CtrlSF Quick Search {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 let g:ctrlsf_populate_qflist = 1
-let g:ctrlsf_ignore_dir = ['tags']
+let g:ctrlsf_ignore_dir = ['tags','node_modules']
 
 nnoremap <silent> <leader>* :call SearchWordWithCtrlSf()<CR>
 vnoremap <silent> <leader>* :call SearchVisualSelectionWithCtrlSf()<CR>

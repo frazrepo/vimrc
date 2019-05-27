@@ -70,7 +70,6 @@ Plug 'romainl/vim-qlist'
 Plug 'romainl/vim-qf'
 
 " Snippet -  Code Generation - AutoCompletion {{{1
-" Plug 'jiangmiao/auto-pairs'
 Plug 'tmsvg/pear-tree'
 Plug 'machakann/vim-sandwich'
 Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
