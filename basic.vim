@@ -402,8 +402,8 @@ nnoremap <A-Down> :cnext<Cr>
 nnoremap <A-Up> :cprevious<Cr>
 
 " H and L Begin/End on homerow
-nnoremap H ^
-nnoremap L $
+map H ^
+map L $
 
 "Quick beautiful paste hack
 nnoremap "p vi""0p
