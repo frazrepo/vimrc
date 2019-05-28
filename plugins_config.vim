@@ -47,7 +47,7 @@ let g:Lf_WildIgnore  = {
     \ 'dir' : ['.git', '.hg', '.svn'],
     \ 'file': ['*.sw?', '~$*', '*.bak', '*.exe', '*.o', '*.so', '*.py[co]','*tags*'],
     \ }
-    
+
 let g:Lf_CacheDirectory = expand('~/.cache')
 if !isdirectory(g:Lf_CacheDirectory)
     silent! call mkdir(g:Lf_CacheDirectory, 'p')
@@ -56,12 +56,14 @@ endif
 let g:Lf_MruMaxFiles = 1024
 let g:Lf_MaxCount    = 0
 
+let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>']}
+
 nnoremap <silent> <c-p> :Leaderf file<CR>
-nnoremap <silent> <leader>, :Leaderf buffer<CR>
-nnoremap <silent> <leader>; :Leaderf line<CR>
-nnoremap <silent> <leader>t :Leaderf buftags<CR>
-nnoremap <silent> <leader>co:Leaderf cmdHistory<CR>
-nnoremap <silent> <leader>u :Leaderf mru<CR>
+nnoremap <silent> <leader>,  :Leaderf buffer<CR>
+nnoremap <silent> <leader>;  :Leaderf line<CR>
+nnoremap <silent> <leader>t  :Leaderf buftags<CR>
+nnoremap <silent> <leader>co :Leaderf cmdHistory<CR>
+nnoremap <silent> <leader>u  :Leaderf mru<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Dirvish {{{1
