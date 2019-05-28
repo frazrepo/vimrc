@@ -315,7 +315,7 @@ map <C-l> <C-W>l
 
 " Center next match
 " nnoremap <silent> n nzz
-nnoremap <silent> N Nzz
+" nnoremap <silent> N Nzz
 nnoremap <silent> * *zz
 nnoremap <silent> # #zz
 nnoremap <silent> g* g*zz
