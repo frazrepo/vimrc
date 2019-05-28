@@ -197,7 +197,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | yo[r,n,w,x,....]                 | Toggle Options         |
 | (space, )space, 10)space, (e, )e | Lines operations       |
 
-**fzf**
+**LeaderF**
 
 | Mapping         | Action                        |
 | ---             | ---                           |
@@ -315,12 +315,10 @@ Regexp search/replace pattern
 - [completor](https://github.com/maralla/completor.vim) : Manage auto completion correctly
 - [ctrlsf.vim](https://github.com/dyng/ctrlsf.vim) : Side searching
 - [emmet-vim](https://github.com/mattn/emmet-vim) : Html editing
-- [fzf / fzf.vim](https://github.com/junegunn/fzf.vim)
 - [leaderF](https://github.com/Yggdroot/LeaderF) : Fuzzy finder
 - [lightline](https://github.com/itchyny/lightline.vim) : Lightweight status line 
 - [neoformat](https://github.com/sbdchd/neoformat): Various formatters for many languages
 - [pear-tree](https://github.com/tmsvg/pear-tree) : Auto close pairs (parenthses, quotes, ...)
-- [fzfmru](https://github.com/pbogut/fzf-mru.vim) : Browse most recent files
 - [utilsnips + vim-snippets](https://github.com/SirVer/ultisnips) : Snippets
 - [Undotree](https://github.com/mbbill/undotree): Undo tree history
 - [vim-abolish](https://github.com/tpope/vim-abolish) : Search words, Coercion

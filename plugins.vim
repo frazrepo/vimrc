@@ -60,9 +60,6 @@ Plug 'machakann/vim-highlightedyank'
 Plug 'tpope/vim-fugitive'
 
 " File management, searching, quickfix {{{1
-Plug 'junegunn/fzf'
-Plug 'junegunn/fzf.vim'
-Plug 'pbogut/fzf-mru.vim'
 Plug 'Yggdroot/LeaderF'
 Plug 'airblade/vim-rooter'
 Plug 'justinmk/vim-dirvish'
