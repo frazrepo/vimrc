@@ -40,6 +40,16 @@ nnoremap <silent> <leader>co :Commands<CR>
 nnoremap <silent> <leader>u :FZFMru<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => LeaderF map {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
+nnoremap <silent> g<c-p> :Leaderf file<CR>
+nnoremap <silent> <leader>g, :Leaderf buffer<CR>
+nnoremap <silent> <leader>g; :Leaderf line<CR>
+nnoremap <silent> <leader>gt :Leaderf buftags<CR>
+nnoremap <silent> <leader>gco:Leaderf cmdHistory<CR>
+nnoremap <silent> <leader>gu :Leaderf mru<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Dirvish {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 map <leader>v :Dirvish<cr>

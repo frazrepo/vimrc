@@ -316,6 +316,7 @@ Regexp search/replace pattern
 - [ctrlsf.vim](https://github.com/dyng/ctrlsf.vim) : Side searching
 - [emmet-vim](https://github.com/mattn/emmet-vim) : Html editing
 - [fzf / fzf.vim](https://github.com/junegunn/fzf.vim)
+- [leaderF](https://github.com/Yggdroot/LeaderF) : Fuzzy finder
 - [lightline](https://github.com/itchyny/lightline.vim) : Lightweight status line 
 - [neoformat](https://github.com/sbdchd/neoformat): Various formatters for many languages
 - [pear-tree](https://github.com/tmsvg/pear-tree) : Auto close pairs (parenthses, quotes, ...)
