@@ -651,6 +651,9 @@ vnoremap <silent> <leader>* :<C-u>call VisualSelection('', '')<CR>:grep <C-R>=@/
 nnoremap <leader>/ :grep <C-R>=' **/*.'. expand('%:p:e')<CR><C-Left><Left>
 vnoremap <leader>/ :<C-u>call VisualSelection('', '')<CR>:grep <C-R>=@/<CR> **/*.<C-R>=expand('%:p:e')<CR>
 
+"Open automatically the Quickfix Window
+autocmd QuickFixCmdPost [^l]* cwindow
+
 " Filter Quickfix list
 function! s:FilterQuickfixList(bang, pattern)
   let cmp = a:bang ? '!~#' : '=~#'
