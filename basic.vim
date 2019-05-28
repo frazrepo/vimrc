@@ -313,8 +313,8 @@ map <silent> <space><space> :noh<cr>
 map <C-h> <C-W>h
 map <C-l> <C-W>l
 
-" Center next macth
-nnoremap <silent> n nzz
+" Center next match
+" nnoremap <silent> n nzz
 nnoremap <silent> N Nzz
 nnoremap <silent> * *zz
 nnoremap <silent> # #zz
