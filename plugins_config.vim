@@ -32,22 +32,36 @@ let g:fzf_colors =
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => FZF map {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-nnoremap <silent> <c-p> :Files<CR>
-nnoremap <silent> <leader>, :Buffers<CR>
-nnoremap <silent> <leader>; :BLines<CR>
-nnoremap <silent> <leader>t :Tags<CR>
-nnoremap <silent> <leader>co :Commands<CR>
-nnoremap <silent> <leader>u :FZFMru<CR>
+" nnoremap <silent> <c-p> :Files<CR>
+" nnoremap <silent> <leader>, :Buffers<CR>
+" nnoremap <silent> <leader>; :BLines<CR>
+" nnoremap <silent> <leader>t :Tags<CR>
+" nnoremap <silent> <leader>co :Commands<CR>
+" nnoremap <silent> <leader>u :FZFMru<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => LeaderF map {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-nnoremap <silent> g<c-p> :Leaderf file<CR>
-nnoremap <silent> <leader>g, :Leaderf buffer<CR>
-nnoremap <silent> <leader>g; :Leaderf line<CR>
-nnoremap <silent> <leader>gt :Leaderf buftags<CR>
-nnoremap <silent> <leader>gco:Leaderf cmdHistory<CR>
-nnoremap <silent> <leader>gu :Leaderf mru<CR>
+let g:Lf_RootMarkers = ['.git', '.hg', '.svn', '.project', '.root']
+let g:Lf_WildIgnore  = {
+    \ 'dir' : ['.git', '.hg', '.svn'],
+    \ 'file': ['*.sw?', '~$*', '*.bak', '*.exe', '*.o', '*.so', '*.py[co]','*tags*'],
+    \ }
+    
+let g:Lf_CacheDirectory = expand('~/.cache')
+if !isdirectory(g:Lf_CacheDirectory)
+    silent! call mkdir(g:Lf_CacheDirectory, 'p')
+endif
+
+let g:Lf_MruMaxFiles = 1024
+let g:Lf_MaxCount    = 0
+
+nnoremap <silent> <c-p> :Leaderf file<CR>
+nnoremap <silent> <leader>, :Leaderf buffer<CR>
+nnoremap <silent> <leader>; :Leaderf line<CR>
+nnoremap <silent> <leader>t :Leaderf buftags<CR>
+nnoremap <silent> <leader>co:Leaderf cmdHistory<CR>
+nnoremap <silent> <leader>u :Leaderf mru<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Dirvish {{{1
