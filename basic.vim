@@ -445,8 +445,6 @@ nnoremap ùù ``
 nnoremap ' `
 
 "Experimental
-nnoremap ! /
-map ç $
 map à @
 
 " For Tags navigation - <C-$> doesn't work yet
