@@ -53,17 +53,21 @@ if !isdirectory(g:Lf_CacheDirectory)
     silent! call mkdir(g:Lf_CacheDirectory, 'p')
 endif
 
-let g:Lf_MruMaxFiles = 1024
+let g:Lf_MruMaxFiles = 200
 let g:Lf_MaxCount    = 0
 
 let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>']}
 
-nnoremap <silent> <c-p> :Leaderf file<CR>
-nnoremap <silent> <leader>,  :Leaderf buffer<CR>
-nnoremap <silent> <leader>;  :Leaderf line<CR>
-nnoremap <silent> <leader>t  :Leaderf buftags<CR>
-nnoremap <silent> <leader>co :Leaderf cmdHistory<CR>
-nnoremap <silent> <leader>u  :Leaderf mru<CR>
+"Files
+let g:Lf_ShortcutF = '<C-P>'
+
+"Buffers
+let g:Lf_ShortcutB = '<leader>,'
+
+nnoremap <silent> <leader>;  :LeaderfLine<CR>
+nnoremap <silent> <leader>t  :LeaderfTag<CR>
+nnoremap <silent> <leader>co :LeaderfHistoryCmd<CR>
+nnoremap <silent> <leader>u  :LeaderfMru<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Dirvish {{{1
