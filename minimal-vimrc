@@ -732,6 +732,9 @@ if has("autocmd")
     autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
 endif
 
+" RemoveTrailingSpaces
+command! RemoveTrailingSpaces call CleanExtraSpaces()
+
 function! CmdLine(str)
     call feedkeys(":" . a:str)
 endfunction 
@@ -804,7 +807,7 @@ augroup SaveBuffer
   autocmd FocusGained,BufEnter,CursorHold buffer.* silent! checktime
 augroup end
 
-" Sort lines by width"
+" Sort lines by width
 function! SortByWidth() range
     silent! execute a:firstline . "," . a:lastline . 's/^\(.*\)$/\=strdisplaywidth( submatch(0) ) . " " . submatch(0)/'
     silent! execute a:firstline . "," . a:lastline . 'sort n'
@@ -831,8 +834,6 @@ endfunction
 " map '<CR>' in command-line mode to execute the function above
 cnoremap <expr> <CR> CCR()
 
-" RemoveTrailingSpaces
-command! RemoveTrailingSpaces call CleanExtraSpaces()
 
 "Templates (Experimental)
 augroup Templates
