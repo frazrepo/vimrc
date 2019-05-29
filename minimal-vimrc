@@ -696,6 +696,25 @@ function! CopyFilePath()
   echo "File path copied to system clipboard"
 endfunction
 
+"Auto-Pairs /Pear Tree replacement
+inoremap ( ()<Left>
+inoremap <expr> ) getline('.')[getpos('.')[2]-1] == ')' ? '<Right>' : ')'
+                   
+inoremap [ []<Left>
+inoremap <expr> ] getline('.')[getpos('.')[2]-1] == ']' ? '<Right>' : ']'
+                   
+inoremap { {}<Left>
+inoremap <expr> } getline('.')[getpos('.')[2]-1] == '}' ? '<Right>' : '}'
+                   
+inoremap < <><Left>
+inoremap <expr> > getline('.')[getpos('.')[2]-1] == '>' ? '<Right>' : '>'
+
+inoremap <expr> " getline('.')[getpos('.')[2]-1] == '"' ? '<Right>' : '""<Left>'
+inoremap <expr> ' getline('.')[getpos('.')[2]-1] == "'" ? '<Right>' : "''<Left>"
+
+
+
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions and Commands {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
