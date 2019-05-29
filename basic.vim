@@ -317,13 +317,6 @@ map <silent> <space><space> :noh<cr>
 map <C-h> <C-W>h
 map <C-l> <C-W>l
 
-" Center next match
-" nnoremap <silent> n nzz
-" nnoremap <silent> N Nzz
-nnoremap <silent> * *zz
-nnoremap <silent> # #zz
-nnoremap <silent> g* g*zz
-
 " Move faster vertically
 nnoremap <c-j> 5j
 nnoremap <c-k> 5k
