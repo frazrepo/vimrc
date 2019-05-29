@@ -666,16 +666,7 @@ command! -range=%  SortByWidth <line1>,<line2>call SortByWidth()
 command! WipeReg for i in range(34,122) | silent! call setreg(nr2char(i), []) | endfor 
 
 " RemoveTrailingSpaces
-function! s:RemoveTrailingSpaces()
-    let user_gdefault = &gdefault
-    try
-        set nogdefault
-        silent! %s/\s\+$
-    finally
-        let &gdefault = user_gdefault
-    endtry
-endfunction
-command! RemoveTrailingSpaces call s:RemoveTrailingSpaces()
+command! RemoveTrailingSpaces call CleanExtraSpaces()
 
 " https://gist.github.com/romainl/047aca21e338df7ccf771f96858edb86 
 function! CCR()
@@ -692,7 +683,6 @@ function! CCR()
 endfunction
 " map '<CR>' in command-line mode to execute the function above
 cnoremap <expr> <CR> CCR()
-
 
 "Templates (Experimental)
 augroup Templates

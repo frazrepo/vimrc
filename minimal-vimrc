@@ -832,16 +832,7 @@ endfunction
 cnoremap <expr> <CR> CCR()
 
 " RemoveTrailingSpaces
-function! s:RemoveTrailingSpaces()
-    let user_gdefault = &gdefault
-    try
-        set nogdefault
-        silent! %s/\s\+$
-    finally
-        let &gdefault = user_gdefault
-    endtry
-endfunction
-command! RemoveTrailingSpaces call s:RemoveTrailingSpaces()
+command! RemoveTrailingSpaces call CleanExtraSpaces()
 
 "Templates (Experimental)
 augroup Templates
