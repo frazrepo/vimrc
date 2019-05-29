@@ -305,6 +305,7 @@ inoremap jk <Esc>
 inoremap <C-U> <C-G>u<C-U>
 
 " Go to end
+inoremap <C-a> <C-O>^
 inoremap <C-e> <C-O>$
 
 """"""""""""""""""""""""""""""
