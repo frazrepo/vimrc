@@ -72,9 +72,12 @@ Plug 'tmsvg/pear-tree'
 Plug 'machakann/vim-sandwich'
 Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
 Plug 'tpope/vim-commentary'
-Plug 'maralla/completor.vim'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
+" Python plugins are too slow on nvim
+if !has('nvim')
+    Plug 'maralla/completor.vim'
+    Plug 'SirVer/ultisnips'
+    Plug 'honza/vim-snippets'
+endif
 
 " Languages - Formatters {{{1
 Plug 'sheerun/vim-polyglot'
