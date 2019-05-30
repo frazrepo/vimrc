@@ -115,6 +115,7 @@ set foldcolumn=1
 
 " Foldmethod manual
 set foldmethod=manual 
+set foldlevelstart=99 
 
 " Dealing with special chars
 set encoding=utf-8
