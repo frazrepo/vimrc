@@ -9,8 +9,8 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 let g:Lf_RootMarkers = ['.git', '.hg', '.svn', '.project', '.root']
 let g:Lf_WildIgnore  = {
-    \ 'dir' : ['.git', '.hg', '.svn', 'bin', 'obj', 'packages'],
-    \ 'file': ['*.sw?', '~$*', '*.bak', '*.exe', '*.dll', '*.png', '*.map', '*.o', '*.so', '*.py[co]','*tags*'],
+    \ 'dir' : ['.git', '.hg', '.svn', 'bin', 'obj', 'packages','android-studio','node_modules'],
+    \ 'file': ['*.sw?', '~$*', '*.bak', '*.exe','*.jar', '*.dll', '*.png', '*.map', '*.o', '*.so', '*.py[co]','*tags*'],
     \ }
 
 let g:Lf_CacheDirectory = expand('~/.cache')
