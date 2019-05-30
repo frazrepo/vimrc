@@ -7,23 +7,10 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugins (experimental) {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 if !has("nvim")
     packadd! matchit
 endif
-
-" Default vim directory : .vim or vimfiles(for Windows)
-
-" if empty(glob('~/vimfiles/autoload/plug.vim'))
-"   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-"     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-"   autocmd VimEnter * PlugInstall
-" endif
-
-" call plug#begin('~/vimfiles/bundle')
-"   Plug 'frazrepo/vim-colorschemes'
-" call plug#end()
-
-" color apprentice
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General {{{1
