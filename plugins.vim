@@ -72,8 +72,8 @@ Plug 'tmsvg/pear-tree'
 Plug 'machakann/vim-sandwich'
 Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
 Plug 'tpope/vim-commentary'
-" Python plugins are too slow on nvim
-if !has('nvim')
+" Python plugins are too slow on nvim windows
+if !(has('nvim') && has("win64"))
     Plug 'maralla/completor.vim'
     Plug 'SirVer/ultisnips'
     Plug 'honza/vim-snippets'
