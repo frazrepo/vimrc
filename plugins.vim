@@ -44,7 +44,7 @@ Plug 'frazrepo/vim-yankmatches'
 Plug 'osyo-manga/vim-over'
 
 " Code formatting {{{1
-Plug 'tommcdo/vim-lion'
+Plug 'tommcdo/vim-lion'                             "Not lazy loadable
 
 " Sorting {{{1
 Plug 'christoomey/vim-sort-motion'
@@ -62,7 +62,7 @@ Plug 'tpope/vim-fugitive'
 " File management, searching, quickfix {{{1
 Plug 'Yggdroot/LeaderF'
 Plug 'airblade/vim-rooter'
-Plug 'justinmk/vim-dirvish'
+Plug 'justinmk/vim-dirvish'                             "Not lazy loadable
 Plug 'justinmk/vim-gtfo'
 Plug 'romainl/vim-qlist'
 Plug 'romainl/vim-qf'
@@ -81,13 +81,13 @@ endif
 
 " Languages - Formatters {{{1
 Plug 'sheerun/vim-polyglot'
-Plug 'sbdchd/neoformat'
+Plug 'sbdchd/neoformat', { 'on' : 'Neoformat'}
 
 " Undo
 Plug 'mbbill/undotree', { 'on' : 'UndotreeToggle' }
 
 " Scratch (Experimental)
-Plug 'frazrepo/scratch'
+Plug 'frazrepo/scratch', { 'on' : 'Scratch'}
 
 "Code navigation {{{1
 " On Linux do a chmod +x ./plat/update_tags.sh
