@@ -7,6 +7,10 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugins (experimental) {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+if !has("nvim")
+    packadd! matchit
+endif
+
 " Default vim directory : .vim or vimfiles(for Windows)
 
 " if empty(glob('~/vimfiles/autoload/plug.vim'))
