@@ -5,6 +5,23 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Plugins (experimental) {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Default vim directory : .vim or vimfiles(for Windows)
+
+" if empty(glob('~/vimfiles/autoload/plug.vim'))
+"   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+"     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+"   autocmd VimEnter * PlugInstall
+" endif
+
+" call plug#begin('~/vimfiles/bundle')
+"   Plug 'frazrepo/vim-colorschemes'
+" call plug#end()
+
+" color apprentice
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -44,24 +61,6 @@ set clipboard^=unnamed,unnamedplus
 " :W sudo saves the file 
 " (useful for handling the permission-denied error on Linux)
 command! W w !sudo tee % > /dev/null
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Plugins (experimental) {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Default vim directory : .vim or vimfiles(for Windows)
-
-" if empty(glob('~/vimfiles/autoload/plug.vim'))
-"   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-"     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-"   autocmd VimEnter * PlugInstall
-" endif
-
-" call plug#begin('~/vimfiles/bundle')
-"   Plug 'frazrepo/vim-colorschemes'
-" call plug#end()
-
-" color apprentice
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface {{{1
@@ -111,13 +110,13 @@ set magic
 
 " Show matching brackets when text indicator is over them
 set showmatch 
+
 " How many tenths of a second to blink when matching brackets
 set mat=2
 
-" No annoying sound on errors
+" No sound on errors
 set noerrorbells
-set visualbell
-set t_vb=
+set visualbell t_vb=
 set tm=500
 
 " Add a bit extra margin to the left
@@ -203,69 +202,6 @@ nnoremap <M-9>        :Smaller<CR>
 nnoremap <M-0>        :Bigger<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Statusline {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" :h mode() to see all modes
-let g:currentmode={
-    \ 'n'      : 'NORMAL ',
-    \ 'no'     : 'N·Operator Pending ',
-    \ 'v'      : 'VISUAL ',
-    \ 'V'      : 'V·Line ',
-    \ "\<C-V>" : 'V·Block ',
-    \ 's'      : 'Select ',
-    \ 'S'      : 'S·Line ',
-    \ '\<C-S>' : 'S·Block ',
-    \ 'i'      : 'INSERT ',
-    \ 'R'      : 'REPLACE ',
-    \ 'Rv'     : 'V·Replace ',
-    \ 'c'      : 'Command ',
-    \ 'cv'     : 'Vim Ex ',
-    \ 'ce'     : 'Ex ',
-    \ 'r'      : 'Prompt ',
-    \ 'rm'     : 'More ',
-    \ 'r?'     : 'Confirm ',
-    \ '!'      : 'Shell ',
-    \ 't'      : 'Terminal '
-    \}
-
-" Automatically change the statusline color depending on mode
-function! ChangeStatuslineColor()
-  if (mode() =~# '\v(n|no)')
-    exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
-  elseif (mode() =~# '\v(v|V)' || g:currentmode[mode()] ==# 'V·Block ' || get(g:currentmode, mode(), '') ==# 't')
-    exe 'hi! StatusLine ctermfg=005 guifg=#000000 guibg=#f2c68a gui=NONE cterm=None'
-  elseif (mode() ==# 'i')
-    exe 'hi! StatusLine ctermfg=004 guifg=#000000 guibg=#95e454 gui=NONE cterm=None'
-  else
-    exe 'hi! StatusLine ctermfg=006 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
-  endif
-  return ''
-endfunction
-
-"Default
-exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
-
-set laststatus=2
-set statusline=
-set statusline+=%{ChangeStatuslineColor()}
-set statusline+=%0*\ %{toupper(g:currentmode[mode()])}
-set statusline+=%2*\ %t          "tail of the filename
-set statusline+=%2*\ %h          "help file flag
-set statusline+=%2*\ %m          "modified flag
-set statusline+=%2*\ %r          "read only flag
-set statusline+=%*
-set statusline+=%2*\ %=          "left/right separator
-set statusline+=%2*\ %y\           "filetype
-set statusline+=%3*\ %3p%%\      "percent through file
-set statusline+=%4*\ %3l:%-3c    "cursor line/cursor column
-hi User0 guifg=#000000 guibg=#8ac6f2
-hi User1 guifg=#000000 guibg=#8ac6f2
-hi User2 guifg=#000000 guibg=#808080
-hi User3 guifg=#000000 guibg=#969696
-hi User4 guifg=#000000 guibg=#a8a8a8
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -330,10 +266,6 @@ xnoremap <Leader>fr :<C-u>'<,'>s/
 " When you press `<leader>r` you can search and replace the selected text:
 vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
 
-" Search in the buffer
-" nnoremap <leader>i :ilist<space>/
-nnoremap <leader>i :execute "vimgrep /" . expand("<cword>") . "/j %" <Bar> cw<CR>
-vnoremap <silent> <leader>i :<C-u>call VisualSelection('', '')<CR>:vimgrep/<C-R>=@/<CR>/j %<CR>:cw<cr>
 
 " VirtualEdit block allow selection everywhere in visual block mode
 set virtualedit=block
@@ -387,12 +319,6 @@ xnoremap <c-k> 5k
 
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-
-" CWD automatically for the current buffer
-augroup CwdBufferEnter
-  autocmd!
-  autocmd Filetype,BufEnter *  call ChangeCurrentWorkingDirectory()
-augroup END
 
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
@@ -544,18 +470,6 @@ inoremap <silent> ,o <C-x><C-o>
 inoremap <silent> ,t <C-x><C-]>
 inoremap <silent> ,u <C-x><C-u>
 
-" <TAB>: minimal tab completion.
-function! InsertTabWrapper()
-    let col = col('.') - 1
-    if !col || getline('.')[col - 1] !~ '\k'
-        return "\<tab>"
-    else
-        return "\<c-p>"
-    endif
-endfunction
-inoremap <expr> <tab> InsertTabWrapper()
-inoremap <s-tab> <c-n>
-
 " Remove the Windows ^M - when the encodings gets messed up
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
@@ -600,16 +514,6 @@ au filetype help wincmd _ " Maximize the help on open
 " => Text-Objects {{{1
 " https://gist.github.com/romainl/c0a8b57a36aec71a986f1120e1931f20
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" 24 simple text-objects
-" ----------------------
-" i_ i. i: i, i; i| i/ i\ i* i+ i- i#
-" a_ a. a: a, a; a| a/ a\ a* a+ a- a#
-for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', '#' ]
-	execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
-	execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
-	execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
-	execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
-endfor
 
 " Line text-object
 " -----------------
@@ -641,6 +545,30 @@ onoremap ae :<C-u>normal vae<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugins Replacement for minimal vimrc {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" vim targets : 24 simple text-objects
+" ----------------------
+" i_ i. i: i, i; i| i/ i\ i* i+ i- i#
+" a_ a. a: a, a; a| a/ a\ a* a+ a- a#
+for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', '#' ]
+	execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
+	execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
+	execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
+	execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
+endfor
+
+" <TAB>: minimal tab completion.
+function! InsertTabWrapper()
+    let col = col('.') - 1
+    if !col || getline('.')[col - 1] !~ '\k'
+        return "\<tab>"
+    else
+        return "\<c-p>"
+    endif
+endfunction
+inoremap <expr> <tab> InsertTabWrapper()
+inoremap <s-tab> <c-n>
+
 " vim-move
 nnoremap <A-j> :m .+1<CR>==
 nnoremap <A-k> :m .-2<CR>==
@@ -718,8 +646,88 @@ inoremap <expr> > getline('.')[getpos('.')[2]-1] == '>' ? '<Right>' : '>'
 inoremap <expr> " getline('.')[getpos('.')[2]-1] == '"' ? '<Right>' : '""<Left>'
 inoremap <expr> ' getline('.')[getpos('.')[2]-1] == "'" ? '<Right>' : "''<Left>"
 
+" IList Search in the buffer
+" nnoremap <leader>i :ilist<space>/
+nnoremap <leader>i :execute "vimgrep /" . expand("<cword>") . "/j %" <Bar> cw<CR>
+vnoremap <silent> <leader>i :<C-u>call VisualSelection('', '')<CR>:vimgrep/<C-R>=@/<CR>/j %<CR>:cw<cr>
 
+" Minimal vim rooter
+" CWD automatically for the current buffer
+augroup CwdBufferEnter
+  autocmd!
+  autocmd Filetype,BufEnter *  call ChangeCurrentWorkingDirectory()
+augroup END
 
+" Change Current Working Directory (CWD) to buffer directory
+function! ChangeCurrentWorkingDirectory()
+  try
+    :cd %:p:h
+  catch
+  endtry
+endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Statusline {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" :h mode() to see all modes
+let g:currentmode={
+    \ 'n'      : 'NORMAL ',
+    \ 'no'     : 'N·Operator Pending ',
+    \ 'v'      : 'VISUAL ',
+    \ 'V'      : 'V·Line ',
+    \ "\<C-V>" : 'V·Block ',
+    \ 's'      : 'Select ',
+    \ 'S'      : 'S·Line ',
+    \ '\<C-S>' : 'S·Block ',
+    \ 'i'      : 'INSERT ',
+    \ 'R'      : 'REPLACE ',
+    \ 'Rv'     : 'V·Replace ',
+    \ 'c'      : 'Command ',
+    \ 'cv'     : 'Vim Ex ',
+    \ 'ce'     : 'Ex ',
+    \ 'r'      : 'Prompt ',
+    \ 'rm'     : 'More ',
+    \ 'r?'     : 'Confirm ',
+    \ '!'      : 'Shell ',
+    \ 't'      : 'Terminal '
+    \}
+
+" Automatically change the statusline color depending on mode
+function! ChangeStatuslineColor()
+  if (mode() =~# '\v(n|no)')
+    exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
+  elseif (mode() =~# '\v(v|V)' || g:currentmode[mode()] ==# 'V·Block ' || get(g:currentmode, mode(), '') ==# 't')
+    exe 'hi! StatusLine ctermfg=005 guifg=#000000 guibg=#f2c68a gui=NONE cterm=None'
+  elseif (mode() ==# 'i')
+    exe 'hi! StatusLine ctermfg=004 guifg=#000000 guibg=#95e454 gui=NONE cterm=None'
+  else
+    exe 'hi! StatusLine ctermfg=006 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
+  endif
+  return ''
+endfunction
+
+"Default
+exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
+
+set laststatus=2
+set statusline=
+set statusline+=%{ChangeStatuslineColor()}
+set statusline+=%0*\ %{toupper(g:currentmode[mode()])}
+set statusline+=%2*\ %t          "tail of the filename
+set statusline+=%2*\ %h          "help file flag
+set statusline+=%2*\ %m          "modified flag
+set statusline+=%2*\ %r          "read only flag
+set statusline+=%*
+set statusline+=%2*\ %=          "left/right separator
+set statusline+=%2*\ %y\           "filetype
+set statusline+=%3*\ %3p%%\      "percent through file
+set statusline+=%4*\ %3l:%-3c    "cursor line/cursor column
+hi User0 guifg=#000000 guibg=#8ac6f2
+hi User1 guifg=#000000 guibg=#8ac6f2
+hi User2 guifg=#000000 guibg=#808080
+hi User3 guifg=#000000 guibg=#969696
+hi User4 guifg=#000000 guibg=#a8a8a8
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions and Commands {{{1
@@ -783,13 +791,6 @@ function! ExecuteMacroOverVisualRange()
   execute ":'<,'>normal @".nr2char(getchar())
 endfunction
 
-" Change Current Working Directory (CWD) to buffer directory
-function! ChangeCurrentWorkingDirectory()
-  try
-    :cd %:p:h
-  catch
-  endtry
-endfunction
 
 " AutoSave Scratch buffer
 function! s:SaveBuffer() abort
@@ -852,6 +853,7 @@ function! ReadTemplate(extension)
   execute '0r '. s:templateFile
   normal j
 endfunction
+
 
 " }}}
 

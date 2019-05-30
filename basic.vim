@@ -104,10 +104,9 @@ set showmatch
 " How many tenths of a second to blink when matching brackets
 set mat=2
 
-" No annoying sound on errors
+" No sound on errors
 set noerrorbells
-set visualbell
-set t_vb=
+set visualbell t_vb=
 set tm=500
 
 " Add a bit extra margin to the left
@@ -185,15 +184,6 @@ else
 endif
 
 " Maximized window on start and Font Size
-" For Ubuntu :
-" 1. Windows Size
-" set lines=768 columns=1366 " cause bug infinite max size not supported on linux, all fonts and linespace not working
-" http://ubuntuguide.net/get-gvim-start-in-maximized-window-in-ubuntu-gnome
-" 2. Font Installation
-" Install fonts on Ubuntu
-" sudo apt-get install fonts-inconsolata
-" sudo fc-cache -fv
-
 if has("gui_running")
   if has("gui_gtk2") || has("gui_gtk3") 
     set lines=535 columns=1366
@@ -303,7 +293,7 @@ xnoremap <expr> v
               \ : mode() ==# 'V' ? 'v' : 'V')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Moving , Searching {{{1
+" => Moving around, tabs, windows and buffers {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Search using magic regex
@@ -673,7 +663,6 @@ command! -range=%  SortByWidth <line1>,<line2>call SortByWidth()
 
 "  Clean all register
 command! WipeReg for i in range(34,122) | silent! call setreg(nr2char(i), []) | endfor 
-
 
 " https://gist.github.com/romainl/047aca21e338df7ccf771f96858edb86 
 function! CCR()
