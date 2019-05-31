@@ -33,7 +33,8 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
     Default GUI : auy (light theme), dracula (dark theme)
     Default Terminal : apprentice (dark theme)
-    Dark theme : anderson, atom-dark256, apprentice, codedark, minimalist, molokai, monokai(sublime text), nord, seoul, space-vim-dark
+    Dark theme : anderson, atom-dark256, apprentice, codedark, minimalist, 
+                 molokai, monokai(sublime text), nord, seoul, space-vim-dark
     Light theme : ayu (dark available), seoul256-light, pencil
 
 ## Normal mode mappings
@@ -115,10 +116,10 @@ And run install.sh (or install.bat) to update vimrc configuration file
 ## Various mappings
 | Mapping    | Action                            |
 | ---        | ---                               |
-| F3         |Neoformat             |
-| F4         |UndoTreeToggle             |
+| F3         |Neoformat                          |
+| F4         |UndoTreeToggle                     |
 | F8         |Toggle quickfix window             |
-| F9         |Toggle CtrlSF|
+| F9         |Toggle CtrlSF                      |
 | F10        |Rotate colorschemes                |
 | F11        |Tagbar Toggle                      |
 | F12        |Tag navigation                     |
