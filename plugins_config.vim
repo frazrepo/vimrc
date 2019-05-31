@@ -272,7 +272,11 @@ if has('nvim')
         \ 'coc-ultisnips',
         \ 'coc-snippets',
         \ 'coc-vimlsp',
+        \ 'coc-python',
         \ ]
+
+
+  "Install for go-langserver : go get -u github.com/sourcegraph/go-langserver
 
   let g:coc_user_config = {
               \   'snippets.ultisnips.directories': [
