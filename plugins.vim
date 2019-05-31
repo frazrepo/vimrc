@@ -72,12 +72,15 @@ Plug 'tmsvg/pear-tree'
 Plug 'machakann/vim-sandwich'
 Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
 Plug 'tpope/vim-commentary'
-" Python plugins are too slow on nvim windows
-if !(has('nvim') && has("win64"))
+if !has('nvim') 
     Plug 'maralla/completor.vim'
-    Plug 'SirVer/ultisnips'
-    Plug 'honza/vim-snippets'
+else
+    "Use coc for nvim
+    Plug 'neoclide/coc.nvim'
 endif
+
+Plug 'SirVer/ultisnips'                                 " Python plugins are too slow on nvim windows
+Plug 'honza/vim-snippets'                               " Python plugins are too slow on nvim windows
 
 " Languages - Formatters {{{1
 Plug 'sheerun/vim-polyglot'
