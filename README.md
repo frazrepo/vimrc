@@ -311,8 +311,8 @@ Regexp search/replace pattern
 
 ## Plugins list
 
-- [auto-pairs](https://github.com/jiangmiao/auto-pairs) : () , {} ,[] , etc...
 - [completor](https://github.com/maralla/completor.vim) : Manage auto completion correctly
+- [coc.nvim](https://github.com/neoclide/coc.nvim) : Completion Plugin used for nvim
 - [ctrlsf.vim](https://github.com/dyng/ctrlsf.vim) : Side searching
 - [emmet-vim](https://github.com/mattn/emmet-vim) : Html editing
 - [leaderF](https://github.com/Yggdroot/LeaderF) : Fuzzy finder
