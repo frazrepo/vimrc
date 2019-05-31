@@ -278,8 +278,19 @@ if has('nvim')
               \   'snippets.ultisnips.directories': [
               \    'plugins/vim-snippets/UltiSnips'
               \   ],
-              \  'suggest.noselect': v:false
-              \ }
+              \  'suggest.noselect': v:false,
+             \ 'languageserver': {
+             \    'golang': {
+             \      'command': '~/go/bin/go-langserver',
+             \      'filetypes': ['go'],
+             \      'initializationOptions': {
+             \        'gocodeCompletionEnabled': v:true,
+             \        'diagnosticsEnabled': v:true,
+             \        'lintTool': 'golint'
+             \      }
+             \    }
+             \  }
+         \  }
 
   " Use tab for trigger completion with characters ahead and navigate.
   " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
