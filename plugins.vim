@@ -68,17 +68,16 @@ Plug 'romainl/vim-qlist'
 Plug 'romainl/vim-qf'
 
 " Snippet -  Code Generation - AutoCompletion {{{1
-Plug 'tmsvg/pear-tree'
 Plug 'machakann/vim-sandwich'
 Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
 Plug 'tpope/vim-commentary'
 if !has('nvim') 
     Plug 'maralla/completor.vim'
+    Plug 'tmsvg/pear-tree'
 else
     "Use coc for nvim
     Plug 'neoclide/coc.nvim'
 endif
-
 Plug 'SirVer/ultisnips'                                 " Python plugins are too slow on nvim windows
 Plug 'honza/vim-snippets'                               " Python plugins are too slow on nvim windows
 
