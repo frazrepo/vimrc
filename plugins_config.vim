@@ -272,27 +272,31 @@ if has('nvim')
         \ 'coc-ultisnips',
         \ 'coc-snippets',
         \ 'coc-vimlsp',
+        \ 'coc-python'
         \ ]
 
 
-  "Install for go-langserver : go get -u github.com/sourcegraph/go-langserver
+  " Language Server : Go and Python
+  " go-langserver : go get -u github.com/sourcegraph/go-langserver
+  " python : Use Microsoft Language Server (disable jedi in config)
 
   let g:coc_user_config = {
               \   'snippets.ultisnips.directories': [
               \    'plugins/vim-snippets/UltiSnips'
               \   ],
               \  'suggest.noselect': v:false,
-             \ 'languageserver': {
-             \    'golang': {
-             \      'command': '~/go/bin/go-langserver',
-             \      'filetypes': ['go'],
-             \      'initializationOptions': {
-             \        'gocodeCompletionEnabled': v:true,
-             \        'diagnosticsEnabled': v:true,
-             \        'lintTool': 'golint'
-             \      }
-             \    }
-             \  }
+              \  'python.jediEnabled': v:false,
+              \ 'languageserver': {
+              \    'golang': {
+              \      'command': '~/go/bin/go-langserver',
+              \      'filetypes': ['go'],
+              \      'initializationOptions': {
+              \        'gocodeCompletionEnabled': v:true,
+              \        'diagnosticsEnabled': v:true,
+              \        'lintTool': 'golint'
+              \      }
+              \    }
+              \  }
          \  }
 
   " Use tab for trigger completion with characters ahead and navigate.
