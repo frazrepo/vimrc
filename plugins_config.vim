@@ -163,19 +163,21 @@ vmap D <Plug>SchleppDup
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => pear-tree {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-"Toggle with Alt-P mapping
-let g:peartree_is_enable=1
-function! TogglePearTree()
-  if g:peartree_is_enable
-    PearTreeDisable
-    let g:peartree_is_enable=0
-  else
-    PearTreeEnable
+if !has('nvim')
+    "Toggle with Alt-P mapping
     let g:peartree_is_enable=1
-  endif
-endfunction
-nnoremap <buffer> <silent> <M-p> :call TogglePearTree()<CR>
-inoremap <buffer> <silent> <M-p> <C-O>:call TogglePearTree()<CR>
+    function! TogglePearTree()
+      if g:peartree_is_enable
+        PearTreeDisable
+        let g:peartree_is_enable=0
+      else
+        PearTreeEnable
+        let g:peartree_is_enable=1
+      endif
+    endfunction
+    nnoremap <buffer> <silent> <M-p> :call TogglePearTree()<CR>
+    inoremap <buffer> <silent> <M-p> <C-O>:call TogglePearTree()<CR>
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-quickscope {{{1

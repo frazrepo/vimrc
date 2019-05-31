@@ -34,9 +34,21 @@ set noshowmode
 " Disable startup message
 set shortmess=atI
 
-"Fix : Press Enter or Type Command to continue error in nvim 
+"nvim specific
 if has('nvim')
+
+    "Fix : Press Enter or Type Command to continue error in nvim 
     set cmdheight=2
+
+    " Smaller updatetime for CursorHold & CursorHoldI
+    set updatetime=300
+
+    " don't give |ins-completion-menu| messages.
+    set shortmess+=c
+
+    " always show signcolumns
+    set signcolumn=yes
+
 endif
 
 " Space as a Leader key
@@ -214,7 +226,7 @@ nnoremap <M-0>        :Bigger<CR>
 
 " Turn backup off, since most stuff is in SVN, git et.c anyway...
 set nobackup
-set nowb
+set nowritebackup
 set noswapfile
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

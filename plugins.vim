@@ -77,6 +77,7 @@ if !has('nvim')
 else
     "Use coc for nvim
     Plug 'neoclide/coc.nvim'
+    " Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.cmd'}
 endif
 Plug 'SirVer/ultisnips'                                 " Python plugins are too slow on nvim windows
 Plug 'honza/vim-snippets'                               " Python plugins are too slow on nvim windows
