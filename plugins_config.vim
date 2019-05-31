@@ -278,14 +278,15 @@ if has('nvim')
 
   " Language Server : Go and Python
   " go-langserver : go get -u github.com/sourcegraph/go-langserver
-  " python : Use Microsoft Language Server (disable jedi in config)
+  " python :  - With jedi , do pip3 install jedi
+            " - Or use Microsoft Language Server (disable jedi in config)
 
   let g:coc_user_config = {
               \   'snippets.ultisnips.directories': [
               \    'plugins/vim-snippets/UltiSnips'
               \   ],
               \  'suggest.noselect': v:false,
-              \  'python.jediEnabled': v:false,
+              \  'python.jediEnabled': v:true,
               \ 'languageserver': {
               \    'golang': {
               \      'command': '~/go/bin/go-langserver',
