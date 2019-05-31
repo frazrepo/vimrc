@@ -272,7 +272,6 @@ if has('nvim')
         \ 'coc-ultisnips',
         \ 'coc-snippets',
         \ 'coc-vimlsp',
-        \ 'coc-python',
         \ ]
 
 
