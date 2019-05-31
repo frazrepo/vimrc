@@ -278,51 +278,27 @@ if has('nvim')
 
   " Language Server : Go and Python
   " go-langserver : go get -u github.com/sourcegraph/go-langserver
-  " python :  - Linux : use jedi , do pip3 install jedi
-            " - Windows : use Microsoft Language Server (disable jedi in config)
+  " python :  - Jedi : do pip3 install jedi (default activated)
+            " - Windows/Linux : use Microsoft Language Server (disable jedi in config)
 
-    if has("win32") || has("win64")
-      " Windows"
-      let g:coc_user_config = {
-                  \   'snippets.ultisnips.directories': [
-                  \    'plugins/vim-snippets/UltiSnips'
-                  \   ],
-                  \  'suggest.noselect': v:false,
-                  \  'python.jediEnabled': v:false,
-                  \ 'languageserver': {
-                  \    'golang': {
-                  \      'command': '~/go/bin/go-langserver',
-                  \      'filetypes': ['go'],
-                  \      'initializationOptions': {
-                  \        'gocodeCompletionEnabled': v:true,
-                  \        'diagnosticsEnabled': v:true,
-                  \        'lintTool': 'golint'
-                  \      }
-                  \    }
-                  \  }
-             \  }
-  else
-      " Linux
-      let g:coc_user_config = {
-                  \   'snippets.ultisnips.directories': [
-                  \    'plugins/vim-snippets/UltiSnips'
-                  \   ],
-                  \  'suggest.noselect': v:false,
-                  \  'python.jediEnabled': v:true,
-                  \ 'languageserver': {
-                  \    'golang': {
-                  \      'command': '~/go/bin/go-langserver',
-                  \      'filetypes': ['go'],
-                  \      'initializationOptions': {
-                  \        'gocodeCompletionEnabled': v:true,
-                  \        'diagnosticsEnabled': v:true,
-                  \        'lintTool': 'golint'
-                  \      }
-                  \    }
-                  \  }
-             \  }
-
-  endif
+  let g:coc_user_config = {
+              \   'snippets.ultisnips.directories': [
+              \    'plugins/vim-snippets/UltiSnips'
+              \   ],
+              \  'suggest.noselect': v:false,
+              \  'python.jediEnabled': v:false,
+              \ 'languageserver': {
+              \    'golang': {
+              \      'command': '~/go/bin/go-langserver',
+              \      'filetypes': ['go'],
+              \      'initializationOptions': {
+              \        'gocodeCompletionEnabled': v:true,
+              \        'diagnosticsEnabled': v:true,
+              \        'lintTool': 'golint'
+              \      }
+              \    }
+              \  }
+         \  }
 
   " Use tab for trigger completion with characters ahead and navigate.
   " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
