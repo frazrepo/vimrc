@@ -10,7 +10,7 @@
 " To start vim without loading any .vimrc or plugins, use:
 "     vim -u NONE
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " => Global Mode Variables {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -181,23 +181,6 @@ syntax on
 " And optimize performance for longlines
 set synmaxcol=200
 
-" Check colorScheme function
-function! HasColorscheme(name)
-    let pat = 'colors/'.a:name.'.vim'
-    return !empty(globpath(&rtp, pat))
-endfunction
-
-" ColorScheme ayu for GUI and apprentice for terminal
-if has("gui_running")
-  if HasColorscheme('ayu')
-    color ayu
-    " Alternative : nord, dracula
-  endif
-else
-  if HasColorscheme('apprentice')
-    color apprentice
-  endif
-endif
 
 " Maximized window on start and Font Size
 if has("gui_running")
@@ -708,11 +691,34 @@ function! ReadTemplate(extension)
   normal j
 endfunction
 
-" }}}
-
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Load Plugins and Configs {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "Plugins and Configurations
 source $HOME/.vim_runtime/plugins.vim
 source $HOME/.vim_runtime/plugins_config.vim
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Color Scheme {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Check colorScheme function
+function! HasColorscheme(name)
+    let pat = 'colors/'.a:name.'.vim'
+    return !empty(globpath(&rtp, pat))
+endfunction
+
+" ColorScheme ayu for GUI and apprentice for terminal
+if has("gui_running")
+  if HasColorscheme('ayu')
+    color ayu
+    " Alternative : nord, dracula
+  endif
+else
+  if HasColorscheme('apprentice')
+    color apprentice
+  endif
+endif
+" }}} "
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
