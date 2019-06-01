@@ -16,9 +16,9 @@
 
 " Define this variable for developer edition
 " Currently for nvim only
-if has('nvim')
+" if has('nvim')
   let g:developer_edition = 1
-endif
+" endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General {{{1
