@@ -71,14 +71,20 @@ Plug 'romainl/vim-qf'
 Plug 'machakann/vim-sandwich'
 Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
 Plug 'tpope/vim-commentary'
-" Plug 'maralla/completor.vim'
-" Plug 'tmsvg/pear-tree'
-"Use coc for nvim
-if has('win32') || has('win64')
-    Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.cmd'}
+
+if exists("g:developer_edition") 
+    "Use coc for nvim
+    if has('win32') || has('win64')
+        Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.cmd'}
+    else
+        Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
+    endif
 else
-    Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
+    "Use completor for basic usage
+    Plug 'maralla/completor.vim'
+    Plug 'tmsvg/pear-tree'
 endif
+
 " endif
 Plug 'SirVer/ultisnips'                                 " Python plugins are too slow on nvim windows
 Plug 'honza/vim-snippets'                               " Python plugins are too slow on nvim windows

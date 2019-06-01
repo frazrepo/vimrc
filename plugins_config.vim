@@ -80,7 +80,9 @@ let g:rainbow_active = 0
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => ultisnips and vim-snippets configuration {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:UltiSnipsExpandTrigger='<Nop>'
+if exists("g:developer_edition") 
+  let g:UltiSnipsExpandTrigger='<Nop>'
+endif
 
 let g:UltiSnipsJumpForwardTrigger = "<Tab>"
 let g:UltiSnipsJumpBackwardTrigger = "<S-Tab>"
@@ -106,8 +108,13 @@ xmap ) ]
 " => Emmet plugin remap {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 " Default leader <C-y> 
- let g:user_emmet_leader_key = '<C-e>'
-let g:user_emmet_expandabbr_key = '<C-x><C-e>'
+ 
+if exists("g:developer_edition") 
+  let g:user_emmet_leader_key = '<C-e>'
+  let g:user_emmet_expandabbr_key = '<C-x><C-e>'
+else
+    let g:user_emmet_leader_key = ','
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => CTRLSF Side Search {{{1
@@ -167,21 +174,21 @@ vmap D <Plug>SchleppDup
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""	
 " => pear-tree {{{1	
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     	
-" if !has('nvim')	
-"     "Toggle with Alt-P mapping	
-"     let g:peartree_is_enable=1	
-"     function! TogglePearTree()	
-"       if g:peartree_is_enable	
-"         PearTreeDisable	
-"         let g:peartree_is_enable=0	
-"       else	
-"         PearTreeEnable	
-"         let g:peartree_is_enable=1	
-"       endif	
-"     endfunction	
-"     nnoremap <buffer> <silent> <M-p> :call TogglePearTree()<CR>	
-"     inoremap <buffer> <silent> <M-p> <C-O>:call TogglePearTree()<CR>	
-" endif
+if !exists("g:developer_edition") 
+    "Toggle with Alt-P mapping	
+    let g:peartree_is_enable=1	
+    function! TogglePearTree()	
+      if g:peartree_is_enable	
+        PearTreeDisable	
+        let g:peartree_is_enable=0	
+      else	
+        PearTreeEnable	
+        let g:peartree_is_enable=1	
+      endif	
+    endfunction	
+    nnoremap <buffer> <silent> <M-p> :call TogglePearTree()<CR>	
+    inoremap <buffer> <silent> <M-p> <C-O>:call TogglePearTree()<CR>	
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-sandwich to simulate surround mappings {{{1
@@ -219,157 +226,160 @@ let g:move_auto_indent = 0
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""	
 " => Completor  {{{1	
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     	
-" if !has('nvim')	
-"   fun! TabOrComplete() "{{{	
-"       call UltiSnips#ExpandSnippet()	
-"       if g:ulti_expand_res == 0	
-"         if pumvisible()	
-"           return "\<C-n>"	
-"         else	
-"           call UltiSnips#JumpForwards()	
-"           if g:ulti_jump_forwards_res == 0	
-"             " If completor is not open and we are in the middle of typing a word then	
-"             " `tab` opens completor menu.	
-"             let inp_str = strpart( getline('.'), col('.')-3, 2 )	
-"             if col('.')>1 && (inp_str =~ '^\w$' || inp_str =~ '\%(->\)\|\%(.\w\)\|\%(\w\.\)\|\%(./\)')	
-"               return "\<C-R>=completor#do('complete')\<CR>"	
-"               " Uncomment here to return to vanilla completion	
-"               " return "\<C-n>"	
-"             else	
-"               return "\<TAB>"	
-"             endif	
-"           endif	
-"         endif	
-"       endif	
-"       return ""	
-"     endf "}}}	
-"     au InsertEnter * exec "inoremap <silent> <Tab> <C-R>=TabOrComplete()<cr>"	
+if !exists("g:developer_edition") 
+  fun! TabOrComplete() "{{{	
+      call UltiSnips#ExpandSnippet()	
+      if g:ulti_expand_res == 0	
+        if pumvisible()	
+          return "\<C-n>"	
+        else	
+          call UltiSnips#JumpForwards()	
+          if g:ulti_jump_forwards_res == 0	
+            " If completor is not open and we are in the middle of typing a word then	
+            " `tab` opens completor menu.	
+            let inp_str = strpart( getline('.'), col('.')-3, 2 )	
+            if col('.')>1 && (inp_str =~ '^\w$' || inp_str =~ '\%(->\)\|\%(.\w\)\|\%(\w\.\)\|\%(./\)')	
+              return "\<C-R>=completor#do('complete')\<CR>"	
+              " Uncomment here to return to vanilla completion	
+              " return "\<C-n>"	
+            else	
+              return "\<TAB>"	
+            endif	
+          endif	
+        endif	
+      endif	
+      return ""	
+    endf "}}}	
+    au InsertEnter * exec "inoremap <silent> <Tab> <C-R>=TabOrComplete()<cr>"	
 
-"    "LSP Activation (not working ?)	
-"   let g:completor_filetype_map = {}	
-"   " Enable lsp for go by using gopls	
-"   let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}	
-" endif
+   "LSP Activation (not working ?)	
+  let g:completor_filetype_map = {}	
+  " Enable lsp for go by using gopls	
+  let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}	
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => coc  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:coc_global_extensions = [
-      \ 'coc-css',
-      \ 'coc-html',
-      \ 'coc-tag',
-      \ 'coc-json',
-      \ 'coc-pairs',
-      \ 'coc-prettier',
-      \ 'coc-tsserver',
-      \ 'coc-ultisnips',
-      \ 'coc-snippets',
-      \ 'coc-vimlsp',
-      \ 'coc-python'
-      \ ]
+
+if exists("g:developer_edition") 
+    let g:coc_global_extensions = [
+          \ 'coc-css',
+          \ 'coc-html',
+          \ 'coc-tag',
+          \ 'coc-json',
+          \ 'coc-pairs',
+          \ 'coc-prettier',
+          \ 'coc-tsserver',
+          \ 'coc-ultisnips',
+          \ 'coc-snippets',
+          \ 'coc-vimlsp',
+          \ 'coc-python'
+          \ ]
 
 
-" Language Server : Go and Python
-" go-langserver : go get -u github.com/sourcegraph/go-langserver
-" python :  - Jedi : do pip3 install jedi (default activated)
-          " - Windows/Linux : use Microsoft Language Server (disable jedi in config)
+    " Language Server : Go and Python
+    " go-langserver : go get -u github.com/sourcegraph/go-langserver
+    " python :  - Jedi : do pip3 install jedi (default activated)
+              " - Windows/Linux : use Microsoft Language Server (disable jedi in config)
 
-let g:coc_user_config = {
-            \   'snippets.ultisnips.directories': [
-            \    'plugins/vim-snippets/UltiSnips'
-            \   ],
-            \  'suggest.noselect': v:false,
-            \  'python.jediEnabled': v:false,
-            \ 'languageserver': {
-            \    'golang': {
-            \      'command': '~/go/bin/go-langserver',
-            \      'filetypes': ['go'],
-            \      'initializationOptions': {
-            \        'gocodeCompletionEnabled': v:true,
-            \        'diagnosticsEnabled': v:true,
-            \        'lintTool': 'golint'
-            \      }
-            \    }
+    let g:coc_user_config = {
+                \   'snippets.ultisnips.directories': [
+                \    'plugins/vim-snippets/UltiSnips'
+                \   ],
+                \  'suggest.noselect': v:false,
+                \  'python.jediEnabled': v:false,
+                \ 'languageserver': {
+                \    'golang': {
+                \      'command': '~/go/bin/go-langserver',
+                \      'filetypes': ['go'],
+                \      'initializationOptions': {
+                \        'gocodeCompletionEnabled': v:true,
+                \        'diagnosticsEnabled': v:true,
+                \        'lintTool': 'golint'
+                \      }
+                \    }
+                \  }
             \  }
-        \  }
 
-" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-" Expand or Validate with <Tab>
-imap <silent><expr> <Tab> <SID>expand()
+    " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+    " Expand or Validate with <Tab>
+    imap <silent><expr> <Tab> <SID>expand()
 
-function! s:expand()
-  if pumvisible()
-    return "\<C-y>"
-  endif
-  let col = col('.') - 1
-  if !col || getline('.')[col - 1]  =~# '\s'
-    return "\<Tab>"
-  endif
-  return "\<C-x>\<C-e>"
-endfunction
+    function! s:expand()
+      if pumvisible()
+        return "\<C-y>"
+      endif
+      let col = col('.') - 1
+      if !col || getline('.')[col - 1]  =~# '\s'
+        return "\<Tab>"
+      endif
+      return "\<C-x>\<C-e>"
+    endfunction
 
-" Close preview window after completion is done
-autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+    " Close preview window after completion is done
+    autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
 
-"Jump to next/previous placeholder for snippet
-let g:coc_snippet_next = '<TAB>'
-let g:coc_snippet_prev = '<S-TAB>'
+    "Jump to next/previous placeholder for snippet
+    let g:coc_snippet_next = '<TAB>'
+    let g:coc_snippet_prev = '<S-TAB>'
 
-" Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
+    " Use <c-space> to trigger completion.
+    inoremap <silent><expr> <c-space> coc#refresh()
 
-" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
-" Coc only does snippet and additional edit on confirm.
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() :
-                                          \"\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+    " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+    " Coc only does snippet and additional edit on confirm.
+    inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() :
+                                              \"\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
-" Remap keys for gotos
-nmap <silent> gd <Plug>(coc-definition)
-" nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gx <Plug>(coc-references)
+    " Remap keys for gotos
+    nmap <silent> gd <Plug>(coc-definition)
+    " nmap <silent> gy <Plug>(coc-type-definition)
+    nmap <silent> gi <Plug>(coc-implementation)
+    nmap <silent> gx <Plug>(coc-references)
 
-" Use K to show documentation in preview window
-nnoremap <silent> K :call <SID>show_documentation()<CR>
+    " Use K to show documentation in preview window
+    nnoremap <silent> K :call <SID>show_documentation()<CR>
 
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
+    function! s:show_documentation()
+      if (index(['vim','help'], &filetype) >= 0)
+        execute 'h '.expand('<cword>')
+      else
+        call CocAction('doHover')
+      endif
+    endfunction
 
-" Highlight symbol under cursor on CursorHold
-autocmd CursorHold * silent call CocActionAsync('highlight')
+    " Highlight symbol under cursor on CursorHold
+    autocmd CursorHold * silent call CocActionAsync('highlight')
 
-" Remap for rename current word
-nmap <leader>rn <Plug>(coc-rename)
+    " Remap for rename current word
+    nmap <leader>rn <Plug>(coc-rename)
 
-" Remap for format selected region
-xmap ,f  <Plug>(coc-format-selected)
-nmap ,f  <Plug>(coc-format-selected)
+    " Remap for format selected region
+    xmap ,f  <Plug>(coc-format-selected)
+    nmap ,f  <Plug>(coc-format-selected)
 
-augroup mygroup
-  autocmd!
-  " Setup formatexpr specified filetype(s).
-  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-  " Update signature help on jump placeholder
-  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-augroup end
+    augroup mygroup
+      autocmd!
+      " Setup formatexpr specified filetype(s).
+      autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+      " Update signature help on jump placeholder
+      autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+    augroup end
 
-" Add diagnostic info for https://github.com/itchyny/lightline.vim
-let g:lightline = {
-      \ 'colorscheme': 'wombat',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'cocstatus': 'coc#status'
-      \ },
-      \ }
+    " Add diagnostic info for https://github.com/itchyny/lightline.vim
+    let g:lightline = {
+          \ 'colorscheme': 'wombat',
+          \ 'active': {
+          \   'left': [ [ 'mode', 'paste' ],
+          \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
+          \ },
+          \ 'component_function': {
+          \   'cocstatus': 'coc#status'
+          \ },
+          \ }
 
+endif 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-rooter  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     

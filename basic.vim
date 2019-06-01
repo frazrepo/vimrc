@@ -10,6 +10,14 @@
 " To start vim without loading any .vimrc or plugins, use:
 "     vim -u NONE
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Global Mode Variables {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" Define this variable for developer edition
+" like in .vimrc.local
+" Default = Not Defined
+" let g:developer_edition = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General {{{1
