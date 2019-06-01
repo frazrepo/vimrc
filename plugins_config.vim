@@ -80,9 +80,7 @@ let g:rainbow_active = 0
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => ultisnips and vim-snippets configuration {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-if has('nvim')
-  let g:UltiSnipsExpandTrigger='<Nop>'
-endif
+let g:UltiSnipsExpandTrigger='<Nop>'
 
 let g:UltiSnipsJumpForwardTrigger = "<Tab>"
 let g:UltiSnipsJumpBackwardTrigger = "<S-Tab>"
@@ -163,25 +161,6 @@ vmap  <left>  <Plug>SchleppLeft
 vmap  <right> <Plug>SchleppRight
 
 vmap D <Plug>SchleppDup
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => pear-tree {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-if !has('nvim')
-    "Toggle with Alt-P mapping
-    let g:peartree_is_enable=1
-    function! TogglePearTree()
-      if g:peartree_is_enable
-        PearTreeDisable
-        let g:peartree_is_enable=0
-      else
-        PearTreeEnable
-        let g:peartree_is_enable=1
-      endif
-    endfunction
-    nnoremap <buffer> <silent> <M-p> :call TogglePearTree()<CR>
-    inoremap <buffer> <silent> <M-p> <C-O>:call TogglePearTree()<CR>
-endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-quickscope {{{1
@@ -268,12 +247,18 @@ let g:coc_user_config = {
 "Working for snippet with tab
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
+
+" https://github.com/neoclide/coc.nvim/issues/170
+
+
 " Expand or Validate with <Tab>
 inoremap <silent><expr> <TAB>
-      \ pumvisible() ? coc#_select_confirm() :
-      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+      \ pumvisible() ? "\<C-y>" : 
       \ <SID>check_back_space() ? "\<TAB>" :
       \ coc#refresh()
+
+" Close preview window after completion is done
+autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
 
 function! s:check_back_space() abort
   let col = col('.') - 1
@@ -291,10 +276,6 @@ inoremap <silent><expr> <c-space> coc#refresh()
 " Coc only does snippet and additional edit on confirm.
 inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() :
                                           \"\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-" Use `[c` and `]c` to navigate diagnostics
-nmap <silent> [c <Plug>(coc-diagnostic-prev)
-nmap <silent> ]c <Plug>(coc-diagnostic-next)
 
 " Remap keys for gotos
 nmap <silent> gd <Plug>(coc-definition)
@@ -331,22 +312,6 @@ augroup mygroup
   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 augroup end
 
-" Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-" Remap for do codeAction of current line
-nmap <leader>ac  <Plug>(coc-codeaction)
-" Fix autofix problem of current line
-nmap <leader>qf  <Plug>(coc-fix-current)
-
-" Use `:Format` to format current buffer
-command! -nargs=0 Format :call CocAction('format')
-
-" Use `:Fold` to fold current buffer
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-
 " Add diagnostic info for https://github.com/itchyny/lightline.vim
 let g:lightline = {
       \ 'colorscheme': 'wombat',
@@ -358,27 +323,6 @@ let g:lightline = {
       \   'cocstatus': 'coc#status'
       \ },
       \ }
-
-
-
-" Using CocList
-" Show all diagnostics
-" nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
-" " Manage extensions
-" nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
-" " Show commands
-" nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
-" " Find symbol of current document
-" nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
-" " Search workspace symbols
-" nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
-" " Do default action for next item.
-" nnoremap <silent> <space>j  :<C-u>CocNext<CR>
-" " Do default action for previous item.
-" nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
-" " Resume latest coc list
-" nnoremap <silent> <space>p  :<C-u>CocListResume<CR>"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-rooter  {{{1
