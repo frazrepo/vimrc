@@ -244,12 +244,7 @@ let g:coc_user_config = {
 
 " Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-"Working for snippet with tab
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-
 " https://github.com/neoclide/coc.nvim/issues/170
-
 
 " Expand or Validate with <Tab>
 inoremap <silent><expr> <TAB>
