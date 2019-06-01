@@ -34,22 +34,17 @@ set noshowmode
 " Disable startup message
 set shortmess=atI
 
-"nvim specific
-if has('nvim')
+"Fix : Press Enter or Type Command to continue error in nvim 
+set cmdheight=2
 
-    "Fix : Press Enter or Type Command to continue error in nvim 
-    set cmdheight=2
+" Smaller updatetime for CursorHold & CursorHoldI
+set updatetime=300
 
-    " Smaller updatetime for CursorHold & CursorHoldI
-    set updatetime=300
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
 
-    " don't give |ins-completion-menu| messages.
-    set shortmess+=c
-
-    " always show signcolumns
-    set signcolumn=yes
-
-endif
+" always show signcolumns
+set signcolumn=yes
 
 " Space as a Leader key
 let mapleader = "\<Space>" 
