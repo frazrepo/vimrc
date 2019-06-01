@@ -62,7 +62,19 @@ Plug 'machakann/vim-highlightedyank'
 Plug 'tpope/vim-fugitive'
 
 " File management, searching, quickfix {{{1
-Plug 'Yggdroot/LeaderF'
+if (s:developer_edition == 1) 
+    if has('nvim')
+        Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
+        Plug 'Shougo/neomru.vim'
+    else
+        Plug 'Shougo/denite.nvim'
+        Plug 'Shougo/neomru.vim'
+        Plug 'roxma/nvim-yarp'
+        Plug 'roxma/vim-hug-neovim-rpc'
+    endif
+else
+    Plug 'Yggdroot/LeaderF'
+endif
 Plug 'airblade/vim-rooter'
 Plug 'justinmk/vim-dirvish'                             "Not lazy loadable
 Plug 'justinmk/vim-gtfo'

@@ -7,32 +7,47 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => LeaderF map {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-let g:Lf_RootMarkers = ['.git', '.hg', '.svn', '.project', '.root']
-let g:Lf_WildIgnore  = {
-    \ 'dir' : ['.git', '.hg', '.svn', 'bin', 'obj', 'packages','android-studio','node_modules'],
-    \ 'file': ['*.sw?', '~$*', '*.bak', '*.exe','*.jar', '*.dll', '*.png', '*.map', '*.o', '*.so', '*.py[co]','*tags*'],
-    \ }
+if !exists("g:developer_edition") 
+  let g:Lf_RootMarkers = ['.git', '.hg', '.svn', '.project', '.root']
+  let g:Lf_WildIgnore  = {
+      \ 'dir' : ['.git', '.hg', '.svn', 'bin', 'obj', 'packages','android-studio','node_modules'],
+      \ 'file': ['*.sw?', '~$*', '*.bak', '*.exe','*.jar', '*.dll', '*.png', '*.map', '*.o', '*.so', '*.py[co]','*tags*'],
+      \ }
 
-let g:Lf_CacheDirectory = expand('~/.cache')
-if !isdirectory(g:Lf_CacheDirectory)
-    silent! call mkdir(g:Lf_CacheDirectory, 'p')
+  let g:Lf_CacheDirectory = expand('~/.cache')
+  if !isdirectory(g:Lf_CacheDirectory)
+      silent! call mkdir(g:Lf_CacheDirectory, 'p')
+  endif
+
+  let g:Lf_MruMaxFiles = 200
+  let g:Lf_MaxCount    = 0
+
+  let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>']}
+
+  "Files
+  let g:Lf_ShortcutF = '<C-P>'
+
+  "Buffers
+  let g:Lf_ShortcutB = '<leader>,'
+
+  nnoremap <silent> <leader>;  :LeaderfLine<CR>
+  nnoremap <silent> <leader>t  :LeaderfTag<CR>
+  nnoremap <silent> <leader>co :LeaderfHistoryCmd<CR>
+  nnoremap <silent> <leader>u  :LeaderfMru<CR>
 endif
 
-let g:Lf_MruMaxFiles = 200
-let g:Lf_MaxCount    = 0
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Denite {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 
-let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>']}
-
-"Files
-let g:Lf_ShortcutF = '<C-P>'
-
-"Buffers
-let g:Lf_ShortcutB = '<leader>,'
-
-nnoremap <silent> <leader>;  :LeaderfLine<CR>
-nnoremap <silent> <leader>t  :LeaderfTag<CR>
-nnoremap <silent> <leader>co :LeaderfHistoryCmd<CR>
-nnoremap <silent> <leader>u  :LeaderfMru<CR>
+if exists("g:developer_edition") 
+  nnoremap <silent> <C-p>  :Denite file/rec<CR>
+  nnoremap <silent> <leader>,  :Denite buffer<CR>
+  nnoremap <silent> <leader>;  :Denite line<CR>
+  " nnoremap <silent> <leader>t  :LeaderfTag<CR>
+  " nnoremap <silent> <leader>co :LeaderfHistoryCmd<CR>
+  nnoremap <silent> <leader>u  :Denite file_mru<CR>
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Dirvish {{{1
