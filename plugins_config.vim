@@ -273,7 +273,6 @@ if exists("g:developer_edition")
           \ 'coc-prettier',
           \ 'coc-tsserver',
           \ 'coc-ultisnips',
-          \ 'coc-snippets',
           \ 'coc-vimlsp',
           \ 'coc-python'
           \ ]
