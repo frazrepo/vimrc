@@ -44,7 +44,9 @@ set noshowmode
 set shortmess=atI
 
 "Fix : Press Enter or Type Command to continue error in nvim 
-set cmdheight=2
+if exists("g:developer_edition") 
+  set cmdheight=2
+endif
 
 " Smaller updatetime for CursorHold & CursorHoldI
 set updatetime=300
