@@ -17,6 +17,8 @@ endif
 " => Vim Plug plugins declaration
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+let s:developer_edition = get(g:,'developer_edition',0)
+
 call plug#begin('~/.vim_runtime/plugins')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -72,7 +74,7 @@ Plug 'machakann/vim-sandwich'
 Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
 Plug 'tpope/vim-commentary'
 
-if exists("g:developer_edition") 
+if (s:developer_edition == 1) 
     "Use coc for nvim
     if has('win32') || has('win64')
         Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.cmd'}
