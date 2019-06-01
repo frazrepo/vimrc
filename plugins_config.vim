@@ -106,7 +106,8 @@ xmap ) ]
 " => Emmet plugin remap {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 " Default leader <C-y> 
-let g:user_emmet_leader_key=','
+ let g:user_emmet_leader_key = '<C-e>'
+let g:user_emmet_expandabbr_key = '<C-x><C-e>'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => CTRLSF Side Search {{{1
@@ -292,23 +293,23 @@ let g:coc_user_config = {
             \  }
         \  }
 
-" Use tab for trigger completion with characters ahead and navigate.
 " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-" https://github.com/neoclide/coc.nvim/issues/170
-
 " Expand or Validate with <Tab>
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-y>" : 
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
+imap <silent><expr> <Tab> <SID>expand()
+
+function! s:expand()
+  if pumvisible()
+    return "\<C-y>"
+  endif
+  let col = col('.') - 1
+  if !col || getline('.')[col - 1]  =~# '\s'
+    return "\<Tab>"
+  endif
+  return "\<C-x>\<C-e>"
+endfunction
 
 " Close preview window after completion is done
 autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
 
 "Jump to next/previous placeholder for snippet
 let g:coc_snippet_next = '<TAB>'
