@@ -162,6 +162,26 @@ vmap  <right> <Plug>SchleppRight
 
 vmap D <Plug>SchleppDup
 
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""	
+" => pear-tree {{{1	
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     	
+" if !has('nvim')	
+"     "Toggle with Alt-P mapping	
+"     let g:peartree_is_enable=1	
+"     function! TogglePearTree()	
+"       if g:peartree_is_enable	
+"         PearTreeDisable	
+"         let g:peartree_is_enable=0	
+"       else	
+"         PearTreeEnable	
+"         let g:peartree_is_enable=1	
+"       endif	
+"     endfunction	
+"     nnoremap <buffer> <silent> <M-p> :call TogglePearTree()<CR>	
+"     inoremap <buffer> <silent> <M-p> <C-O>:call TogglePearTree()<CR>	
+" endif
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-sandwich to simulate surround mappings {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
