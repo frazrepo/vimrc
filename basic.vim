@@ -15,8 +15,8 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Define this variable for developer edition
-" like in .vimrc.local
 " Default = Not Defined
+" Uncomment this line for developer edition
 " let g:developer_edition = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -708,6 +708,10 @@ function! ReadTemplate(extension)
 endfunction
 
 " }}}
+
+"Plugins and Configurations
+source $HOME/.vim_runtime/plugins.vim
+source $HOME/.vim_runtime/plugins_config.vim
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
