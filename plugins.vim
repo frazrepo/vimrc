@@ -76,8 +76,11 @@ if !has('nvim')
     Plug 'tmsvg/pear-tree'
 else
     "Use coc for nvim
-    " Plug 'neoclide/coc.nvim'
-    Plug 'neoclide/coc.nvim', {'tag': '*', 'do': ':call coc#util#install()'}
+    if has('win32') || has('win64')
+        Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.cmd'}
+    else
+        Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
+    endif
 endif
 Plug 'SirVer/ultisnips'                                 " Python plugins are too slow on nvim windows
 Plug 'honza/vim-snippets'                               " Python plugins are too slow on nvim windows
