@@ -8,6 +8,7 @@
 " => LeaderF map {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 let g:Lf_RootMarkers = ['.git', '.hg', '.svn', '.project', '.root']
+let g:Lf_WorkingDirectoryMode = 'Ac'
 let g:Lf_WildIgnore  = {
     \ 'dir' : ['.git', '.hg', '.svn', 'bin', 'obj', 'packages','android-studio','node_modules'],
     \ 'file': ['*.sw?', '~$*', '*.bak', '*.exe','*.jar', '*.dll', '*.png', '*.map', '*.o', '*.so', '*.py[co]','*tags*'],
