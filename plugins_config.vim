@@ -163,11 +163,6 @@ vmap  <right> <Plug>SchleppRight
 vmap D <Plug>SchleppDup
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-quickscope {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-sandwich to simulate surround mappings {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 runtime macros/sandwich/keymap/surround.vim
