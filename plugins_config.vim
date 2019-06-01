@@ -215,6 +215,41 @@ nnoremap <F4> :UndotreeToggle<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:move_auto_indent = 0
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""	
+" => Completor  {{{1	
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     	
+" if !has('nvim')	
+"   fun! TabOrComplete() "{{{	
+"       call UltiSnips#ExpandSnippet()	
+"       if g:ulti_expand_res == 0	
+"         if pumvisible()	
+"           return "\<C-n>"	
+"         else	
+"           call UltiSnips#JumpForwards()	
+"           if g:ulti_jump_forwards_res == 0	
+"             " If completor is not open and we are in the middle of typing a word then	
+"             " `tab` opens completor menu.	
+"             let inp_str = strpart( getline('.'), col('.')-3, 2 )	
+"             if col('.')>1 && (inp_str =~ '^\w$' || inp_str =~ '\%(->\)\|\%(.\w\)\|\%(\w\.\)\|\%(./\)')	
+"               return "\<C-R>=completor#do('complete')\<CR>"	
+"               " Uncomment here to return to vanilla completion	
+"               " return "\<C-n>"	
+"             else	
+"               return "\<TAB>"	
+"             endif	
+"           endif	
+"         endif	
+"       endif	
+"       return ""	
+"     endf "}}}	
+"     au InsertEnter * exec "inoremap <silent> <Tab> <C-R>=TabOrComplete()<cr>"	
+
+"    "LSP Activation (not working ?)	
+"   let g:completor_filetype_map = {}	
+"   " Enable lsp for go by using gopls	
+"   let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}	
+" endif
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => coc  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
