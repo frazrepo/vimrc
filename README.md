@@ -25,6 +25,13 @@ And run install.sh (or install.bat) to update vimrc configuration file
  - [Cheat Sheet for this vimrc](https://www.cheatography.com/fraz/cheat-sheets/vim-mappings/)
  - [Muscle Memory Cheat](https://www.cheatography.com/fraz/cheat-sheets/vim-muscle-memory/)
 
+## Mode
+
+    - Default Mode : For heavy text editing 
+    - Developer Mode : 
+          * Define let g:developer_edition = 1 (like in .vimrc.local)
+          * coc autocompletion and LSP mode
+
 ## Leader key
 
     leader = <space>
