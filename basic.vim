@@ -15,9 +15,10 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Define this variable for developer edition
-" Default = Not Defined
-" Uncomment this line for developer edition
-" let g:developer_edition = 1
+" Currently for nvim only
+if has('nvim')
+  let g:developer_edition = 1
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General {{{1
