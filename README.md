@@ -370,3 +370,5 @@ Just do following:
 * [Toran Billups's vimrc](https://github.com/toranb/dotfiles/blob/master/vimrc)
 * [Damian Conway's vim setup](https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup)
 * [vimrcfu](https://vimrcfu.com/)
+* [Debugging vim](https://codeinthehole.com/tips/debugging-vim-by-example/)
+* [Another tips to debug vimrc](https://vimways.org/2018/debugging-your-vim-config/)
