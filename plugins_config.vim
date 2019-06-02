@@ -278,8 +278,8 @@ if exists("g:developer_edition")
           \ 'coc-pairs',
           \ 'coc-prettier',
           \ 'coc-tsserver',
-          \ 'coc-ultisnips',
           \ 'coc-vimlsp',
+          \ 'coc-snippets',
           \ 'coc-python',
           \ 'coc-rls',
           \ 'https://github.com/polypus74/trusty_rusty_snippets'
