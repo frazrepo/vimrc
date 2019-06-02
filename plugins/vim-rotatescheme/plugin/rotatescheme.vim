@@ -8,7 +8,7 @@ endif
 
 let loaded_rotatescheme = 1
 
-let s:choices = ['anderson', 'ayu', 'apprentice', 'atom-dark-256', 'codedark', 'dracula' ,'monokai','nord' ,'pencil', 'seoul256-light', 'seoul256']
+let s:choices = ['anderson', 'ayu', 'apprentice', 'atom-dark-256', 'codedark', 'dracula', 'gruvbox8','monokai','nord' ,'pencil', 'seoul256-light', 'seoul256']
 
 function! RotateColorScheme(forward)
   if !exists("g:colors_index")
