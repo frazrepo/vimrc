@@ -408,6 +408,13 @@ let g:highlightedyank_highlight_duration = 300
 nnoremap <leader>bs :Scratch<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Fugitive  {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
+nnoremap <leader>gd :Gvdiff<cr>
+nnoremap gdh :diffget //2<cr>
+nnoremap gdl :diffget //3<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim: fdm=marker
