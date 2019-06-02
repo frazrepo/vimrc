@@ -262,6 +262,12 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => coc  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+" Languages Support : 
+" javascript, typescript
+" html, css
+" vim
+" python
+" rust with trusty-rusty-snippets (need a cocinstall coc-snippets)
 
 if exists("g:developer_edition") 
     let g:coc_global_extensions = [
@@ -274,7 +280,9 @@ if exists("g:developer_edition")
           \ 'coc-tsserver',
           \ 'coc-ultisnips',
           \ 'coc-vimlsp',
-          \ 'coc-python'
+          \ 'coc-python',
+          \ 'coc-rls',
+          \ 'https://github.com/polypus74/trusty_rusty_snippets'
           \ ]
 
 
