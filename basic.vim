@@ -388,8 +388,8 @@ nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
 
 "Insert new line in normal mode quickly (but not in quickfix window)
-nnoremap <expr> <cr>  &buftype ==# 'quickfix' ? "\<CR>" : ":set paste<CR>m`o<Esc>``:set nopaste<CR>"
-nnoremap <S-cr> :set paste<CR>m`O<Esc>``:set nopaste<CR>
+nnoremap <silent> <expr> <cr>  &buftype ==# 'quickfix' ? "\<CR>" : ":set paste<CR>m`o<Esc>``:set nopaste<CR>"
+nnoremap <silent> <S-cr> :set paste<CR>m`O<Esc>``:set nopaste<CR>
 
 " Navigating quickfix (Experimental)
 nnoremap <A-Down> :cnext<Cr>
