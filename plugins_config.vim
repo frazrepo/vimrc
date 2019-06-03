@@ -269,6 +269,10 @@ endif
 " python
 " rust with trusty-rusty-snippets (need a cocinstall coc-snippets)
 
+"Snippets
+" coc-snippets
+" coc-ultisnips : to handle ultisnips python snippets, uuid, ....
+
 if exists("g:developer_edition") 
     let g:coc_global_extensions = [
           \ 'coc-css',
@@ -280,6 +284,7 @@ if exists("g:developer_edition")
           \ 'coc-tsserver',
           \ 'coc-vimlsp',
           \ 'coc-snippets',
+          \ 'coc-ultisnips',
           \ 'coc-python',
           \ 'coc-rls',
           \ 'https://github.com/polypus74/trusty_rusty_snippets'
