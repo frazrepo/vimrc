@@ -268,6 +268,8 @@ endif
 " vim
 " python
 " rust with trusty-rusty-snippets (need a cocinstall coc-snippets)
+" go via languageserver
+" Powershell
 
 "Snippets
 " coc-snippets
