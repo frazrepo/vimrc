@@ -1,0 +1,5 @@
+*.zip
+PowerShellEditorServices/
+.pses
+tags.lock
+tags.temp

@@ -286,6 +286,8 @@ if exists("g:developer_edition")
           \ ]
 
 
+    "  Powershell :  call coc#powershell#install() to install
+
     " Language Server : Go and Python
     " go-langserver : go get -u github.com/sourcegraph/go-langserver
     " python :  - Jedi : do pip3 install jedi (default activated)

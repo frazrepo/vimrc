@@ -81,6 +81,9 @@ if (s:developer_edition == 1)
     else
         Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
     endif
+
+    "Powershell stuff
+    Plug 'yatli/coc-powershell'
 else
     "Use completor for basic usage
     Plug 'maralla/completor.vim'
