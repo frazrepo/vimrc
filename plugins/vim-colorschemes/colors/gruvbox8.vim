@@ -90,7 +90,9 @@ if &background ==# 'dark'
   hi PmenuThumb ctermfg=NONE ctermbg=243 guifg=NONE guibg=#7c6f64 guisp=NONE cterm=NONE gui=NONE
   hi Question ctermfg=208 ctermbg=NONE guifg=#fe8019 guibg=NONE guisp=NONE cterm=NONE,bold gui=NONE,bold
   hi! link QuickFixLine Search
-  hi Search ctermfg=214 ctermbg=236 guifg=#fabd2f guibg=#32302f guisp=NONE cterm=NONE,reverse gui=NONE,reverse
+  " hi Search ctermfg=214 ctermbg=236 guifg=#fabd2f guibg=#32302f guisp=NONE cterm=NONE,reverse gui=NONE,reverse
+  " frazrepo
+  hi Search ctermfg=NONE ctermbg=NONE guifg=NONE guibg=NONE guisp=#9d0006 cterm=NONE,underline gui=NONE,underline
   hi SpecialKey ctermfg=239 ctermbg=NONE guifg=#504945 guibg=NONE guisp=NONE cterm=NONE gui=NONE
   hi SpellBad ctermfg=203 ctermbg=NONE guifg=#fb4934 guibg=NONE guisp=#fb4934 cterm=NONE,underline gui=NONE,italic,undercurl
   hi SpellCap ctermfg=109 ctermbg=NONE guifg=#83a598 guibg=NONE guisp=#83a598 cterm=NONE,underline gui=NONE,italic,undercurl
