@@ -289,9 +289,6 @@ nnoremap ? ?\v
 " Search/Replace
 nnoremap <leader>r :%s///g<Left><Left>
     
-" Search current buffer using g and show line number
-nnoremap <leader>f :g//#<Left><Left>
- 
 " Disable highlight when <space><space> is pressed
 map <silent> <space><space> :noh<cr>
 
@@ -643,9 +640,9 @@ inoremap <expr> " getline('.')[getpos('.')[2]-1] == '"' ? '<Right>' : '""<Left>'
 inoremap <expr> ' getline('.')[getpos('.')[2]-1] == "'" ? '<Right>' : "''<Left>"
 
 " IList Search in the buffer
-" nnoremap <leader>i :ilist<space>/
-nnoremap <leader>i :execute "vimgrep /" . expand("<cword>") . "/j %" <Bar> cw<CR>
-vnoremap <silent> <leader>i :<C-u>call VisualSelection('', '')<CR>:vimgrep/<C-R>=@/<CR>/j %<CR>:cw<cr>
+" nnoremap <leader>f :ilist<space>/
+nnoremap <leader>f :execute "vimgrep /" . expand("<cword>") . "/j %" <Bar> cw<CR>
+vnoremap <silent> <leader>f :<C-u>call VisualSelection('', '')<CR>:vimgrep/<C-R>=@/<CR>/j %<CR>:cw<cr>
 
 " Minimal vim rooter
 " CWD automatically for the current buffer

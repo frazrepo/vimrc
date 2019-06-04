@@ -304,9 +304,6 @@ nnoremap ? ?\v
 " Search/Replace
 nnoremap <leader>r :OverCommandLine%s///g<Left><Left>
     
-" Search current buffer using g and show line number
-nnoremap <leader>f :g//#<Left><Left>
- 
 " Disable highlight when <space><space> is pressed
 map <silent> <space><space> :noh<cr>
 
