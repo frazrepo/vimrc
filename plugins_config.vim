@@ -313,7 +313,7 @@ if exists("g:developer_edition")
                 \    'plugins/vim-snippets/UltiSnips'
                 \   ],
                 \  'suggest.noselect': v:false,
-                \  'python.jediEnabled': v:false,
+                \  'python.jediEnabled': v:true,
                 \ 'languageserver': {
                 \    'golang': {
                 \      'command': '~/go/bin/go-langserver',
