@@ -22,6 +22,7 @@ INTRODUCTION                                    *fztips*
 17. Apply macro to range of lines                 |fztips-17|
 18. Apply macro to a pattern off lines            |fztips-18|
 19. Apply macro to visual selection of lines      |fztips-19|
+20. Move block of text                            |fztips-20|
 
 XX.Ressources                                     |fztips-XX|
 
@@ -139,6 +140,26 @@ XX.Ressources                                     |fztips-XX|
 19. Apply macro to visual selection of lines     *fztips-19*
 >
     :'<,'>norm! @a
+<
+
+20. Move/Delete block of text                    *fztips-20*
+>
+    " Title2
+    " .....
+    " Title1
+    " ....
+    " Title3
+    "......
+
+    " Move Title2 block below Title1
+    " Search title2 then for each line, search the next Title1 , go -1 
+    " and move the block above Title3
+    :g/Title2/,/Title1/-1 move /Title3/-1
+
+
+    " Delete a block of text
+    " Delete all Title1 block
+    :g/Title1/,/Title3/-1d
 <
 
 XX.Ressources                                     *fztips-XX*
