@@ -95,8 +95,8 @@ else
 endif
 
 " endif
-Plug 'SirVer/ultisnips'                                 " Python plugins are too slow on nvim windows
-Plug 'honza/vim-snippets'                               " Python plugins are too slow on nvim windows
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 
 " Languages - Formatters {{{1
 Plug 'sheerun/vim-polyglot'
@@ -105,7 +105,7 @@ Plug 'sbdchd/neoformat', { 'on' : 'Neoformat'}
 " Undo
 Plug 'mbbill/undotree', { 'on' : 'UndotreeToggle' }
 
-" Scratch (Experimental)
+" Scratch 
 Plug 'frazrepo/vim-scratch', { 'on' : 'Scratch'}
 
 "Code navigation {{{1
