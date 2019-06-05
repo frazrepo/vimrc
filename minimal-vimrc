@@ -151,8 +151,8 @@ let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
 
 "ColorColumn at 80 Experimental
-" set colorcolumn=80
 highlight ColorColumn ctermbg=0 guibg=lightgrey
+call matchadd('ColorColumn', '\%81v\s*\zs\S', 100)
 
 " Hide tilde ~ sign at the end of buffer
  hi! EndOfBuffer guibg=bg guifg=bg
