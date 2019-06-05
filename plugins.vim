@@ -106,7 +106,7 @@ Plug 'sbdchd/neoformat', { 'on' : 'Neoformat'}
 Plug 'mbbill/undotree', { 'on' : 'UndotreeToggle' }
 
 " Scratch (Experimental)
-Plug 'frazrepo/scratch', { 'on' : 'Scratch'}
+Plug 'frazrepo/vim-scratch', { 'on' : 'Scratch'}
 
 "Code navigation {{{1
 " On Linux do a chmod +x ./plat/update_tags.sh
