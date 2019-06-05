@@ -29,7 +29,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
     - Default Mode : For heavy text editing 
     - Developer Mode : 
-          * Define let g:developer_edition = 1 (like in .vimrc.local)
+          * Define let g:developer_edition = 1 
           * coc autocompletion and LSP mode
 
 ## Leader key
@@ -40,7 +40,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
     Default GUI : auy (light theme), dracula (dark theme)
     Default Terminal : apprentice (dark theme)
-    Dark theme : anderson, atom-dark256, apprentice, codedark, minimalist, 
+    Dark theme : anderson, atom-dark256, apprentice, codedark, gruvbox8, minimalist, 
                  molokai, monokai(sublime text), nord, seoul, space-vim-dark
     Light theme : ayu (dark available), seoul256-light, pencil
 
@@ -69,7 +69,7 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | Mapping      | Action                         |
 | ---          | ---                            |
 | \<leader>bn  | New buffer                     |
-| \<leader>bd  | Close buffer                   |
+| \<leader>bd or !  | Close buffer                   |
 | \<leader>ba  | Close all buffers              |
 | \<bs>        | Navigate alternate buffer      |
 | \<leader>h   | Navigate previous              |
@@ -228,14 +228,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | ---           | ---                     |
 | F10 / \<S-F10> | Rotate Forward/Backward |
 
-**vim-signature**
-
-| Mapping      | Action                   |
-| ---          | ---                      |
-| ma, mb, . .. | Add(Toggle) mark         |
-| (' or )'     | Navigation between marks |
-| m<space>     | Delete all marks         |
-
 **vim-scripts/Tranpose**
 
 | Mapping             | Action |
@@ -257,8 +249,8 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | Mapping  | Action        |
 | ---      | ---           |
 | \<Tab>   | Expand        |
-| \<C-j>   | Jump forward  |
-| \<C-k>   | Jump backward |
+| \<Tab>   | Jump forward  |
+| \<S-Tab>   | Jump backward |
 
 **CtrlSF**
 
@@ -313,9 +305,8 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 Regexp search/replace pattern
 
-    :h fz-regexp
-    :h fz-macro
-    :h fz-vimtips
+    :h fztips
+    :h fzvimtips
 
 ## Plugins list
 
