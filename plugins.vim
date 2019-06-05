@@ -84,6 +84,10 @@ if (s:developer_edition == 1)
 
     "Powershell stuff
     Plug 'yatli/coc-powershell'
+
+    " Go
+    Plug 'fatih/vim-go'
+
 else
     "Use completor for basic usage
     Plug 'maralla/completor.vim'
