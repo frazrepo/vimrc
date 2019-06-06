@@ -61,6 +61,9 @@ XX.Ressources                                     |fztips-XX|
 >
   " Replace First with FirstName
   :%s/First/&Name
+
+  " \U \u Uppercase , \L \l for Lowercase
+  :%s/First/\U&
 <
 7. Change whole word foo to bar                   *fztips-7*
 >
