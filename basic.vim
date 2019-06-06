@@ -707,23 +707,42 @@ source $HOME/.vim_runtime/plugins_config.vim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Color Scheme {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 " Check colorScheme function
 function! HasColorscheme(name)
     let pat = 'colors/'.a:name.'.vim'
     return !empty(globpath(&rtp, pat))
 endfunction
 
+" Get current hour
+function! GetCurrentHour()
+    let hr = str2nr(strftime('%H'))
+    return hr
+endfunction
+
 " ColorScheme ayu for GUI and apprentice for terminal
 if has("gui_running")
-  if HasColorscheme('ayu')
-    color ayu
-    " Alternative : nord, dracula
-  endif
-else
-  if HasColorscheme('apprentice')
-    color apprentice
-  endif
+    if GetCurrentHour() >=7 || GetCurrentHour() <=18
+      if HasColorscheme('ayu')
+        color ayu
+      endif
+    else
+      if HasColorscheme('dracula')
+        color dracula
+      endif
+    endif
+else "Terminal
+    if GetCurrentHour() >=7 || GetCurrentHour() <=18
+      if HasColorscheme('seoul256-light')
+        color seoul256-light
+      endif
+    else
+      if HasColorscheme('apprentice')
+        color apprentice
+      endif
+    endif
 endif
+
 " }}} "
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
