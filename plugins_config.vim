@@ -271,6 +271,7 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 " Languages Support : 
 " javascript, typescript : coc-tsserver
+" angular : coc-angular
 " html, css : coc-html and coc-css
 " vim : vim-lsp
 " python : coc-python (jedi)
@@ -291,6 +292,7 @@ if exists("g:developer_edition")
           \ 'coc-pairs',
           \ 'coc-prettier',
           \ 'coc-tsserver',
+          \ 'coc-angular',
           \ 'coc-vimlsp',
           \ 'coc-snippets',
           \ 'coc-ultisnips',
