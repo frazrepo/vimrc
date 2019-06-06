@@ -309,6 +309,7 @@ if exists("g:developer_edition")
               " - Windows/Linux : use Microsoft Language Server (disable jedi in config)
 
     let g:coc_user_config = {
+                \   'coc.preferences.extensionUpdateCheck': 'never',
                 \   'snippets.ultisnips.directories': [
                 \    'plugins/vim-snippets/UltiSnips'
                 \   ],
