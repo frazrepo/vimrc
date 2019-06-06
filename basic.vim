@@ -367,6 +367,9 @@ map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 " => Editing Mappings {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" Add count with . command
+nnoremap . :<C-u>execute 'normal!' . repeat('.', v:count1)<CR>
+
 " Change word under cursor and dot repeat, really useful to edit quickly
 nnoremap c* *Ncgn
 nnoremap c# #NcgN
