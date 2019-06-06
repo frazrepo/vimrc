@@ -409,6 +409,9 @@ nnoremap )p vi)"0p
 xnoremap <leader>p "0p
 nnoremap <leader>p "0p
 
+"Paste quickly in insert mode
+inoremap <C-r><C-r> <C-r>*
+
 " Use CTRL-S for saving, also in Insert mode
 noremap <C-S>		     :update<CR>
 vnoremap <C-S>		<C-C>:update<CR>
