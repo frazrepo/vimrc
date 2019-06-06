@@ -83,10 +83,10 @@ if (s:developer_edition == 1)
     endif
 
     "Powershell stuff
-    Plug 'yatli/coc-powershell'
+    Plug 'yatli/coc-powershell', { 'for' : 'ps1'}
 
     " Go
-    Plug 'fatih/vim-go'
+    Plug 'fatih/vim-go', { 'for' : 'go'}
 
 else
     "Use completor for basic usage
