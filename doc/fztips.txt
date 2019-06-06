@@ -7,8 +7,8 @@ INTRODUCTION                                    *fztips*
 2. Reduce multiples blank lines to a single blank |fztips-2|
 3. Reverse the order of the lines from 10 to 20   |fztips-3|
 4. Delete all lines not matching a pattern        |fztips-4|
-5. Find this or that                              |fztips-5|
-6. Find this and that                             |fztips-6|
+5. Find this and/or that                          |fztips-5|
+6. Search replace tips                            |fztips-6|
 7. Change whole word foo to bar                   |fztips-7|
 8. Transpose a line with separator ; to columns   |fztips-8|
 9. Search and replace in files                    |fztips-9|
@@ -50,13 +50,17 @@ XX.Ressources                                     |fztips-XX|
 >
   :g!/foo/d  or :v/foo/d
 <
-5. Find this or that                              *fztips-5*
+5. Find this and/or that                              *fztips-5*
 >
+  " this or that
   /this\|that
-<
-6. Find this and that                             *fztips-6*
->
+  " this and that
   /.*this\&.*that
+<
+6. Search Replace tips                             *fztips-6*
+>
+  " Replace First with FirstName
+  :%s/First/&Name
 <
 7. Change whole word foo to bar                   *fztips-7*
 >
