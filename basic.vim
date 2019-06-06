@@ -334,7 +334,7 @@ map <leader>! :bd!<cr>
 " Useful mapping for managing  buffers
 map <leader>bn :enew<cr>
 map <leader>ba :bufdo bd<cr>
-
+ 
 " Buffers navigation
 map <leader>l :bnext<cr>
 map <leader>h :bprevious<cr>
@@ -366,9 +366,6 @@ map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Editing Mappings {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Add count with . command
-nnoremap . :<C-u>execute 'normal!' . repeat('.', v:count1)<CR>
 
 " Change word under cursor and dot repeat, really useful to edit quickly
 nnoremap c* *Ncgn
