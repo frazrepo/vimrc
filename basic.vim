@@ -719,7 +719,7 @@ endfunction
 
 " ColorScheme ayu for GUI and apprentice for terminal
 if has("gui_running")
-    if GetCurrentHour() >=7 || GetCurrentHour() <=18
+    if GetCurrentHour() >=7 && GetCurrentHour() <=16
       if HasColorscheme('ayu')
         color ayu
       endif
@@ -729,7 +729,7 @@ if has("gui_running")
       endif
     endif
 else "Terminal
-    if GetCurrentHour() >=7 || GetCurrentHour() <=18
+    if GetCurrentHour() >=7 && GetCurrentHour() <=17
       if HasColorscheme('seoul256-light')
         color seoul256-light
       endif
