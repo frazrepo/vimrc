@@ -275,7 +275,7 @@ endif
 " html, css : coc-html and coc-css (ok)
 " vim : vim-lsp (ok)
 " python : coc-python (jedi) (ok)
-" rust :  coc-rls with trusty-rusty-snippets (need a cocinstall coc-snippets)
+" rust :  coc-rls with trusty-rusty-snippets (need a rust installation and a  cocinstall coc-snippets) (ok)
 " go :  via languageserver and vim-go (ok)
 " Powershell : coc-powershell (ok)
 
