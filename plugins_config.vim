@@ -265,6 +265,15 @@ if !exists("g:developer_edition")
   " Enable lsp for go by using gopls	
   let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}	
 endif
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => ALE Linters  {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+
+"Need to install linter prog for each language
+if exists("g:developer_edition") 
+  " let g:ale_linter_aliases = {'ps1': 'powershell'}
+  " Dockerfile : npm install -g dockerfile_lint
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => coc  {{{1
@@ -277,7 +286,7 @@ endif
 " python : coc-python (jedi)
 " rust :  coc-rls with trusty-rusty-snippets (need a cocinstall coc-snippets)
 " go :  via languageserver and vim-go
-" Powershell : vim-powershell
+" Powershell : coc-powershell
 
 "Snippets
 " coc-snippets
@@ -309,6 +318,7 @@ if exists("g:developer_edition")
     " go-langserver : go get -u github.com/sourcegraph/go-langserver
     " python :  - Jedi : do pip3 install jedi (default activated)
               " - Windows/Linux : use Microsoft Language Server (disable jedi in config)
+
 
     let g:coc_user_config = {
                 \   'coc.preferences.extensionUpdateCheck': 'never',
