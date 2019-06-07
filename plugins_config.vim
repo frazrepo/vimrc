@@ -270,11 +270,11 @@ endif
 " => coc  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 " Languages Support : 
-" javascript, typescript : coc-tsserver
-" angular : coc-angular
-" html, css : coc-html and coc-css
+" javascript, typescript : coc-tsserver (ok)
+" angular : coc-angular (ok)
+" html, css : coc-html and coc-css (ok)
 " vim : vim-lsp (ok)
-" python : coc-python (jedi)
+" python : coc-python (jedi) (ok)
 " rust :  coc-rls with trusty-rusty-snippets (need a cocinstall coc-snippets)
 " go :  via languageserver and vim-go (ok)
 " Powershell : coc-powershell (ok)
