@@ -76,9 +76,6 @@ Plug 'tpope/vim-commentary'
 
 if (s:developer_edition == 1) 
 
-    " Default linter for many languages
-    Plug 'w0rp/ale'
-    
     "Use coc for nvim
     if has('win32') || has('win64')
         Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.cmd'}

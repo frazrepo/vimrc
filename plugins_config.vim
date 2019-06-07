@@ -265,15 +265,6 @@ if !exists("g:developer_edition")
   " Enable lsp for go by using gopls	
   let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}	
 endif
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => ALE Linters  {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-
-"Need to install linter prog for each language
-if exists("g:developer_edition") 
-  " let g:ale_linter_aliases = {'ps1': 'powershell'}
-  " Dockerfile : npm install -g dockerfile_lint
-endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => coc  {{{1
