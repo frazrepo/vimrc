@@ -255,6 +255,10 @@ inoremap jk <Esc>
 " so that you can undo CTRL-U after inserting a line break.
 inoremap <C-U> <C-G>u<C-U>
 
+" Go to end
+inoremap <C-a> <C-O>^
+inoremap <C-e> <C-O>$
+
 """"""""""""""""""""""""""""""
 " => Visual mode related {{{1
 """"""""""""""""""""""""""""""
