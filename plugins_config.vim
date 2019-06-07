@@ -288,7 +288,7 @@ endif
 " go :  via languageserver and vim-go
 " Powershell : coc-powershell
 
-"Snippets
+" Snippets
 " coc-snippets
 " coc-ultisnips : to handle ultisnips python snippets, uuid, ....
 
