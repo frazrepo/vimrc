@@ -98,7 +98,7 @@ else
     Plug 'tmsvg/pear-tree'
 endif
 
-" endif
+" Snippets
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
