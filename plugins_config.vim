@@ -270,7 +270,8 @@ endif
 " => coc  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 " Languages Support : 
-" javascript, typescript : coc-tsserver (ok)
+" javascript : coc-tsserver  and coc-eslint (npm install -g eslint) (ok)
+" typescript : coc-tsserver and coc-tslint (npm install -g tslint typescript) (ok)
 " angular : coc-angular (ok)
 " html, css : coc-html and coc-css (ok)
 " vim : vim-lsp (ok)
@@ -292,6 +293,8 @@ if exists("g:developer_edition")
           \ 'coc-pairs',
           \ 'coc-prettier',
           \ 'coc-tsserver',
+          \ 'coc-tslint',
+          \ 'coc-eslint',
           \ 'coc-angular',
           \ 'coc-vimlsp',
           \ 'coc-snippets',
