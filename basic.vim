@@ -323,6 +323,9 @@ nnoremap <c-k> 5k
 xnoremap <c-j> 5j
 xnoremap <c-k> 5k
 
+" Join line up (experimental)
+nnoremap K kJ
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Buffers  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
