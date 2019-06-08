@@ -284,6 +284,7 @@ endif
 " rust :  coc-rls with trusty-rusty-snippets (need a rust installation and a  cocinstall coc-snippets) (ok)
 " go :  via languageserver and vim-go (ok)
 " Powershell : coc-powershell (ok)
+" ruby : coc-solargraph (not installed yet)
 
 " Snippets
 " coc-snippets
