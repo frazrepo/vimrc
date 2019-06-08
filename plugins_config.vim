@@ -189,6 +189,11 @@ if !exists("g:developer_edition")
     endfunction	
     nnoremap <buffer> <silent> <M-p> :call TogglePearTree()<CR>	
     inoremap <buffer> <silent> <M-p> <C-O>:call TogglePearTree()<CR>	
+
+    "Remap jk 
+    imap jk <Plug>(PearTreeFinishExpansion)
+    imap <ESC> <Plug>(PearTreeFinishExpansion)
+    
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

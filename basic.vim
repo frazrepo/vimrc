@@ -245,8 +245,10 @@ set complete=.,w,b,u
 " => Insert Mode related {{{1
 """"""""""""""""""""""""""""""
 
-" Map jk to ESC in insert mode 
-inoremap jk <Esc>
+" Map jk to ESC in insert mode -  See peartree config on non-developer edition
+if exists("g:developer_edition") 
+  inoremap jk <Esc>
+endif
 
 " CTRL-U in insert mode deletes a lot.	Use CTRL-G u to first break undo,
 " so that you can undo CTRL-U after inserting a line break.
