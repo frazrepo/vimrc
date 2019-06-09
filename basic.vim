@@ -250,10 +250,6 @@ if exists("g:developer_edition")
   inoremap jk <Esc>
 endif
 
-" CTRL-U in insert mode deletes a lot.	Use CTRL-G u to first break undo,
-" so that you can undo CTRL-U after inserting a line break.
-inoremap <C-U> <C-G>u<C-U>
-
 " rsi bindings
 inoremap <C-A> <C-O>^
 cnoremap <C-A> <Home>
@@ -295,11 +291,6 @@ vnoremap < <gv
 
 " Reselect last insertext
 nnoremap gV `[v`]
-
-"Cycle visual mode
-xnoremap <expr> v 
-              \ (mode() ==# 'v' ? "\<C-V>"
-              \ : mode() ==# 'V' ? 'v' : 'V')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Moving around, tabs, windows and buffers {{{1
