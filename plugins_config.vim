@@ -280,11 +280,10 @@ endif
 " angular : coc-angular (ok)
 " html, css : coc-html and coc-css (ok)
 " vim : vim-lsp (ok)
-" python : coc-python (jedi) (ok)
-" rust :  coc-rls with trusty-rusty-snippets (need a rust installation and a  cocinstall coc-snippets) (ok)
-" go :  via languageserver and vim-go (ok)
-" Powershell : coc-powershell (ok)
 " ruby : coc-solargraph (not installed yet)
+" python : coc-python (jedi) (ok)
+" go :  via languageserver and vim-go (ok)
+" powershell : coc-powershell (ok)
 
 " Snippets
 " coc-snippets
@@ -306,8 +305,6 @@ if exists("g:developer_edition")
           \ 'coc-snippets',
           \ 'coc-ultisnips',
           \ 'coc-python',
-          \ 'coc-rls',
-          \ 'https://github.com/polypus74/trusty_rusty_snippets'
           \ ]
 
 
