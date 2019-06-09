@@ -327,6 +327,8 @@ xnoremap <c-k> 5k
 
 " Join line up (experimental)
 nnoremap K kJ
+" Split line here
+nnoremap <leader>J Do<C-r>"<ESC>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Buffers  {{{1
