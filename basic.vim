@@ -318,8 +318,9 @@ xnoremap <c-k> 5k
 
 " Join line up (experimental)
 nnoremap K kJ
-" Split line here
+" Split line here (try gS for mapping)
 nnoremap <leader>J Do<C-r>"<ESC>
+nnoremap gS Do<C-r>"<ESC>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Buffers  {{{1
