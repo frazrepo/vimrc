@@ -56,3 +56,16 @@ if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'smali') == -1
   augroup end
 endif
 
+"Jenkinsfile
+if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'jenkins') == -1
+  augroup filetypedetect
+  " jenkins, from Jenkinsfile.vim in martinda/Jenkinsfile-vim-syntax
+    " Jenkinsfile
+    autocmd BufRead,BufNewFile Jenkinsfile set ft=Jenkinsfile
+    autocmd BufRead,BufNewFile Jenkinsfile* setf Jenkinsfile
+    autocmd BufRead,BufNewFile *.jenkinsfile set ft=Jenkinsfile
+    autocmd BufRead,BufNewFile *.jenkinsfile setf Jenkinsfile
+autocmd BufRead,BufNewFile *.Jenkinsfile setf Jenkinsfile
+  augroup end
+endif
+
