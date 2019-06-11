@@ -445,6 +445,7 @@ nnoremap <leader>bs :Scratch<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Fugitive  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
+nnoremap <leader>gs :Gstatus<cr>
 nnoremap <leader>gd :Gvdiff<cr>
 nnoremap gdh :diffget //2<cr>
 nnoremap gdl :diffget //3<cr>
