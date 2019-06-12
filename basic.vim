@@ -186,7 +186,7 @@ set synmaxcol=200
 if has("gui_running")
   if has("gui_gtk2") || has("gui_gtk3") 
     set lines=535 columns=1366
-    set guifont=Inconsolata\ 16
+    set guifont=Inconsolata\ 17
   elseif has("gui_macvim")
     set lines=768 columns=1366
     set guifont=Menlo\ Regular:h14
@@ -317,9 +317,8 @@ xnoremap <c-j> 5j
 xnoremap <c-k> 5k
 
 " Join line up (experimental)
-nnoremap K kJ
 " Split line here (try gS for mapping)
-nnoremap <leader>J Do<C-r>"<ESC>
+nnoremap K Do<C-r>"<ESC>_
 nnoremap gS Do<C-r>"<ESC>_
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
