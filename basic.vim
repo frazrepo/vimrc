@@ -686,18 +686,6 @@ endfunction
 " map '<CR>' in command-line mode to execute the function above
 cnoremap <expr> <CR> CCR()
 
-"Templates (Experimental)
-augroup Templates
-  autocmd!
-  autocmd BufNewFile * silent! :call ReadTemplate(expand("%:e"))
-augroup END
-
-function! ReadTemplate(extension)
-  let s:templateFile = $HOME . '/.vim_runtime/templates/' . a:extension . '.tpl'
-  execute '0r '. s:templateFile
-  normal j
-endfunction
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Load Plugins and Configs {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
