@@ -1,59 +1,59 @@
-snippet sql-sel "Select from table" b
+snippet ssel "Select from table" b
 	select * from ${1:table}
 endsnippet
 
-snippet sql-t10 "Select top 10 from table" b
+snippet st10 "Select top 10 from table" b
 	select top 10 * from ${1:table}
 endsnippet
 
-snippet sql-t100 "Select top 100 from table" b
+snippet st100 "Select top 100 from table" b
 	select top 100 * from ${1:table}
 endsnippet
 
-snippet sql-w "Select from table where" b
+snippet sfw "Select from table where" b
 	select * from ${1:table}
 	where ${2:column} = '${3:value}'
 endsnippet
 
-snippet sql-del "Delete from table where" b
+snippet sdel "Delete from table where" b
 	delete from ${1:table}
 	where ${2:column} = '${3:value}'
 endsnippet
 
-snippet sql-alter-add-after "sql-alter-add-after" b
+snippet salter-add-after "salter-add-after" b
 	ALTER TABLE ${1:table} ADD COLUMN ${2:col_name} ${3:INT}${4: NOT NULL} AFTER ${5:col_name};
 endsnippet
 
-snippet sql-alter-add-first "sql-alter-add-first" b
+snippet salter-add-first "salter-add-first" b
 	ALTER TABLE ${1:table} ADD COLUMN ${2:col_name} ${3:INT}${4: NOT NULL} FIRST;
 endsnippet
 
-snippet sql-alter-add "sql-alter-add" b
+snippet salter-add "salter-add" b
 	ALTER TABLE ${1:table} ADD COLUMN ${2:col_name} ${3:INT}${4: NOT NULL};
 endsnippet
 
-snippet sql-alter-auto-increment "sql-alter-auto-increment" b
+snippet salter-auto-increment "salter-auto-increment" b
 	ALTER TABLE ${1:table} AUTO_INCREMENT = ${2:1};
 endsnippet
 
-snippet sql-alter-change "sql-alter-change" b
+snippet salter-change "salter-change" b
 	ALTER TABLE ${1:table} CHANGE ${2:old_name} ${3:new_name} ${4:new_type}${5: NOT NULL};
 endsnippet
 
-snippet sql-alter-db-charset "sql-alter-db-charset" b
+snippet salter-db-charset "salter-db-charset" b
 	ALTER DATABASE ${1:table} CHARACTER SET ${2:utf8} COLLATE ${3:utf8_unicode_ci};
 endsnippet
 
-snippet sql-alter-drop "sql-alter-drop" b
+snippet salter-drop "salter-drop" b
 	ALTER TABLE ${1:table} DROP COLUMN ${2:col_name};
 endsnippet
 
-snippet sql-alter-fk-drop "sql-alter-fk-drop" b
+snippet salter-fk-drop "salter-fk-drop" b
 	ALTER TABLE $1
 	DROP FOREIGN KEY ${2:fk_${3:the_table}_${4:far_table}};
 endsnippet
 
-snippet sql-alter--fk "sql-alter--fk" b
+snippet salter--fk "salter--fk" b
 	ALTER TABLE $1
 	ADD INDEX fk_$1_$3_idx ($2 ASC),
 	ADD CONSTRAINT fk_${1:the_table}_$3
@@ -63,7 +63,7 @@ snippet sql-alter--fk "sql-alter--fk" b
 	ON UPDATE CASCADE
 endsnippet
 
-snippet sql-alter-fk "sql-alter-fk" b
+snippet salter-fk "salter-fk" b
 	ALTER TABLE $1
 	ADD CONSTRAINT fk_${1:the_table}_$3
 	FOREIGN KEY (${2:foreign_key})
@@ -72,56 +72,56 @@ snippet sql-alter-fk "sql-alter-fk" b
 	ON UPDATE CASCADE
 endsnippet
 
-snippet sql-alter-idx-drop "sql-alter-idx-drop" b
+snippet salter-idx-drop "salter-idx-drop" b
 	ALTER TABLE ${1:table} DROP INDEX ${3:index_name};
 endsnippet
 
-snippet sql-alter-idx "sql-alter-idx" b
+snippet salter-idx "salter-idx" b
 	ALTER TABLE ${1:table} ADD ${2:INDEX} ${3:index_name}(${4:field} ASC$5);
 endsnippet
 
-snippet sql-alter-modify "sql-alter-modify" b
+snippet salter-modify "salter-modify" b
 	ALTER TABLE ${1:table} MODIFY ${2:field} ${3:NEW-FIELD-TYPE}${4: NOT NULL} ${5:AFTER ${6:field}};
 endsnippet
 
-snippet sql-alter-sort "sql-alter-sort" b
+snippet salter-sort "salter-sort" b
 	ALTER TABLE ${1:table} ORDER BY ${2:field};
 endsnippet
 
-snippet sql-alter-table-charset "sql-alter-table-charset" b
+snippet salter-table-charset "salter-table-charset" b
 	ALTER TABLE ${1:table} CHARACTER SET ${2:utf8} COLLATE ${3:utf8_unicode_ci};
 endsnippet
 
-snippet sql-alter-table-rename "sql-alter-table-rename" b
+snippet salter-table-rename "salter-table-rename" b
 	ALTER TABLE ${1:table} RENAME TO ${2:new_name};
 endsnippet
 
-snippet sql-alter-uk "sql-alter-uk" b
+snippet salter-uk "salter-uk" b
 	ALTER TABLE ${1:table_name} ADD UNIQUE unique_${5:index_name} (${11:column_1}${15:, ${18:column_2}});
 endsnippet
 
-snippet sql--case-wb "sql--case-wb" b
+snippet s-case-wb "s-case-wb" b
 	WHEN ${1:var_name} ${2:=} '${3:value}' THEN BEGIN
 	${0:-- SELECT 'case $3'};
 	END;
 endsnippet
 
-snippet sql-case-wb "sql-case-wb" b
+snippet scase-wb "scase-wb" b
 	WHEN '${1:value}' THEN BEGIN
 	${0:-- SELECT 'case $1'};
 END;
 
 endsnippet
 
-snippet sql--case-w "sql--case-w" b
+snippet s-case-w "s-case-w" b
 	WHEN ${1:var_name} ${2:=} '${3:value}' THEN ${0:-- SELECT 'case $3'};
 endsnippet
 
-snippet sql-case-w "sql-case-w" b
+snippet scase-w "scase-w" b
 	WHEN '${1:value}' THEN ${0:-- SELECT 'case $1'};
 endsnippet
 
-snippet sql-cur "sql-cur" b
+snippet scur "scur" b
 	DECLARE ${5:var_1} ${7:VARCHAR(255)};
 	DECLARE ${10:done} INT DEFAULT 0;
 	DECLARE ${30:cur} CURSOR FOR ${40:SELECT User FROM mysql.user};
@@ -139,37 +139,37 @@ snippet sql-cur "sql-cur" b
 	CLOSE ${30:cur};
 endsnippet
 
-snippet sql-dec-cur "sql-dec-cur" b
+snippet sdec-cur "sdec-cur" b
 	DECLARE ${1:cursor_name} FOR ${0:-- SELECT ...};
 endsnippet
 
-snippet sql--dec "sql--dec" b
+snippet s-dec "s-dec" b
 	DECLARE ${1:var_name} ${2:INT} DEFAULT '${3:value}';
 endsnippet
 
-snippet sql-dec-h "sql-dec-h" b
+snippet sdec-h "sdec-h" b
 	DECLARE CONTINUE HANDLER FOR SQLSTATE '${1:02000}' ${2:SET done = 1};
 endsnippet
 
-snippet sql--dec-s "sql--dec-s" b
+snippet s-dec-s "s-dec-s" b
 	DECLARE ${1:var_name} VARCHAR(${2:255}) DEFAULT '${3:value}';
 endsnippet
 
-snippet sql-dec-s "sql-dec-s" b
+snippet sdec-s "sdec-s" b
 	DECLARE ${1:var_name} VARCHAR(${2:255});
 endsnippet
 
-snippet sql-dec "sql-dec" b
+snippet sdec "sdec" b
 	DECLARE ${1:var_name} ${2:INT};
 endsnippet
 
-snippet sql-if "sql-if" b
+snippet sif "sif" b
 	IF ${1:var} ${2:=} ${3:value} THEN
 		${4:-- body}
 	END IF;
 endsnippet
 
-snippet sql-loop "sql-loop" b
+snippet sloop "sloop" b
 	${1:label_name}: LOOP
 		SET ${10:var_name} = ${10} ${11:+} ${12:1};
 
@@ -181,7 +181,7 @@ snippet sql-loop "sql-loop" b
 	END LOOP ${1:label_name};
 endsnippet
 
-snippet sql--repeat "sql--repeat" b
+snippet s-repeat "s-repeat" b
 	REPEAT
 		BEGIN
 			${0:-- Your code ...}
@@ -189,31 +189,31 @@ snippet sql--repeat "sql--repeat" b
 	UNTIL ${1:var_name} ${2:>} ${3:10} END REPEAT;
 endsnippet
 
-snippet sql-repeat "sql-repeat" b
+snippet srepeat "srepeat" b
 	REPEAT ${0:/* Your code ... */}; UNTIL ${1:var_name} ${2:>} ${3:10} END REPEAT;
 endsnippet
 
-snippet sql-db-drop "sql-db-drop" b
+snippet sdb-drop "sdb-drop" b
 	DROP DATABASE ${1:db_name};
 endsnippet
 
-snippet sql-db "sql-db" b
+snippet sdb "sdb" b
 	CREATE DATABASE ${1:db_name} DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 endsnippet
 
-snippet sql-d "sql-d" b
+snippet sd "sd" b
 	DELETE FROM ${1:table}${2: WHERE $3 = '$4'};
 endsnippet
 
-snippet sql-func-drop "sql-func-drop" b
+snippet sfunc-drop "sfunc-drop" b
 	DROP FUNCTION IF EXISTS ${1:name};
 endsnippet
 
-snippet sql-func-list "sql-func-list" b
+snippet sfunc-list "sfunc-list" b
 	${1:SELECT name, param_list, comment FROM mysql.proc WHERE db=DATABASE() AND type = 'FUNCTION';}
 endsnippet
 
-snippet sql--func "sql--func" b
+snippet s-func "s-func" b
 	DROP FUNCTION IF EXISTS ${1:function_name};
 	CREATE FUNCTION ${1}(${2:arg_name} ${3:INT}) RETURNS ${4:INT}
 	BEGIN
@@ -221,66 +221,66 @@ snippet sql--func "sql--func" b
 	END;
 endsnippet
 
-snippet sql-func "sql-func" b
+snippet sfunc "sfunc" b
 	CREATE FUNCTION ${1:function_name}(${2:arg_name} ${3:INT}) RETURNS ${4:INT}
 	BEGIN
 		$5
 	END;
 endsnippet
 
-snippet sql-ione "sql-ione" b
+snippet sione "sione" b
 	INSERT INTO $1 SET
 	${2:name} = '${3:value}'${4:,
 	};
 endsnippet
 
-snippet sql-ifrom "sql-ifrom" b
+snippet sifrom "sifrom" b
 	INSERT INTO ${1:table} SELECT ${2:*} FROM ${3:${4:database}.}${5:$1};
 endsnippet
 
-snippet sql-i "sql-i" b
+snippet si "si" b
 	INSERT INTO $1($2) VALUES
 	($3)${4:,
 	};
 endsnippet
 
-snippet sql-utc "sql-utc" b
+snippet sutc "sutc" b
 	SELECT UNIX_TIMESTAMP(NOW());
 endsnippet
 
-snippet sql-priv-add-all "sql-priv-add-all" b
+snippet spriv-add-all "spriv-add-all" b
 	GRANT ALL PRIVILEGES ON *.* TO '${4:user_name}'@'${5:localhost}';
 endsnippet
 
-snippet sql-priv-add "sql-priv-add" b
+snippet spriv-add "spriv-add" b
 	GRANT ${1:ALL} PRIVILEGES ON ${2:db_name}.${3:table_name} TO '${4:user_name}'@'${5:localhost}';
 endsnippet
 
-snippet sql-priv-drop-all "sql-priv-drop-all" b
+snippet spriv-drop-all "spriv-drop-all" b
 	REVOKE ALL ON *.* FROM '${4:user_name}'@'${5:localhost}';
 endsnippet
 
-snippet sql-priv-drop "sql-priv-drop" b
+snippet spriv-drop "spriv-drop" b
 	REVOKE ${1:ALL} ON ${2:db_name}.${3:table_name} FROM '${4:user_name}'@'${5:localhost}';
 endsnippet
 
-snippet sql-priv-list "sql-priv-list" b
+snippet spriv-list "spriv-list" b
 	SHOW GRANTS FOR '${1:user_name}'@'${2:localhost}'\\G
 endsnippet
 
-snippet sql-priv-refresh "sql-priv-refresh" b
+snippet spriv-refresh "spriv-refresh" b
 	${0:FLUSH PRIVILEGES;}
 endsnippet
 
-snippet sql-proc-drop "sql-proc-drop" b
+snippet sproc-drop "sproc-drop" b
 	DROP PROCEDURE IF EXISTS ${1:name};
 endsnippet
 
-snippet sql-proc-list "sql-proc-list" b
+snippet sproc-list "sproc-list" b
 	${1:SELECT name, param_list, comment FROM mysql.proc WHERE db=DATABASE() AND type = 'PROCEDURE';}
 endsnippet
 
-snippet sql--proc "sql--proc" b
+snippet s-proc "s-proc" b
 	DROP PROCEDURE IF EXISTS ${1:procedure_name};
 	CREATE PROCEDURE ${1}(
 		${2:arg_name} ${3:INT}${4:,}
@@ -289,7 +289,7 @@ snippet sql--proc "sql--proc" b
 	END;
 endsnippet
 
-snippet sql-proc "sql-proc" b
+snippet sproc "sproc" b
 	CREATE PROCEDURE ${1:procedure_name}(
 	${2:arg_name} ${3:INT}${4:,}
 	) BEGIN
@@ -297,130 +297,121 @@ snippet sql-proc "sql-proc" b
 	END;
 endsnippet
 
-snippet sql--and "sql--and" b
+snippet s-and "s-and" b
 	AND ( $1 ${2:=} '$3' ) 
 endsnippet
 
-snippet sql-and "sql-and" b
+snippet sand "sand" b
 	AND ( $1 ) 
 endsnippet
 
-snippet sql-alias "sql-alias" b
+snippet salias "salias" b
 	$1.$2 AS $3
 endsnippet
 
-snippet sql--alias "sql--alias" b
+snippet s-alias "s-alias" b
 	, $1.$2 AS $3
 endsnippet
 
-snippet sql-- "sql--" b
+snippet s- "s-" b
 	, $1.$2
 endsnippet
 
-snippet sql- "sql-" b
+snippet s "s" b
 	$1.$2
 endsnippet
 
-snippet sql-e "sql-e" b
+snippet se "se" b
 	( $1 ${2:=} '$3' ) 
 endsnippet
 
-snippet sql-f "sql-f" b
+snippet sf "sf" b
 	FROM $1 AS $2
 endsnippet
 
-snippet sql-g "sql-g" b
+snippet sg "sg" b
 	GROUP BY $1
 endsnippet
 
-snippet sql-h "sql-h" b
+snippet sh "sh" b
 	HAVING ( $1 ${2:=} '$3' ) 
 endsnippet
 
-snippet sql-j "sql-j" b
+snippet sj "sj" b
 	INNER JOIN $1 AS ${2:${1/(.)[^_]*(?:_(.))?.*/$1$2/}} ON ( ${2:${1/(.)[^_]*(?:_(.))?.*/$1$2/}}.${4:id} = $5.${6:id} )
 endsnippet
 
-snippet sql-jleft "sql-jleft" b
+snippet sjleft "sjleft" b
 	LEFT JOIN $1 AS ${2:${1/(.)[^_]*(?:_(.))?.*/$1$2/}} ON ( ${2:${1/(.)[^_]*(?:_(.))?.*/$1$2/}}.${4:id} = $5.${6:id} )
 endsnippet
 
-snippet sql-jright "sql-jright" b
+snippet sjright "sjright" b
 	RIGHT JOIN $1 AS ${2:${1/(.)[^_]*(?:_(.))?.*/$1$2/}} ON ( ${2:${1/(.)[^_]*(?:_(.))?.*/$1$2/}}.${4:id} = $5.${6:id} )
 endsnippet
 
-snippet sql-l "sql-l" b
-	LIMIT ${1:0endsnippet ${3:count}
-
+snippet sor "sor" b
+	OR ( $1 ) 
 endsnippet
 
-snippet sql--or "sql--or" b
-    OR ( $1 ${2:=} '$3' ) 
+snippet so "so" b
+	ORDER BY $1${2: DESC}
 endsnippet
 
-snippet sql-or "sql-or" b
-    OR ( $1 ) 
-endsnippet
-
-snippet sql-o "sql-o" b
-    ORDER BY $1${2: DESC}
-endsnippet
-
-snippet sql-union "sql-union" b
-    (
-	  $1
+snippet sunion "sunion" b
+	(
+		$1
 	) UNION (
-	  $2
+		$2
 	)
 endsnippet
 
-snippet sql-w "sql-w" b
-    WHERE ( $1 ${2:=} '$3' ) 
+snippet sw "sw" b
+	WHERE ( $1 ${2:=} '$3' ) 
 endsnippet
 
-snippet sql-scount "sql-scount" b
-    SELECT COUNT(${1:*}) FROM $2 AS ${2/(.).*/$1/}
+snippet sscount "sscount" b
+	SELECT COUNT(${1:*}) FROM $2 AS ${2/(.).*/$1/}
 endsnippet
 
-snippet sql-sinline "sql-sinline" b
+snippet ssinline "ssinline" b
 	SELECT ${3/(.).*/$1/}.$1 FROM $3 AS ${3/(.).*/$1/}
 endsnippet
 
-snippet sql-smax "sql-smax" b
+snippet ssmax "ssmax" b
 	SELECT MAX(${1:id}) FROM $2 AS ${2/(.).*/$1/}
 endsnippet
 
-snippet sql-smin "sql-smin" b
+snippet ssmin "ssmin" b
 	SELECT MIN(${1:id}) FROM $2 AS ${2/(.).*/$1/}
 endsnippet
 
-snippet sql-ss "sql-ss" b
+snippet sss "sss" b
 	SELECT '${1:My String}';
 endsnippet
 
-snippet sql-sv "sql-sv" b
+snippet ssv "ssv" b
 	SELECT ${1:var_name};
 endsnippet
 
-snippet sql-s "sql-s" b
+snippet ss "ss" b
 	SELECT
 		${4:${3/(.).*/$1/}}.${1:*}
 	FROM $3 AS ${4:${3/(.).*/$1/}}
 endsnippet
 
-snippet sql-hcols "sql-hcols" b
+snippet shcols "shcols" b
 	${2:SHOW FULL COLUMNS FROM ${1:table};}
 endsnippet
 
-snippet sql-hcreate "sql-hcreate" b
+snippet shcreate "shcreate" b
 	${2:SHOW CREATE TABLE ${1:table};}
 endsnippet
 
-snippet sql-hidx "sql-hidx" b
+snippet shidx "shidx" b
 	${2:SHOW INDEX FROM ${1:table};}
 endsnippet
 
-snippet sql-hrel "sql-hrel" b
+snippet shrel "shrel" b
 	${0:SELECT CONCAT(
 	constraint_name, ' : ',
 	table_name, '.', column_name, ' -> ', 
@@ -433,7 +424,7 @@ WHERE table_schema = ${1:DATABASE()}
 }
 endsnippet
 
-snippet sql--fk "sql--fk" b
+snippet sfk "sfk" b
 	INDEX fk_$1_$3_idx ($2 ASC),
 	CONSTRAINT fk_${1:the_table}_$3
 	FOREIGN KEY (${2:foreign_key})
@@ -442,25 +433,17 @@ snippet sql--fk "sql--fk" b
 	ON UPDATE CASCADE
 endsnippet
 
-snippet sql-fk "sql-fk" b
-	CONSTRAINT fk_${1:the_table}_$3
-	FOREIGN KEY (${2:foreign_key})
-	REFERENCES ${3:far_table} (${4:far_key})
-	ON DELETE NO ACTION
-	ON UPDATE CASCADE
-endsnippet
-
-snippet sql-idx-txt "sql-idx-txt" b
+snippet sidx-txt "sidx-txt" b
 	FULLTEXT INDEX $1_idx (${1:column} ASC$2)${3:,
 }
 endsnippet
 
-snippet sql-idx "sql-idx" b
+snippet sidx "sidx" b
 	INDEX $1_idx (${1:email} ASC$2)${3:,
 }
 endsnippet
 
-snippet sql-many-many "sql-many-many" b
+snippet smany-many "smany-many" b
 	CREATE INDEX $4_idx ON $1 ($4 ASC);
 	CREATE INDEX $5_idx ON $2 ($5 ASC);
 
@@ -486,111 +469,82 @@ snippet sql-many-many "sql-many-many" b
 	) ENGINE = InnoDB;
 endsnippet
 
-snippet sql-pk "sql-pk" b
+snippet spk "spk" b
 	PRIMARY KEY pk_${1:id}($1)${2:,
 }
 endsnippet
 
-snippet sql-table-drop "sql-table-drop" b
+snippet stable-drop "stable-drop" b
 	DROP TABLE IF EXISTS $1;
 endsnippet
 
-snippet sql--table "sql--table" b
-	DROP TABLE IF EXISTS ${1:table_name};
-	CREATE TABLE $1 (
-	${2:id} INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	${3:name} ${4:VARCHAR(255)endsnippet
+
+snippet stable "stable" b
+	CREATE TABLE IF NOT EXISTS ${1:table_name} (
+		${2:id} INT UNSIGNED NOT NULL AUTO_INCREMENT,
+		${3:name} VARCHAR(255)
 	PRIMARY KEY pk_$2($2)
 	) ENGINE = InnoDB;
 endsnippet
 
-snippet sql--table-tmp "sql--table-tmp" b
-    DROP TABLE IF EXISTS ${1:table_name};
-	CREATE TEMPORARY TABLE IF NOT EXISTS ${1:table_name} (
-	${2:id} INT UNSIGNED NOT NULL AUTO_INCREMENT,
-	${3:name} ${4:VARCHAR(255)endsnippet
-	PRIMARY KEY pk_$2($2)
-	) ENGINE = MEMORY;
-endsnippet
-
-snippet sql-table-tmp "sql-table-tmp" b
-    CREATE TEMPORARY TABLE IF NOT EXISTS ${1:table_name} (
-  ${2:id} INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  ${3:name} ${4:VARCHAR(255)endsnippet
-  PRIMARY KEY pk_$2($2)
-) ENGINE = MEMORY;
-
-endsnippet
-
-snippet sql-table "sql-table" b
-    CREATE TABLE IF NOT EXISTS ${1:table_name} (
-  ${2:id} INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  ${3:name} ${4:VARCHAR(255)endsnippet
-  PRIMARY KEY pk_$2($2)
-) ENGINE = InnoDB;
-
-endsnippet
-
-snippet sql-uk "sql-uk" b
-    UNIQUE KEY unique_${1:id}($1$2)${3:,
+snippet suk "suk" b
+	UNIQUE KEY unique_${1:id}($1$2)${3:,
 }
 endsnippet
 
-snippet sql-trig-drop "sql-trig-drop" b
-    DROP TRIGGER IF EXISTS ${1:name};
+snippet strig-drop "strig-drop" b
+	DROP TRIGGER IF EXISTS ${1:name};
 endsnippet
 
-snippet sql--trig-list "sql--trig-list" b
-    SHOW TRIGGERS FROM ${1:full_db_name} LIKE '${2:table_name}%'\\G
+snippet s-trig-list "s-trig-list" b
+	SHOW TRIGGERS FROM ${1:full_db_name} LIKE '${2:table_name}%'\\G
 endsnippet
 
-snippet sql-trig-list "sql-trig-list" b
-    SHOW TRIGGERS LIKE '${2:table_name}%'\\G
+snippet strig-list "strig-list" b
+	SHOW TRIGGERS LIKE '${2:table_name}%'\\G
 endsnippet
 
-snippet sql--trig "sql--trig" b
-    DROP TRIGGER IF EXISTS ${1:trigger_name};
+snippet s-trig "s-trig" b
+	DROP TRIGGER IF EXISTS ${1:trigger_name};
 CREATE TRIGGER ${1} ${2:AFTER} ${3:INSERT} ON ${4:table_name} FOR EACH ROW
 BEGIN
-    ${5: -- Use NEW and OLD constants for access to row}
+	${5: -- Use NEW and OLD constants for access to row}
 END;
 endsnippet
 
-snippet sql-trig "sql-trig" b
-    CREATE TRIGGER ${1:trigger_name} ${2:AFTER} ${3:INSERT} ON ${4:table_name} FOR EACH ROW
+snippet strig "strig" b
+	CREATE TRIGGER ${1:trigger_name} ${2:AFTER} ${3:INSERT} ON ${4:table_name} FOR EACH ROW
 BEGIN
-    ${5: -- Use NEW and OLD constants for access to row}
+	${5: -- Use NEW and OLD constants for access to row}
 END;
 endsnippet
 
-snippet sql-u "sql-u" b
-    UPDATE ${1:table} SET
-	  $2 = '$3'${4:,}
+snippet su "su" b
+	UPDATE ${1:table} SET
+		$2 = '$3'${4:,}
 	WHERE $5 = '$6';
 endsnippet
 
-snippet sql-user-add-hash "sql-user-add-hash" b
-    CREATE USER '${1:username}'@'${2:localhost}' IDENTIFIED BY PASSWORD '*832EB84CB764129D05D498ED9CA7E5CE9B8F83EB';
+snippet suser-add-hash "suser-add-hash" b
+	CREATE USER '${1:username}'@'${2:localhost}' IDENTIFIED BY PASSWORD '*832EB84CB764129D05D498ED9CA7E5CE9B8F83EB';
 endsnippet
 
-snippet sql--user-add "sql--user-add" b
-    CREATE USER '${1:username}'@'${2:localhost}' IDENTIFIED BY '${3:password}';
+snippet s-user-add "s-user-add" b
+	CREATE USER '${1:username}'@'${2:localhost}' IDENTIFIED BY '${3:password}';
 endsnippet
 
-snippet sql-user-add "sql-user-add" b
-    CREATE USER '${1:username}'@'${2:localhost}';
+snippet suser-add "suser-add" b
+	CREATE USER '${1:username}'@'${2:localhost}';
 endsnippet
 
-snippet sql-user-drop "sql-user-drop" b
-    DROP USER '${1:username}'@'${2:localhost}';
+snippet suser-drop "suser-drop" b
+	DROP USER '${1:username}'@'${2:localhost}';
 endsnippet
 
-snippet sql-user-list "sql-user-list" b
-    SELECT user, host, password FROM mysql.user;
+snippet suser-list "suser-list" b
+	SELECT user, host, password FROM mysql.user;
 endsnippet
 
-snippet sql-user-pwd "sql-user-pwd" b
-    SET PASSWORD ${1:FOR '${2:username}'@'${3:localhost}'} = PASSWORD('${4:password}');
+snippet suser-pwd "suser-pwd" b
+	SET PASSWORD ${1:FOR '${2:username}'@'${3:localhost}'} = PASSWORD('${4:password}');
 endsnippet
-
-
