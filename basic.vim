@@ -447,6 +447,7 @@ nnoremap ' `
 
 "Experimental
 map à @
+nnoremap àà @@
 
 " For Tags navigation - <C-$> doesn't work yet
 nmap <F12> <C-]>
