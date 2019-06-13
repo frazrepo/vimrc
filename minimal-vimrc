@@ -615,7 +615,7 @@ command! Scratch vnew | setlocal nobuflisted buftype=nofile bufhidden=wipe noswa
 nnoremap <leader>bs :Scratch<cr>
 
 " Yankmatches/ DeleteMatches
-if has('win32') or has('win64')
+if has('win32') || has('win64')
   nnoremap <silent> ym qxq:g/<C-R>//yank X<CR>:let @*=@x<CR>
 else
   nnoremap <silent> ym qxq:g/<C-R>//yank X<CR>:let @+=@x<CR>
