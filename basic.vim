@@ -310,7 +310,6 @@ nnoremap <c-k> 5k
 xnoremap <c-j> 5j
 xnoremap <c-k> 5k
 
-" Join line up (experimental)
 " Split line here (try gS for mapping)
 nnoremap K Do<C-r>"<ESC>_
 nnoremap gS Do<C-r>"<ESC>_
