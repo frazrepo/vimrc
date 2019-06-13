@@ -277,13 +277,14 @@ endif
 " Languages Support : 
 " javascript : coc-tsserver  and coc-eslint (npm install -g eslint) (ok)
 " typescript : coc-tsserver and coc-tslint (npm install -g tslint typescript) (ok)
-" angular : coc-angular (ok)
+" angular : coc-angular (ok) Snippets: BeastCode/VSCode-Angular-TypeScript-Snippets
 " html, css : coc-html and coc-css (ok)
 " vim : vim-lsp (ok)
 " ruby : coc-solargraph (not installed yet)
 " python : coc-python (jedi) (ok)
 " go :  via languageserver and vim-go (ok)
 " powershell : coc-powershell (ok)
+" sql snippets : SadeghPM/sql-vscode-snipptes
 
 " Snippets
 " coc-snippets
