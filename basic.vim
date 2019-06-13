@@ -128,8 +128,8 @@ set noerrorbells
 set visualbell t_vb=
 set tm=500
 
-" Foldmethod manual
-set foldmethod=manual 
+" Foldmethod manual default (experimental marker)
+set foldmethod=marker 
 set foldlevelstart=99 
 
 " Dealing with special chars
