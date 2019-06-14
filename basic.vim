@@ -732,7 +732,7 @@ endif
 augroup LastFileMarkSetup
     autocmd!
     autocmd BufLeave *.css,*.less,*.scss,*.sass normal! mC
-    autocmd BufLeave *.html, *.cshtml           normal! mH
+    autocmd BufLeave *.html,*.cshtml           normal! mH
     autocmd BufLeave *.js                       normal! mJ
     autocmd BufLeave vimrc,*.vim                normal! mV
 augroup END
