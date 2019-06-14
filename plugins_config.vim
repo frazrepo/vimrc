@@ -191,8 +191,11 @@ if !exists("g:developer_edition")
     inoremap <buffer> <silent> <M-p> <C-O>:call TogglePearTree()<CR>	
 
     "Remap jk 
-    imap jk <Plug>(PearTreeFinishExpansion)
-    imap <ESC> <Plug>(PearTreeFinishExpansion)
+    " imap jk <Plug>(PearTreeFinishExpansion)
+    " Activating both cause bugs in terminal where pressing arrow keys leads 
+    " to ABCD
+    " imap <ESC> <Plug>(PearTreeFinishExpansion)
+    " Just use ESC
     
 endif
 
