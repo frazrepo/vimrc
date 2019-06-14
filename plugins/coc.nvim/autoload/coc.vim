@@ -2,11 +2,13 @@ let g:coc#_context = {'start': 0, 'candidates': []}
 let g:coc_user_config = get(g:, 'coc_user_config', {})
 let g:coc_global_extensions = get(g:, 'coc_global_extensions', [])
 let g:coc_selected_text = ''
+let g:coc_vim_commands = []
 let s:watched_keys = []
 let s:is_vim = !has('nvim')
 let s:error_sign = get(g:, 'coc_status_error_sign', has('mac') ? '❌ ' : 'E')
 let s:warning_sign = get(g:, 'coc_status_warning_sign', has('mac') ? '⚠️ ' : 'W')
 let s:select_api = exists('*nvim_select_popupmenu_item')
+let s:callbacks = {}
 
 function! coc#expandable() abort
   return coc#rpc#request('snippetCheck', [1, 0])
@@ -18,6 +20,14 @@ endfunction
 
 function! coc#expandableOrJumpable() abort
   return coc#rpc#request('snippetCheck', [1, 1])
+endfunction
+
+" add vim command to CocCommand list
+function! coc#add_command(id, cmd, ...)
+  let config = {'id':a:id, 'cmd':a:cmd, 'title': get(a:,1,'')}
+  call add(g:coc_vim_commands, config)
+  if !coc#rpc#ready() | return | endif
+  call coc#rpc#notify('addCommand', [config])
 endfunction
 
 function! coc#refresh() abort
@@ -182,5 +192,19 @@ endfunction
 function! coc#_init()
   if exists('#User#CocNvimInit')
     doautocmd User CocNvimInit
+  endif
+endfunction
+
+function! coc#on_notify(id, method, Cb)
+  let key = a:id. '-'.a:method
+  let s:callbacks[key] = a:Cb
+  call coc#rpc#notify('registNotification', [a:id, a:method])
+endfunction
+
+function! coc#do_notify(id, method, result)
+  let key = a:id. '-'.a:method
+  let Fn = s:callbacks[key]
+  if !empty(Fn)
+    call Fn(a:result)
   endif
 endfunction

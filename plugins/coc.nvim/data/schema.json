@@ -20,6 +20,16 @@
           "default": false,
           "description": "Disable workspaceFolders feature for this languageserver."
         },
+        "disableDiagnostics": {
+          "type": "boolean",
+          "default": false,
+          "description": "Disable handle diagnostics for this languageserver."
+        },
+        "disableCompletion": {
+          "type": "boolean",
+          "default": false,
+          "description": "Disable completion feature for this languageserver."
+        },
         "env": {
           "type": "object",
           "default": null,
@@ -106,6 +116,8 @@
           "default": "127.0.0.1",
           "description": "Host of server"
         },
+        "disableDiagnostics": {},
+        "disableCompletion": {},
         "enable": {},
         "disableWorkspaceFolders": {},
         "rootPatterns": {},
@@ -166,6 +178,8 @@
         "env": {},
         "enable": {},
         "disableWorkspaceFolders": {},
+        "disableDiagnostics": {},
+        "disableCompletion": {},
         "rootPatterns": {},
         "requireRootPattern": {},
         "ignoredRootPaths": {},
@@ -211,6 +225,8 @@
         "env": {},
         "enable": {},
         "disableWorkspaceFolders": {},
+        "disableDiagnostics": {},
+        "disableCompletion": {},
         "rootPatterns": {},
         "requireRootPattern": {},
         "ignoredRootPaths": {},
@@ -236,13 +252,23 @@
     },
     "suggest.maxPreviewWidth": {
       "type": "number",
-      "default": 50,
-      "description": "Maxmium width of floating preview window."
+      "default": 80,
+      "description": "Maximum width of floating preview window."
     },
     "suggest.enablePreview": {
       "type": "boolean",
       "description": "Add preview option to completeopt, default: false.",
       "default": false
+    },
+    "suggest.floatEnable": {
+      "type": "boolean",
+      "description": "Enable floating window for documentation when possible.",
+      "default": true
+    },
+    "suggest.labelMaxLength": {
+      "type": "number",
+      "description": "Max length of abbr that shown as label of complete item.",
+      "default": 200
     },
     "suggest.detailMaxLength": {
       "type": "number",
@@ -254,11 +280,6 @@
       "default": "menu",
       "description": "Where to add the detail in complete item when it's less than max length.",
       "enum": ["abbr", "menu", "preview"]
-    },
-    "suggest.previewIsKeyword": {
-      "type": "string",
-      "default": "@,48-57,_192-255,<,>,$,#,-,`,*",
-      "description": "'iskeyword' option on floating preview buffer."
     },
     "suggest.autoTrigger": {
       "type": "string",
@@ -286,6 +307,11 @@
       "description": "Remove menu field from vim complete item.",
       "default": false
     },
+    "suggest.disableMenuShortcut": {
+      "type": "boolean",
+      "description": "Disable shortcut of completion source in menu.",
+      "default": false
+    },
     "suggest.snippetIndicator": {
       "type": "string",
       "default": "~",
@@ -294,7 +320,7 @@
     "suggest.maxCompleteItemCount": {
       "type": "number",
       "default": 50,
-      "description": "Maxmium number of complete items shown in vim"
+      "description": "Maximum number of complete items shown in vim"
     },
     "suggest.preferCompleteThanJumpPlaceholder": {
       "type": "boolean",
@@ -511,13 +537,20 @@
     },
     "diagnostic.maxWindowHeight": {
       "type": "number",
-      "description": "Maxmium height of diagnostics floating window.",
+      "description": "Maximum height of diagnostics floating window.",
       "default": 8
     },
     "signature.enable": {
       "type": "boolean",
       "description": "Enable signature help when trigger character typed, require restart service on change.",
       "default": true
+    },
+    "signature.triggerSignatureWait": {
+      "type": "integer",
+      "default": 50,
+      "minimum": 50,
+      "maximum": 500,
+      "description": "Timeout for trigger signature help, in miliseconds."
     },
     "signature.target": {
       "type": "string",
@@ -536,7 +569,7 @@
     },
     "signature.maxWindowHeight": {
       "type": "number",
-      "description": "Maxmium height of floating signature help window.",
+      "description": "Maximum height of floating signature help window.",
       "default": 8
     },
     "codeLens.enable": {
@@ -565,7 +598,7 @@
     "list.maxHeight": {
       "type": "number",
       "default": 10,
-      "description": "Maxmium height of list window."
+      "description": "Maximum height of list window."
     },
     "list.signOffset": {
       "type": "number",
@@ -576,6 +609,11 @@
       "type": "string",
       "default": "*",
       "description": "Sign text for selected lines."
+    },
+    "list.extendedSearchMode": {
+      "type": "boolean",
+      "default": true,
+      "description": "Enable extended search mode which allows multiple search patterns delimited by spaces."
     },
     "list.autoResize": {
       "type": "boolean",
@@ -591,6 +629,11 @@
       "type": "number",
       "default": 12,
       "description": "Max height for preview window of list."
+    },
+    "list.previewSplitRight": {
+      "type": "boolean",
+      "default": false,
+      "description": "Use vsplit for preview window."
     },
     "list.previewHighlightGroup": {
       "type": "string",

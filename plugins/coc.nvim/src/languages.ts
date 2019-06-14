@@ -30,7 +30,7 @@ import sources from './sources'
 import { CompleteOption, CompleteResult, CompletionContext, DiagnosticCollection, Documentation, ISource, SourceType, VimCompleteItem } from './types'
 import { wait } from './util'
 import * as complete from './util/complete'
-import { getChangedPosition, rangeOverlap } from './util/position'
+import { getChangedFromEdits, rangeOverlap } from './util/position'
 import { byteLength } from './util/string'
 import workspace from './workspace'
 const logger = require('./util/logger')('languages')
@@ -48,6 +48,10 @@ interface CompleteConfig {
   waitTime: number
   detailMaxLength: number
   detailField: string
+}
+
+function fixDocumentation(str: string): string {
+  return str.replace(/&nbsp;/g, ' ')
 }
 
 export function check<R extends (...args: any[]) => Promise<R>>(_target: any, key: string, descriptor: any): void {
@@ -327,7 +331,7 @@ class Languages {
   }
 
   @check
-  public async getSelectionRanges(document: TextDocument, positions: Position[]): Promise<SelectionRange[][] | null> {
+  public async getSelectionRanges(document: TextDocument, positions: Position[]): Promise<SelectionRange[] | null> {
     return await this.selectionRangeManager.provideSelectionRanges(document, positions, this.token)
   }
 
@@ -404,7 +408,6 @@ class Languages {
   @check
   public async getCodeActions(document: TextDocument, range: Range, context: CodeActionContext, silent = false): Promise<Map<string, CodeAction[]>> {
     if (!silent && !this.codeActionManager.hasProvider(document)) {
-      workspace.showMessage('Code action provider not found for current document', 'error')
       return null
     }
     return await this.codeActionManager.provideCodeActions(document, range, context, this.token)
@@ -436,7 +439,6 @@ class Languages {
   @check
   public async provideFoldingRanges(document: TextDocument, context: FoldingContext): Promise<FoldingRange[] | null> {
     if (!this.formatRangeManager.hasProvider(document)) {
-      workspace.showMessage('Folding ranges provider not found for current document', 'error')
       return null
     }
     return await this.foldingRangeManager.provideFoldingRanges(document, context, this.token)
@@ -494,6 +496,7 @@ class Languages {
     let source: ISource = {
       name,
       priority,
+      shortcut,
       enable: true,
       sourceType: SourceType.Service,
       filetypes: languageIds,
@@ -566,12 +569,12 @@ class Languages {
             if (typeof documentation == 'string') {
               docs.push({
                 filetype: 'markdown',
-                content: documentation
+                content: fixDocumentation(documentation)
               })
             } else if (documentation.value) {
               docs.push({
                 filetype: documentation.kind == 'markdown' ? 'markdown' : 'txt',
-                content: documentation.value
+                content: fixDocumentation(documentation.value)
               })
             }
           }
@@ -677,16 +680,11 @@ class Languages {
     if (!document) return
     await wait(workspace.isVim ? 100 : 10)
     // how to move cursor after edit
-    let changed = { line: 0, character: 0 }
+    let changed = null
     let pos = await workspace.getCursorPosition()
-    if (!snippet) {
-      for (let edit of textEdits) {
-        let d = getChangedPosition(pos, edit)
-        changed = { line: changed.line + d.line, character: changed.character + d.character }
-      }
-    }
+    if (!snippet) changed = getChangedFromEdits(pos, textEdits)
     await document.applyEdits(this.nvim, textEdits)
-    if (changed.line != 0 || changed.character != 0) {
+    if (changed) {
       await workspace.moveTo(Position.create(pos.line + changed.line, pos.character + changed.character))
     }
   }

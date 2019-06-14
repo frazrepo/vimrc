@@ -204,21 +204,42 @@ export class Sources {
     return false
   }
 
-  public getCompleteSources(opt: CompleteOption, isTriggered: boolean): ISource[] {
+  public getCompleteSources(opt: CompleteOption): ISource[] {
     let { filetype } = opt
-    let pre = byteSlice(opt.line, 0, opt.col)
+    let pre = byteSlice(opt.line, 0, opt.colnr - 1)
+    let isTriggered = opt.input == '' && opt.triggerCharacter
     if (isTriggered) return this.getTriggerSources(pre, filetype)
-    return this.getSourcesForFiletype(filetype)
+    let character = pre.length ? pre[pre.length - 1] : ''
+    return this.sources.filter(source => {
+      let { filetypes, triggerOnly, enable } = source
+      if (!enable || (filetypes && filetypes.indexOf(filetype) == -1)) {
+        return false
+      }
+      if (triggerOnly && !this.checkTrigger(source, pre, character)) {
+        return false
+      }
+      return true
+    })
+  }
+
+  public checkTrigger(source: ISource, pre: string, character: string): boolean {
+    let { triggerCharacters, triggerPatterns } = source
+    if (!triggerCharacters && !triggerPatterns) return false
+    if (character && triggerCharacters && triggerCharacters.indexOf(character) !== -1) {
+      return true
+    }
+    if (triggerPatterns && triggerPatterns.findIndex(p => p.test(pre)) !== -1) {
+      return true
+    }
+    return false
   }
 
   public shouldTrigger(pre: string, languageId: string): boolean {
-    if (pre.length == 0) return false
-    let last = pre[pre.length - 1]
+    let last = pre.length ? pre[pre.length - 1] : ''
     let idx = this.sources.findIndex(s => {
       let { enable, triggerCharacters, triggerPatterns, filetypes } = s
-      if (!enable) return false
-      if ((filetypes && filetypes.indexOf(languageId) == -1)) return false
-      if (triggerCharacters) return triggerCharacters.indexOf(last) !== -1
+      if (!enable || (filetypes && filetypes.indexOf(languageId) == -1)) return false
+      if (last && triggerCharacters) return triggerCharacters.indexOf(last) !== -1
       if (triggerPatterns) return triggerPatterns.findIndex(p => p.test(pre)) !== -1
       return false
     })
@@ -226,18 +247,22 @@ export class Sources {
   }
 
   public getTriggerSources(pre: string, languageId: string): ISource[] {
-    let sources = this.getSourcesForFiletype(languageId)
-    let character = pre[pre.length - 1]
-    return sources.filter(o => {
-      if (o.triggerCharacters && o.triggerCharacters.indexOf(character) !== -1) return true
-      if (o.triggerPatterns && o.triggerPatterns.findIndex(p => p.test(pre)) !== -1) return true
-      return false
+    let character = pre.length ? pre[pre.length - 1] : ''
+    return this.sources.filter(source => {
+      let { filetypes, enable } = source
+      if (!enable || (filetypes && filetypes.indexOf(languageId) == -1)) {
+        return false
+      }
+      return this.checkTrigger(source, pre, character)
     })
   }
 
-  public getSourcesForFiletype(filetype: string): ISource[] {
+  public getSourcesForFiletype(filetype: string, isTriggered: boolean): ISource[] {
     return this.sources.filter(source => {
       let { filetypes } = source
+      if (source.triggerOnly && isTriggered === false) {
+        return false
+      }
       if (source.enable && (!filetypes || filetypes.indexOf(filetype) !== -1)) {
         return true
       }
@@ -288,6 +313,7 @@ export class Sources {
     for (let item of items) {
       res.push({
         name: item.name,
+        shortcut: item.shortcut || '',
         filetypes: item.filetypes || [],
         filepath: item.filepath || '',
         type: item.sourceType == SourceType.Native

@@ -1,6 +1,8 @@
 let s:activated = 0
 let s:is_vim = !has('nvim')
 let s:saved_ve = &t_ve
+let s:saved_cursor = &guicursor
+let s:gui = has('gui_running')
 
 function! coc#list#get_chars()
   return {
@@ -16,6 +18,8 @@ function! coc#list#get_chars()
         \ '<home>': "\<home>",
         \ '<end>': "\<end>",
         \ '<cr>': "\<cr>",
+        \ '<PageUp>' : "\<PageUp>",
+        \ '<PageDown>' : "\<PageDown>",
         \ '<FocusGained>' : "\<FocusGained>",
         \ '<ScrollWheelUp>': "\<ScrollWheelUp>",
         \ '<ScrollWheelDown>': "\<ScrollWheelDown>",
@@ -78,24 +82,54 @@ function! coc#list#get_chars()
         \}
 endfunction
 
-function! s:getchar()
-  let ch = getchar()
-  return (type(ch) == 0 ? nr2char(ch) : ch)
+function! coc#list#getc() abort
+  let c = getchar()
+  return type(c) == type(0) ? nr2char(c) : c
 endfunction
 
-function! coc#list#prompt_start()
-  call timer_start(0, {-> coc#list#start_prompt()})
+function! coc#list#getchar() abort
+  let input = coc#list#getc()
+  if 1 != &iminsert
+    return input
+  endif
+  "a language keymap is activated, so input must be resolved to the mapped values.
+  let partial_keymap = mapcheck(input, "l")
+  while partial_keymap !=# ""
+    let full_keymap = maparg(input, "l")
+    if full_keymap ==# "" && len(input) >= 3 "HACK: assume there are no keymaps longer than 3.
+      return input
+    elseif full_keymap ==# partial_keymap
+      return full_keymap
+    endif
+    let c = coc#list#getc()
+    if c ==# "\<Esc>" || c ==# "\<CR>"
+      "if the short sequence has a valid mapping, return that.
+      if !empty(full_keymap)
+        return full_keymap
+      endif
+      return input
+    endif
+    let input .= c
+    let partial_keymap = mapcheck(input, "l")
+  endwhile
+  return input
+endfunction
+
+function! coc#list#prompt_start() abort
+  call timer_start(&updatetime, {-> coc#list#start_prompt()})
 endfunction
 
 function! coc#list#start_prompt()
   if s:activated | return | endif
-  if s:is_vim
+  if s:gui
+    set guicursor+=a:ver1-Cursor-blinkon0
+  elseif s:is_vim
     set t_ve=
   endif
   let s:activated = 1
   try
     while s:activated
-      let ch = s:getchar()
+      let ch = coc#list#getchar()
       if ch ==# "\u26d4"
         break
       endif
@@ -133,15 +167,14 @@ function! coc#list#options(...)
 endfunction
 
 function! coc#list#stop_prompt()
+  if s:gui
+    let &guicursor = s:saved_cursor
+  elseif s:is_vim
+    let &t_ve = s:saved_ve
+  endif
   if s:activated
     let s:activated = 0
     call feedkeys("\u26d4", 'int')
-  endif
-endfunction
-
-function! coc#list#restore()
-  if s:is_vim
-    let &t_ve = s:saved_ve
   endif
 endfunction
 
@@ -150,7 +183,24 @@ function! coc#list#status(name)
   return get(b:list_status, a:name, '')
 endfunction
 
+function! coc#list#create(position, height, name)
+  nohlsearch
+  execute 'silent keepalt '.(a:position ==# 'top' ? '' : 'botright').a:height.'sp list:///'.a:name
+  execute 'resize '.a:height
+  return [bufnr('%'), win_getid()]
+endfunction
+
 function! coc#list#setup(source)
+  let b:list_status = {}
+  let statusParts = [
+    \ '%#CocListMode#-- %{get(b:list_status, "mode")} --%*',
+    \ '%{get(g:, "coc_list_loading_status", "")}',
+    \ '%{get(b:list_status, "args", "")}',
+    \ '(%L/%{get(b:list_status, "total", "")})',
+    \ '%=',
+    \ '%#CocListPath# %{get(b:list_status, "cwd", "")} %l/%L%*'
+    \ ]
+  call setwinvar(winnr(), '&statusline', join(statusParts, ' '))
   setl buftype=nofile nobuflisted nofen nowrap
   setl number norelativenumber bufhidden=wipe cursorline winfixheight
   setl tabstop=1 nolist nocursorcolumn
@@ -160,6 +210,7 @@ function! coc#list#setup(source)
   let source = a:source[8:]
   let name = toupper(source[0]).source[1:]
   execute 'syntax match Coc'.name.'Line /\v^.*$/'
+  nnoremap <silent><nowait><buffer> <esc> <C-w>c
 endfunction
 
 function! coc#list#has_preview()
@@ -181,4 +232,10 @@ function! coc#list#get_colors()
     let color_map[name] = get(g:, 'terminal_color_'.i, colors[i])
   endfor
   return color_map
+endfunction
+
+function! coc#list#restore(winid, height)
+  let res = win_gotoid(a:winid)
+  if res == 0 | return | endif
+  execute 'resize '.a:height
 endfunction

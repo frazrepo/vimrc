@@ -23,7 +23,7 @@ const locations: ReadonlyArray<QuickfixItem> = [{
 beforeAll(async () => {
   await helper.setup()
   nvim = helper.nvim
-  await nvim.setVar('coc_jump_locations', locations)
+    ; (global as any).locations = locations
 })
 
 afterEach(async () => {
@@ -198,6 +198,23 @@ describe('list configuration', () => {
     helper.updateConfiguration('list.maxHeight', 12)
   })
 
+  it('should split right for preview window', async () => {
+    helper.updateConfiguration('list.previewSplitRight', true)
+    let win = await nvim.window
+    await manager.start(['location'])
+    await helper.wait(100)
+    await manager.doAction('preview')
+    await helper.wait(100)
+    manager.prompt.cancel()
+    await helper.wait(10)
+    await nvim.call('win_gotoid', [win.id])
+    await nvim.command('wincmd l')
+    let curr = await nvim.window
+    let isPreview = await curr.getOption('previewwindow')
+    expect(isPreview).toBe(true)
+    helper.updateConfiguration('list.previewSplitRight', false)
+  })
+
   it('should change autoResize', async () => {
     helper.updateConfiguration('list.autoResize', false)
     await manager.start(['location'])
@@ -256,16 +273,6 @@ describe('list configuration', () => {
     await helper.wait(30)
     let items = await manager.ui.getItems()
     expect(items.length).toBe(3)
-  })
-
-  it('should activated after cursor moved out and in', async () => {
-    await manager.start(['--normal', 'location'])
-    await helper.wait(100)
-    await nvim.command('wincmd p')
-    await helper.wait(100)
-    await nvim.command('wincmd p')
-    await helper.wait(100)
-    expect(manager.isActivated).toBe(true)
   })
 
   it('should toggle preview', async () => {

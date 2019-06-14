@@ -73,7 +73,7 @@ describe('FloatFactory', () => {
     expect(hasFloat).toBe(1)
     await helper.wait(30)
     await nvim.input('$')
-    await helper.wait(100)
+    await helper.wait(200)
     hasFloat = await nvim.call('coc#util#has_float')
     expect(hasFloat).toBe(0)
   })
@@ -109,5 +109,16 @@ describe('FloatFactory', () => {
     await floatFactory.create(docs, true)
     let { mode } = await nvim.mode
     expect(mode).toBe('s')
+  })
+
+  it('should get correct height', async () => {
+    await helper.createDocument()
+    let docs = [{
+      filetype: 'txt',
+      content: 'Declared in global namespace\n\ntypedef seL4_Uint64 seL4_Word'
+    }]
+    await floatFactory.create(docs, true)
+    let res = await floatFactory.getBoundings(docs)
+    expect(res.height).toBe(3)
   })
 })

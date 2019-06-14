@@ -22,6 +22,7 @@ import OutputList from './source/output'
 import ServicesList from './source/services'
 import SourcesList from './source/sources'
 import SymbolsList from './source/symbols'
+import ActionsList from './source/actions'
 import UI from './ui'
 import Worker from './worker'
 const logger = require('../util/logger')('list-manager')
@@ -79,7 +80,6 @@ export class ListManager implements Disposable {
       } else {
         nvim.pauseNotification()
         this.prompt.cancel()
-        if (isVim) nvim.call('coc#list#restore', [], true)
         await nvim.resumeNotification()
       }
     }, 100), null, this.disposables)
@@ -100,12 +100,6 @@ export class ListManager implements Disposable {
         if (typeof this.currList.doHighlight == 'function') {
           this.currList.doHighlight()
         }
-        this.ui.window.notify('nvim_win_set_option', ['statusline', this.buildStatusline()])
-      }
-    }, null, this.disposables)
-    this.ui.onDidChange(() => {
-      if (this.currList) {
-        this.ui.window.notify('nvim_win_set_option', ['statusline', this.buildStatusline()])
       }
     }, null, this.disposables)
     this.ui.onDidClose(async () => {
@@ -115,9 +109,7 @@ export class ListManager implements Disposable {
       if (this.activated) {
         this.updateStatus()
       }
-      if (workspace.isNvim) {
-        this.prompt.drawPrompt()
-      }
+      this.prompt.drawPrompt()
     }, null, this.disposables)
     this.ui.onDidDoubleClick(async () => {
       await this.doAction()
@@ -145,6 +137,7 @@ export class ListManager implements Disposable {
     this.registerList(new OutputList(nvim))
     this.registerList(new ListsList(nvim, this.listMap))
     this.registerList(new FolderList(nvim))
+    this.registerList(new ActionsList(nvim))
   }
 
   public async start(args: string[]): Promise<void> {
@@ -160,16 +153,15 @@ export class ListManager implements Disposable {
       this.currList = list
       this.listArgs = listArgs
       this.cwd = workspace.cwd
-      this.window = await this.nvim.window
-      await this.nvim.command('nohlsearch')
       await this.getCharMap()
-      this.prompt.start(options)
       await this.history.load()
+      this.window = await this.nvim.window
+      this.prompt.start(options)
       await this.worker.loadItems()
     } catch (e) {
       await this.cancel()
       let msg = e instanceof Error ? e.message : e.toString()
-      workspace.showMessage(`Error on "CocList ${list.name}" ${msg}`, 'error')
+      workspace.showMessage(`Error on "CocList ${list.name}": ${msg}`, 'error')
       logger.error(e)
     }
   }
@@ -232,7 +224,6 @@ export class ListManager implements Disposable {
         if (valid) nvim.call('win_gotoid', this.window.id, true)
       }
     }
-    nvim.call('coc#list#restore', [], true)
     await nvim.resumeNotification()
   }
 
@@ -372,31 +363,18 @@ export class ListManager implements Disposable {
   }
 
   public updateStatus(): void {
-    let { ui, currList, listArgs, activated, nvim } = this
+    let { ui, currList, activated, nvim } = this
     if (!activated) return
     let buf = nvim.createBuffer(ui.bufnr)
     let status = {
       mode: this.prompt.mode.toUpperCase(),
-      args: listArgs.join(' '),
+      args: this.args.join(' '),
       name: currList.name,
       total: this.worker.length,
       cwd: this.cwd,
     }
     buf.setVar('list_status', status, true)
     if (ui.window) nvim.command('redraws', true)
-  }
-
-  private buildStatusline(): string {
-    let { args } = this
-    let parts: string[] = [
-      `%#CocListMode#-- %{coc#list#status('mode')} --%*`,
-      `%{get(g:, 'coc_list_loading_status', '')}`,
-      args.join(' '),
-      `(%L/%{coc#list#status('total')})`,
-      '%=',
-      `%#CocListPath# %{coc#list#status('cwd')} %l/%L%*`
-    ]
-    return parts.join(' ')
   }
 
   private async onInputChar(ch: string, charmod: number): Promise<void> {
@@ -678,29 +656,26 @@ export class ListManager implements Disposable {
     disposeAll(this.disposables)
   }
 
-  private async getCharMap(): Promise<Map<string, string>> {
-    if (this.charMap) return this.charMap
+  private async getCharMap(): Promise<void> {
+    if (this.charMap) return
     this.charMap = new Map()
     let chars = await this.nvim.call('coc#list#get_chars')
     Object.keys(chars).forEach(key => {
       this.charMap.set(chars[key], key)
     })
-    return this.charMap
+    return
   }
 
   private async doItemAction(items: ListItem[], action: ListAction): Promise<void> {
     if (this.executing) return
     this.executing = true
-    let { nvim, ui } = this
+    let { nvim } = this
     let shouldCancel = action.persist !== true && action.name != 'preview'
     try {
       if (shouldCancel) {
         await this.cancel()
-      } else {
+      } else if (action.name != 'preview') {
         await nvim.call('coc#list#stop_prompt')
-      }
-      if (action.name == 'preview') {
-        items = items.slice(0, 1)
       }
       if (!shouldCancel && !this.isActivated) return
       if (action.multiple) {
@@ -719,28 +694,18 @@ export class ListManager implements Disposable {
           this.nvim.command('pclose', true)
           return
         }
-        this.prompt.start()
-        let { window } = ui
-        if (!window) return
-        let valid = await window.valid
-        if (!valid) return
-        let winid = await nvim.call('win_getid')
-        if (winid != window.id) {
-          nvim.pauseNotification()
-          nvim.call('win_gotoid', [window.id], true)
-          await this.ui.restoreWindow()
-          nvim.command('redraw', true)
-          await nvim.resumeNotification()
-        } else {
-          await this.ui.restoreWindow()
+        if (action.name != 'preview') {
+          this.prompt.start()
         }
+        await this.ui.restoreWindow()
         if (action.reload) await this.worker.loadItems(true)
       }
     } catch (e) {
+      // tslint:disable-next-line: no-console
+      console.error(e)
       if (!shouldCancel && this.activated) {
         this.prompt.start()
       }
-      logger.error(e)
     }
     this.executing = false
   }

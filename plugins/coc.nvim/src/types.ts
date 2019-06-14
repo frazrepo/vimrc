@@ -1,15 +1,21 @@
 import { Neovim, Window } from '@chemzqm/neovim'
 import log4js from 'log4js'
 import { CancellationToken, CompletionTriggerKind, CreateFileOptions, DeleteFileOptions, Diagnostic, DidChangeTextDocumentParams, Disposable, DocumentSelector, Event, FormattingOptions, Location, Position, Range, RenameFileOptions, TextDocument, TextDocumentSaveReason, TextEdit, WorkspaceEdit, WorkspaceFolder } from 'vscode-languageserver-protocol'
-import Uri from 'vscode-uri'
+import { URI } from 'vscode-uri'
 import Configurations from './configuration'
 import { LanguageClient } from './language-client'
 import Document from './model/document'
 import FileSystemWatcher from './model/fileSystemWatcher'
 import { ProviderResult, TextDocumentContentProvider } from './provider'
+import * as protocol from 'vscode-languageserver-protocol'
 
 export type MsgTypes = 'error' | 'warning' | 'more'
 export type ExtensionState = 'disabled' | 'loaded' | 'activated' | 'unknown'
+
+export interface CodeAction extends protocol.CodeAction {
+  isPrefered?: boolean
+  clientId?: string
+}
 
 export interface TaskOptions {
   cmd: string
@@ -29,10 +35,11 @@ export interface KeymapOption {
   sync: boolean
   cancel: boolean
   silent: boolean
+  repeat: boolean
 }
 
 export interface Autocmd {
-  event: string
+  event: string | string[]
   arglist?: string[]
   request?: boolean
   thisArg?: any
@@ -111,7 +118,7 @@ export interface TerminalOptions {
   shellArgs?: string[]
 
   /**
-   * A path or Uri for the current working directory to be used for the terminal.
+   * A path or URI for the current working directory to be used for the terminal.
    */
   cwd?: string
 
@@ -226,6 +233,7 @@ export interface Env {
   readonly isVim: boolean
   readonly isMacvim: boolean
   readonly version: string
+  readonly locationlist: boolean
 }
 
 export interface Fragment {
@@ -293,7 +301,7 @@ export interface ConfigurationChangeEvent {
    * Returns `true` if the given section for the given resource (if provided) is affected.
    *
    * @param section Configuration name, supports _dotted_ names.
-   * @param resource A resource Uri.
+   * @param resource A resource URI.
    * @return `true` if the given section for the given resource (if provided) is affected.
    */
   affectsConfiguration(section: string, resource?: string): boolean
@@ -305,6 +313,8 @@ export interface LanguageServerConfig {
   transport?: string
   transportPort?: number
   disableWorkspaceFolders?: boolean
+  disableCompletion?: boolean
+  disableDiagnostics?: boolean
   filetypes: string[]
   additionalSchemes: string[]
   enable: boolean
@@ -361,6 +371,7 @@ export interface ChangeItem {
 
 export interface BufferOption {
   eol: number
+  variables: { [key: string]: any }
   bufname: string
   fullpath: string
   buftype: string
@@ -368,6 +379,7 @@ export interface BufferOption {
   iskeyword: string
   changedtick: number
   rootPatterns: string[] | null
+  additionalKeywords: string[]
 }
 
 export interface DiagnosticInfo {
@@ -478,9 +490,7 @@ export interface PopupChangeEvent {
 
 export interface CompleteResult {
   items: VimCompleteItem[]
-  completeInComplete?: boolean
   isIncomplete?: boolean
-  engross?: boolean
   startcol?: number
   source?: string
   priority?: number
@@ -489,6 +499,7 @@ export interface CompleteResult {
 export interface SourceStat {
   name: string
   type: string
+  shortcut: string
   filepath: string
   disabled: boolean
   filetypes: string[]
@@ -497,7 +508,9 @@ export interface SourceStat {
 export interface CompleteConfig {
   disableKind: boolean
   disableMenu: boolean
+  disableMenuShortcut: boolean
   enablePreview: boolean
+  labelMaxLength: number
   maxPreviewWidth: number
   autoTrigger: string
   previewIsKeyword: string
@@ -578,8 +591,8 @@ export interface ConfigurationInspect<T> {
 }
 
 export interface RenameEvent {
-  oldUri: Uri
-  newUri: Uri
+  oldUri: URI
+  newUri: URI
 }
 
 export interface TerminalResult {
@@ -721,24 +734,62 @@ export interface ListTask {
 }
 
 export interface ListArgument {
+  key?: string
+  hasValue?: boolean
   name: string
   description: string
 }
 
 export interface IList {
+  /**
+   * Unique name of list.
+   */
   name: string
+  /**
+   * Action list.
+   */
   actions: ListAction[]
+  /**
+   * Default action name.
+   */
   defaultAction: string
+  /**
+   * Load list items.
+   */
   loadItems(context: ListContext, token: CancellationToken): Promise<ListItem[] | ListTask | null | undefined>
+  /**
+   * Resolve list item.
+   */
   resolveItem?(item: ListItem): Promise<ListItem | null>
-  // support interactive mode
+  /**
+   * Should be true when interactive is supported.
+   */
   interactive?: boolean
+  /**
+   * Description of list.
+   */
   description?: string
+  /**
+   * Detail description, shown in help.
+   */
   detail?: string
+  /**
+   * Options supported by list.
+   */
   options?: ListArgument[]
-  searchHighlight?: boolean
+  /**
+   * Highlight buffer by vim's syntax commands.
+   */
   doHighlight?(): void
   dispose?(): void
+}
+
+export interface PreiewOptions {
+  bufname: string
+  sketch: boolean
+  filetype: string
+  lines?: string[]
+  lnum?: number
 }
 
 export interface AnsiItem {
@@ -754,9 +805,12 @@ export interface ISource {
   // identifier
   name: string
   enable?: boolean
+  shortcut?: string
   priority?: number
   sourceType?: SourceType
   triggerCharacters?: string[]
+  // should only be used when trigger match.
+  triggerOnly?: boolean
   // regex to detect trigger completetion, ignored when triggerCharacters exists.
   triggerPatterns?: RegExp[]
   disableSyntaxes?: string[]

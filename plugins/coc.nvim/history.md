@@ -1,8 +1,56 @@
+# 2019-06-12
+
+- feat(document): add getVar method
+- fix(util): not break selection on message
+- fix(workspace): fix jumpTo not work on vim8
+- fix(completion): trigger completion with word character
+- refactor(handler): return boolean result
+- perf(workspace): improve jump performance
+- fix(util): Escape filename for jump (#862)
+- refactor(plugin): not show empty hover
+- feat(outline): ignore callback function
+- feat(workspace): support list of events with registerAutocmd
+- fix(workspace): fix jump with tab drop
+- refactor(language-client): change API of selectionRanges
+
+# 2019-06-09
+
+- **Break change** `CocHighlightText` link to `CursorColumn` by default.
+- **Break change** logger folder changed to `$XDG_RUNTIME_DIR` when exists.
+- Add `<PageUp>` and `<PageDown>` support for list, #825.
+- Add function `coc#add_command()`.
+- Add `disableDiagnostics` & `disableCompletion` to languageclient configuration.
+- Add `signature.triggerSignatureWait` configuration.
+- Add vim-repeat support for run command and quickfix.
+- Add prefered `codeAction` support.
+- Add `prompt.paste` action to list.
+- Add title as argument support for `codeAction` action.
+- Add `suggest.floatEnable` configuration.
+- Add `editor.action.orgnizeImport` command.
+- Add `:CocAction` and `:CocFix` commands.
+- Add `codeActions` action.
+- Fix issues with list.
+
+# 2019-05-30
+
+- **Break change** logger folder changed.
+- Add support of vim-repeat for `<Plug>` keymaps.
+- Add `CocRegistNotification()` function.
+- Add argument to rename action.
+- Add `suggest.disableMenuShortcut` configuration.
+- Add glob support for root patterns.
+- Add `<esc>` keymap to list window.
+- Add shortcut in sources list.
+- Add `list.previewSplitRight` configuration.
+- Add `triggerOnly` property to source.
+- Add warning for duplicate extension.
+- Bug fixes.
+
 # 2019-05-07
 
 - **New feature** load extensions from coc-extensions folder.
 - Add `workspace.renameCurrentFile` command.
-- Add `FloatBuffer`, `FloatFactory` and `Uri` to exports.
+- Add `FloatBuffer`, `FloatFactory` and `URI` to exports.
 - Add `resolveItem` support to list.
 - Fix prompt can't work when execute list action.
 - Fix ansiparser for empty color ranges.

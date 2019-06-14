@@ -2,13 +2,12 @@ import { spawn } from 'child_process'
 import { debounce } from 'debounce'
 import fastDiff from 'fast-diff'
 import fs from 'fs'
-import glob from 'glob'
 import isuri from 'isuri'
 import path from 'path'
 import semver from 'semver'
 import util from 'util'
 import { Disposable, Emitter, Event } from 'vscode-languageserver-protocol'
-import Uri from 'vscode-uri'
+import { URI } from 'vscode-uri'
 import events from './events'
 import DB from './model/db'
 import Memos from './model/memos'
@@ -16,10 +15,11 @@ import { Extension, ExtensionContext, ExtensionInfo, ExtensionState } from './ty
 import { disposeAll, runCommand, wait } from './util'
 import { distinct } from './util/array'
 import { createExtension, ExtensionExport } from './util/factory'
-import { readFile, statAsync, readdirAsync } from './util/fs'
+import { readFile, inDirectory, statAsync, readdirAsync, realpathAsync } from './util/fs'
 import Watchman from './watchman'
 import workspace from './workspace'
 import { Neovim } from '@chemzqm/neovim'
+import commandManager from './commands'
 import './util/extensions'
 
 const createLogger = require('./util/logger')
@@ -89,8 +89,7 @@ export class Extensions {
     }
     if (process.env.COC_NO_PLUGINS) return
     let stats = await this.globalExtensionStats()
-    let names = stats.map(info => info.id)
-    let localStats = await this.localExtensionStats(names)
+    let localStats = await this.localExtensionStats(stats)
     stats = stats.concat(localStats)
     this.memos = new Memos(path.resolve(this.root, '../memos.json'))
     await this.loadFileExtensions()
@@ -239,22 +238,6 @@ export class Extensions {
     return this.list.find(o => o.id == id)
   }
 
-  public get commands(): { [index: string]: string } {
-    let res = {}
-    for (let item of this.list) {
-      let { packageJSON } = item.extension
-      if (packageJSON.contributes) {
-        let { commands } = packageJSON.contributes
-        if (commands && commands.length) {
-          for (let cmd of commands) {
-            res[cmd.command] = cmd.title
-          }
-        }
-      }
-    }
-    return res
-  }
-
   public getExtensionState(id: string): ExtensionState {
     let disabled = this.isDisabled(id)
     if (disabled) return 'disabled'
@@ -266,8 +249,7 @@ export class Extensions {
 
   public async getExtensionStates(): Promise<ExtensionInfo[]> {
     let globalStats = await this.globalExtensionStats()
-    let names = globalStats.map(info => info.id)
-    let localStats = await this.localExtensionStats(names)
+    let localStats = await this.localExtensionStats(globalStats)
     return globalStats.concat(localStats)
   }
 
@@ -518,6 +500,7 @@ export class Extensions {
           let stat = await statAsync(jsonFile)
           if (!stat || !stat.isFile()) return resolve(null)
           let content = await readFile(jsonFile, 'utf8')
+          root = await realpathAsync(root)
           let obj = JSON.parse(content)
           let { engines } = obj
           if (!engines || (!engines.hasOwnProperty('coc') && !engines.hasOwnProperty('vscode'))) {
@@ -543,12 +526,17 @@ export class Extensions {
     return res.filter(info => info != null)
   }
 
-  private async localExtensionStats(exclude: string[]): Promise<ExtensionInfo[]> {
+  private async localExtensionStats(exclude: ExtensionInfo[]): Promise<ExtensionInfo[]> {
     let runtimepath = await workspace.nvim.eval('&runtimepath') as string
+    let included = exclude.map(o => o.root)
+    let names = exclude.map(o => o.id)
     let paths = runtimepath.split(',')
     let res: ExtensionInfo[] = await Promise.all(paths.map(root => {
       return new Promise<ExtensionInfo>(async resolve => {
         try {
+          if (included.includes(root)) {
+            return resolve(null)
+          }
           let jsonFile = path.join(root, 'package.json')
           let stat = await statAsync(jsonFile)
           if (!stat || !stat.isFile()) return resolve(null)
@@ -558,7 +546,8 @@ export class Extensions {
           if (!engines || (!engines.hasOwnProperty('coc') && !engines.hasOwnProperty('vscode'))) {
             return resolve(null)
           }
-          if (exclude.indexOf(obj.name) !== -1) {
+          if (names.indexOf(obj.name) !== -1) {
+            workspace.showMessage(`Skipped extension  "${root}", please uninstall "${obj.name}" by :CocUninstall ${obj.name}`, 'warning')
             return resolve(null)
           }
           let version = obj ? obj.version || '' : ''
@@ -647,25 +636,26 @@ export class Extensions {
           }
         }, null, disposables)
       } else if (ev == 'workspaceContains') {
-        let check = (cwd: string) => {
-          glob(parts[1], { cwd }, (err, files) => {
-            if (err) return
-            if (files && files.length) {
+        let check = () => {
+          let folders = workspace.workspaceFolders.map(o => URI.parse(o.uri).fsPath)
+          for (let folder of folders) {
+            if (inDirectory(folder, parts[1].split(/\s+/))) {
               active()
+              break
             }
-          })
+          }
         }
-        check(workspace.cwd)
-        events.on('DirChanged', check, null, disposables)
+        check()
+        workspace.onDidChangeWorkspaceFolders(check, null, disposables)
       } else if (ev == 'onFileSystem') {
         for (let doc of workspace.documents) {
-          let u = Uri.parse(doc.uri)
+          let u = URI.parse(doc.uri)
           if (u.scheme == parts[1]) {
             return active()
           }
         }
         workspace.onDidOpenTextDocument(document => {
-          let u = Uri.parse(document.uri)
+          let u = URI.parse(document.uri)
           if (u.scheme == parts[1]) {
             active()
           }
@@ -753,7 +743,7 @@ export class Extensions {
     })
     let { contributes } = packageJSON
     if (contributes) {
-      let { configuration, rootPatterns } = contributes
+      let { configuration, rootPatterns, commands } = contributes
       if (configuration && configuration.properties) {
         let { properties } = configuration
         let props = {}
@@ -766,6 +756,11 @@ export class Extensions {
       if (rootPatterns && rootPatterns.length) {
         for (let item of rootPatterns) {
           workspace.addRootPatterns(item.filetype, item.patterns)
+        }
+      }
+      if (commands && commands.length) {
+        for (let cmd of commands) {
+          commandManager.titles.set(cmd.command, cmd.title)
         }
       }
     }

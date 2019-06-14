@@ -91,14 +91,14 @@
 const semver = __webpack_require__(1)
 const version = process.version.replace('v', '')
 if (!semver.gte(version, '8.10.0')) {
-  console.error('node >= 8.10.0 required, please upgrade nodejs, or use `let g:coc_node_path = "/path/to/node"` in your vimrc')
-  process.exit(1)
+  console.error('node version ' + version + ' < 8.10.0, please upgrade nodejs, or use `let g:coc_node_path = "/path/to/node"` in your vimrc')
+  process.exit()
 }
 Object.defineProperty(console, 'log', {
   value: () => { }
 })
 const attach = __webpack_require__(2).default
-const logger = __webpack_require__(179)('server')
+const logger = __webpack_require__(182)('server')
 
 attach({ reader: process.stdin, writer: process.stdout })
 
@@ -549,6 +549,30 @@ SemVer.prototype.comparePre = function (other) {
   } while (++i)
 }
 
+SemVer.prototype.compareBuild = function (other) {
+  if (!(other instanceof SemVer)) {
+    other = new SemVer(other, this.options)
+  }
+
+  var i = 0
+  do {
+    var a = this.build[i]
+    var b = other.build[i]
+    debug('prerelease compare', i, a, b)
+    if (a === undefined && b === undefined) {
+      return 0
+    } else if (b === undefined) {
+      return 1
+    } else if (a === undefined) {
+      return -1
+    } else if (a === b) {
+      continue
+    } else {
+      return compareIdentifiers(a, b)
+    }
+  } while (++i)
+}
+
 // preminor will bump the version up to the next minor release, and immediately
 // down to pre-release. premajor and prepatch work the same way.
 SemVer.prototype.inc = function (release, identifier) {
@@ -743,6 +767,13 @@ function compareLoose (a, b) {
   return compare(a, b, true)
 }
 
+exports.compareBuild = compareBuild
+function compareBuild (a, b, loose) {
+  var versionA = new SemVer(a, loose)
+  var versionB = new SemVer(b, loose)
+  return versionA.compare(versionB) || versionA.compareBuild(versionB)
+}
+
 exports.rcompare = rcompare
 function rcompare (a, b, loose) {
   return compare(b, a, loose)
@@ -751,14 +782,14 @@ function rcompare (a, b, loose) {
 exports.sort = sort
 function sort (list, loose) {
   return list.sort(function (a, b) {
-    return exports.compare(a, b, loose)
+    return exports.compareBuild(a, b, loose)
   })
 }
 
 exports.rsort = rsort
 function rsort (list, loose) {
   return list.sort(function (a, b) {
-    return exports.rcompare(a, b, loose)
+    return exports.compareBuild(b, a, loose)
   })
 }
 
@@ -878,7 +909,7 @@ Comparator.prototype.parse = function (comp) {
     throw new TypeError('Invalid comparator: ' + comp)
   }
 
-  this.operator = m[1]
+  this.operator = m[1] !== undefined ? m[1] : ''
   if (this.operator === '=') {
     this.operator = ''
   }
@@ -898,7 +929,7 @@ Comparator.prototype.toString = function () {
 Comparator.prototype.test = function (version) {
   debug('Comparator.test', version, this.options.loose)
 
-  if (this.semver === ANY) {
+  if (this.semver === ANY || version === ANY) {
     return true
   }
 
@@ -924,9 +955,15 @@ Comparator.prototype.intersects = function (comp, options) {
   var rangeTmp
 
   if (this.operator === '') {
+    if (this.value === '') {
+      return true
+    }
     rangeTmp = new Range(comp.value, options)
     return satisfies(this.value, rangeTmp, options)
   } else if (comp.operator === '') {
+    if (comp.value === '') {
+      return true
+    }
     rangeTmp = new Range(this.value, options)
     return satisfies(comp.semver, rangeTmp, options)
   }
@@ -1610,7 +1647,7 @@ function intersects (r1, r2, options) {
 }
 
 exports.coerce = coerce
-function coerce (version) {
+function coerce (version, options) {
   if (version instanceof SemVer) {
     return version
   }
@@ -1627,7 +1664,7 @@ function coerce (version) {
 
   return parse(match[1] +
     '.' + (match[2] || '0') +
-    '.' + (match[3] || '0'))
+    '.' + (match[3] || '0'), options)
 }
 
 
@@ -1641,11 +1678,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
 const neovim_1 = __webpack_require__(4);
 const log4js_1 = tslib_1.__importDefault(__webpack_require__(63));
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const plugin_1 = tslib_1.__importDefault(__webpack_require__(230));
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const plugin_1 = tslib_1.__importDefault(__webpack_require__(232));
 const semver_1 = tslib_1.__importDefault(__webpack_require__(1));
-__webpack_require__(307);
-const logger = __webpack_require__(179)('attach');
+__webpack_require__(298);
+const logger = __webpack_require__(182)('attach');
 const isTest = "none" == 'test';
 exports.default = (opts, requestApi = true) => {
     const nvim = neovim_1.attach(opts, log4js_1.default.getLogger('node-client'), requestApi);
@@ -1711,7 +1748,7 @@ exports.default = (opts, requestApi = true) => {
         clientReady = true;
         if (isTest)
             nvim.command(`let g:coc_node_channel_id = ${channelId}`, true);
-        let json = __webpack_require__(344);
+        let json = __webpack_require__(348);
         let { major, minor, patch } = semver_1.default.parse(json.version);
         nvim.setClientInfo('coc', { major, minor, patch }, 'remote', {}, {});
         let entered = await nvim.getVvar('vim_did_enter');
@@ -6049,10 +6086,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(__webpack_require__(54));
 const os_1 = __importDefault(__webpack_require__(55));
 const path_1 = __importDefault(__webpack_require__(56));
-const LOG_FILE_PATH = process.env.NODE_CLIENT_LOG_FILE || path_1.default.join(os_1.default.tmpdir(), 'node-client.log');
+function getLogFile() {
+    let file = process.env.NODE_CLIENT_LOG_FILE;
+    if (file)
+        return file;
+    let dir = process.env.XDG_RUNTIME_DIR;
+    if (dir)
+        return path_1.default.join(dir, 'node-client.log');
+    return path_1.default.join(os_1.default.tmpdir(), `node-client-${process.pid}.log`);
+}
+const LOG_FILE_PATH = getLogFile();
 const level = process.env.NODE_CLIENT_LOG_LEVEL || 'info';
-if (level === 'debug') {
-    fs_1.default.writeFileSync(LOG_FILE_PATH, '', 'utf8');
+let invalid = process.getuid && process.getuid() == 0;
+if (!invalid) {
+    try {
+        fs_1.default.mkdirSync(path_1.default.dirname(LOG_FILE_PATH), { recursive: true });
+        fs_1.default.writeFileSync(LOG_FILE_PATH, '', { encoding: 'utf8', mode: 0o666 });
+    }
+    catch (_e) {
+        invalid = true;
+    }
 }
 function toObject(arg) {
     if (arg == null) {
@@ -6073,7 +6126,7 @@ function toString(arg) {
         return JSON.stringify(arg, null, 2);
     return String(arg);
 }
-let stream = fs_1.default.createWriteStream(LOG_FILE_PATH, { encoding: 'utf8' });
+const stream = invalid ? null : fs_1.default.createWriteStream(LOG_FILE_PATH, { encoding: 'utf8' });
 class Logger {
     constructor(name) {
         this.name = name;
@@ -6087,18 +6140,22 @@ class Logger {
         return `${new Date().toLocaleTimeString()} ${level.toUpperCase()} [${this.name}] - ${data}${more}\n`;
     }
     debug(data, ...meta) {
-        if (level != 'debug')
+        if (level != 'debug' || stream == null)
             return;
         stream.write(this.getText('debug', data, meta));
     }
     info(data, ...meta) {
+        if (stream == null)
+            return;
         stream.write(this.getText('info', data, meta));
     }
     error(data, ...meta) {
+        if (stream == null)
+            return;
         stream.write(this.getText('error', data, meta));
     }
     trace(data, ...meta) {
-        if (level != 'debug')
+        if (level != 'trace' || stream == null)
             return;
         stream.write(this.getText('trace', data, meta));
     }
@@ -6146,6 +6203,7 @@ class VimTransport extends base_1.default {
         this.pending = new Map();
         this.nextRequestId = 0;
         this.attached = false;
+        this.notifyMethod = process.env.COC_NVIM == '1' ? 'coc#api#notify' : 'nvim#api#notify';
     }
     attach(writer, reader, client) {
         let connection = this.connection = new connection_1.default(reader, writer);
@@ -6208,8 +6266,7 @@ class VimTransport extends base_1.default {
             this.paused.push([method, args]);
             return;
         }
-        let m = process.env.COC_NVIM == '1' ? 'coc#api#notify' : 'nvim#api#notify';
-        this.connection.call(m, [method.slice(5), args]);
+        this.connection.call(this.notifyMethod, [method.slice(5), args]);
     }
     createResponse(requestId) {
         let called = false;
@@ -6255,7 +6312,7 @@ class Connection extends events_1.default {
             this.parseData(line);
         });
         rl.on('close', () => {
-            logger.error('stdin get closed');
+            logger.error('connection closed');
             process.exit(0);
         });
     }
@@ -6273,11 +6330,7 @@ class Connection extends events_1.default {
         }
         // request, notification, response
         let [id, obj] = arr;
-        if (debug)
-            logger.debug('received:', id, obj);
-        if (arr.length > 2) {
-            logger.error('Result array length > 2', arr);
-        }
+        logger.debug('received:', arr);
         if (id > 0) {
             this.emit('request', id, obj);
         }
@@ -6344,6 +6397,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const logger_1 = __webpack_require__(53);
 const logger = logger_1.createLogger('request');
 const debug = process.env.NODE_CLIENT_LOG_LEVEL == 'debug';
+const func = process.env.COC_NVIM == '1' ? 'coc#api#call' : 'nvim#api#call';
 class Request {
     constructor(connection, cb, id) {
         this.connection = connection;
@@ -6353,8 +6407,7 @@ class Request {
     request(method, args = []) {
         this.method = method;
         this.args = args;
-        let m = process.env.COC_NVIM == '1' ? 'coc#api#call' : 'nvim#api#call';
-        this.connection.call(m, [method.slice(5), args], this.id);
+        this.connection.call(func, [method.slice(5), args], this.id);
     }
     callback(client, err, result) {
         let { method, cb } = this;
@@ -6786,10 +6839,10 @@ const configuration = __webpack_require__(73);
 const layouts = __webpack_require__(74);
 const levels = __webpack_require__(76);
 const appenders = __webpack_require__(77);
-const categories = __webpack_require__(139);
-const Logger = __webpack_require__(140);
+const categories = __webpack_require__(142);
+const Logger = __webpack_require__(143);
 const clustering = __webpack_require__(78);
-const connectLogger = __webpack_require__(141);
+const connectLogger = __webpack_require__(144);
 
 let enabled = false;
 
@@ -6899,7 +6952,7 @@ const log4js = {
   shutdown,
   connectLogger,
   levels,
-  addLayout: layouts.addLayout
+  addLayout: layouts.addLayout,
 };
 
 module.exports = log4js;
@@ -8216,6 +8269,7 @@ function rfdcCircles (opts) {
 const util = __webpack_require__(40);
 const debug = __webpack_require__(64)('log4js:configuration');
 
+const preProcessingListeners = [];
 const listeners = [];
 
 const not = thing => !thing;
@@ -8228,7 +8282,12 @@ const anInteger = thing => thing && typeof thing === 'number' && Number.isIntege
 
 const addListener = (fn) => {
   listeners.push(fn);
-  debug(`Added listener, listeners now ${listeners.length}`);
+  debug(`Added listener, now ${listeners.length} listeners`);
+};
+
+const addPreProcessingListener = (fn) => {
+  preProcessingListeners.push(fn);
+  debug(`Added pre-processing listener, now ${preProcessingListeners.length} listeners`);
 };
 
 const throwExceptionIf = (config, checks, message) => {
@@ -8245,6 +8304,10 @@ const configure = (candidate) => {
   debug('New configuration to be validated: ', candidate);
   throwExceptionIf(candidate, not(anObject(candidate)), 'must be an object.');
 
+  debug(`Calling pre-processing listeners (${preProcessingListeners.length})`);
+  preProcessingListeners.forEach(listener => listener(candidate));
+  debug('Configuration pre-processing finished.');
+
   debug(`Calling configuration listeners (${listeners.length})`);
   listeners.forEach(listener => listener(candidate));
   debug('Configuration finished.');
@@ -8253,6 +8316,7 @@ const configure = (candidate) => {
 module.exports = {
   configure,
   addListener,
+  addPreProcessingListener,
   throwExceptionIf,
   anObject,
   anInteger,
@@ -8313,7 +8377,7 @@ function timestampLevelAndCategory(loggingEvent, colour) {
     util.format(
       '[%s] [%s] %s - ',
       dateFormat.asString(loggingEvent.startTime),
-      loggingEvent.level,
+      loggingEvent.level.toString(),
       loggingEvent.categoryName
     ),
     colour
@@ -8366,6 +8430,10 @@ function dummyLayout(loggingEvent) {
  *  - %% %
  *  - %n newline
  *  - %z pid
+ *  - %f filename
+ *  - %l line number
+ *  - %o column postion
+ *  - %s call stack
  *  - %x{<tokenname>} add dynamic tokens to your log. Tokens are specified in the tokens parameter
  *  - %X{<tokenname>} add dynamic tokens to your log. Tokens are specified in logger context
  * You can use %[ and %] to define a colored block.
@@ -8387,7 +8455,7 @@ function dummyLayout(loggingEvent) {
  */
 function patternLayout(pattern, tokens) {
   const TTCC_CONVERSION_PATTERN = '%r %p %c - %m%n';
-  const regex = /%(-?[0-9]+)?(\.?[0-9]+)?([[\]cdhmnprzxXy%])(\{([^}]+)\})?|([^%]+)/;
+  const regex = /%(-?[0-9]+)?(\.?[0-9]+)?([[\]cdhmnprzxXyflos%])(\{([^}]+)\})?|([^%]+)/;
 
   pattern = pattern || TTCC_CONVERSION_PATTERN;
 
@@ -8483,6 +8551,22 @@ function patternLayout(pattern, tokens) {
     return null;
   }
 
+  function fileName(loggingEvent) {
+    return loggingEvent.fileName || '';
+  }
+
+  function lineNumber(loggingEvent) {
+    return loggingEvent.lineNumber || '';
+  }
+
+  function columnNumber(loggingEvent) {
+    return loggingEvent.columnNumber || '';
+  }
+
+  function callStack(loggingEvent) {
+    return loggingEvent.callStack || '';
+  }
+
   /* eslint quote-props:0 */
   const replacers = {
     'c': categoryName,
@@ -8498,7 +8582,11 @@ function patternLayout(pattern, tokens) {
     'z': pid,
     '%': percent,
     'x': userDefined,
-    'X': contextDefined
+    'X': contextDefined,
+    'f': fileName,
+    'l': lineNumber,
+    'o': columnNumber,
+    's': callStack,
   };
 
   function replaceToken(conversionCharacter, loggingEvent, specifier) {
@@ -8932,15 +9020,18 @@ const coreAppenders = new Map();
 coreAppenders.set('console', __webpack_require__(83));
 coreAppenders.set('stdout', __webpack_require__(84));
 coreAppenders.set('stderr', __webpack_require__(85));
-coreAppenders.set('file', __webpack_require__(86));
-coreAppenders.set('dateFile', __webpack_require__(137));
+coreAppenders.set('logLevelFilter', __webpack_require__(86));
+coreAppenders.set('categoryFilter', __webpack_require__(87));
+coreAppenders.set('noLogFilter', __webpack_require__(88));
+coreAppenders.set('file', __webpack_require__(89));
+coreAppenders.set('dateFile', __webpack_require__(140));
 
 const appenders = new Map();
 
 const tryLoading = (modulePath, config) => {
   debug('Loading module from ', modulePath);
   try {
-    return __webpack_require__(138)(modulePath); //eslint-disable-line
+    return __webpack_require__(141)(modulePath); //eslint-disable-line
   } catch (e) {
     // if the module was found, and we still got an error, then raise it
     configuration.throwExceptionIf(
@@ -9148,13 +9239,21 @@ class LoggingEvent {
    * @param {Array} data objects to log
    * @author Seth Chisamore
    */
-  constructor(categoryName, level, data, context) {
+  constructor(categoryName, level, data, context, location) {
     this.startTime = new Date();
     this.categoryName = categoryName;
     this.data = data;
     this.level = level;
     this.context = Object.assign({}, context);
     this.pid = process.pid;
+
+    if (location) {
+      this.functionName = location.functionName;
+      this.fileName = location.fileName;
+      this.lineNumber = location.lineNumber;
+      this.columnNumber = location.columnNumber;
+      this.callStack = location.callStack;
+    }
   }
 
   serialise() {
@@ -9469,9 +9568,113 @@ module.exports.configure = configure;
 "use strict";
 
 
+function logLevelFilter(minLevelString, maxLevelString, appender, levels) {
+  const minLevel = levels.getLevel(minLevelString);
+  const maxLevel = levels.getLevel(maxLevelString, levels.FATAL);
+  return (logEvent) => {
+    const eventLevel = logEvent.level;
+    if (eventLevel.isGreaterThanOrEqualTo(minLevel) && eventLevel.isLessThanOrEqualTo(maxLevel)) {
+      appender(logEvent);
+    }
+  };
+}
+
+function configure(config, layouts, findAppender, levels) {
+  const appender = findAppender(config.appender);
+  return logLevelFilter(config.level, config.maxLevel, appender, levels);
+}
+
+module.exports.configure = configure;
+
+
+/***/ }),
+/* 87 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const debug = __webpack_require__(64)('log4js:categoryFilter');
+
+function categoryFilter(excludes, appender) {
+  if (typeof excludes === 'string') excludes = [excludes];
+  return (logEvent) => {
+    debug(`Checking ${logEvent.categoryName} against ${excludes}`);
+    if (excludes.indexOf(logEvent.categoryName) === -1) {
+      debug('Not excluded, sending to appender');
+      appender(logEvent);
+    }
+  };
+}
+
+function configure(config, layouts, findAppender) {
+  const appender = findAppender(config.appender);
+  return categoryFilter(config.exclude, appender);
+}
+
+module.exports.configure = configure;
+
+
+/***/ }),
+/* 88 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+const debug = __webpack_require__(64)('log4js:noLogFilter');
+
+/**
+ * The function removes empty or null regexp from the array
+ * @param {Array<string>} regexp
+ * @returns {Array<string>} a filtered string array with not empty or null regexp
+ */
+function removeNullOrEmptyRegexp(regexp) {
+  const filtered = regexp.filter(el => ((el != null) && (el !== '')));
+  return filtered;
+}
+
+/**
+ * Returns a function that will exclude the events in case they match
+ * with the regular expressions provided
+ * @param {string | Array<string>} filters contains the regexp that will be used for the evaluation
+ * @param {*} appender
+ * @returns {function}
+ */
+function noLogFilter(filters, appender) {
+  return (logEvent) => {
+    debug(`Checking data: ${logEvent.data} against filters: ${filters}`);
+    if (typeof filters === 'string') {
+      filters = [filters];
+    }
+    filters = removeNullOrEmptyRegexp(filters);
+    const regex = new RegExp(filters.join('|'), 'i');
+    if (filters.length === 0
+      || logEvent.data.findIndex(value => regex.test(value)) < 0) {
+      debug('Not excluded, sending to appender');
+      appender(logEvent);
+    }
+  };
+}
+
+function configure(config, layouts, findAppender) {
+  const appender = findAppender(config.appender);
+  return noLogFilter(config.exclude, appender);
+}
+
+module.exports.configure = configure;
+
+
+/***/ }),
+/* 89 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
 const debug = __webpack_require__(64)('log4js:file');
 const path = __webpack_require__(56);
-const streams = __webpack_require__(87);
+const streams = __webpack_require__(90);
 const os = __webpack_require__(55);
 
 const eol = os.EOL || '\n';
@@ -9518,14 +9721,14 @@ function fileAppender(file, layout, logSize, numBackups, options, timezoneOffset
     timezoneOffset, ')'
   );
 
-  const writer = openTheStream(file, logSize, numBackups, options);
+  let writer = openTheStream(file, logSize, numBackups, options);
 
   const app = function (loggingEvent) {
     writer.write(layout(loggingEvent, timezoneOffset) + eol, 'utf8');
   };
 
   app.reopen = function () {
-    writer.closeTheStream(writer.openTheStream.bind(writer));
+    writer.end(() => { writer = openTheStream(file, logSize, numBackups, options); });
   };
 
   app.sighupHandler = function () {
@@ -9568,27 +9771,27 @@ module.exports.configure = configure;
 
 
 /***/ }),
-/* 87 */
+/* 90 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = {
-  RollingFileWriteStream: __webpack_require__(88),
-  RollingFileStream: __webpack_require__(135),
-  DateRollingFileStream: __webpack_require__(136)
+  RollingFileWriteStream: __webpack_require__(91),
+  RollingFileStream: __webpack_require__(138),
+  DateRollingFileStream: __webpack_require__(139)
 };
 
 
 /***/ }),
-/* 88 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const debug = __webpack_require__(89)('streamroller:RollingFileWriteStream');
-const _ = __webpack_require__(93);
-const async = __webpack_require__(95);
-const fs = __webpack_require__(96);
-const zlib = __webpack_require__(133);
+const debug = __webpack_require__(92)('streamroller:RollingFileWriteStream');
+const _ = __webpack_require__(96);
+const async = __webpack_require__(98);
+const fs = __webpack_require__(99);
+const zlib = __webpack_require__(136);
 const path = __webpack_require__(56);
-const newNow = __webpack_require__(134);
+const newNow = __webpack_require__(137);
 const format = __webpack_require__(75);
 const { Writable } = __webpack_require__(41);
 
@@ -9660,7 +9863,7 @@ class RollingFileWriteStream extends Writable {
     };
 
     if (this.options.flags === 'a') {
-      this.state.currentSize = this._getExistingSize();
+      this._setExistingSizeAndDate();
     }
 
     debug(`create new file with no hot file. name=${this.justTheFile}, state=${JSON.stringify(this.state)}`);
@@ -9668,12 +9871,14 @@ class RollingFileWriteStream extends Writable {
 
   }
 
-  _getExistingSize() {
+  _setExistingSizeAndDate() {
     try {
-      return fs.statSync(this.filename).size;
+      const stats = fs.statSync(this.filename);
+      this.state.currentSize = stats.size;
+      this.state.currentDate = stats.birthtime;
     } catch (e) {
       //file does not exist, that's fine - move along
-      return 0;
+      return;
     }
   }
 
@@ -9943,7 +10148,7 @@ module.exports = RollingFileWriteStream;
 
 
 /***/ }),
-/* 89 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9954,15 +10159,15 @@ module.exports = RollingFileWriteStream;
  * treat as a browser.
  */
 if (typeof process === 'undefined' || process.type === 'renderer' || process.browser === true || process.__nwjs) {
-  module.exports = __webpack_require__(90);
+  module.exports = __webpack_require__(93);
 } else {
-  module.exports = __webpack_require__(92);
+  module.exports = __webpack_require__(95);
 }
 
 
 
 /***/ }),
-/* 90 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10132,7 +10337,7 @@ function localstorage() {
   }
 }
 
-module.exports = __webpack_require__(91)(exports);
+module.exports = __webpack_require__(94)(exports);
 var formatters = module.exports.formatters;
 /**
  * Map %j to `JSON.stringify()`, since no Web Inspectors do that by default.
@@ -10149,7 +10354,7 @@ formatters.j = function (v) {
 
 
 /***/ }),
-/* 91 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10405,7 +10610,7 @@ module.exports = setup;
 
 
 /***/ }),
-/* 92 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10563,7 +10768,7 @@ function init(debug) {
   }
 }
 
-module.exports = __webpack_require__(91)(exports);
+module.exports = __webpack_require__(94)(exports);
 var formatters = module.exports.formatters;
 /**
  * Map %o to `util.inspect()`, all on a single line.
@@ -10586,7 +10791,7 @@ formatters.O = function (v) {
 
 
 /***/ }),
-/* 93 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -27689,10 +27894,10 @@ formatters.O = function (v) {
   else {}
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(94)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(97)(module)))
 
 /***/ }),
-/* 94 */
+/* 97 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -27720,7 +27925,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 95 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(module) {(function (global, factory) {
@@ -33332,10 +33537,10 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(94)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(97)(module)))
 
 /***/ }),
-/* 96 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33344,19 +33549,19 @@ Object.defineProperty(exports, '__esModule', { value: true });
 module.exports = Object.assign(
   {},
   // Export promiseified graceful-fs:
-  __webpack_require__(97),
+  __webpack_require__(100),
   // Export extra methods:
-  __webpack_require__(105),
-  __webpack_require__(113),
+  __webpack_require__(108),
   __webpack_require__(116),
   __webpack_require__(119),
-  __webpack_require__(125),
-  __webpack_require__(107),
-  __webpack_require__(130),
-  __webpack_require__(131),
-  __webpack_require__(132),
-  __webpack_require__(115),
-  __webpack_require__(117)
+  __webpack_require__(122),
+  __webpack_require__(128),
+  __webpack_require__(110),
+  __webpack_require__(133),
+  __webpack_require__(134),
+  __webpack_require__(135),
+  __webpack_require__(118),
+  __webpack_require__(120)
 )
 
 // Export fs.promises as a getter property so that we don't trigger
@@ -33370,15 +33575,15 @@ if (Object.getOwnPropertyDescriptor(fs, 'promises')) {
 
 
 /***/ }),
-/* 97 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 // This is adapted from https://github.com/normalize/mz
 // Copyright (c) 2014-2016 Jonathan Ong me@jongleberry.com and Contributors
-const u = __webpack_require__(98).fromCallback
-const fs = __webpack_require__(99)
+const u = __webpack_require__(101).fromCallback
+const fs = __webpack_require__(102)
 
 const api = [
   'access',
@@ -33481,7 +33686,7 @@ exports.write = function (fd, buffer, ...args) {
 
 
 /***/ }),
-/* 98 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -33513,13 +33718,13 @@ exports.fromPromise = function (fn) {
 
 
 /***/ }),
-/* 99 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var fs = __webpack_require__(54)
-var polyfills = __webpack_require__(100)
-var legacy = __webpack_require__(102)
-var clone = __webpack_require__(103)
+var polyfills = __webpack_require__(103)
+var legacy = __webpack_require__(105)
+var clone = __webpack_require__(106)
 
 var queue = []
 
@@ -33540,7 +33745,7 @@ else if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || ''))
 if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
   process.on('exit', function() {
     debug(queue)
-    __webpack_require__(104).equal(queue.length, 0)
+    __webpack_require__(107).equal(queue.length, 0)
   })
 }
 
@@ -33798,10 +34003,10 @@ function retry () {
 
 
 /***/ }),
-/* 100 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var constants = __webpack_require__(101)
+var constants = __webpack_require__(104)
 
 var origCwd = process.cwd
 var cwd = null
@@ -34133,13 +34338,13 @@ function patch (fs) {
 
 
 /***/ }),
-/* 101 */
+/* 104 */
 /***/ (function(module, exports) {
 
 module.exports = require("constants");
 
 /***/ }),
-/* 102 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var Stream = __webpack_require__(41).Stream
@@ -34263,7 +34468,7 @@ function legacy (fs) {
 
 
 /***/ }),
-/* 103 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34289,34 +34494,34 @@ function clone (obj) {
 
 
 /***/ }),
-/* 104 */
+/* 107 */
 /***/ (function(module, exports) {
 
 module.exports = require("assert");
 
 /***/ }),
-/* 105 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-  copySync: __webpack_require__(106)
+  copySync: __webpack_require__(109)
 }
 
 
 /***/ }),
-/* 106 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const fs = __webpack_require__(99)
+const fs = __webpack_require__(102)
 const path = __webpack_require__(56)
-const mkdirpSync = __webpack_require__(107).mkdirsSync
-const utimesSync = __webpack_require__(111).utimesMillisSync
+const mkdirpSync = __webpack_require__(110).mkdirsSync
+const utimesSync = __webpack_require__(114).utimesMillisSync
 
 const notExist = Symbol('notExist')
 
@@ -34388,7 +34593,7 @@ function copyFile (srcStat, src, dest, opts) {
 
 function copyFileFallback (srcStat, src, dest, opts) {
   const BUF_LENGTH = 64 * 1024
-  const _buff = __webpack_require__(112)(BUF_LENGTH)
+  const _buff = __webpack_require__(115)(BUF_LENGTH)
 
   const fdr = fs.openSync(src, 'r')
   const fdw = fs.openSync(dest, 'w', srcStat.mode)
@@ -34507,14 +34712,14 @@ module.exports = copySync
 
 
 /***/ }),
-/* 107 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-const u = __webpack_require__(98).fromCallback
-const mkdirs = u(__webpack_require__(108))
-const mkdirsSync = __webpack_require__(110)
+const u = __webpack_require__(101).fromCallback
+const mkdirs = u(__webpack_require__(111))
+const mkdirsSync = __webpack_require__(113)
 
 module.exports = {
   mkdirs,
@@ -34528,15 +34733,15 @@ module.exports = {
 
 
 /***/ }),
-/* 108 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const fs = __webpack_require__(99)
+const fs = __webpack_require__(102)
 const path = __webpack_require__(56)
-const invalidWin32Path = __webpack_require__(109).invalidWin32Path
+const invalidWin32Path = __webpack_require__(112).invalidWin32Path
 
 const o777 = parseInt('0777', 8)
 
@@ -34598,7 +34803,7 @@ module.exports = mkdirs
 
 
 /***/ }),
-/* 109 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34630,15 +34835,15 @@ module.exports = {
 
 
 /***/ }),
-/* 110 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const fs = __webpack_require__(99)
+const fs = __webpack_require__(102)
 const path = __webpack_require__(56)
-const invalidWin32Path = __webpack_require__(109).invalidWin32Path
+const invalidWin32Path = __webpack_require__(112).invalidWin32Path
 
 const o777 = parseInt('0777', 8)
 
@@ -34691,13 +34896,13 @@ module.exports = mkdirsSync
 
 
 /***/ }),
-/* 111 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const fs = __webpack_require__(99)
+const fs = __webpack_require__(102)
 const os = __webpack_require__(55)
 const path = __webpack_require__(56)
 
@@ -34777,7 +34982,7 @@ module.exports = {
 
 
 /***/ }),
-/* 112 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -34796,30 +35001,30 @@ module.exports = function (size) {
 
 
 /***/ }),
-/* 113 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const u = __webpack_require__(98).fromCallback
+const u = __webpack_require__(101).fromCallback
 module.exports = {
-  copy: u(__webpack_require__(114))
+  copy: u(__webpack_require__(117))
 }
 
 
 /***/ }),
-/* 114 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const fs = __webpack_require__(99)
+const fs = __webpack_require__(102)
 const path = __webpack_require__(56)
-const mkdirp = __webpack_require__(107).mkdirs
-const pathExists = __webpack_require__(115).pathExists
-const utimes = __webpack_require__(111).utimesMillis
+const mkdirp = __webpack_require__(110).mkdirs
+const pathExists = __webpack_require__(118).pathExists
+const utimes = __webpack_require__(114).utimesMillis
 
 const notExist = Symbol('notExist')
 
@@ -35062,13 +35267,13 @@ module.exports = copy
 
 
 /***/ }),
-/* 115 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-const u = __webpack_require__(98).fromPromise
-const fs = __webpack_require__(97)
+const u = __webpack_require__(101).fromPromise
+const fs = __webpack_require__(100)
 
 function pathExists (path) {
   return fs.access(path).then(() => true).catch(() => false)
@@ -35081,17 +35286,17 @@ module.exports = {
 
 
 /***/ }),
-/* 116 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const u = __webpack_require__(98).fromCallback
+const u = __webpack_require__(101).fromCallback
 const fs = __webpack_require__(54)
 const path = __webpack_require__(56)
-const mkdir = __webpack_require__(107)
-const remove = __webpack_require__(117)
+const mkdir = __webpack_require__(110)
+const remove = __webpack_require__(120)
 
 const emptyDir = u(function emptyDir (dir, callback) {
   callback = callback || function () {}
@@ -35136,14 +35341,14 @@ module.exports = {
 
 
 /***/ }),
-/* 117 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const u = __webpack_require__(98).fromCallback
-const rimraf = __webpack_require__(118)
+const u = __webpack_require__(101).fromCallback
+const rimraf = __webpack_require__(121)
 
 module.exports = {
   remove: u(rimraf),
@@ -35152,15 +35357,15 @@ module.exports = {
 
 
 /***/ }),
-/* 118 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const fs = __webpack_require__(99)
+const fs = __webpack_require__(102)
 const path = __webpack_require__(56)
-const assert = __webpack_require__(104)
+const assert = __webpack_require__(107)
 
 const isWindows = (process.platform === 'win32')
 
@@ -35473,15 +35678,15 @@ rimraf.sync = rimrafSync
 
 
 /***/ }),
-/* 119 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const file = __webpack_require__(120)
-const link = __webpack_require__(121)
-const symlink = __webpack_require__(122)
+const file = __webpack_require__(123)
+const link = __webpack_require__(124)
+const symlink = __webpack_require__(125)
 
 module.exports = {
   // file
@@ -35503,17 +35708,17 @@ module.exports = {
 
 
 /***/ }),
-/* 120 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const u = __webpack_require__(98).fromCallback
+const u = __webpack_require__(101).fromCallback
 const path = __webpack_require__(56)
-const fs = __webpack_require__(99)
-const mkdir = __webpack_require__(107)
-const pathExists = __webpack_require__(115).pathExists
+const fs = __webpack_require__(102)
+const mkdir = __webpack_require__(110)
+const pathExists = __webpack_require__(118).pathExists
 
 function createFile (file, callback) {
   function makeFile () {
@@ -35559,17 +35764,17 @@ module.exports = {
 
 
 /***/ }),
-/* 121 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const u = __webpack_require__(98).fromCallback
+const u = __webpack_require__(101).fromCallback
 const path = __webpack_require__(56)
-const fs = __webpack_require__(99)
-const mkdir = __webpack_require__(107)
-const pathExists = __webpack_require__(115).pathExists
+const fs = __webpack_require__(102)
+const mkdir = __webpack_require__(110)
+const pathExists = __webpack_require__(118).pathExists
 
 function createLink (srcpath, dstpath, callback) {
   function makeLink (srcpath, dstpath) {
@@ -35627,28 +35832,28 @@ module.exports = {
 
 
 /***/ }),
-/* 122 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const u = __webpack_require__(98).fromCallback
+const u = __webpack_require__(101).fromCallback
 const path = __webpack_require__(56)
-const fs = __webpack_require__(99)
-const _mkdirs = __webpack_require__(107)
+const fs = __webpack_require__(102)
+const _mkdirs = __webpack_require__(110)
 const mkdirs = _mkdirs.mkdirs
 const mkdirsSync = _mkdirs.mkdirsSync
 
-const _symlinkPaths = __webpack_require__(123)
+const _symlinkPaths = __webpack_require__(126)
 const symlinkPaths = _symlinkPaths.symlinkPaths
 const symlinkPathsSync = _symlinkPaths.symlinkPathsSync
 
-const _symlinkType = __webpack_require__(124)
+const _symlinkType = __webpack_require__(127)
 const symlinkType = _symlinkType.symlinkType
 const symlinkTypeSync = _symlinkType.symlinkTypeSync
 
-const pathExists = __webpack_require__(115).pathExists
+const pathExists = __webpack_require__(118).pathExists
 
 function createSymlink (srcpath, dstpath, type, callback) {
   callback = (typeof type === 'function') ? type : callback
@@ -35697,15 +35902,15 @@ module.exports = {
 
 
 /***/ }),
-/* 123 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 const path = __webpack_require__(56)
-const fs = __webpack_require__(99)
-const pathExists = __webpack_require__(115).pathExists
+const fs = __webpack_require__(102)
+const pathExists = __webpack_require__(118).pathExists
 
 /**
  * Function that returns two types of paths, one relative to symlink, and one
@@ -35803,13 +36008,13 @@ module.exports = {
 
 
 /***/ }),
-/* 124 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const fs = __webpack_require__(99)
+const fs = __webpack_require__(102)
 
 function symlinkType (srcpath, type, callback) {
   callback = (typeof type === 'function') ? type : callback
@@ -35841,17 +36046,17 @@ module.exports = {
 
 
 /***/ }),
-/* 125 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const u = __webpack_require__(98).fromCallback
-const jsonFile = __webpack_require__(126)
+const u = __webpack_require__(101).fromCallback
+const jsonFile = __webpack_require__(129)
 
-jsonFile.outputJson = u(__webpack_require__(128))
-jsonFile.outputJsonSync = __webpack_require__(129)
+jsonFile.outputJson = u(__webpack_require__(131))
+jsonFile.outputJsonSync = __webpack_require__(132)
 // aliases
 jsonFile.outputJSON = jsonFile.outputJson
 jsonFile.outputJSONSync = jsonFile.outputJsonSync
@@ -35864,14 +36069,14 @@ module.exports = jsonFile
 
 
 /***/ }),
-/* 126 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const u = __webpack_require__(98).fromCallback
-const jsonFile = __webpack_require__(127)
+const u = __webpack_require__(101).fromCallback
+const jsonFile = __webpack_require__(130)
 
 module.exports = {
   // jsonfile exports
@@ -35883,12 +36088,12 @@ module.exports = {
 
 
 /***/ }),
-/* 127 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _fs
 try {
-  _fs = __webpack_require__(99)
+  _fs = __webpack_require__(102)
 } catch (_) {
   _fs = __webpack_require__(54)
 }
@@ -36023,16 +36228,16 @@ module.exports = jsonfile
 
 
 /***/ }),
-/* 128 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 const path = __webpack_require__(56)
-const mkdir = __webpack_require__(107)
-const pathExists = __webpack_require__(115).pathExists
-const jsonFile = __webpack_require__(126)
+const mkdir = __webpack_require__(110)
+const pathExists = __webpack_require__(118).pathExists
+const jsonFile = __webpack_require__(129)
 
 function outputJson (file, data, options, callback) {
   if (typeof options === 'function') {
@@ -36057,16 +36262,16 @@ module.exports = outputJson
 
 
 /***/ }),
-/* 129 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const fs = __webpack_require__(99)
+const fs = __webpack_require__(102)
 const path = __webpack_require__(56)
-const mkdir = __webpack_require__(107)
-const jsonFile = __webpack_require__(126)
+const mkdir = __webpack_require__(110)
+const jsonFile = __webpack_require__(129)
 
 function outputJsonSync (file, data, options) {
   const dir = path.dirname(file)
@@ -36082,18 +36287,18 @@ module.exports = outputJsonSync
 
 
 /***/ }),
-/* 130 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const fs = __webpack_require__(99)
+const fs = __webpack_require__(102)
 const path = __webpack_require__(56)
-const copySync = __webpack_require__(105).copySync
-const removeSync = __webpack_require__(117).removeSync
-const mkdirpSync = __webpack_require__(107).mkdirsSync
-const buffer = __webpack_require__(112)
+const copySync = __webpack_require__(108).copySync
+const removeSync = __webpack_require__(120).removeSync
+const mkdirpSync = __webpack_require__(110).mkdirsSync
+const buffer = __webpack_require__(115)
 
 function moveSync (src, dest, options) {
   options = options || {}
@@ -36206,19 +36411,19 @@ module.exports = {
 
 
 /***/ }),
-/* 131 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const u = __webpack_require__(98).fromCallback
-const fs = __webpack_require__(99)
+const u = __webpack_require__(101).fromCallback
+const fs = __webpack_require__(102)
 const path = __webpack_require__(56)
-const copy = __webpack_require__(113).copy
-const remove = __webpack_require__(117).remove
-const mkdirp = __webpack_require__(107).mkdirp
-const pathExists = __webpack_require__(115).pathExists
+const copy = __webpack_require__(116).copy
+const remove = __webpack_require__(120).remove
+const mkdirp = __webpack_require__(110).mkdirp
+const pathExists = __webpack_require__(118).pathExists
 
 function move (src, dest, opts, cb) {
   if (typeof opts === 'function') {
@@ -36295,17 +36500,17 @@ module.exports = {
 
 
 /***/ }),
-/* 132 */
+/* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const u = __webpack_require__(98).fromCallback
-const fs = __webpack_require__(99)
+const u = __webpack_require__(101).fromCallback
+const fs = __webpack_require__(102)
 const path = __webpack_require__(56)
-const mkdir = __webpack_require__(107)
-const pathExists = __webpack_require__(115).pathExists
+const mkdir = __webpack_require__(110)
+const pathExists = __webpack_require__(118).pathExists
 
 function outputFile (file, data, encoding, callback) {
   if (typeof encoding === 'function') {
@@ -36342,13 +36547,13 @@ module.exports = {
 
 
 /***/ }),
-/* 133 */
+/* 136 */
 /***/ (function(module, exports) {
 
 module.exports = require("zlib");
 
 /***/ }),
-/* 134 */
+/* 137 */
 /***/ (function(module, exports) {
 
 // allows us to inject a mock date in tests
@@ -36356,10 +36561,10 @@ module.exports = () => new Date();
 
 
 /***/ }),
-/* 135 */
+/* 138 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const RollingFileWriteStream = __webpack_require__(88);
+const RollingFileWriteStream = __webpack_require__(91);
 
 // just to adapt the previous version
 class RollingFileStream extends RollingFileWriteStream {
@@ -36389,10 +36594,10 @@ module.exports = RollingFileStream;
 
 
 /***/ }),
-/* 136 */
+/* 139 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const RollingFileWriteStream = __webpack_require__(88);
+const RollingFileWriteStream = __webpack_require__(91);
 
 // just to adapt the previous version
 class DateRollingFileStream extends RollingFileWriteStream {
@@ -36428,13 +36633,13 @@ module.exports = DateRollingFileStream;
 
 
 /***/ }),
-/* 137 */
+/* 140 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-const streams = __webpack_require__(87);
+const streams = __webpack_require__(90);
 const os = __webpack_require__(55);
 
 const eol = os.EOL || '\n';
@@ -36454,6 +36659,10 @@ function appender(
   options,
   timezoneOffset
 ) {
+  // the options for file appender use maxLogSize, but the docs say any file appender
+  // options should work for dateFile as well.
+  options.maxSize = options.maxLogSize;
+
   const logFile = new streams.DateRollingFileStream(
     filename,
     pattern,
@@ -36497,7 +36706,7 @@ module.exports.configure = configure;
 
 
 /***/ }),
-/* 138 */
+/* 141 */
 /***/ (function(module, exports) {
 
 function webpackEmptyContext(req) {
@@ -36508,10 +36717,10 @@ function webpackEmptyContext(req) {
 webpackEmptyContext.keys = function() { return []; };
 webpackEmptyContext.resolve = webpackEmptyContext;
 module.exports = webpackEmptyContext;
-webpackEmptyContext.id = 138;
+webpackEmptyContext.id = 141;
 
 /***/ }),
-/* 139 */
+/* 142 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const debug = __webpack_require__(64)('log4js:categories');
@@ -36520,6 +36729,72 @@ const levels = __webpack_require__(76);
 const appenders = __webpack_require__(77);
 
 const categories = new Map();
+
+/**
+ * Add inherited config to this category.  That includes extra appenders from parent,
+ * and level, if none is set on this category.
+ * This is recursive, so each parent also gets loaded with inherited appenders.
+ * Inheritance is blocked if a category has inherit=false
+ * @param  {any} config
+ * @param  {any} category the child category
+ * @param  {string} categoryName dotted path to category
+ * @return {void}
+ */
+function inheritFromParent(config, category, categoryName) {
+  if (category.inherit === false) return;
+  const lastDotIndex = categoryName.lastIndexOf('.');
+  if (lastDotIndex < 0) return; // category is not a child
+  const parentCategoryName = categoryName.substring(0, lastDotIndex);
+  let parentCategory = config.categories[parentCategoryName];
+
+
+  if (!parentCategory) {
+    // parent is missing, so implicitly create it, so that it can inherit from its parents
+    parentCategory = { inherit: true, appenders: [] };
+  }
+
+  // make sure parent has had its inheritance taken care of before pulling its properties to this child
+  inheritFromParent(config, parentCategory, parentCategoryName);
+
+  // if the parent is not in the config (because we just created it above),
+  // and it inherited a valid configuration, add it to config.categories
+  if (!config.categories[parentCategoryName]
+    && parentCategory.appenders
+    && parentCategory.appenders.length
+    && parentCategory.level) {
+    config.categories[parentCategoryName] = parentCategory;
+  }
+
+  category.appenders = category.appenders || [];
+  category.level = category.level || parentCategory.level;
+
+  // merge in appenders from parent (parent is already holding its inherited appenders)
+  parentCategory.appenders.forEach((ap) => {
+    if (!category.appenders.includes(ap)) {
+      category.appenders.push(ap);
+    }
+  });
+  category.parent = parentCategory;
+}
+
+
+/**
+ * Walk all categories in the config, and pull down any configuration from parent to child.
+ * This includes inherited appenders, and level, where level is not set.
+ * Inheritance is skipped where a category has inherit=false.
+ * @param  {any} config
+ */
+function addCategoryInheritance(config) {
+  if (!config.categories) return;
+  const categoryNames = Object.keys(config.categories);
+  categoryNames.forEach((name) => {
+    const category = config.categories[name];
+    // add inherited appenders and level to this category
+    inheritFromParent(config, category, name);
+  });
+}
+
+configuration.addPreProcessingListener(config => addCategoryInheritance(config));
 
 configuration.addListener((config) => {
   configuration.throwExceptionIf(
@@ -36558,6 +36833,14 @@ configuration.addListener((config) => {
       `category "${name}" is not valid (appenders must contain at least one appender name)`
     );
 
+    if (Object.prototype.hasOwnProperty.call(category, 'enableCallStack')) {
+      configuration.throwExceptionIf(
+        config,
+        typeof category.enableCallStack !== 'boolean',
+        `category "${name}" is not valid (enableCallStack must be boolean type)`
+      );
+    }
+
     category.appenders.forEach((appender) => {
       configuration.throwExceptionIf(
         config,
@@ -36570,7 +36853,7 @@ configuration.addListener((config) => {
       config,
       configuration.not(levels.getLevel(category.level)),
       `category "${name}" is not valid (level "${category.level}" not recognised;`
-        + ` valid levels are ${levels.levels.join(', ')})`
+      + ` valid levels are ${levels.levels.join(', ')})`
     );
   });
 
@@ -36593,7 +36876,11 @@ const setup = (config) => {
       debug(`Creating category ${name}`);
       categories.set(
         name,
-        { appenders: categoryAppenders, level: levels.getLevel(category.level) }
+        {
+          appenders: categoryAppenders,
+          level: levels.getLevel(category.level),
+          enableCallStack: category.enableCallStack || false
+        }
       );
     });
   });
@@ -36632,15 +36919,22 @@ const setLevelForCategory = (category, level) => {
   categories.set(category, categoryConfig);
 };
 
+const getEnableCallStackForCategory = category => configForCategory(category).enableCallStack === true;
+const setEnableCallStackForCategory = (category, useCallStack) => {
+  configForCategory(category).enableCallStack = useCallStack;
+};
+
 module.exports = {
   appendersForCategory,
   getLevelForCategory,
-  setLevelForCategory
+  setLevelForCategory,
+  getEnableCallStackForCategory,
+  setEnableCallStackForCategory,
 };
 
 
 /***/ }),
-/* 140 */
+/* 143 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36652,8 +36946,24 @@ const debug = __webpack_require__(64)('log4js:logger');
 const LoggingEvent = __webpack_require__(80);
 const levels = __webpack_require__(76);
 const clustering = __webpack_require__(78);
-const categories = __webpack_require__(139);
+const categories = __webpack_require__(142);
 const configuration = __webpack_require__(73);
+
+const stackReg = /at (?:(.+)\s+\()?(?:(.+?):(\d+)(?::(\d+))?|([^)]+))\)?/;
+function parseCallStack(data, skipIdx = 4) {
+  const stacklines = data.stack.split('\n').slice(skipIdx);
+  const lineMatch = stackReg.exec(stacklines[0]);
+  if (lineMatch && lineMatch.length === 6) {
+    return {
+      functionName: lineMatch[1],
+      fileName: lineMatch[2],
+      lineNumber: parseInt(lineMatch[3], 10),
+      columnNumber: parseInt(lineMatch[4], 10),
+      callStack: stacklines.join('\n'),
+    };
+  }
+  return null;
+}
 
 /**
  * Logger to log messages.
@@ -36685,6 +36995,14 @@ class Logger {
     categories.setLevelForCategory(this.category, levels.getLevel(level, this.level));
   }
 
+  get useCallStack() {
+    return categories.getEnableCallStackForCategory(this.category);
+  }
+
+  set useCallStack(bool) {
+    categories.setEnableCallStackForCategory(this.category, (bool === true));
+  }
+
   log(level, ...args) {
     const logLevel = levels.getLevel(level, levels.INFO);
     if (this.isLevelEnabled(logLevel)) {
@@ -36698,7 +37016,13 @@ class Logger {
 
   _log(level, data) {
     debug(`sending log data (${level}) to appenders`);
-    const loggingEvent = new LoggingEvent(this.category, level, data, this.context);
+    const loggingEvent = new LoggingEvent(
+      this.category,
+      level,
+      data,
+      this.context,
+      (this.useCallStack) && parseCallStack(new Error())
+    );
     clustering.send(loggingEvent);
   }
 
@@ -36741,7 +37065,7 @@ module.exports = Logger;
 
 
 /***/ }),
-/* 141 */
+/* 144 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -36952,6 +37276,7 @@ function matchRules(statusCode, currentLevel, ruleSet) {
    *   - `level`         A log4js levels instance. Supports also 'auto'
    *   - `nolog`         A string or RegExp to exclude target logs
    *   - `statusRules`   A array of rules for setting specific logging levels base on status codes
+   *   - `context`       Whether to add a response of express to the context
    *
    * Tokens:
    *
@@ -37021,12 +37346,14 @@ module.exports = function getLogger(logger4js, options) {
 
         const combinedTokens = assembleTokens(req, res, options.tokens || []);
 
+        if (options.context) thisLogger.addContext('res', res);
         if (typeof fmt === 'function') {
           const line = fmt(req, res, str => format(str, combinedTokens));
           if (line) thisLogger.log(level, line);
         } else {
           thisLogger.log(level, format(fmt, combinedTokens));
         }
+        if (options.context) thisLogger.removeContext('res');
       });
     }
 
@@ -37037,22 +37364,25 @@ module.exports = function getLogger(logger4js, options) {
 
 
 /***/ }),
-/* 142 */
+/* 145 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const util_1 = __webpack_require__(168);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)('events');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const util_1 = __webpack_require__(171);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('events');
 class Events {
     constructor() {
         this.handlers = new Map();
+        this.paused = false;
     }
     async fire(event, args) {
+        if (this.paused && event == 'CursorHold')
+            return;
         logger.debug('Event:', event, args);
         let handlers = this.handlers.get(event);
         if (handlers) {
@@ -37098,7 +37428,7 @@ exports.default = new Events();
 //# sourceMappingURL=events.js.map
 
 /***/ }),
-/* 143 */
+/* 146 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37111,7 +37441,7 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_jsonrpc_1 = __webpack_require__(144);
+const vscode_jsonrpc_1 = __webpack_require__(147);
 exports.ErrorCodes = vscode_jsonrpc_1.ErrorCodes;
 exports.ResponseError = vscode_jsonrpc_1.ResponseError;
 exports.CancellationToken = vscode_jsonrpc_1.CancellationToken;
@@ -37139,11 +37469,11 @@ exports.createServerPipeTransport = vscode_jsonrpc_1.createServerPipeTransport;
 exports.generateRandomPipeName = vscode_jsonrpc_1.generateRandomPipeName;
 exports.createClientSocketTransport = vscode_jsonrpc_1.createClientSocketTransport;
 exports.createServerSocketTransport = vscode_jsonrpc_1.createServerSocketTransport;
-__export(__webpack_require__(155));
-__export(__webpack_require__(156));
-const callHierarchy = __webpack_require__(165);
-const progress = __webpack_require__(166);
-const sr = __webpack_require__(167);
+__export(__webpack_require__(158));
+__export(__webpack_require__(159));
+const callHierarchy = __webpack_require__(168);
+const progress = __webpack_require__(169);
+const sr = __webpack_require__(170);
 var Proposed;
 (function (Proposed) {
     let SelectionRangeRequest;
@@ -37183,7 +37513,7 @@ exports.createProtocolConnection = createProtocolConnection;
 
 
 /***/ }),
-/* 144 */
+/* 147 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -37197,8 +37527,8 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-const Is = __webpack_require__(145);
-const messages_1 = __webpack_require__(146);
+const Is = __webpack_require__(148);
+const messages_1 = __webpack_require__(149);
 exports.RequestType = messages_1.RequestType;
 exports.RequestType0 = messages_1.RequestType0;
 exports.RequestType1 = messages_1.RequestType1;
@@ -37223,26 +37553,26 @@ exports.NotificationType6 = messages_1.NotificationType6;
 exports.NotificationType7 = messages_1.NotificationType7;
 exports.NotificationType8 = messages_1.NotificationType8;
 exports.NotificationType9 = messages_1.NotificationType9;
-const messageReader_1 = __webpack_require__(147);
+const messageReader_1 = __webpack_require__(150);
 exports.MessageReader = messageReader_1.MessageReader;
 exports.StreamMessageReader = messageReader_1.StreamMessageReader;
 exports.IPCMessageReader = messageReader_1.IPCMessageReader;
 exports.SocketMessageReader = messageReader_1.SocketMessageReader;
-const messageWriter_1 = __webpack_require__(149);
+const messageWriter_1 = __webpack_require__(152);
 exports.MessageWriter = messageWriter_1.MessageWriter;
 exports.StreamMessageWriter = messageWriter_1.StreamMessageWriter;
 exports.IPCMessageWriter = messageWriter_1.IPCMessageWriter;
 exports.SocketMessageWriter = messageWriter_1.SocketMessageWriter;
-const events_1 = __webpack_require__(148);
+const events_1 = __webpack_require__(151);
 exports.Disposable = events_1.Disposable;
 exports.Event = events_1.Event;
 exports.Emitter = events_1.Emitter;
-const cancellation_1 = __webpack_require__(150);
+const cancellation_1 = __webpack_require__(153);
 exports.CancellationTokenSource = cancellation_1.CancellationTokenSource;
 exports.CancellationToken = cancellation_1.CancellationToken;
-const linkedMap_1 = __webpack_require__(151);
-__export(__webpack_require__(152));
-__export(__webpack_require__(154));
+const linkedMap_1 = __webpack_require__(154);
+__export(__webpack_require__(155));
+__export(__webpack_require__(157));
 var CancelNotification;
 (function (CancelNotification) {
     CancelNotification.type = new messages_1.NotificationType('$/cancelRequest');
@@ -38113,7 +38443,7 @@ exports.createMessageConnection = createMessageConnection;
 
 
 /***/ }),
-/* 145 */
+/* 148 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38154,7 +38484,7 @@ exports.stringArray = stringArray;
 
 
 /***/ }),
-/* 146 */
+/* 149 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38164,7 +38494,7 @@ exports.stringArray = stringArray;
  * ------------------------------------------------------------------------------------------ */
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const is = __webpack_require__(145);
+const is = __webpack_require__(148);
 /**
  * Predefined error codes.
  */
@@ -38407,7 +38737,7 @@ exports.isResponseMessage = isResponseMessage;
 
 
 /***/ }),
-/* 147 */
+/* 150 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38417,8 +38747,8 @@ exports.isResponseMessage = isResponseMessage;
  * ------------------------------------------------------------------------------------------ */
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const events_1 = __webpack_require__(148);
-const Is = __webpack_require__(145);
+const events_1 = __webpack_require__(151);
+const Is = __webpack_require__(148);
 let DefaultSize = 8192;
 let CR = Buffer.from('\r', 'ascii')[0];
 let LF = Buffer.from('\n', 'ascii')[0];
@@ -38639,7 +38969,7 @@ exports.SocketMessageReader = SocketMessageReader;
 
 
 /***/ }),
-/* 148 */
+/* 151 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38777,7 +39107,7 @@ exports.Emitter = Emitter;
 
 
 /***/ }),
-/* 149 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38787,8 +39117,8 @@ exports.Emitter = Emitter;
  * ------------------------------------------------------------------------------------------ */
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const events_1 = __webpack_require__(148);
-const Is = __webpack_require__(145);
+const events_1 = __webpack_require__(151);
+const Is = __webpack_require__(148);
 let ContentLength = 'Content-Length: ';
 let CRLF = '\r\n';
 var MessageWriter;
@@ -38978,7 +39308,7 @@ exports.SocketMessageWriter = SocketMessageWriter;
 
 
 /***/ }),
-/* 150 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -38988,8 +39318,8 @@ exports.SocketMessageWriter = SocketMessageWriter;
  *--------------------------------------------------------------------------------------------*/
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const events_1 = __webpack_require__(148);
-const Is = __webpack_require__(145);
+const events_1 = __webpack_require__(151);
+const Is = __webpack_require__(148);
 var CancellationToken;
 (function (CancellationToken) {
     CancellationToken.None = Object.freeze({
@@ -39079,7 +39409,7 @@ exports.CancellationTokenSource = CancellationTokenSource;
 
 
 /***/ }),
-/* 151 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39365,7 +39695,7 @@ exports.LinkedMap = LinkedMap;
 
 
 /***/ }),
-/* 152 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39377,10 +39707,10 @@ exports.LinkedMap = LinkedMap;
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __webpack_require__(56);
 const os_1 = __webpack_require__(55);
-const crypto_1 = __webpack_require__(153);
+const crypto_1 = __webpack_require__(156);
 const net_1 = __webpack_require__(6);
-const messageReader_1 = __webpack_require__(147);
-const messageWriter_1 = __webpack_require__(149);
+const messageReader_1 = __webpack_require__(150);
+const messageWriter_1 = __webpack_require__(152);
 function generateRandomPipeName() {
     const randomSuffix = crypto_1.randomBytes(21).toString('hex');
     if (process.platform === 'win32') {
@@ -39426,13 +39756,13 @@ exports.createServerPipeTransport = createServerPipeTransport;
 
 
 /***/ }),
-/* 153 */
+/* 156 */
 /***/ (function(module, exports) {
 
 module.exports = require("crypto");
 
 /***/ }),
-/* 154 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -39443,8 +39773,8 @@ module.exports = require("crypto");
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const net_1 = __webpack_require__(6);
-const messageReader_1 = __webpack_require__(147);
-const messageWriter_1 = __webpack_require__(149);
+const messageReader_1 = __webpack_require__(150);
+const messageWriter_1 = __webpack_require__(152);
 function createClientSocketTransport(port, encoding = 'utf-8') {
     let connectResolve;
     let connected = new Promise((resolve, _reject) => {
@@ -39479,7 +39809,7 @@ exports.createServerSocketTransport = createServerSocketTransport;
 
 
 /***/ }),
-/* 155 */
+/* 158 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -41028,7 +41358,7 @@ var Is;
 
 
 /***/ }),
-/* 156 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41038,23 +41368,23 @@ var Is;
  * ------------------------------------------------------------------------------------------ */
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const Is = __webpack_require__(157);
-const vscode_jsonrpc_1 = __webpack_require__(144);
-const protocol_implementation_1 = __webpack_require__(158);
+const Is = __webpack_require__(160);
+const vscode_jsonrpc_1 = __webpack_require__(147);
+const protocol_implementation_1 = __webpack_require__(161);
 exports.ImplementationRequest = protocol_implementation_1.ImplementationRequest;
-const protocol_typeDefinition_1 = __webpack_require__(159);
+const protocol_typeDefinition_1 = __webpack_require__(162);
 exports.TypeDefinitionRequest = protocol_typeDefinition_1.TypeDefinitionRequest;
-const protocol_workspaceFolders_1 = __webpack_require__(160);
+const protocol_workspaceFolders_1 = __webpack_require__(163);
 exports.WorkspaceFoldersRequest = protocol_workspaceFolders_1.WorkspaceFoldersRequest;
 exports.DidChangeWorkspaceFoldersNotification = protocol_workspaceFolders_1.DidChangeWorkspaceFoldersNotification;
-const protocol_configuration_1 = __webpack_require__(161);
+const protocol_configuration_1 = __webpack_require__(164);
 exports.ConfigurationRequest = protocol_configuration_1.ConfigurationRequest;
-const protocol_colorProvider_1 = __webpack_require__(162);
+const protocol_colorProvider_1 = __webpack_require__(165);
 exports.DocumentColorRequest = protocol_colorProvider_1.DocumentColorRequest;
 exports.ColorPresentationRequest = protocol_colorProvider_1.ColorPresentationRequest;
-const protocol_foldingRange_1 = __webpack_require__(163);
+const protocol_foldingRange_1 = __webpack_require__(166);
 exports.FoldingRangeRequest = protocol_foldingRange_1.FoldingRangeRequest;
-const protocol_declaration_1 = __webpack_require__(164);
+const protocol_declaration_1 = __webpack_require__(167);
 exports.DeclarationRequest = protocol_declaration_1.DeclarationRequest;
 // @ts-ignore: to avoid inlining LocatioLink as dynamic import
 let __noDynamicImport;
@@ -41578,7 +41908,7 @@ var ApplyWorkspaceEditRequest;
 
 
 /***/ }),
-/* 157 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41627,7 +41957,7 @@ exports.thenable = thenable;
 
 
 /***/ }),
-/* 158 */
+/* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41637,7 +41967,7 @@ exports.thenable = thenable;
  * ------------------------------------------------------------------------------------------ */
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_jsonrpc_1 = __webpack_require__(144);
+const vscode_jsonrpc_1 = __webpack_require__(147);
 // @ts-ignore: to avoid inlining LocatioLink as dynamic import
 let __noDynamicImport;
 /**
@@ -41653,7 +41983,7 @@ var ImplementationRequest;
 
 
 /***/ }),
-/* 159 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41663,7 +41993,7 @@ var ImplementationRequest;
  * ------------------------------------------------------------------------------------------ */
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_jsonrpc_1 = __webpack_require__(144);
+const vscode_jsonrpc_1 = __webpack_require__(147);
 // @ts-ignore: to avoid inlining LocatioLink as dynamic import
 let __noDynamicImport;
 /**
@@ -41679,7 +42009,7 @@ var TypeDefinitionRequest;
 
 
 /***/ }),
-/* 160 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41689,7 +42019,7 @@ var TypeDefinitionRequest;
  * ------------------------------------------------------------------------------------------ */
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_jsonrpc_1 = __webpack_require__(144);
+const vscode_jsonrpc_1 = __webpack_require__(147);
 /**
  * The `workspace/workspaceFolders` is sent from the server to the client to fetch the open workspace folders.
  */
@@ -41708,7 +42038,7 @@ var DidChangeWorkspaceFoldersNotification;
 
 
 /***/ }),
-/* 161 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41718,7 +42048,7 @@ var DidChangeWorkspaceFoldersNotification;
  * ------------------------------------------------------------------------------------------ */
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_jsonrpc_1 = __webpack_require__(144);
+const vscode_jsonrpc_1 = __webpack_require__(147);
 /**
  * The 'workspace/configuration' request is sent from the server to the client to fetch a certain
  * configuration setting.
@@ -41735,7 +42065,7 @@ var ConfigurationRequest;
 
 
 /***/ }),
-/* 162 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41745,7 +42075,7 @@ var ConfigurationRequest;
  * ------------------------------------------------------------------------------------------ */
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_jsonrpc_1 = __webpack_require__(144);
+const vscode_jsonrpc_1 = __webpack_require__(147);
 /**
  * A request to list all color symbols found in a given text document. The request's
  * parameter is of type [DocumentColorParams](#DocumentColorParams) the
@@ -41769,7 +42099,7 @@ var ColorPresentationRequest;
 
 
 /***/ }),
-/* 163 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41779,7 +42109,7 @@ var ColorPresentationRequest;
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_jsonrpc_1 = __webpack_require__(144);
+const vscode_jsonrpc_1 = __webpack_require__(147);
 /**
  * Enum of known range kinds
  */
@@ -41811,7 +42141,7 @@ var FoldingRangeRequest;
 
 
 /***/ }),
-/* 164 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41821,7 +42151,7 @@ var FoldingRangeRequest;
  * ------------------------------------------------------------------------------------------ */
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_jsonrpc_1 = __webpack_require__(144);
+const vscode_jsonrpc_1 = __webpack_require__(147);
 // @ts-ignore: to avoid inlining LocatioLink as dynamic import
 let __noDynamicImport;
 /**
@@ -41838,7 +42168,7 @@ var DeclarationRequest;
 
 
 /***/ }),
-/* 165 */
+/* 168 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41848,7 +42178,7 @@ var DeclarationRequest;
  * ------------------------------------------------------------------------------------------ */
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_jsonrpc_1 = __webpack_require__(144);
+const vscode_jsonrpc_1 = __webpack_require__(147);
 /**
  * The direction of a call hierarchy request.
  */
@@ -41878,7 +42208,7 @@ var CallHierarchyRequest;
 
 
 /***/ }),
-/* 166 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41888,7 +42218,7 @@ var CallHierarchyRequest;
  * ------------------------------------------------------------------------------------------ */
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_jsonrpc_1 = __webpack_require__(144);
+const vscode_jsonrpc_1 = __webpack_require__(147);
 /**
  * The `window/progress/start` notification is sent from the server to the client
  * to initiate a progress.
@@ -41924,7 +42254,7 @@ var ProgressCancelNotification;
 
 
 /***/ }),
-/* 167 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41934,8 +42264,8 @@ var ProgressCancelNotification;
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_jsonrpc_1 = __webpack_require__(144);
-const vscode_languageserver_types_1 = __webpack_require__(155);
+const vscode_jsonrpc_1 = __webpack_require__(147);
+const vscode_languageserver_types_1 = __webpack_require__(158);
 /**
  * The SelectionRange namespace provides helper function to work with
  * SelectionRange literals.
@@ -41970,7 +42300,7 @@ var SelectionRangeRequest;
 
 
 /***/ }),
-/* 168 */
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41979,16 +42309,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
 const neovim_1 = __webpack_require__(4);
 const path_1 = tslib_1.__importStar(__webpack_require__(56));
-const child_process_1 = tslib_1.__importStar(__webpack_require__(169));
-const debounce_1 = tslib_1.__importDefault(__webpack_require__(170));
+const child_process_1 = tslib_1.__importStar(__webpack_require__(172));
+const debounce_1 = tslib_1.__importDefault(__webpack_require__(173));
 const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const which_1 = tslib_1.__importDefault(__webpack_require__(172));
-const platform = tslib_1.__importStar(__webpack_require__(176));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const vscode_uri_1 = __webpack_require__(174);
+const which_1 = tslib_1.__importDefault(__webpack_require__(175));
+const platform = tslib_1.__importStar(__webpack_require__(179));
 exports.platform = platform;
-const isuri_1 = tslib_1.__importDefault(__webpack_require__(177));
-const logger = __webpack_require__(179)('util-index');
+const isuri_1 = tslib_1.__importDefault(__webpack_require__(180));
+const logger = __webpack_require__(182)('util-index');
 const prefix = '[coc.nvim] ';
 function escapeSingleQuote(str) {
     return str.replace(/'/g, "''");
@@ -42020,10 +42350,12 @@ function echoMsg(nvim, msg, hl) {
 function getUri(fullpath, id, buftype) {
     if (!fullpath)
         return `untitled:${id}`;
+    if (platform.isWindows)
+        fullpath = path_1.default.win32.normalize(fullpath);
     if (path_1.default.isAbsolute(fullpath))
-        return vscode_uri_1.default.file(fullpath).toString();
+        return vscode_uri_1.URI.file(fullpath).toString();
     if (isuri_1.default.isValid(fullpath))
-        return vscode_uri_1.default.parse(fullpath).toString();
+        return vscode_uri_1.URI.parse(fullpath).toString();
     if (buftype != '')
         return `${buftype}:${id}`;
     return `unknown:${id}`;
@@ -42167,13 +42499,13 @@ exports.isDocumentEdit = isDocumentEdit;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 169 */
+/* 172 */
 /***/ (function(module, exports) {
 
 module.exports = require("child_process");
 
 /***/ }),
-/* 170 */
+/* 173 */
 /***/ (function(module, exports) {
 
 /**
@@ -42249,11 +42581,13 @@ module.exports = debounce;
 
 
 /***/ }),
-/* 171 */
+/* 174 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setUriThrowOnMissingScheme", function() { return setUriThrowOnMissingScheme; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "URI", function() { return URI; });
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -42281,7 +42615,25 @@ else if (typeof navigator === 'object') {
 var _schemePattern = /^\w[\w\d+.-]*$/;
 var _singleSlashStart = /^\//;
 var _doubleSlashStart = /^\/\//;
-function _validateUri(ret) {
+var _throwOnMissingSchema = true;
+/**
+ * @internal
+ */
+function setUriThrowOnMissingScheme(value) {
+    var old = _throwOnMissingSchema;
+    _throwOnMissingSchema = value;
+    return old;
+}
+function _validateUri(ret, _strict) {
+    // scheme, must be set
+    if (!ret.scheme) {
+        if (_strict || _throwOnMissingSchema) {
+            throw new Error("[UriError]: Scheme is missing: {scheme: \"\", authority: \"" + ret.authority + "\", path: \"" + ret.path + "\", query: \"" + ret.query + "\", fragment: \"" + ret.fragment + "\"}");
+        }
+        else {
+            // console.warn(`[UriError]: Scheme is missing: {scheme: "", authority: "${ret.authority}", path: "${ret.path}", query: "${ret.query}", fragment: "${ret.fragment}"}`);
+        }
+    }
     // scheme, https://tools.ietf.org/html/rfc3986#section-3.1
     // ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
     if (ret.scheme && !_schemePattern.test(ret.scheme)) {
@@ -42304,6 +42656,20 @@ function _validateUri(ret) {
             }
         }
     }
+}
+// for a while we allowed uris *without* schemes and this is the migration
+// for them, e.g. an uri without scheme and without strict-mode warns and falls
+// back to the file-scheme. that should cause the least carnage and still be a
+// clear warning
+function _schemeFix(scheme, _strict) {
+    if (_strict || _throwOnMissingSchema) {
+        return scheme || _empty;
+    }
+    if (!scheme) {
+        // console.trace('BAD uri lacks scheme, falling back to file-scheme.');
+        scheme = 'file';
+    }
+    return scheme;
 }
 // implements a bit of https://tools.ietf.org/html/rfc3986#section-5
 function _referenceResolution(scheme, path) {
@@ -42328,6 +42694,15 @@ function _referenceResolution(scheme, path) {
 var _empty = '';
 var _slash = '/';
 var _regexp = /^(([^:/?#]+?):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?/;
+function _isQueryStringScheme(scheme) {
+    switch (scheme.toLowerCase()) {
+        case 'http':
+        case 'https':
+        case 'ftp':
+            return true;
+    }
+    return false;
+}
 /**
  * Uniform Resource Identifier (URI) http://tools.ietf.org/html/rfc3986.
  * This class is a simple parser which creates the basic component parts
@@ -42346,7 +42721,8 @@ var URI = (function () {
     /**
      * @internal
      */
-    function URI(schemeOrData, authority, path, query, fragment) {
+    function URI(schemeOrData, authority, path, query, fragment, _strict) {
+        if (_strict === void 0) { _strict = false; }
         if (typeof schemeOrData === 'object') {
             this.scheme = schemeOrData.scheme || _empty;
             this.authority = schemeOrData.authority || _empty;
@@ -42358,12 +42734,12 @@ var URI = (function () {
             // _validateUri(this);
         }
         else {
-            this.scheme = schemeOrData || _empty;
+            this.scheme = _schemeFix(schemeOrData, _strict);
             this.authority = authority || _empty;
             this.path = _referenceResolution(this.scheme, path || _empty);
             this.query = query || _empty;
             this.fragment = fragment || _empty;
-            _validateUri(this);
+            _validateUri(this, _strict);
         }
     }
     URI.isUri = function (thing) {
@@ -42377,7 +42753,10 @@ var URI = (function () {
             && typeof thing.fragment === 'string'
             && typeof thing.path === 'string'
             && typeof thing.query === 'string'
-            && typeof thing.scheme === 'string';
+            && typeof thing.scheme === 'string'
+            && typeof thing.fsPath === 'function'
+            && typeof thing.with === 'function'
+            && typeof thing.toString === 'function';
     };
     Object.defineProperty(URI.prototype, "fsPath", {
         // ---- filesystem path -----------------------
@@ -42420,31 +42799,31 @@ var URI = (function () {
             return this;
         }
         var scheme = change.scheme, authority = change.authority, path = change.path, query = change.query, fragment = change.fragment;
-        if (scheme === void 0) {
+        if (scheme === undefined) {
             scheme = this.scheme;
         }
         else if (scheme === null) {
             scheme = _empty;
         }
-        if (authority === void 0) {
+        if (authority === undefined) {
             authority = this.authority;
         }
         else if (authority === null) {
             authority = _empty;
         }
-        if (path === void 0) {
+        if (path === undefined) {
             path = this.path;
         }
         else if (path === null) {
             path = _empty;
         }
-        if (query === void 0) {
+        if (query === undefined) {
             query = this.query;
         }
         else if (query === null) {
             query = _empty;
         }
-        if (fragment === void 0) {
+        if (fragment === undefined) {
             fragment = this.fragment;
         }
         else if (fragment === null) {
@@ -42466,12 +42845,13 @@ var URI = (function () {
      *
      * @param value A string which represents an URI (see `URI#toString`).
      */
-    URI.parse = function (value) {
+    URI.parse = function (value, _strict) {
+        if (_strict === void 0) { _strict = false; }
         var match = _regexp.exec(value);
         if (!match) {
-            return new _URI(_empty, _empty, _empty, _empty, _empty);
+            return new _URI(_empty, _empty, _empty, _empty, _empty, _strict);
         }
-        return new _URI(match[2] || _empty, decodeURIComponent(match[4] || _empty), decodeURIComponent(match[5] || _empty), decodeURIComponent(match[7] || _empty), decodeURIComponent(match[9] || _empty));
+        return new _URI(match[2] || _empty, decodeURIComponentFast(match[4] || _empty, false, false), decodeURIComponentFast(match[5] || _empty, true, false), decodeURIComponentFast(match[7] || _empty, false, _isQueryStringScheme(match[2])), decodeURIComponentFast(match[9] || _empty, false, false), _strict);
     };
     /**
      * Creates a new URI from a file system path, e.g. `c:\my\files`,
@@ -42486,7 +42866,6 @@ var URI = (function () {
     good.scheme === 'file';
     good.path === '/coding/c#/project1';
     good.fragment === '';
-
     const bad = URI.parse('file://' + '/coding/c#/project1');
     bad.scheme === 'file';
     bad.path === '/coding/c'; // path is now broken
@@ -42523,7 +42902,7 @@ var URI = (function () {
     };
     // ---- printing/externalize ---------------------------
     /**
-     * Creates a string presentation for this URI. It's guardeed that calling
+     * Creates a string representation for this URI. It's guaranteed that calling
      * `URI.parse` with the result of this function creates an URI which is equal
      * to this URI.
      *
@@ -42549,14 +42928,15 @@ var URI = (function () {
         }
         else {
             var result = new _URI(data);
-            result._fsPath = data.fsPath;
             result._formatted = data.external;
+            result._fsPath = data._sep === _pathSepMarker ? data.fsPath : null;
             return result;
         }
     };
     return URI;
 }());
-/* harmony default export */ __webpack_exports__["default"] = (URI);
+
+var _pathSepMarker = isWindows ? 1 : undefined;
 // tslint:disable-next-line:class-name
 var _URI = (function (_super) {
     __extends(_URI, _super);
@@ -42596,6 +42976,7 @@ var _URI = (function (_super) {
         // cached state
         if (this._fsPath) {
             res.fsPath = this._fsPath;
+            res._sep = _pathSepMarker;
         }
         if (this._formatted) {
             res.external = this._formatted;
@@ -42620,6 +43001,65 @@ var _URI = (function (_super) {
     };
     return _URI;
 }(URI));
+function isHex(value, pos) {
+    if (pos >= value.length) {
+        return false;
+    }
+    var code = value.charCodeAt(pos);
+    return (code >= 48 /* Digit0 */ && code <= 57 /* Digit9 */) // 0-9
+        || (code >= 97 /* a */ && code <= 102 /* f */) //a-f
+        || (code >= 65 /* A */ && code <= 70 /* F */); //A-F
+}
+function decodeURIComponentFast(uriComponent, isPath, isQueryString) {
+    var res;
+    var nativeDecodePos = -1;
+    for (var pos = 0; pos < uriComponent.length; pos++) {
+        var code = uriComponent.charCodeAt(pos);
+        // decoding needed
+        if (code === 37 /* PercentSign */ && isHex(uriComponent, pos + 1) && isHex(uriComponent, pos + 2)) {
+            var chA = uriComponent.charCodeAt(pos + 1);
+            var chB = uriComponent.charCodeAt(pos + 2);
+            // when in a path -> check and accept %2f and %2F (fwd slash)
+            // when in a query string -> check and accept %3D, %26, and %3B (equals, ampersand, semi-colon)
+            if ((isPath && chA === 50 /* Digit2 */ && (chB === 70 /* F */ || chB === 102 /* f */))
+                ||
+                    (isQueryString && ((chA === 50 /* Digit2 */ && chB === 54 /* Digit6 */) // %26
+                        ||
+                            (chA === 51 /* Digit3 */ && (chB === 66 /* B */ || chB === 98 /* b */ || chB === 68 /* D */ || chB === 100 /* d */)) // %3D, %3D
+                    ))) {
+                if (nativeDecodePos !== -1) {
+                    res += decodeURIComponent(uriComponent.substring(nativeDecodePos, pos));
+                    nativeDecodePos = -1;
+                }
+                if (res !== undefined) {
+                    res += uriComponent.substr(pos, 3);
+                }
+                pos += 2;
+                continue;
+            }
+            if (res === undefined) {
+                res = uriComponent.substring(0, pos);
+            }
+            if (nativeDecodePos === -1) {
+                nativeDecodePos = pos;
+            }
+            pos += 2;
+        }
+        else {
+            if (nativeDecodePos !== -1) {
+                res += decodeURIComponent(uriComponent.substring(nativeDecodePos, pos));
+                nativeDecodePos = -1;
+            }
+            if (res !== undefined) {
+                res += String.fromCharCode(code);
+            }
+        }
+    }
+    if (nativeDecodePos !== -1) {
+        res += decodeURIComponent(uriComponent.substr(nativeDecodePos));
+    }
+    return res !== undefined ? res : uriComponent;
+}
 // reserved characters: https://tools.ietf.org/html/rfc3986#section-2.2
 var encodeTable = (_a = {},
     _a[58 /* Colon */] = '%3A',
@@ -42642,7 +43082,7 @@ var encodeTable = (_a = {},
     _a[61 /* Equals */] = '%3D',
     _a[32 /* Space */] = '%20',
     _a);
-function encodeURIComponentFast(uriComponent, allowSlash) {
+function encodeURIComponentFast(uriComponent, isPath, isQueryString) {
     var res = undefined;
     var nativeEncodePos = -1;
     for (var pos = 0; pos < uriComponent.length; pos++) {
@@ -42655,7 +43095,9 @@ function encodeURIComponentFast(uriComponent, allowSlash) {
             || code === 46 /* Period */
             || code === 95 /* Underline */
             || code === 126 /* Tilde */
-            || (allowSlash && code === 47 /* Slash */)) {
+            || (isPath && code === 47 /* Slash */) // path => allow slash AS-IS
+            || (isQueryString && (code === 61 /* Equals */ || code === 38 /* Ampersand */ || code === 59 /* Semicolon */)) // query string => allow &=;
+        ) {
             // check if we are delaying native encode
             if (nativeEncodePos !== -1) {
                 res += encodeURIComponent(uriComponent.substring(nativeEncodePos, pos));
@@ -42665,6 +43107,19 @@ function encodeURIComponentFast(uriComponent, allowSlash) {
             if (res !== undefined) {
                 res += uriComponent.charAt(pos);
             }
+        }
+        else if (code === 37 /* PercentSign */ && isHex(uriComponent, pos + 1) && isHex(uriComponent, pos + 2)) {
+            // at percentage encoded value
+            // check if we are delaying native encode
+            if (nativeEncodePos !== -1) {
+                res += encodeURIComponent(uriComponent.substring(nativeEncodePos, pos));
+                nativeEncodePos = -1;
+            }
+            // check if we write into a new string (by default we try to return the param)
+            if (res !== undefined) {
+                res += uriComponent.substr(pos, 3);
+            }
+            pos += 2;
         }
         else {
             // encoding needed, we need to allocate a new string
@@ -42713,7 +43168,6 @@ function encodeURIComponentMinimal(path) {
 }
 /**
  * Compute `fsPath` for the given uri
- * @param uri
  */
 function _makeFsPath(uri) {
     var value;
@@ -42761,24 +43215,24 @@ function _asFormatted(uri, skipEncoding) {
             authority = authority.substr(idx + 1);
             idx = userinfo.indexOf(':');
             if (idx === -1) {
-                res += encoder(userinfo, false);
+                res += encoder(userinfo, false, false);
             }
             else {
                 // <user>:<pass>@<auth>
-                res += encoder(userinfo.substr(0, idx), false);
+                res += encoder(userinfo.substr(0, idx), false, false);
                 res += ':';
-                res += encoder(userinfo.substr(idx + 1), false);
+                res += encoder(userinfo.substr(idx + 1), false, false);
             }
             res += '@';
         }
         authority = authority.toLowerCase();
         idx = authority.indexOf(':');
         if (idx === -1) {
-            res += encoder(authority, false);
+            res += encoder(authority, false, false);
         }
         else {
             // <auth>:<port>
-            res += encoder(authority.substr(0, idx), false);
+            res += encoder(authority.substr(0, idx), false, false);
             res += authority.substr(idx);
         }
     }
@@ -42797,15 +43251,15 @@ function _asFormatted(uri, skipEncoding) {
             }
         }
         // encode the rest of the path
-        res += encoder(path, true);
+        res += encoder(path, true, false);
     }
     if (query) {
         res += '?';
-        res += encoder(query, false);
+        res += encoder(query, false, _isQueryStringScheme(scheme));
     }
     if (fragment) {
         res += '#';
-        res += !skipEncoding ? encodeURIComponentFast(fragment, false) : fragment;
+        res += !skipEncoding ? encodeURIComponentFast(fragment, false, false) : fragment;
     }
     return res;
 }
@@ -42813,7 +43267,7 @@ var _a;
 
 
 /***/ }),
-/* 172 */
+/* 175 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = which
@@ -42825,7 +43279,7 @@ var isWindows = process.platform === 'win32' ||
 
 var path = __webpack_require__(56)
 var COLON = isWindows ? ';' : ':'
-var isexe = __webpack_require__(173)
+var isexe = __webpack_require__(176)
 
 function getNotFoundError (cmd) {
   var er = new Error('not found: ' + cmd)
@@ -42954,15 +43408,15 @@ function whichSync (cmd, opt) {
 
 
 /***/ }),
-/* 173 */
+/* 176 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var fs = __webpack_require__(54)
 var core
 if (process.platform === 'win32' || global.TESTING_WINDOWS) {
-  core = __webpack_require__(174)
+  core = __webpack_require__(177)
 } else {
-  core = __webpack_require__(175)
+  core = __webpack_require__(178)
 }
 
 module.exports = isexe
@@ -43017,7 +43471,7 @@ function sync (path, options) {
 
 
 /***/ }),
-/* 174 */
+/* 177 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = isexe
@@ -43065,7 +43519,7 @@ function sync (path, options) {
 
 
 /***/ }),
-/* 175 */
+/* 178 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = isexe
@@ -43112,7 +43566,7 @@ function checkMode (stat, options) {
 
 
 /***/ }),
-/* 176 */
+/* 179 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43172,13 +43626,13 @@ exports.OS = _isMacintosh
 //# sourceMappingURL=platform.js.map
 
 /***/ }),
-/* 177 */
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var rfc3986 = __webpack_require__(178);
+var rfc3986 = __webpack_require__(181);
 
 // See: https://github.com/hapijs/hoek/blob/f62961d3d07aca68ab11480893e6e80a421914b4/lib/index.js#L783-L787
 function escapeRegex(string) {
@@ -43258,7 +43712,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 178 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43458,7 +43912,7 @@ internals.generate();
 module.exports = internals.rfc3986;
 
 /***/ }),
-/* 179 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -43519,46 +43973,46 @@ module.exports = (name = 'coc-nvim') => {
 //# sourceMappingURL=logger.js.map
 
 /***/ }),
-/* 180 */
+/* 183 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const debounce_1 = tslib_1.__importDefault(__webpack_require__(170));
-const find_up_1 = tslib_1.__importDefault(__webpack_require__(181));
+const debounce_1 = tslib_1.__importDefault(__webpack_require__(173));
+const find_up_1 = tslib_1.__importDefault(__webpack_require__(184));
 const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
 const os_1 = tslib_1.__importDefault(__webpack_require__(55));
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
 const util_1 = tslib_1.__importDefault(__webpack_require__(40));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const which_1 = tslib_1.__importDefault(__webpack_require__(172));
-const configuration_1 = tslib_1.__importDefault(__webpack_require__(187));
-const shape_1 = tslib_1.__importDefault(__webpack_require__(199));
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const db_1 = tslib_1.__importDefault(__webpack_require__(200));
-const task_1 = tslib_1.__importDefault(__webpack_require__(206));
-const document_1 = tslib_1.__importDefault(__webpack_require__(207));
-const fileSystemWatcher_1 = tslib_1.__importDefault(__webpack_require__(213));
-const mru_1 = tslib_1.__importDefault(__webpack_require__(214));
-const outputChannel_1 = tslib_1.__importDefault(__webpack_require__(215));
-const resolver_1 = tslib_1.__importDefault(__webpack_require__(216));
-const status_1 = tslib_1.__importDefault(__webpack_require__(218));
-const terminal_1 = tslib_1.__importDefault(__webpack_require__(222));
-const willSaveHandler_1 = tslib_1.__importDefault(__webpack_require__(223));
-const types_1 = __webpack_require__(188);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const vscode_uri_1 = __webpack_require__(174);
+const which_1 = tslib_1.__importDefault(__webpack_require__(175));
+const configuration_1 = tslib_1.__importDefault(__webpack_require__(189));
+const shape_1 = tslib_1.__importDefault(__webpack_require__(206));
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const db_1 = tslib_1.__importDefault(__webpack_require__(207));
+const task_1 = tslib_1.__importDefault(__webpack_require__(208));
+const document_1 = tslib_1.__importDefault(__webpack_require__(209));
+const fileSystemWatcher_1 = tslib_1.__importDefault(__webpack_require__(215));
+const mru_1 = tslib_1.__importDefault(__webpack_require__(216));
+const outputChannel_1 = tslib_1.__importDefault(__webpack_require__(217));
+const resolver_1 = tslib_1.__importDefault(__webpack_require__(218));
+const status_1 = tslib_1.__importDefault(__webpack_require__(220));
+const terminal_1 = tslib_1.__importDefault(__webpack_require__(224));
+const willSaveHandler_1 = tslib_1.__importDefault(__webpack_require__(225));
+const types_1 = __webpack_require__(190);
 const fs_2 = __webpack_require__(201);
-const index_1 = __webpack_require__(168);
-const match_1 = __webpack_require__(224);
-const string_1 = __webpack_require__(210);
-const watchman_1 = tslib_1.__importDefault(__webpack_require__(225));
-const uuid = __webpack_require__(219);
-const array_1 = __webpack_require__(212);
-const position_1 = __webpack_require__(229);
+const index_1 = __webpack_require__(171);
+const match_1 = __webpack_require__(226);
+const string_1 = __webpack_require__(212);
+const watchman_1 = tslib_1.__importDefault(__webpack_require__(227));
+const uuid = __webpack_require__(221);
+const array_1 = __webpack_require__(214);
+const position_1 = __webpack_require__(231);
 const requireFunc =  true ? require : undefined;
-const logger = __webpack_require__(179)('workspace');
+const logger = __webpack_require__(182)('workspace');
 const CONFIG_FILE_NAME = 'coc-settings.json';
 let NAME_SPACE = 1080;
 class Workspace {
@@ -43621,7 +44075,7 @@ class Workspace {
         if (this._env.workspaceFolders) {
             this._workspaceFolders = this._env.workspaceFolders.map(f => {
                 return {
-                    uri: vscode_uri_1.default.file(f).toString(),
+                    uri: vscode_uri_1.URI.file(f).toString(),
                     name: path_1.default.dirname(f)
                 };
             });
@@ -43790,7 +44244,7 @@ class Workspace {
         if (rootPath == os_1.default.homedir())
             return null;
         return {
-            uri: vscode_uri_1.default.file(rootPath).toString(),
+            uri: vscode_uri_1.URI.file(rootPath).toString(),
             name: path_1.default.basename(rootPath)
         };
     }
@@ -43863,7 +44317,7 @@ class Workspace {
         let filepath = await this.nvim.call('expand', '%:p');
         filepath = path_1.default.normalize(filepath);
         let isFile = filepath && path_1.default.isAbsolute(filepath);
-        if (isFile && !filepath.startsWith(cwd)) {
+        if (isFile && !fs_2.isParentFolder(cwd, filepath)) {
             // can't use cwd
             return await find_up_1.default(filename, { cwd: path_1.default.dirname(filepath) });
         }
@@ -43916,7 +44370,7 @@ class Workspace {
         if (typeof uri === 'number') {
             return this.buffers.get(uri);
         }
-        uri = vscode_uri_1.default.parse(uri).toString();
+        uri = vscode_uri_1.URI.parse(uri).toString();
         for (let doc of this.buffers.values()) {
             if (doc && doc.uri === uri)
                 return doc;
@@ -43952,21 +44406,21 @@ class Workspace {
                 for (let change of documentChanges) {
                     if (index_1.isDocumentEdit(change)) {
                         let { textDocument, edits } = change;
-                        if (vscode_uri_1.default.parse(textDocument.uri).toString() == currUri) {
+                        if (vscode_uri_1.URI.parse(textDocument.uri).toString() == currUri) {
                             changed = position_1.getChangedFromEdits(pos, edits);
                         }
                         let doc = await this.loadFile(textDocument.uri);
                         await doc.applyEdits(nvim, edits);
                     }
                     else if (vscode_languageserver_protocol_1.CreateFile.is(change)) {
-                        let file = vscode_uri_1.default.parse(change.uri).fsPath;
+                        let file = vscode_uri_1.URI.parse(change.uri).fsPath;
                         await this.createFile(file, change.options);
                     }
                     else if (vscode_languageserver_protocol_1.RenameFile.is(change)) {
-                        await this.renameFile(vscode_uri_1.default.parse(change.oldUri).fsPath, vscode_uri_1.default.parse(change.newUri).fsPath, change.options);
+                        await this.renameFile(vscode_uri_1.URI.parse(change.oldUri).fsPath, vscode_uri_1.URI.parse(change.newUri).fsPath, change.options);
                     }
                     else if (vscode_languageserver_protocol_1.DeleteFile.is(change)) {
-                        await this.deleteFile(vscode_uri_1.default.parse(change.uri).fsPath, change.options);
+                        await this.deleteFile(vscode_uri_1.URI.parse(change.uri).fsPath, change.options);
                     }
                 }
                 this.showMessage(`${n} buffers changed.`);
@@ -43974,7 +44428,7 @@ class Workspace {
             else if (changes) {
                 for (let uri of Object.keys(changes)) {
                     let document = await this.loadFile(uri);
-                    if (vscode_uri_1.default.parse(uri).toString() == currUri) {
+                    if (vscode_uri_1.URI.parse(uri).toString() == currUri) {
                         changed = position_1.getChangedFromEdits(pos, changes[uri]);
                     }
                     await document.applyEdits(nvim, changes[uri]);
@@ -43998,22 +44452,21 @@ class Workspace {
      * Convert location to quickfix item.
      */
     async getQuickfixItem(loc, text, type = '') {
-        let { cwd, nvim } = this;
         if (vscode_languageserver_protocol_1.LocationLink.is(loc)) {
             loc = vscode_languageserver_protocol_1.Location.create(loc.targetUri, loc.targetRange);
         }
+        let doc = this.getDocument(loc.uri);
         let { uri, range } = loc;
         let { line, character } = range.start;
-        let u = vscode_uri_1.default.parse(uri);
-        let bufname = u.scheme == 'file' ? u.fsPath : uri;
-        let bufnr = await nvim.call('bufnr', bufname);
+        let u = vscode_uri_1.URI.parse(uri);
+        let bufnr = doc ? doc.bufnr : -1;
         if (!text && u.scheme == 'file') {
             text = await this.getLine(uri, line);
             character = string_1.byteIndex(text, character);
         }
         let item = {
             uri,
-            filename: bufname.startsWith(cwd) ? path_1.default.relative(cwd, bufname) : bufname,
+            filename: u.scheme == 'file' ? u.fsPath : uri,
             lnum: line + 1,
             col: character + 1,
             text: text || '',
@@ -44067,8 +44520,14 @@ class Workspace {
             nvim.command('copen', true);
         }
         else {
-            await nvim.setVar('coc_jump_locations', items);
-            await nvim.command('doautocmd User CocLocationsChange');
+            if (this.env.locationlist) {
+                global.locations = items;
+                nvim.command('CocList --normal --auto-preview location', true);
+            }
+            else {
+                await nvim.setVar('coc_jump_locations', items);
+                nvim.command('doautocmd User CocLocationsChange', true);
+            }
         }
     }
     /**
@@ -44080,13 +44539,15 @@ class Workspace {
             return document.getline(line) || '';
         if (!uri.startsWith('file:'))
             return '';
-        return await fs_2.readFileLine(vscode_uri_1.default.parse(uri).fsPath, line);
+        return await fs_2.readFileLine(vscode_uri_1.URI.parse(uri).fsPath, line);
     }
     /**
      * Get WorkspaceFolder of uri
      */
     getWorkspaceFolder(uri) {
-        return this.workspaceFolders.find(f => uri.startsWith(f.uri));
+        this.workspaceFolders.sort((a, b) => b.uri.length - a.uri.length);
+        let filepath = vscode_uri_1.URI.parse(uri).fsPath;
+        return this.workspaceFolders.find(folder => fs_2.isParentFolder(vscode_uri_1.URI.parse(folder.uri).fsPath, filepath));
     }
     /**
      * Get content from buffer of file by uri.
@@ -44097,11 +44558,16 @@ class Workspace {
             document.forceSync();
             return document.content;
         }
-        let u = vscode_uri_1.default.parse(uri);
+        let u = vscode_uri_1.URI.parse(uri);
         if (u.scheme != 'file')
             return '';
         let encoding = await this.getFileEncoding();
         return await fs_2.readFile(u.fsPath, encoding);
+    }
+    getFilepath(filepath) {
+        let { cwd } = this;
+        let rel = path_1.default.relative(cwd, filepath);
+        return rel.startsWith('..') ? filepath : rel;
     }
     onWillSaveUntil(callback, thisArg, clientId) {
         return this.willSaveUntilHandler.addCallback(callback, thisArg, clientId);
@@ -44223,34 +44689,20 @@ class Workspace {
         let col = character + 1;
         if (doc)
             col = string_1.byteLength(doc.getline(line).slice(0, character)) + 1;
-        let u = vscode_uri_1.default.parse(uri);
-        let bufname = u.scheme == 'file' ? u.fsPath : uri;
+        let bufnr = doc ? doc.bufnr : -1;
         await nvim.command(`normal! m'`);
-        let loaded = await nvim.call('bufloaded', bufname);
-        let bufnr = loaded == 0 ? -1 : await nvim.call('bufnr', bufname);
-        let method = this.isVim ? 'callTimer' : 'call';
         if (bufnr == this.bufnr && position && jumpCommand == 'edit') {
             await nvim.call('cursor', [line + 1, col]);
         }
         else if (bufnr != -1 && jumpCommand == 'edit') {
             let moveCmd = position ? `+call\\ cursor(${line + 1},${col})` : '';
-            await nvim[method]('coc#util#execute', [`buffer ${moveCmd} ${bufnr}`]);
+            await this.nvim.call('coc#util#execute', [`buffer ${moveCmd} ${bufnr}`]);
         }
         else {
-            let cwd = await nvim.call('getcwd');
-            let file;
-            if (bufnr == -1) {
-                file = bufname.startsWith(cwd) ? path_1.default.relative(cwd, bufname) : bufname;
-            }
-            else {
-                file = await nvim.call('bufname', [bufnr]);
-            }
-            file = await nvim.call('fnameescape', file);
-            let moveCmd = position ? `+call\\ cursor(${line + 1},${col})` : '';
-            await nvim[method]('coc#util#execute', [`${jumpCommand} ${moveCmd} ${file}`]);
+            let bufname = uri.startsWith('file:') ? path_1.default.normalize(vscode_uri_1.URI.parse(uri).fsPath) : uri;
+            let pos = position ? [line + 1, col] : [];
+            await this.nvim.call('coc#util#jump', [jumpCommand, bufname, pos]);
         }
-        if (this.isVim)
-            await index_1.wait(100);
     }
     /**
      * Move cursor to position.
@@ -44283,7 +44735,7 @@ class Workspace {
                 }
             }
             else {
-                let uri = vscode_uri_1.default.file(filepath).toString();
+                let uri = vscode_uri_1.URI.file(filepath).toString();
                 let doc = this.getDocument(uri);
                 if (doc)
                     return;
@@ -44297,7 +44749,7 @@ class Workspace {
      * Load uri as document.
      */
     async loadFile(uri) {
-        let u = vscode_uri_1.default.parse(uri);
+        let u = vscode_uri_1.URI.parse(uri);
         let doc = this.getDocument(uri);
         if (doc)
             return doc;
@@ -44340,7 +44792,7 @@ class Workspace {
         if (!stat || overwrite) {
             try {
                 await fs_2.renameAsync(oldPath, newPath);
-                let uri = vscode_uri_1.default.file(oldPath).toString();
+                let uri = vscode_uri_1.URI.file(oldPath).toString();
                 let doc = this.getDocument(uri);
                 if (doc) {
                     await doc.buffer.setName(newPath);
@@ -44374,7 +44826,7 @@ class Workspace {
             let method = isDir ? 'rmdir' : 'unlink';
             await util_1.default.promisify(fs_1.default[method])(filepath);
             if (!isDir) {
-                let uri = vscode_uri_1.default.file(filepath).toString();
+                let uri = vscode_uri_1.URI.file(filepath).toString();
                 let doc = this.getDocument(uri);
                 if (doc)
                     await this.nvim.command(`silent bwipeout ${doc.bufnr}`);
@@ -44473,6 +44925,11 @@ class Workspace {
         this._blocking = false;
         return res == 1;
     }
+    async callAsync(method, args) {
+        if (this.isNvim)
+            return await this.nvim.call(method, args);
+        return await this.nvim.callAsync('coc#util#with_callback', [method, args]);
+    }
     /**
      * Request input from user
      */
@@ -44520,9 +44977,9 @@ class Workspace {
     registerKeymap(modes, key, fn, opts = {}) {
         if (this.keymaps.has(key))
             return;
-        opts = Object.assign({ sync: true, cancel: true, silent: true }, opts);
+        opts = Object.assign({ sync: true, cancel: true, silent: true, repeat: false }, opts);
         let { nvim } = this;
-        this.keymaps.set(key, [fn, true]);
+        this.keymaps.set(key, [fn, !!opts.repeat]);
         let method = opts.sync ? 'request' : 'notify';
         let silent = opts.silent ? '<silent>' : '';
         for (let m of modes) {
@@ -44613,7 +45070,8 @@ class Workspace {
         }
         for (let [id, autocmd] of this.autocmds.entries()) {
             let args = autocmd.arglist && autocmd.arglist.length ? ', ' + autocmd.arglist.join(', ') : '';
-            cmds.push(`autocmd ${autocmd.event} * call coc#rpc#${autocmd.request ? 'request' : 'notify'}('doAutocmd', [${id}${args}])`);
+            let event = Array.isArray(autocmd.event) ? autocmd.event.join(' ') : autocmd.event;
+            cmds.push(`autocmd ${event} * call coc#rpc#${autocmd.request ? 'request' : 'notify'}('doAutocmd', [${id}${args}])`);
         }
         for (let key of this.watchedOptions) {
             cmds.push(`autocmd OptionSet ${key} call coc#rpc#notify('OptionSet',[expand('<amatch>'), v:option_old, v:option_new])`);
@@ -44639,7 +45097,7 @@ augroup end`;
             return;
         }
         let tokenSource = new vscode_languageserver_protocol_1.CancellationTokenSource();
-        let content = await Promise.resolve(provider.provideTextDocumentContent(vscode_uri_1.default.parse(uri), tokenSource.token));
+        let content = await Promise.resolve(provider.provideTextDocumentContent(vscode_uri_1.URI.parse(uri), tokenSource.token));
         let buf = await this.nvim.buffer;
         await buf.setLines(content.split('\n'), {
             start: 0,
@@ -44688,7 +45146,7 @@ augroup end`;
                         this.showMessage(`Can't apply edits to ${uri}.`, 'error');
                         return false;
                     }
-                    let exists = fs_1.default.existsSync(vscode_uri_1.default.parse(uri).fsPath);
+                    let exists = fs_1.default.existsSync(vscode_uri_1.URI.parse(uri).fsPath);
                     if (!exists) {
                         this.showMessage(`File ${uri} not exists.`, 'error');
                         return false;
@@ -44718,7 +45176,7 @@ augroup end`;
             return;
         const onChange = async (bufnr) => {
             let doc = this.getDocument(bufnr);
-            if (doc)
+            if (doc && doc.shouldAttach)
                 doc.fetchContent();
         };
         events_1.default.on('TextChangedI', onChange, null, this.disposables);
@@ -44738,7 +45196,7 @@ augroup end`;
             let token = source.token;
             this.creatingSources.set(bufnr, source);
             let created = await document.init(this.nvim, token);
-            if (!created)
+            if (!created || document.getVar('enabled', 1) === 0)
                 document = null;
             if (this.creatingSources.get(bufnr) == source) {
                 source.dispose();
@@ -44760,11 +45218,12 @@ augroup end`;
             let config = this.getConfiguration('workspace');
             let filetypes = config.get('ignoredFiletypes', []);
             if (filetypes.indexOf(document.filetype) == -1) {
-                let root = this.resolveRoot(document) || this.cwd;
-                this.addWorkspaceFolder(root);
-                let workspaceFolder = this.getWorkspaceFolder(document.uri);
-                if (this.bufnr == buffer.id && workspaceFolder) {
-                    this._root = vscode_uri_1.default.parse(workspaceFolder.uri).fsPath;
+                let root = this.resolveRoot(document);
+                if (root) {
+                    this.addWorkspaceFolder(root);
+                    if (this.bufnr == buffer.id) {
+                        this._root = root;
+                    }
                 }
             }
             this.configurations.checkFolderConfiguration(document.uri);
@@ -44786,7 +45245,7 @@ augroup end`;
             this.configurations.setFolderConfiguration(doc.uri);
             let workspaceFolder = this.getWorkspaceFolder(doc.uri);
             if (workspaceFolder)
-                this._root = vscode_uri_1.default.parse(workspaceFolder.uri).fsPath;
+                this._root = vscode_uri_1.URI.parse(workspaceFolder.uri).fsPath;
         }
     }
     async onCursorMoved(bufnr) {
@@ -44863,7 +45322,7 @@ augroup end`;
     }
     resolveRoot(document) {
         let types = [types_1.PatternType.Buffer, types_1.PatternType.LanguageServer, types_1.PatternType.Global];
-        let u = vscode_uri_1.default.parse(document.uri);
+        let u = vscode_uri_1.URI.parse(document.uri);
         let dir = path_1.default.dirname(u.fsPath);
         for (let patternType of types) {
             let patterns = this.getRootPatterns(document, patternType);
@@ -44873,7 +45332,7 @@ augroup end`;
                     return root;
             }
         }
-        if (this.cwd != os_1.default.homedir() && dir.startsWith(this.cwd))
+        if (this.cwd != os_1.default.homedir() && fs_2.isParentFolder(this.cwd, dir))
             return this.cwd;
         return null;
     }
@@ -44895,7 +45354,7 @@ augroup end`;
             nvim.errWriteLine('current buffer is not file.');
             return;
         }
-        let oldPath = vscode_uri_1.default.parse(doc.uri).fsPath;
+        let oldPath = vscode_uri_1.URI.parse(doc.uri).fsPath;
         let newPath = await nvim.call('input', ['new path:', oldPath, 'file']);
         newPath = newPath ? newPath.trim() : null;
         if (newPath == oldPath || !newPath)
@@ -44914,7 +45373,7 @@ augroup end`;
             }
             fs_1.default.renameSync(oldPath, newPath);
         }
-        let filepath = newPath.startsWith(cwd) ? path_1.default.relative(cwd, newPath) : newPath;
+        let filepath = fs_2.isParentFolder(cwd, newPath) ? path_1.default.relative(cwd, newPath) : newPath;
         let cursor = await nvim.call('getcurpos');
         nvim.pauseNotification();
         nvim.command(`keepalt ${bufnr}bwipeout!`, true);
@@ -44962,10 +45421,10 @@ augroup end`;
         return res;
     }
     get folderPaths() {
-        return this.workspaceFolders.map(f => vscode_uri_1.default.parse(f.uri).fsPath);
+        return this.workspaceFolders.map(f => vscode_uri_1.URI.parse(f.uri).fsPath);
     }
     removeWorkspaceFolder(fsPath) {
-        let idx = this._workspaceFolders.findIndex(f => vscode_uri_1.default.parse(f.uri).fsPath == fsPath);
+        let idx = this._workspaceFolders.findIndex(f => vscode_uri_1.URI.parse(f.uri).fsPath == fsPath);
         if (idx != -1) {
             let folder = this._workspaceFolders[idx];
             this._workspaceFolders.splice(idx, 1);
@@ -44976,12 +45435,12 @@ augroup end`;
         }
     }
     renameWorkspaceFolder(oldPath, newPath) {
-        let idx = this._workspaceFolders.findIndex(f => vscode_uri_1.default.parse(f.uri).fsPath == oldPath);
+        let idx = this._workspaceFolders.findIndex(f => vscode_uri_1.URI.parse(f.uri).fsPath == oldPath);
         if (idx == -1)
             return;
         let removed = this._workspaceFolders[idx];
         let added = {
-            uri: vscode_uri_1.default.file(newPath).toString(),
+            uri: vscode_uri_1.URI.file(newPath).toString(),
             name: path_1.default.dirname(newPath)
         };
         this._workspaceFolders.splice(idx, 1);
@@ -45028,7 +45487,7 @@ augroup end`;
         if (rootPath == os_1.default.homedir())
             return;
         let { _workspaceFolders } = this;
-        let uri = vscode_uri_1.default.file(rootPath).toString();
+        let uri = vscode_uri_1.URI.file(rootPath).toString();
         let workspaceFolder = { uri, name: path_1.default.basename(rootPath) };
         if (_workspaceFolders.findIndex(o => o.uri == uri) == -1) {
             _workspaceFolders.push(workspaceFolder);
@@ -45060,152 +45519,94 @@ exports.default = new Workspace();
 //# sourceMappingURL=workspace.js.map
 
 /***/ }),
-/* 181 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-const path = __webpack_require__(56);
-const locatePath = __webpack_require__(182);
-
-module.exports = (filename, opts = {}) => {
-	const startDir = path.resolve(opts.cwd || '');
-	const {root} = path.parse(startDir);
-
-	const filenames = [].concat(filename);
-
-	return new Promise(resolve => {
-		(function find(dir) {
-			locatePath(filenames, {cwd: dir}).then(file => {
-				if (file) {
-					resolve(path.join(dir, file));
-				} else if (dir === root) {
-					resolve(null);
-				} else {
-					find(path.dirname(dir));
-				}
-			});
-		})(startDir);
-	});
-};
-
-module.exports.sync = (filename, opts = {}) => {
-	let dir = path.resolve(opts.cwd || '');
-	const {root} = path.parse(dir);
-
-	const filenames = [].concat(filename);
-
-	// eslint-disable-next-line no-constant-condition
-	while (true) {
-		const file = locatePath.sync(filenames, {cwd: dir});
-
-		if (file) {
-			return path.join(dir, file);
-		}
-
-		if (dir === root) {
-			return null;
-		}
-
-		dir = path.dirname(dir);
-	}
-};
-
-
-/***/ }),
-/* 182 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-const path = __webpack_require__(56);
-const pathExists = __webpack_require__(183);
-const pLocate = __webpack_require__(184);
-
-module.exports = (iterable, options) => {
-	options = Object.assign({
-		cwd: process.cwd()
-	}, options);
-
-	return pLocate(iterable, el => pathExists(path.resolve(options.cwd, el)), options);
-};
-
-module.exports.sync = (iterable, options) => {
-	options = Object.assign({
-		cwd: process.cwd()
-	}, options);
-
-	for (const el of iterable) {
-		if (pathExists.sync(path.resolve(options.cwd, el))) {
-			return el;
-		}
-	}
-};
-
-
-/***/ }),
-/* 183 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-const fs = __webpack_require__(54);
-
-module.exports = fp => new Promise(resolve => {
-	fs.access(fp, err => {
-		resolve(!err);
-	});
-});
-
-module.exports.sync = fp => {
-	try {
-		fs.accessSync(fp);
-		return true;
-	} catch (err) {
-		return false;
-	}
-};
-
-
-/***/ }),
 /* 184 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-const pLimit = __webpack_require__(185);
+const path = __webpack_require__(56);
+const locatePath = __webpack_require__(185);
 
-class EndError extends Error {
-	constructor(value) {
-		super();
-		this.value = value;
+const stop = Symbol('findUp.stop');
+
+module.exports = async (name, options = {}) => {
+	let directory = path.resolve(options.cwd || '');
+	const {root} = path.parse(directory);
+	const paths = [].concat(name);
+
+	const runMatcher = async locateOptions => {
+		if (typeof name !== 'function') {
+			return locatePath(paths, locateOptions);
+		}
+
+		const foundPath = await name(locateOptions.cwd);
+		if (typeof foundPath === 'string') {
+			return locatePath([foundPath], locateOptions);
+		}
+
+		return foundPath;
+	};
+
+	// eslint-disable-next-line no-constant-condition
+	while (true) {
+		// eslint-disable-next-line no-await-in-loop
+		const foundPath = await runMatcher({...options, cwd: directory});
+
+		if (foundPath === stop) {
+			return;
+		}
+
+		if (foundPath) {
+			return path.resolve(directory, foundPath);
+		}
+
+		if (directory === root) {
+			return;
+		}
+
+		directory = path.dirname(directory);
 	}
-}
-
-// The input can also be a promise, so we `Promise.resolve()` it
-const testElement = (el, tester) => Promise.resolve(el).then(tester);
-
-// The input can also be a promise, so we `Promise.all()` them both
-const finder = el => Promise.all(el).then(val => val[1] === true && Promise.reject(new EndError(val[0])));
-
-module.exports = (iterable, tester, opts) => {
-	opts = Object.assign({
-		concurrency: Infinity,
-		preserveOrder: true
-	}, opts);
-
-	const limit = pLimit(opts.concurrency);
-
-	// Start all the promises concurrently with optional limit
-	const items = [...iterable].map(el => [el, limit(testElement, el, tester)]);
-
-	// Check the promises either serially or concurrently
-	const checkLimit = pLimit(opts.preserveOrder ? 1 : Infinity);
-
-	return Promise.all(items.map(el => checkLimit(finder, el)))
-		.then(() => {})
-		.catch(err => err instanceof EndError ? err.value : Promise.reject(err));
 };
+
+module.exports.sync = (name, options = {}) => {
+	let directory = path.resolve(options.cwd || '');
+	const {root} = path.parse(directory);
+	const paths = [].concat(name);
+
+	const runMatcher = locateOptions => {
+		if (typeof name !== 'function') {
+			return locatePath.sync(paths, locateOptions);
+		}
+
+		const foundPath = name(locateOptions.cwd);
+		if (typeof foundPath === 'string') {
+			return locatePath.sync([foundPath], locateOptions);
+		}
+
+		return foundPath;
+	};
+
+	// eslint-disable-next-line no-constant-condition
+	while (true) {
+		const foundPath = runMatcher({...options, cwd: directory});
+
+		if (foundPath === stop) {
+			return;
+		}
+
+		if (foundPath) {
+			return path.resolve(directory, foundPath);
+		}
+
+		if (directory === root) {
+			return;
+		}
+
+		directory = path.dirname(directory);
+	}
+};
+
+module.exports.stop = stop;
 
 
 /***/ }),
@@ -45214,7 +45615,138 @@ module.exports = (iterable, tester, opts) => {
 
 "use strict";
 
-const pTry = __webpack_require__(186);
+const path = __webpack_require__(56);
+const fs = __webpack_require__(54);
+const {promisify} = __webpack_require__(40);
+const pLocate = __webpack_require__(186);
+
+const fsStat = promisify(fs.stat);
+const fsLStat = promisify(fs.lstat);
+
+const typeMappings = {
+	directory: 'isDirectory',
+	file: 'isFile'
+};
+
+function checkType({type}) {
+	if (type in typeMappings) {
+		return;
+	}
+
+	throw new Error(`Invalid type specified: ${type}`);
+}
+
+const matchType = (type, stat) => type === undefined || stat[typeMappings[type]]();
+
+module.exports = async (paths, options) => {
+	options = {
+		cwd: process.cwd(),
+		type: 'file',
+		allowSymlinks: true,
+		...options
+	};
+	checkType(options);
+	const statFn = options.allowSymlinks ? fsStat : fsLStat;
+
+	return pLocate(paths, async path_ => {
+		try {
+			const stat = await statFn(path.resolve(options.cwd, path_));
+			return matchType(options.type, stat);
+		} catch (_) {
+			return false;
+		}
+	}, options);
+};
+
+module.exports.sync = (paths, options) => {
+	options = {
+		cwd: process.cwd(),
+		allowSymlinks: true,
+		type: 'file',
+		...options
+	};
+	checkType(options);
+	const statFn = options.allowSymlinks ? fs.statSync : fs.lstatSync;
+
+	for (const path_ of paths) {
+		try {
+			const stat = statFn(path.resolve(options.cwd, path_));
+
+			if (matchType(options.type, stat)) {
+				return path_;
+			}
+		} catch (_) {
+		}
+	}
+};
+
+
+/***/ }),
+/* 186 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const pLimit = __webpack_require__(187);
+
+class EndError extends Error {
+	constructor(value) {
+		super();
+		this.value = value;
+	}
+}
+
+// The input can also be a promise, so we await it
+const testElement = async (element, tester) => tester(await element);
+
+// The input can also be a promise, so we `Promise.all()` them both
+const finder = async element => {
+	const values = await Promise.all(element);
+	if (values[1] === true) {
+		throw new EndError(values[0]);
+	}
+
+	return false;
+};
+
+const pLocate = async (iterable, tester, options) => {
+	options = {
+		concurrency: Infinity,
+		preserveOrder: true,
+		...options
+	};
+
+	const limit = pLimit(options.concurrency);
+
+	// Start all the promises concurrently with optional limit
+	const items = [...iterable].map(element => [element, limit(testElement, element, tester)]);
+
+	// Check the promises either serially or concurrently
+	const checkLimit = pLimit(options.preserveOrder ? 1 : Infinity);
+
+	try {
+		await Promise.all(items.map(element => checkLimit(finder, element)));
+	} catch (error) {
+		if (error instanceof EndError) {
+			return error.value;
+		}
+
+		throw error;
+	}
+};
+
+module.exports = pLocate;
+// TODO: Remove this for the next major release
+module.exports.default = pLocate;
+
+
+/***/ }),
+/* 187 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const pTry = __webpack_require__(188);
 
 const pLimit = concurrency => {
 	if (concurrency < 1) {
@@ -45268,7 +45800,7 @@ module.exports.default = pLimit;
 
 
 /***/ }),
-/* 186 */
+/* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45283,7 +45815,7 @@ module.exports.default = pTry;
 
 
 /***/ }),
-/* 187 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45293,17 +45825,18 @@ const tslib_1 = __webpack_require__(3);
 const os_1 = tslib_1.__importDefault(__webpack_require__(55));
 const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const types_1 = __webpack_require__(188);
-const object_1 = __webpack_require__(189);
-const util_1 = __webpack_require__(168);
-const configuration_1 = __webpack_require__(191);
-const model_1 = __webpack_require__(192);
-const util_2 = __webpack_require__(193);
-const is_1 = __webpack_require__(190);
-const find_up_1 = tslib_1.__importDefault(__webpack_require__(181));
-const logger = __webpack_require__(179)('configurations');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const vscode_uri_1 = __webpack_require__(174);
+const types_1 = __webpack_require__(190);
+const object_1 = __webpack_require__(191);
+const util_1 = __webpack_require__(171);
+const configuration_1 = __webpack_require__(193);
+const model_1 = __webpack_require__(194);
+const util_2 = __webpack_require__(195);
+const is_1 = __webpack_require__(192);
+const find_up_1 = tslib_1.__importDefault(__webpack_require__(184));
+const fs_2 = __webpack_require__(201);
+const logger = __webpack_require__(182)('configurations');
 function lookUp(tree, key) {
     if (key) {
         if (tree && tree.hasOwnProperty(key))
@@ -45340,7 +45873,7 @@ class Configurations {
     parseContentFromFile(filepath) {
         if (!filepath)
             return { contents: {} };
-        let uri = vscode_uri_1.default.file(filepath).toString();
+        let uri = vscode_uri_1.URI.file(filepath).toString();
         this._errorItems = this._errorItems.filter(o => o.location.uri != uri);
         let res = util_2.parseContentFromFile(filepath, errors => {
             this._errorItems.push(...errors);
@@ -45444,12 +45977,12 @@ class Configurations {
             affectsConfiguration: (section, resource) => {
                 if (!resource || target != types_1.ConfigurationTarget.Workspace)
                     return changed.indexOf(section) !== -1;
-                let u = vscode_uri_1.default.parse(resource);
+                let u = vscode_uri_1.URI.parse(resource);
                 if (u.scheme !== 'file')
                     return changed.indexOf(section) !== -1;
                 let filepath = u.fsPath;
                 let preRoot = workspaceConfigFile ? path_1.default.resolve(workspaceConfigFile, '../..') : '';
-                if (configFile && !filepath.startsWith(preRoot) && !filepath.startsWith(path_1.default.resolve(configFile, '../..'))) {
+                if (configFile && !fs_2.isParentFolder(preRoot, filepath) && !fs_2.isParentFolder(path_1.default.resolve(configFile, '../..'), filepath)) {
                     return false;
                 }
                 return changed.indexOf(section) !== -1;
@@ -45457,13 +45990,13 @@ class Configurations {
         });
     }
     setFolderConfiguration(uri) {
-        let u = vscode_uri_1.default.parse(uri);
+        let u = vscode_uri_1.URI.parse(uri);
         if (u.scheme != 'file')
             return;
         let filepath = u.fsPath;
         for (let [configFile, model] of this.foldConfigurations) {
             let root = path_1.default.resolve(configFile, '../..');
-            if (filepath.startsWith(root) && this.workspaceConfigFile != configFile) {
+            if (fs_2.isParentFolder(root, filepath) && this.workspaceConfigFile != configFile) {
                 this.changeConfiguration(types_1.ConfigurationTarget.Workspace, model, configFile);
                 break;
             }
@@ -45471,7 +46004,7 @@ class Configurations {
     }
     hasFolderConfiguration(filepath) {
         let { folders } = this;
-        return folders.findIndex(f => filepath.startsWith(f)) !== -1;
+        return folders.findIndex(f => fs_2.isParentFolder(f, filepath)) !== -1;
     }
     getConfigFile(target) {
         if (target == types_1.ConfigurationTarget.Global)
@@ -45571,19 +46104,19 @@ class Configurations {
         return object_1.deepFreeze(result);
     }
     getFolderConfiguration(uri) {
-        let u = vscode_uri_1.default.parse(uri);
+        let u = vscode_uri_1.URI.parse(uri);
         if (u.scheme != 'file')
             return new model_1.ConfigurationModel();
         let filepath = u.fsPath;
         for (let [configFile, model] of this.foldConfigurations) {
             let root = path_1.default.resolve(configFile, '../..');
-            if (filepath.startsWith(root))
+            if (fs_2.isParentFolder(root, filepath))
                 return model;
         }
         return new model_1.ConfigurationModel();
     }
     checkFolderConfiguration(uri) {
-        let u = vscode_uri_1.default.parse(uri);
+        let u = vscode_uri_1.URI.parse(uri);
         if (u.scheme != 'file')
             return;
         let rootPath = path_1.default.dirname(u.fsPath);
@@ -45614,7 +46147,7 @@ exports.default = Configurations;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 188 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45662,14 +46195,14 @@ var ServiceStat;
 //# sourceMappingURL=types.js.map
 
 /***/ }),
-/* 189 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const Is = tslib_1.__importStar(__webpack_require__(190));
+const Is = tslib_1.__importStar(__webpack_require__(192));
 function deepClone(obj) {
     if (!obj || typeof obj !== 'object') {
         return obj;
@@ -45796,7 +46329,7 @@ exports.equals = equals;
 //# sourceMappingURL=object.js.map
 
 /***/ }),
-/* 190 */
+/* 192 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -45850,13 +46383,13 @@ exports.typedArray = typedArray;
 //# sourceMappingURL=is.js.map
 
 /***/ }),
-/* 191 */
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const model_1 = __webpack_require__(192);
+const model_1 = __webpack_require__(194);
 class Configuration {
     constructor(_defaultConfiguration, _userConfiguration, _workspaceConfiguration, _memoryConfiguration = new model_1.ConfigurationModel()) {
         this._defaultConfiguration = _defaultConfiguration;
@@ -45913,15 +46446,15 @@ exports.Configuration = Configuration;
 //# sourceMappingURL=configuration.js.map
 
 /***/ }),
-/* 192 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const is_1 = __webpack_require__(190);
-const object_1 = __webpack_require__(189);
-const util_1 = __webpack_require__(193);
+const is_1 = __webpack_require__(192);
+const object_1 = __webpack_require__(191);
+const util_1 = __webpack_require__(195);
 class ConfigurationModel {
     constructor(_contents = {}) {
         this._contents = _contents;
@@ -45977,28 +46510,28 @@ exports.ConfigurationModel = ConfigurationModel;
 //# sourceMappingURL=model.js.map
 
 /***/ }),
-/* 193 */
+/* 195 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const jsonc_parser_1 = __webpack_require__(194);
-const is_1 = __webpack_require__(190);
-const object_1 = __webpack_require__(189);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const jsonc_parser_1 = __webpack_require__(196);
+const is_1 = __webpack_require__(192);
+const object_1 = __webpack_require__(191);
 const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
+const vscode_uri_1 = __webpack_require__(174);
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const logger = __webpack_require__(179)('configuration-util');
+const logger = __webpack_require__(182)('configuration-util');
 const isWebpack = typeof __webpack_require__ === "function";
 const pluginRoot = isWebpack ? path_1.default.dirname(__dirname) : path_1.default.resolve(__dirname, '../..');
 function parseContentFromFile(filepath, onError) {
     if (!filepath || !fs_1.default.existsSync(filepath))
         return { contents: {} };
     let content;
-    let uri = vscode_uri_1.default.file(filepath).toString();
+    let uri = vscode_uri_1.URI.file(filepath).toString();
     try {
         content = fs_1.default.readFileSync(filepath, 'utf8');
     }
@@ -46243,7 +46776,7 @@ exports.getChangedKeys = getChangedKeys;
 //# sourceMappingURL=util.js.map
 
 /***/ }),
-/* 194 */
+/* 196 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -46262,10 +46795,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "format", function() { return format; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "modify", function() { return modify; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "applyEdits", function() { return applyEdits; });
-/* harmony import */ var _impl_format__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(195);
-/* harmony import */ var _impl_edit__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(197);
-/* harmony import */ var _impl_scanner__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(196);
-/* harmony import */ var _impl_parser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(198);
+/* harmony import */ var _impl_format__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(197);
+/* harmony import */ var _impl_edit__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(199);
+/* harmony import */ var _impl_scanner__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(198);
+/* harmony import */ var _impl_parser__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(200);
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -46385,14 +46918,14 @@ function applyEdits(text, edits) {
 //# sourceMappingURL=main.js.map
 
 /***/ }),
-/* 195 */
+/* 197 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "format", function() { return format; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isEOL", function() { return isEOL; });
-/* harmony import */ var _scanner__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(196);
+/* harmony import */ var _scanner__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(198);
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -46590,7 +47123,7 @@ function isEOL(text, offset) {
 //# sourceMappingURL=format.js.map
 
 /***/ }),
-/* 196 */
+/* 198 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -46961,7 +47494,7 @@ function isDigit(ch) {
 //# sourceMappingURL=scanner.js.map
 
 /***/ }),
-/* 197 */
+/* 199 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -46970,8 +47503,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "setProperty", function() { return setProperty; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "applyEdit", function() { return applyEdit; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isWS", function() { return isWS; });
-/* harmony import */ var _format__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(195);
-/* harmony import */ var _parser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(198);
+/* harmony import */ var _format__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(197);
+/* harmony import */ var _parser__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(200);
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -47143,7 +47676,7 @@ function isWS(text, offset) {
 //# sourceMappingURL=edit.js.map
 
 /***/ }),
-/* 198 */
+/* 200 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -47158,7 +47691,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "findNodeAtOffset", function() { return findNodeAtOffset; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "visit", function() { return visit; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "stripComments", function() { return stripComments; });
-/* harmony import */ var _scanner__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(196);
+/* harmony import */ var _scanner__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(198);
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
@@ -47774,185 +48307,6 @@ function getLiteralNodeType(value) {
 //# sourceMappingURL=parser.js.map
 
 /***/ }),
-/* 199 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
-const jsonc_parser_1 = __webpack_require__(194);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const logger = __webpack_require__(179)('configuration-shape');
-class ConfigurationProxy {
-    constructor(workspace) {
-        this.workspace = workspace;
-    }
-    get nvim() {
-        return this.workspace.nvim;
-    }
-    async modifyConfiguration(target, key, value) {
-        let { nvim, workspace } = this;
-        let file = workspace.getConfigFile(target);
-        if (!file)
-            return;
-        let formattingOptions = await workspace.getFormatOptions();
-        let content = await workspace.readFile(vscode_uri_1.default.file(file).toString());
-        value = value == null ? undefined : value;
-        let edits = jsonc_parser_1.modify(content, [key], value, { formattingOptions });
-        content = jsonc_parser_1.applyEdits(content, edits);
-        fs_1.default.writeFileSync(file, content, 'utf8');
-        let doc = workspace.getDocument(vscode_uri_1.default.file(file).toString());
-        if (doc)
-            nvim.command('checktime', true);
-        return;
-    }
-    $updateConfigurationOption(target, key, value) {
-        this.modifyConfiguration(target, key, value); // tslint:disable-line
-    }
-    $removeConfigurationOption(target, key) {
-        this.modifyConfiguration(target, key); // tslint:disable-line
-    }
-}
-exports.default = ConfigurationProxy;
-//# sourceMappingURL=shape.js.map
-
-/***/ }),
-/* 200 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
-const fsAsync = tslib_1.__importStar(__webpack_require__(201));
-const util_1 = __webpack_require__(168);
-class DB {
-    constructor(filepath) {
-        this.filepath = filepath;
-    }
-    async fetch(key) {
-        let obj = await this.load();
-        if (obj == null)
-            return undefined;
-        if (!key)
-            return obj;
-        let parts = key.split('.');
-        for (let part of parts) {
-            if (typeof obj[part] == 'undefined') {
-                return undefined;
-            }
-            obj = obj[part];
-        }
-        return obj;
-    }
-    fetchSync(key) {
-        try {
-            let content = fs_1.default.readFileSync(this.filepath, 'utf8');
-            let obj = JSON.parse(content);
-            if (obj == null)
-                return undefined;
-            let parts = key.split('.');
-            for (let part of parts) {
-                if (typeof obj[part] == 'undefined') {
-                    return undefined;
-                }
-                obj = obj[part];
-            }
-        }
-        catch (e) {
-            return undefined;
-        }
-    }
-    async exists(key) {
-        let obj = await this.load();
-        if (obj == null)
-            return false;
-        let parts = key.split('.');
-        for (let part of parts) {
-            if (typeof obj[part] == 'undefined') {
-                return false;
-            }
-            obj = obj[part];
-        }
-        return true;
-    }
-    async delete(key) {
-        let obj = await this.load();
-        if (obj == null)
-            return;
-        let origin = obj;
-        let parts = key.split('.');
-        let len = parts.length;
-        for (let i = 0; i < len; i++) {
-            if (typeof obj[parts[i]] == 'undefined') {
-                break;
-            }
-            if (i == len - 1) {
-                delete obj[parts[i]];
-                await fsAsync.writeFile(this.filepath, JSON.stringify(origin, null, 2));
-                break;
-            }
-            obj = obj[parts[i]];
-        }
-    }
-    async push(key, data) {
-        let origin = (await this.load()) || {};
-        let obj = origin;
-        let parts = key.split('.');
-        let len = parts.length;
-        if (obj == null) {
-            let dir = path_1.default.dirname(this.filepath);
-            await util_1.mkdirp(dir);
-            obj = origin;
-        }
-        for (let i = 0; i < len; i++) {
-            let key = parts[i];
-            if (i == len - 1) {
-                obj[key] = data;
-                await fsAsync.writeFile(this.filepath, JSON.stringify(origin, null, 2));
-                break;
-            }
-            if (typeof obj[key] == 'undefined') {
-                obj[key] = {};
-                obj = obj[key];
-            }
-            else {
-                obj = obj[key];
-            }
-        }
-    }
-    async load() {
-        let stat = await fsAsync.statAsync(this.filepath);
-        if (!stat || !stat.isFile())
-            return null;
-        let content = await fsAsync.readFile(this.filepath, 'utf8');
-        if (!content.trim())
-            return {};
-        try {
-            return JSON.parse(content);
-        }
-        catch (e) {
-            return null;
-        }
-    }
-    async clear() {
-        let stat = await fsAsync.statAsync(this.filepath);
-        if (!stat || !stat.isFile())
-            return;
-        await fsAsync.writeFile(this.filepath, '');
-    }
-    async destroy() {
-        await fsAsync.unlinkAsync(this.filepath);
-    }
-}
-exports.default = DB;
-//# sourceMappingURL=db.js.map
-
-/***/ }),
 /* 201 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -47960,15 +48314,15 @@ exports.default = DB;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const child_process_1 = __webpack_require__(169);
+const child_process_1 = __webpack_require__(172);
 const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
 const net_1 = tslib_1.__importDefault(__webpack_require__(6));
 const os_1 = tslib_1.__importDefault(__webpack_require__(55));
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
 const readline_1 = tslib_1.__importDefault(__webpack_require__(59));
 const util_1 = tslib_1.__importDefault(__webpack_require__(40));
-const minimatch = __webpack_require__(202);
-const logger = __webpack_require__(179)('util-fs');
+const minimatch_1 = tslib_1.__importDefault(__webpack_require__(202));
+const logger = __webpack_require__(182)('util-fs');
 async function statAsync(filepath) {
     let stat = null;
     try {
@@ -48025,12 +48379,12 @@ async function isGitIgnored(fullpath) {
 exports.isGitIgnored = isGitIgnored;
 function resolveRoot(dir, subs, cwd) {
     let home = os_1.default.homedir();
-    if (home.startsWith(dir))
+    if (isParentFolder(dir, home))
         return null;
     let { root } = path_1.default.parse(dir);
     if (root == dir)
         return null;
-    if (cwd && cwd != home && dir.startsWith(cwd) && inDirectory(cwd, subs))
+    if (cwd && cwd != home && isParentFolder(cwd, dir) && inDirectory(cwd, subs))
         return cwd;
     let parts = dir.split(path_1.default.sep);
     let curr = [parts.shift()];
@@ -48051,7 +48405,7 @@ function inDirectory(dir, subs) {
             // note, only '*' expanded
             let is_wildcard = (pattern.indexOf('*') !== -1);
             let res = is_wildcard ?
-                (minimatch.match(files, pattern, { nobrace: true, noext: true, nocomment: true, nonegate: true, dot: true }).length !== 0) :
+                (minimatch_1.default.match(files, pattern, { nobrace: true, noext: true, nocomment: true, nonegate: true, dot: true }).length !== 0) :
                 (files.indexOf(pattern) !== -1);
             if (res)
                 return true;
@@ -48116,6 +48470,23 @@ function isFile(uri) {
 exports.isFile = isFile;
 exports.readdirAsync = util_1.default.promisify(fs_1.default.readdir);
 exports.realpathAsync = util_1.default.promisify(fs_1.default.realpath);
+function parentDirs(pth) {
+    let { root, dir } = path_1.default.parse(pth);
+    if (dir === root)
+        return [root];
+    const dirs = [root];
+    const parts = dir.slice(root.length).split(path_1.default.sep);
+    for (let i = 1; i <= parts.length; i++) {
+        dirs.push(path_1.default.join(root, parts.slice(0, i).join(path_1.default.sep)));
+    }
+    return dirs;
+}
+exports.parentDirs = parentDirs;
+function isParentFolder(folder, filepath) {
+    let rel = path_1.default.relative(folder, filepath);
+    return !rel.startsWith('..');
+}
+exports.isParentFolder = isParentFolder;
 //# sourceMappingURL=fs.js.map
 
 /***/ }),
@@ -49347,9 +49718,188 @@ function range(a, b, str) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const util_1 = __webpack_require__(168);
+const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
+const jsonc_parser_1 = __webpack_require__(196);
+const vscode_uri_1 = __webpack_require__(174);
+const logger = __webpack_require__(182)('configuration-shape');
+class ConfigurationProxy {
+    constructor(workspace) {
+        this.workspace = workspace;
+    }
+    get nvim() {
+        return this.workspace.nvim;
+    }
+    async modifyConfiguration(target, key, value) {
+        let { nvim, workspace } = this;
+        let file = workspace.getConfigFile(target);
+        if (!file)
+            return;
+        let formattingOptions = await workspace.getFormatOptions();
+        let content = await workspace.readFile(vscode_uri_1.URI.file(file).toString());
+        value = value == null ? undefined : value;
+        let edits = jsonc_parser_1.modify(content, [key], value, { formattingOptions });
+        content = jsonc_parser_1.applyEdits(content, edits);
+        fs_1.default.writeFileSync(file, content, 'utf8');
+        let doc = workspace.getDocument(vscode_uri_1.URI.file(file).toString());
+        if (doc)
+            nvim.command('checktime', true);
+        return;
+    }
+    $updateConfigurationOption(target, key, value) {
+        this.modifyConfiguration(target, key, value); // tslint:disable-line
+    }
+    $removeConfigurationOption(target, key) {
+        this.modifyConfiguration(target, key); // tslint:disable-line
+    }
+}
+exports.default = ConfigurationProxy;
+//# sourceMappingURL=shape.js.map
+
+/***/ }),
+/* 207 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const path_1 = tslib_1.__importDefault(__webpack_require__(56));
+const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
+const fsAsync = tslib_1.__importStar(__webpack_require__(201));
+const util_1 = __webpack_require__(171);
+class DB {
+    constructor(filepath) {
+        this.filepath = filepath;
+    }
+    async fetch(key) {
+        let obj = await this.load();
+        if (obj == null)
+            return undefined;
+        if (!key)
+            return obj;
+        let parts = key.split('.');
+        for (let part of parts) {
+            if (typeof obj[part] == 'undefined') {
+                return undefined;
+            }
+            obj = obj[part];
+        }
+        return obj;
+    }
+    fetchSync(key) {
+        try {
+            let content = fs_1.default.readFileSync(this.filepath, 'utf8');
+            let obj = JSON.parse(content);
+            if (obj == null)
+                return undefined;
+            let parts = key.split('.');
+            for (let part of parts) {
+                if (typeof obj[part] == 'undefined') {
+                    return undefined;
+                }
+                obj = obj[part];
+            }
+        }
+        catch (e) {
+            return undefined;
+        }
+    }
+    async exists(key) {
+        let obj = await this.load();
+        if (obj == null)
+            return false;
+        let parts = key.split('.');
+        for (let part of parts) {
+            if (typeof obj[part] == 'undefined') {
+                return false;
+            }
+            obj = obj[part];
+        }
+        return true;
+    }
+    async delete(key) {
+        let obj = await this.load();
+        if (obj == null)
+            return;
+        let origin = obj;
+        let parts = key.split('.');
+        let len = parts.length;
+        for (let i = 0; i < len; i++) {
+            if (typeof obj[parts[i]] == 'undefined') {
+                break;
+            }
+            if (i == len - 1) {
+                delete obj[parts[i]];
+                await fsAsync.writeFile(this.filepath, JSON.stringify(origin, null, 2));
+                break;
+            }
+            obj = obj[parts[i]];
+        }
+    }
+    async push(key, data) {
+        let origin = (await this.load()) || {};
+        let obj = origin;
+        let parts = key.split('.');
+        let len = parts.length;
+        if (obj == null) {
+            let dir = path_1.default.dirname(this.filepath);
+            await util_1.mkdirp(dir);
+            obj = origin;
+        }
+        for (let i = 0; i < len; i++) {
+            let key = parts[i];
+            if (i == len - 1) {
+                obj[key] = data;
+                await fsAsync.writeFile(this.filepath, JSON.stringify(origin, null, 2));
+                break;
+            }
+            if (typeof obj[key] == 'undefined') {
+                obj[key] = {};
+                obj = obj[key];
+            }
+            else {
+                obj = obj[key];
+            }
+        }
+    }
+    async load() {
+        let stat = await fsAsync.statAsync(this.filepath);
+        if (!stat || !stat.isFile())
+            return null;
+        let content = await fsAsync.readFile(this.filepath, 'utf8');
+        if (!content.trim())
+            return {};
+        try {
+            return JSON.parse(content);
+        }
+        catch (e) {
+            return null;
+        }
+    }
+    async clear() {
+        let stat = await fsAsync.statAsync(this.filepath);
+        if (!stat || !stat.isFile())
+            return;
+        await fsAsync.writeFile(this.filepath, '');
+    }
+    async destroy() {
+        await fsAsync.unlinkAsync(this.filepath);
+    }
+}
+exports.default = DB;
+//# sourceMappingURL=db.js.map
+
+/***/ }),
+/* 208 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const util_1 = __webpack_require__(171);
 /**
  * Task - task run by vim
  * @public
@@ -49406,23 +49956,23 @@ exports.default = Task;
 //# sourceMappingURL=task.js.map
 
 /***/ }),
-/* 207 */
+/* 209 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const debounce_1 = tslib_1.__importDefault(__webpack_require__(170));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const diff_1 = __webpack_require__(208);
+const debounce_1 = tslib_1.__importDefault(__webpack_require__(173));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const vscode_uri_1 = __webpack_require__(174);
+const diff_1 = __webpack_require__(210);
 const fs_1 = __webpack_require__(201);
-const index_1 = __webpack_require__(168);
-const string_1 = __webpack_require__(210);
-const chars_1 = __webpack_require__(211);
-const array_1 = __webpack_require__(212);
-const logger = __webpack_require__(179)('model-document');
+const index_1 = __webpack_require__(171);
+const string_1 = __webpack_require__(212);
+const chars_1 = __webpack_require__(213);
+const array_1 = __webpack_require__(214);
+const logger = __webpack_require__(182)('model-document');
 // wrapper class of TextDocument
 class Document {
     constructor(buffer, env) {
@@ -49436,6 +49986,7 @@ class Document {
         this.attached = false;
         // real current lines
         this.lines = [];
+        this._additionalKeywords = [];
         this._words = [];
         this._onDocumentChange = new vscode_languageserver_protocol_1.Emitter();
         this._onDocumentDetach = new vscode_languageserver_protocol_1.Emitter();
@@ -49450,7 +50001,8 @@ class Document {
             });
         }, 50);
     }
-    shouldAttach(buftype) {
+    get shouldAttach() {
+        let { buftype } = this;
         if (this.uri.endsWith('%5BCommand%20Line%5D'))
             return true;
         return buftype == '' || buftype == 'acwrite';
@@ -49486,7 +50038,7 @@ class Document {
         return this._changedtick;
     }
     get schema() {
-        return vscode_uri_1.default.parse(this.uri).scheme;
+        return vscode_uri_1.URI.parse(this.uri).scheme;
     }
     get lineCount() {
         return this.lines.length;
@@ -49498,6 +50050,8 @@ class Document {
         if (opts == null)
             return false;
         let buftype = this.buftype = opts.buftype;
+        this.variables = opts.variables;
+        this._additionalKeywords = opts.additionalKeywords;
         this._changedtick = opts.changedtick;
         this._rootPatterns = opts.rootPatterns;
         this.eol = opts.eol == 1;
@@ -49530,19 +50084,13 @@ class Document {
     }
     setIskeyword(iskeyword) {
         let chars = (this.chars = new chars_1.Chars(iskeyword));
-        this.buffer.getVar('coc_additional_keywords').then((keywords) => {
-            if (keywords && keywords.length) {
-                for (let ch of keywords) {
-                    chars.addKeyword(ch);
-                }
-                this._words = this.chars.matchKeywords(this.lines.join('\n'));
-            }
-        }, _e => {
-            // noop
-        });
+        for (let ch of this._additionalKeywords) {
+            chars.addKeyword(ch);
+        }
+        this._words = this.chars.matchKeywords(this.lines.join('\n'));
     }
     async attach() {
-        if (this.shouldAttach(this.buftype)) {
+        if (this.shouldAttach) {
             let attached = await this.buffer.attach(false);
             if (!attached)
                 return false;
@@ -49718,12 +50266,6 @@ class Document {
     }
     /**
      * Current word for replacement
-     *
-     * @public
-     * @param {Position} position
-     * @param {string} extraChars?
-     * @param {boolean} current? - use current line
-     * @returns {Range}
      */
     getWordRangeAtPosition(position, extraChars, current = true) {
         let chars = this.chars.clone();
@@ -49760,7 +50302,7 @@ class Document {
         let { uri } = this;
         if (!uri.startsWith('file') || this.buftype != '')
             return;
-        let filepath = vscode_uri_1.default.parse(uri).fsPath;
+        let filepath = vscode_uri_1.URI.parse(uri).fsPath;
         fs_1.isGitIgnored(filepath).then(isIgnored => {
             this.isIgnored = isIgnored;
         }, () => {
@@ -49966,11 +50508,6 @@ class Document {
     }
     /**
      * Real current line
-     *
-     * @public
-     * @param {number} line - zero based line number
-     * @param {boolean} current - use current line
-     * @returns {string}
      */
     getline(line, current = true) {
         if (current)
@@ -49982,6 +50519,10 @@ class Document {
         let content = this.lines.join('\n');
         return this.eol ? content + '\n' : content;
     }
+    getVar(key, defaultValue) {
+        let val = this.variables[`coc_${key}`];
+        return val === undefined ? defaultValue : val;
+    }
     get rootPatterns() {
         return this._rootPatterns;
     }
@@ -49990,16 +50531,16 @@ exports.default = Document;
 //# sourceMappingURL=document.js.map
 
 /***/ }),
-/* 208 */
+/* 210 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const fast_diff_1 = tslib_1.__importDefault(__webpack_require__(209));
-const string_1 = __webpack_require__(210);
-const logger = __webpack_require__(179)('util-diff');
+const fast_diff_1 = tslib_1.__importDefault(__webpack_require__(211));
+const string_1 = __webpack_require__(212);
+const logger = __webpack_require__(182)('util-diff');
 function diffLines(from, to) {
     let newLines = to.split('\n');
     let oldLines = from.split('\n');
@@ -50090,7 +50631,7 @@ exports.patchLine = patchLine;
 //# sourceMappingURL=diff.js.map
 
 /***/ }),
-/* 209 */
+/* 211 */
 /***/ (function(module, exports) {
 
 /**
@@ -50870,7 +51411,7 @@ module.exports = diff;
 
 
 /***/ }),
-/* 210 */
+/* 212 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -50952,16 +51493,59 @@ function resolveVariables(str, variables) {
     });
 }
 exports.resolveVariables = resolveVariables;
+function isAsciiLetter(code) {
+    if (code >= 65 && code <= 90)
+        return true;
+    if (code >= 97 && code <= 122)
+        return true;
+    return false;
+}
+exports.isAsciiLetter = isAsciiLetter;
+function doEqualsIgnoreCase(a, b, stopAt = a.length) {
+    if (typeof a !== 'string' || typeof b !== 'string') {
+        return false;
+    }
+    for (let i = 0; i < stopAt; i++) {
+        const codeA = a.charCodeAt(i);
+        const codeB = b.charCodeAt(i);
+        if (codeA === codeB) {
+            continue;
+        }
+        // a-z A-Z
+        if (isAsciiLetter(codeA) && isAsciiLetter(codeB)) {
+            const diff = Math.abs(codeA - codeB);
+            if (diff !== 0 && diff !== 32) {
+                return false;
+            }
+        }
+        // Any other charcode
+        else {
+            if (String.fromCharCode(codeA).toLowerCase() !== String.fromCharCode(codeB).toLowerCase()) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+function equalsIgnoreCase(a, b) {
+    const len1 = a ? a.length : 0;
+    const len2 = b ? b.length : 0;
+    if (len1 !== len2) {
+        return false;
+    }
+    return doEqualsIgnoreCase(a, b);
+}
+exports.equalsIgnoreCase = equalsIgnoreCase;
 //# sourceMappingURL=string.js.map
 
 /***/ }),
-/* 211 */
+/* 213 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const logger = __webpack_require__(179)('model-chars');
+const logger = __webpack_require__(182)('model-chars');
 class Range {
     constructor(start, end) {
         this.start = start;
@@ -51089,7 +51673,7 @@ exports.Chars = Chars;
 //# sourceMappingURL=chars.js.map
 
 /***/ }),
-/* 212 */
+/* 214 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51153,18 +51737,17 @@ exports.flatMap = (xs, f) => xs.reduce((x, y) => [...x, ...f(y)], []);
 //# sourceMappingURL=array.js.map
 
 /***/ }),
-/* 213 */
+/* 215 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const vscode_uri_1 = __webpack_require__(174);
 const path = __webpack_require__(56);
-const util_1 = __webpack_require__(168);
-const logger = __webpack_require__(179)('filesystem-watcher');
+const util_1 = __webpack_require__(171);
+const logger = __webpack_require__(182)('filesystem-watcher');
 class FileSystemWatcher {
     constructor(clientPromise, globPattern, ignoreCreateEvents, ignoreChangeEvents, ignoreDeleteEvents) {
         this.globPattern = globPattern;
@@ -51196,7 +51779,7 @@ class FileSystemWatcher {
             let { root, files } = change;
             files = files.filter(f => f.type == 'f');
             for (let file of files) {
-                let uri = vscode_uri_1.default.file(path.join(root, file.name));
+                let uri = vscode_uri_1.URI.file(path.join(root, file.name));
                 if (!file.exists) {
                     if (!ignoreDeleteEvents)
                         this._onDidDelete.fire(uri);
@@ -51217,8 +51800,8 @@ class FileSystemWatcher {
                 let newFile = files[1];
                 if (oldFile.size == newFile.size) {
                     this._onDidRename.fire({
-                        oldUri: vscode_uri_1.default.file(path.join(root, oldFile.name)),
-                        newUri: vscode_uri_1.default.file(path.join(root, newFile.name))
+                        oldUri: vscode_uri_1.URI.file(path.join(root, oldFile.name)),
+                        newUri: vscode_uri_1.URI.file(path.join(root, newFile.name))
                     });
                 }
             }
@@ -51234,7 +51817,7 @@ exports.default = FileSystemWatcher;
 //# sourceMappingURL=fileSystemWatcher.js.map
 
 /***/ }),
-/* 214 */
+/* 216 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51291,16 +51874,16 @@ exports.default = Mru;
 //# sourceMappingURL=mru.js.map
 
 /***/ }),
-/* 215 */
+/* 217 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const util_1 = __webpack_require__(168);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)("outpubChannel");
+const util_1 = __webpack_require__(171);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)("outpubChannel");
 class BufferChannel {
     constructor(name, nvim) {
         this.name = name;
@@ -51412,7 +51995,7 @@ exports.default = BufferChannel;
 //# sourceMappingURL=outputChannel.js.map
 
 /***/ }),
-/* 216 */
+/* 218 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51420,10 +52003,10 @@ exports.default = BufferChannel;
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const util_1 = __webpack_require__(168);
+const util_1 = __webpack_require__(171);
 const fs_1 = __webpack_require__(201);
-const decorator_1 = __webpack_require__(217);
-const logger = __webpack_require__(179)('model-resolver');
+const decorator_1 = __webpack_require__(219);
+const logger = __webpack_require__(182)('model-resolver');
 class Resolver {
     get nodeFolder() {
         if (!util_1.executable('npm'))
@@ -51465,13 +52048,13 @@ exports.default = Resolver;
 //# sourceMappingURL=resolver.js.map
 
 /***/ }),
-/* 217 */
+/* 219 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const logger = __webpack_require__(179)('util-decorator');
+const logger = __webpack_require__(182)('util-decorator');
 function memorize(_target, key, descriptor) {
     let fn = descriptor.get;
     if (typeof fn !== 'function')
@@ -51494,14 +52077,14 @@ exports.memorize = memorize;
 //# sourceMappingURL=decorator.js.map
 
 /***/ }),
-/* 218 */
+/* 220 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const uuidv1 = __webpack_require__(219);
-const logger = __webpack_require__(179)('model-status');
+const uuidv1 = __webpack_require__(221);
+const logger = __webpack_require__(182)('model-status');
 const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
 class StatusLine {
     constructor(nvim) {
@@ -51574,11 +52157,11 @@ exports.default = StatusLine;
 //# sourceMappingURL=status.js.map
 
 /***/ }),
-/* 219 */
+/* 221 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var rng = __webpack_require__(220);
-var bytesToUuid = __webpack_require__(221);
+var rng = __webpack_require__(222);
+var bytesToUuid = __webpack_require__(223);
 
 // **`v1()` - Generate time-based UUID**
 //
@@ -51689,13 +52272,13 @@ module.exports = v1;
 
 
 /***/ }),
-/* 220 */
+/* 222 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Unique ID creation requires a high quality random # generator.  In node.js
 // this is pretty straight-forward - we use the crypto API.
 
-var crypto = __webpack_require__(153);
+var crypto = __webpack_require__(156);
 
 module.exports = function nodeRNG() {
   return crypto.randomBytes(16);
@@ -51703,7 +52286,7 @@ module.exports = function nodeRNG() {
 
 
 /***/ }),
-/* 221 */
+/* 223 */
 /***/ (function(module, exports) {
 
 /**
@@ -51733,14 +52316,14 @@ module.exports = bytesToUuid;
 
 
 /***/ }),
-/* 222 */
+/* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const isVim = process.env.VIM_NODE_RPC == '1';
-const logger = __webpack_require__(179)('model-terminal');
+const logger = __webpack_require__(182)('model-terminal');
 class TerminalModel {
     constructor(cmd, args, nvim, _name) {
         this.cmd = cmd;
@@ -51832,15 +52415,15 @@ exports.default = TerminalModel;
 //# sourceMappingURL=terminal.js.map
 
 /***/ }),
-/* 223 */
+/* 225 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const util_1 = __webpack_require__(168);
-const logger = __webpack_require__(179)('willSaveHandler');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const util_1 = __webpack_require__(171);
+const logger = __webpack_require__(182)('willSaveHandler');
 class WillSaveUntilHandler {
     constructor(workspace) {
         this.workspace = workspace;
@@ -51931,7 +52514,7 @@ exports.default = WillSaveUntilHandler;
 //# sourceMappingURL=willSaveHandler.js.map
 
 /***/ }),
-/* 224 */
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -51939,7 +52522,7 @@ exports.default = WillSaveUntilHandler;
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
 const minimatch_1 = tslib_1.__importDefault(__webpack_require__(202));
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
+const vscode_uri_1 = __webpack_require__(174);
 function score(selector, uri, languageId) {
     if (Array.isArray(selector)) {
         // array -> take max individual value
@@ -51970,7 +52553,7 @@ function score(selector, uri, languageId) {
         }
     }
     else if (selector) {
-        let u = vscode_uri_1.default.parse(uri);
+        let u = vscode_uri_1.URI.parse(uri);
         // filter -> select accordingly, use defaults for scheme
         const { language, pattern, scheme } = selector;
         let ret = 0;
@@ -52014,19 +52597,19 @@ exports.score = score;
 //# sourceMappingURL=match.js.map
 
 /***/ }),
-/* 225 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const fb_watchman_1 = tslib_1.__importDefault(__webpack_require__(226));
+const fb_watchman_1 = tslib_1.__importDefault(__webpack_require__(228));
 const os_1 = tslib_1.__importDefault(__webpack_require__(55));
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const uuidv1 = __webpack_require__(219);
-const vscode_jsonrpc_1 = __webpack_require__(144);
-const logger = __webpack_require__(179)('watchman');
+const uuidv1 = __webpack_require__(221);
+const vscode_jsonrpc_1 = __webpack_require__(147);
+const logger = __webpack_require__(182)('watchman');
 const requiredCapabilities = ['relative_root', 'cmd-watch-project', 'wildmatch'];
 const clientsMap = new Map();
 /**
@@ -52186,7 +52769,7 @@ exports.default = Watchman;
 //# sourceMappingURL=watchman.js.map
 
 /***/ }),
-/* 226 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -52198,8 +52781,8 @@ exports.default = Watchman;
 var net = __webpack_require__(6);
 var EE = __webpack_require__(49).EventEmitter;
 var util = __webpack_require__(40);
-var childProcess = __webpack_require__(169);
-var bser = __webpack_require__(227);
+var childProcess = __webpack_require__(172);
+var bser = __webpack_require__(229);
 
 // We'll emit the responses to these when they get sent down to us
 var unilateralTags = ['subscription', 'log'];
@@ -52515,7 +53098,7 @@ Client.prototype.end = function() {
 
 
 /***/ }),
-/* 227 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* Copyright 2015-present Facebook, Inc.
@@ -52524,8 +53107,8 @@ Client.prototype.end = function() {
 var EE = __webpack_require__(49).EventEmitter;
 var util = __webpack_require__(40);
 var os = __webpack_require__(55);
-var assert = __webpack_require__(104);
-var Int64 = __webpack_require__(228);
+var assert = __webpack_require__(107);
+var Int64 = __webpack_require__(230);
 
 // BSER uses the local endianness to reduce byte swapping overheads
 // (the protocol is expressly local IPC only).  We need to tell node
@@ -53106,7 +53689,7 @@ function dumpToBuffer(val) {
 exports.dumpToBuffer = dumpToBuffer
 
 /***/ }),
-/* 228 */
+/* 230 */
 /***/ (function(module, exports) {
 
 //     Int64.js
@@ -53380,7 +53963,7 @@ Int64.prototype = {
 
 
 /***/ }),
-/* 229 */
+/* 231 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53520,7 +54103,7 @@ exports.getChangedFromEdits = getChangedFromEdits;
 //# sourceMappingURL=position.js.map
 
 /***/ }),
-/* 230 */
+/* 232 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53528,22 +54111,23 @@ exports.getChangedFromEdits = getChangedFromEdits;
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
 const events_1 = __webpack_require__(49);
-const https_1 = tslib_1.__importDefault(__webpack_require__(231));
+const https_1 = tslib_1.__importDefault(__webpack_require__(233));
 const semver_1 = tslib_1.__importDefault(__webpack_require__(1));
-const commands_1 = tslib_1.__importDefault(__webpack_require__(232));
-const completion_1 = tslib_1.__importDefault(__webpack_require__(235));
-const manager_1 = tslib_1.__importDefault(__webpack_require__(256));
-const extensions_1 = tslib_1.__importDefault(__webpack_require__(237));
-const handler_1 = tslib_1.__importDefault(__webpack_require__(337));
-const manager_2 = tslib_1.__importDefault(__webpack_require__(302));
-const services_1 = tslib_1.__importDefault(__webpack_require__(289));
-const manager_3 = tslib_1.__importDefault(__webpack_require__(233));
-const sources_1 = tslib_1.__importDefault(__webpack_require__(236));
-const types_1 = __webpack_require__(188);
-const clean_1 = tslib_1.__importDefault(__webpack_require__(343));
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const debounce = __webpack_require__(170);
-const logger = __webpack_require__(179)('plugin');
+const vscode_languageserver_types_1 = __webpack_require__(158);
+const commands_1 = tslib_1.__importDefault(__webpack_require__(234));
+const completion_1 = tslib_1.__importDefault(__webpack_require__(238));
+const manager_1 = tslib_1.__importDefault(__webpack_require__(248));
+const extensions_1 = tslib_1.__importDefault(__webpack_require__(240));
+const handler_1 = tslib_1.__importDefault(__webpack_require__(330));
+const manager_2 = tslib_1.__importDefault(__webpack_require__(293));
+const services_1 = tslib_1.__importDefault(__webpack_require__(280));
+const manager_3 = tslib_1.__importDefault(__webpack_require__(235));
+const sources_1 = tslib_1.__importDefault(__webpack_require__(239));
+const types_1 = __webpack_require__(190);
+const clean_1 = tslib_1.__importDefault(__webpack_require__(336));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const debounce = __webpack_require__(173);
+const logger = __webpack_require__(182)('plugin');
 class Plugin extends events_1.EventEmitter {
     constructor(nvim) {
         super();
@@ -53557,6 +54141,9 @@ class Plugin extends events_1.EventEmitter {
         });
         this.addMethod('listNames', () => {
             return manager_2.default.names;
+        });
+        this.addMethod('codeActionRange', (start, end, only) => {
+            return this.handler.codeActionRange(start, end, only);
         });
         this.addMethod('rootPatterns', bufnr => {
             let doc = workspace_1.default.getDocument(bufnr);
@@ -53630,13 +54217,13 @@ class Plugin extends events_1.EventEmitter {
             nvim.call(`coc#util#open_file`, ['edit', file], true);
         });
         this.addMethod('doKeymap', async (key, defaultReturn = '') => {
-            let [fn, isPlug] = workspace_1.default.keymaps.get(key);
+            let [fn, repeat] = workspace_1.default.keymaps.get(key);
             if (!fn) {
                 logger.error(`keymap for ${key} not found`);
                 return defaultReturn;
             }
             let res = await Promise.resolve(fn());
-            if (isPlug)
+            if (repeat)
                 await nvim.command(`silent! call repeat#set("\\<Plug>(coc-${key})", -1)`);
             return res || defaultReturn;
         });
@@ -53656,6 +54243,14 @@ class Plugin extends events_1.EventEmitter {
             value: fn
         });
     }
+    addCommand(cmd) {
+        let id = `vim.${cmd.id}`;
+        commands_1.default.registerCommand(id, async () => {
+            await this.nvim.command(cmd.cmd);
+        });
+        if (cmd.title)
+            commands_1.default.titles.set(id, cmd.title);
+    }
     async init() {
         let { nvim } = this;
         try {
@@ -53674,8 +54269,19 @@ class Plugin extends events_1.EventEmitter {
             nvim.setVar('coc_service_initialized', 1, true);
             nvim.call('coc#_init', [], true);
             this._ready = true;
+            let cmds = await nvim.getVar('coc_vim_commands');
+            if (cmds && cmds.length) {
+                for (let cmd of cmds) {
+                    this.addCommand(cmd);
+                }
+            }
             logger.info(`coc ${this.version} initialized with node: ${process.version}`);
             this.emit('ready');
+            if (workspace_1.default.isVim) {
+                let updatetime = await nvim.getOption('updatetime');
+                if (updatetime > 1000)
+                    workspace_1.default.showMessage(`Option 'updatetime' is ${updatetime}, position jump can be quite slow, consider make it <= 300`, 'warning');
+            }
         }
         catch (e) {
             this._ready = false;
@@ -53687,9 +54293,7 @@ class Plugin extends events_1.EventEmitter {
                 return;
             if (extensions_1.default.has('coc-json') || extensions_1.default.isDisabled('coc-json'))
                 return;
-            let res = await workspace_1.default.showPrompt('Install coc-json for json intellisense?');
-            if (res)
-                await this.nvim.command('CocInstall coc-json');
+            workspace_1.default.showMessage(`Run :CocInstall coc-json for json intellisense`, 'more');
         });
     }
     get isReady() {
@@ -53755,7 +54359,7 @@ class Plugin extends events_1.EventEmitter {
         return false;
     }
     get version() {
-        return workspace_1.default.version + ( true ? '-' + "5787dbedd5" : undefined);
+        return workspace_1.default.version + ( true ? '-' + "99537d3c52" : undefined);
     }
     async showInfo() {
         if (!this.infoChannel) {
@@ -53774,7 +54378,7 @@ class Plugin extends events_1.EventEmitter {
         channel.appendLine('term: ' + (process.env.TERM_PROGRAM || process.env.TERM));
         channel.appendLine('platform: ' + process.platform);
         channel.appendLine('');
-        channel.appendLine('## Error messages');
+        channel.appendLine('## Messages');
         let msgs = await this.nvim.call('coc#rpc#get_errors');
         channel.append(msgs.join('\n'));
         channel.appendLine('');
@@ -53858,8 +54462,7 @@ class Plugin extends events_1.EventEmitter {
                     break;
                 }
                 case 'fold': {
-                    await handler.fold(args[1]);
-                    break;
+                    return await handler.fold(args[1]);
                 }
                 case 'startCompletion':
                     await completion_1.default.startCompletion(args[1]);
@@ -53884,26 +54487,19 @@ class Plugin extends events_1.EventEmitter {
                 case 'diagnosticList':
                     return manager_1.default.getDiagnosticList();
                 case 'jumpDefinition':
-                    await handler.gotoDefinition(args[1]);
-                    break;
+                    return await handler.gotoDefinition(args[1]);
                 case 'jumpDeclaration':
-                    await handler.gotoDeclaration(args[1]);
-                    break;
+                    return await handler.gotoDeclaration(args[1]);
                 case 'jumpImplementation':
-                    await handler.gotoImplementation(args[1]);
-                    break;
+                    return await handler.gotoImplementation(args[1]);
                 case 'jumpTypeDefinition':
-                    await handler.gotoTypeDefinition(args[1]);
-                    break;
+                    return await handler.gotoTypeDefinition(args[1]);
                 case 'jumpReferences':
-                    await handler.gotoReferences(args[1]);
-                    break;
+                    return await handler.gotoReferences(args[1]);
                 case 'doHover':
-                    await handler.onHover();
-                    break;
+                    return await handler.onHover();
                 case 'showSignatureHelp':
-                    await handler.showSignatureHelp();
-                    break;
+                    return await handler.showSignatureHelp();
                 case 'documentSymbols':
                     return await handler.getDocumentSymbols();
                 case 'selectionRanges':
@@ -53925,17 +54521,21 @@ class Plugin extends events_1.EventEmitter {
                 case 'toggleService':
                     return services_1.default.toggle(args[1]);
                 case 'codeAction':
-                    return handler.doCodeAction(args[1]);
+                    return handler.doCodeAction(args[1], args[2]);
+                case 'doCodeAction':
+                    return await handler.applyCodeAction(args[1]);
+                case 'codeActions':
+                    return await handler.getCurrentCodeActions(args[1]);
+                case 'quickfixes':
+                    return await handler.getCurrentCodeActions(args[1], [vscode_languageserver_types_1.CodeActionKind.QuickFix]);
                 case 'codeLensAction':
                     return handler.doCodeLensAction();
                 case 'runCommand':
                     return await handler.runCommand(...args.slice(1));
-                case 'quickfixes':
-                    return await handler.getQuickfixActions();
                 case 'doQuickfix':
                     return await handler.doQuickfix();
-                case 'doCodeAction':
-                    return await handler.applyCodeAction(args[1]);
+                case 'repeatCommand':
+                    return await commands_1.default.repeatCommand();
                 case 'extensionStats':
                     return await extensions_1.default.getExtensionStates();
                 case 'activeExtension':
@@ -53983,25 +54583,25 @@ exports.default = Plugin;
 //# sourceMappingURL=plugin.js.map
 
 /***/ }),
-/* 231 */
+/* 233 */
 /***/ (function(module, exports) {
 
 module.exports = require("https");
 
 /***/ }),
-/* 232 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const util_1 = __webpack_require__(168);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const manager_1 = tslib_1.__importDefault(__webpack_require__(233));
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const logger = __webpack_require__(179)('commands');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const util_1 = __webpack_require__(171);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const manager_1 = tslib_1.__importDefault(__webpack_require__(235));
+const vscode_uri_1 = __webpack_require__(174);
+const logger = __webpack_require__(182)('commands');
 class CommandItem {
     constructor(id, impl, thisArg, internal = false) {
         this.id = id;
@@ -54021,6 +54621,7 @@ class CommandItem {
 class CommandManager {
     constructor() {
         this.commands = new Map();
+        this.titles = new Map();
     }
     init(nvim, plugin) {
         this.register({
@@ -54113,7 +54714,7 @@ class CommandManager {
             id: 'workspace.workspaceFolders',
             execute: async () => {
                 let folders = workspace_1.default.workspaceFolders;
-                let lines = folders.map(folder => vscode_uri_1.default.parse(folder.uri).fsPath);
+                let lines = folders.map(folder => vscode_uri_1.URI.parse(folder.uri).fsPath);
                 await workspace_1.default.echoLines(lines);
             }
         });
@@ -54209,7 +54810,7 @@ class CommandManager {
      *
      * * *Note 1:* When executing an editor command not all types are allowed to
      * be passed as arguments. Allowed are the primitive types `string`, `boolean`,
-     * `number`, `undefined`, and `null`, as well as [`Position`](#Position), [`Range`](#Range), [`Uri`](#Uri) and [`Location`](#Location).
+     * `number`, `undefined`, and `null`, as well as [`Position`](#Position), [`Range`](#Range), [`URI`](#URI) and [`Location`](#Location).
      * * *Note 2:* There are no restrictions when executing commands that have been contributed
      * by extensions.
      *
@@ -54229,26 +54830,35 @@ class CommandManager {
             logger.error(e.stack);
         });
     }
+    async repeatCommand() {
+        let mru = workspace_1.default.createMru('commands');
+        let mruList = await mru.load();
+        let first = mruList[0];
+        if (first) {
+            await this.executeCommand(first);
+            await workspace_1.default.nvim.command(`silent! call repeat#set("\\<Plug>(coc-command-repeat)", -1)`);
+        }
+    }
 }
 exports.CommandManager = CommandManager;
 exports.default = new CommandManager();
 //# sourceMappingURL=commands.js.map
 
 /***/ }),
-/* 233 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const session_1 = __webpack_require__(234);
-const Snippets = tslib_1.__importStar(__webpack_require__(288));
-const variableResolve_1 = __webpack_require__(336);
-const parser_1 = __webpack_require__(288);
-const logger = __webpack_require__(179)('snippets-manager');
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const Snippets = tslib_1.__importStar(__webpack_require__(236));
+const parser_1 = __webpack_require__(236);
+const session_1 = __webpack_require__(237);
+const variableResolve_1 = __webpack_require__(329);
+const logger = __webpack_require__(182)('snippets-manager');
 class SnippetManager {
     constructor() {
         this.sessionMap = new Map();
@@ -54360,6 +54970,10 @@ class SnippetManager {
         let session = this.getSession(workspace_1.default.bufnr);
         return session && session.isActive ? session : null;
     }
+    isActived(bufnr) {
+        let session = this.getSession(bufnr);
+        return session && session.isActive;
+    }
     jumpable() {
         let { session } = this;
         if (!session)
@@ -54392,8330 +55006,18 @@ exports.default = new SnippetManager();
 //# sourceMappingURL=manager.js.map
 
 /***/ }),
-/* 234 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const util_1 = __webpack_require__(168);
-const position_1 = __webpack_require__(229);
-const string_1 = __webpack_require__(210);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const completion_1 = tslib_1.__importDefault(__webpack_require__(235));
-const snippet_1 = __webpack_require__(335);
-const variableResolve_1 = __webpack_require__(336);
-const logger = __webpack_require__(179)('snippets-session');
-class SnippetSession {
-    constructor(nvim, bufnr) {
-        this.nvim = nvim;
-        this.bufnr = bufnr;
-        this._isActive = false;
-        this._currId = 0;
-        // Get state of line where we inserted
-        this.version = 0;
-        this.preferComplete = false;
-        this._snippet = null;
-        this._onCancelEvent = new vscode_languageserver_protocol_1.Emitter();
-        this.onCancel = this._onCancelEvent.event;
-        let config = workspace_1.default.getConfiguration('coc.preferences');
-        let suggest = workspace_1.default.getConfiguration('suggest');
-        this.preferComplete = config.get('preferCompleteThanJumpPlaceholder', suggest.get('preferCompleteThanJumpPlaceholder', false));
-    }
-    async start(snippetString, select = true, range) {
-        const { document, nvim } = this;
-        if (!document)
-            return false;
-        if (!range) {
-            let position = await workspace_1.default.getCursorPosition();
-            range = vscode_languageserver_protocol_1.Range.create(position, position);
-        }
-        let position = range.start;
-        const formatOptions = await workspace_1.default.getFormatOptions(this.document.uri);
-        const currentLine = document.getline(position.line);
-        const currentIndent = currentLine.match(/^\s*/)[0];
-        const inserted = normalizeSnippetString(snippetString, currentIndent, formatOptions);
-        const resolver = new variableResolve_1.SnippetVariableResolver();
-        await resolver.init(document);
-        const snippet = new snippet_1.CocSnippet(inserted, position, resolver);
-        const edit = vscode_languageserver_protocol_1.TextEdit.replace(range, snippet.toString());
-        const endPart = currentLine.slice(position.character);
-        if (snippetString.endsWith('\n') && endPart) {
-            // make next line same indent
-            edit.newText = edit.newText + currentIndent;
-        }
-        if (snippet.isPlainText) {
-            // insert as text
-            await document.applyEdits(nvim, [edit]);
-            let placeholder = snippet.finalPlaceholder;
-            await workspace_1.default.moveTo(placeholder.range.start);
-            return this._isActive;
-        }
-        await document.patchChange();
-        document.forceSync();
-        this.version = document.version;
-        await document.applyEdits(nvim, [edit]);
-        if (this._isActive) {
-            // insert check
-            let placeholder = this.findPlaceholder(vscode_languageserver_protocol_1.Range.create(position, position));
-            // insert to placeholder
-            if (placeholder && !placeholder.isFinalTabstop) {
-                // don't repeat snippet insert
-                let index = this.snippet.insertSnippet(placeholder, inserted, position);
-                let p = this.snippet.getPlaceholder(index);
-                this._currId = p.id;
-                if (select)
-                    await this.selectPlaceholder(p);
-                return true;
-            }
-        }
-        // new snippet
-        this._snippet = snippet;
-        this._currId = snippet.firstPlaceholder.id;
-        if (select)
-            await this.selectPlaceholder(snippet.firstPlaceholder);
-        this.activate();
-        return true;
-    }
-    activate() {
-        if (this._isActive)
-            return;
-        this._isActive = true;
-        this.nvim.call('coc#snippet#enable', [], true);
-    }
-    deactivate() {
-        if (this._isActive) {
-            this._isActive = false;
-            this._snippet = null;
-            this.nvim.call('coc#snippet#disable', [], true);
-            logger.debug("[SnippetManager::cancel]");
-        }
-        this._onCancelEvent.fire(void 0);
-        this._onCancelEvent.dispose();
-    }
-    get isActive() {
-        return this._isActive;
-    }
-    async nextPlaceholder() {
-        await this.documentSynchronize();
-        if (!this.isActive)
-            return;
-        let curr = this.placeholder;
-        let next = this.snippet.getNextPlaceholder(curr.index);
-        await this.selectPlaceholder(next);
-    }
-    async previousPlaceholder() {
-        await this.documentSynchronize();
-        if (!this.isActive)
-            return;
-        let curr = this.placeholder;
-        let prev = this.snippet.getPrevPlaceholder(curr.index);
-        await this.selectPlaceholder(prev);
-    }
-    async synchronizeUpdatedPlaceholders(change) {
-        if (!this.isActive || !this.document || this.document.version - this.version == 1)
-            return;
-        let edit = { range: change.range, newText: change.text };
-        let { snippet } = this;
-        // change outside range
-        let adjusted = snippet.adjustTextEdit(edit);
-        if (adjusted)
-            return;
-        if (position_1.comparePosition(edit.range.start, snippet.range.end) > 0) {
-            if (!edit.newText)
-                return;
-            logger.info('Content add after snippet, cancelling snippet session');
-            this.deactivate();
-            return;
-        }
-        let placeholder = this.findPlaceholder(edit.range);
-        if (!placeholder) {
-            logger.info('Change outside placeholder, cancelling snippet session');
-            this.deactivate();
-            return;
-        }
-        if (placeholder.isFinalTabstop) {
-            logger.info('Change final placeholder, cancelling snippet session');
-            this.deactivate();
-            return;
-        }
-        this._currId = placeholder.id;
-        let { edits, delta } = snippet.updatePlaceholder(placeholder, edit);
-        if (!edits.length)
-            return;
-        this.version = this.document.version;
-        // let pos = await workspace.getCursorPosition()
-        await this.document.applyEdits(this.nvim, edits);
-        if (delta) {
-            await this.nvim.call('coc#util#move_cursor', delta);
-        }
-    }
-    async selectCurrentPlaceholder(triggerAutocmd = true) {
-        let placeholder = this.snippet.getPlaceholderById(this._currId);
-        if (placeholder)
-            await this.selectPlaceholder(placeholder, triggerAutocmd);
-    }
-    async selectPlaceholder(placeholder, triggerAutocmd = true) {
-        let { nvim, document } = this;
-        if (!document || !placeholder)
-            return;
-        let { start, end } = placeholder.range;
-        const len = end.character - start.character;
-        const col = string_1.byteLength(document.getline(start.line).slice(0, start.character)) + 1;
-        this._currId = placeholder.id;
-        if (placeholder.choice) {
-            await nvim.call('coc#snippet#show_choices', [start.line + 1, col, len, placeholder.choice]);
-        }
-        else {
-            await this.select(placeholder.range, placeholder.value, triggerAutocmd);
-        }
-    }
-    async select(range, text, triggerAutocmd = true) {
-        let { document, nvim } = this;
-        let { start, end } = range;
-        let { textDocument } = document;
-        let len = textDocument.offsetAt(end) - textDocument.offsetAt(start);
-        let line = document.getline(start.line);
-        let col = line ? string_1.byteLength(line.slice(0, start.character)) : 0;
-        let endLine = document.getline(end.line);
-        let endCol = endLine ? string_1.byteLength(endLine.slice(0, end.character)) : 0;
-        nvim.setVar('coc_last_placeholder', {
-            current_text: text,
-            start: { line: start.line, col },
-            end: { line: end.line, col: endCol }
-        }, true);
-        let ve = await nvim.getOption('virtualedit');
-        let selection = await nvim.getOption('selection');
-        let mode = await nvim.call('mode');
-        let move_cmd = '';
-        if (mode.startsWith('i')) {
-            let pum = await nvim.call('pumvisible');
-            if (pum && this.preferComplete) {
-                let pre = completion_1.default.hasSelected() ? '' : '\\<C-n>';
-                await nvim.eval(`feedkeys("${pre}\\<C-y>", 'in')`);
-                return;
-            }
-        }
-        let resetVirtualEdit = false;
-        if (ve != 'onemore') {
-            resetVirtualEdit = true;
-            await nvim.setOption('virtualedit', 'onemore');
-        }
-        await nvim.call('cursor', [start.line + 1, col + 1]);
-        if (mode != 'n')
-            move_cmd += "\\<Esc>";
-        if (len == 0) {
-            triggerAutocmd = false;
-            if (col == 0 || (!mode.startsWith('i') && col < string_1.byteLength(line))) {
-                move_cmd += 'i';
-            }
-            else {
-                move_cmd += 'a';
-            }
-        }
-        else {
-            move_cmd += 'v';
-            endCol = await this.getVirtualCol(end.line + 1, endCol);
-            if (selection == 'inclusive') {
-                if (end.character == 0) {
-                    move_cmd += `${end.line}G`;
-                }
-                else {
-                    move_cmd += `${end.line + 1}G${endCol}|`;
-                }
-            }
-            else if (selection == 'old') {
-                move_cmd += `${end.line + 1}G${endCol}|`;
-            }
-            else {
-                move_cmd += `${end.line + 1}G${endCol + 1}|`;
-            }
-            col = await this.getVirtualCol(start.line + 1, col);
-            move_cmd += `o${start.line + 1}G${col + 1}|o\\<c-g>`;
-        }
-        await nvim.eval(`feedkeys("${move_cmd}", 'in')`);
-        if (workspace_1.default.env.isVim) {
-            nvim.command('redraw', true);
-        }
-        if (resetVirtualEdit)
-            await nvim.setOption('virtualedit', ve);
-        if (triggerAutocmd)
-            nvim.command('silent doautocmd User CocJumpPlaceholder', true);
-    }
-    async getVirtualCol(line, col) {
-        let { nvim } = this;
-        return await nvim.eval(`virtcol([${line}, ${col}])`);
-    }
-    async documentSynchronize() {
-        if (!this.isActive)
-            return;
-        await this.document.patchChange();
-        this.document.forceSync();
-        await util_1.wait(50);
-    }
-    async checkPosition() {
-        if (!this.isActive)
-            return;
-        let position = await workspace_1.default.getCursorPosition();
-        if (this.snippet && position_1.positionInRange(position, this.snippet.range) != 0) {
-            logger.info('Cursor insert out of range, cancelling snippet session');
-            this.deactivate();
-        }
-    }
-    findPlaceholder(range) {
-        if (!this.snippet)
-            return null;
-        let { placeholder } = this;
-        if (position_1.rangeInRange(range, placeholder.range))
-            return placeholder;
-        return this.snippet.getPlaceholderByRange(range) || null;
-    }
-    get placeholder() {
-        if (!this.snippet)
-            return;
-        return this.snippet.getPlaceholderById(this._currId);
-    }
-    get snippet() {
-        return this._snippet;
-    }
-    get document() {
-        return workspace_1.default.getDocument(this.bufnr);
-    }
-}
-exports.SnippetSession = SnippetSession;
-function normalizeSnippetString(snippet, indent, opts) {
-    let lines = snippet.split(/\r?\n/);
-    let ind = opts.insertSpaces ? ' '.repeat(opts.tabSize) : '\t';
-    let tabSize = opts.tabSize || 2;
-    lines = lines.map((line, idx) => {
-        let space = line.match(/^\s*/)[0];
-        let pre = space;
-        let isTab = space.startsWith('\t');
-        if (isTab && opts.insertSpaces) {
-            pre = ind.repeat(space.length);
-        }
-        else if (!isTab && !opts.insertSpaces) {
-            pre = ind.repeat(space.length / tabSize);
-        }
-        return (idx == 0 || line.length == 0 ? '' : indent) + pre + line.slice(space.length);
-    });
-    return lines.join('\n');
-}
-exports.normalizeSnippetString = normalizeSnippetString;
-//# sourceMappingURL=session.js.map
-
-/***/ }),
-/* 235 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const sources_1 = tslib_1.__importDefault(__webpack_require__(236));
-const util_1 = __webpack_require__(168);
-const string_1 = __webpack_require__(210);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const complete_1 = tslib_1.__importDefault(__webpack_require__(332));
-const floating_1 = tslib_1.__importDefault(__webpack_require__(334));
-const debounce_1 = tslib_1.__importDefault(__webpack_require__(170));
-const logger = __webpack_require__(179)('completion');
-const completeItemKeys = ['abbr', 'menu', 'info', 'kind', 'icase', 'dup', 'empty', 'user_data'];
-class Completion {
-    constructor() {
-        // current input string
-        this.activted = false;
-        this.disposables = [];
-        this.complete = null;
-        this.recentScores = {};
-        this.changedTick = 0;
-        this.insertCharTs = 0;
-        this.insertLeaveTs = 0;
-        // only used when no pum change event
-        this.isResolving = false;
-    }
-    init(nvim) {
-        this.nvim = nvim;
-        this.config = this.getCompleteConfig();
-        this.floating = new floating_1.default(nvim);
-        events_1.default.on('InsertCharPre', this.onInsertCharPre, this, this.disposables);
-        events_1.default.on('InsertLeave', this.onInsertLeave, this, this.disposables);
-        events_1.default.on('InsertEnter', this.onInsertEnter, this, this.disposables);
-        events_1.default.on('TextChangedP', this.onTextChangedP, this, this.disposables);
-        events_1.default.on('TextChangedI', this.onTextChangedI, this, this.disposables);
-        events_1.default.on('CompleteDone', this.onCompleteDone, this, this.disposables);
-        events_1.default.on('MenuPopupChanged', this.onPumChange, this, this.disposables);
-        events_1.default.on('CursorMovedI', debounce_1.default(async (bufnr, cursor) => {
-            // try trigger completion
-            let doc = workspace_1.default.getDocument(bufnr);
-            if (this.isActivted || !doc || cursor[1] == 1)
-                return;
-            let line = doc.getline(cursor[0] - 1);
-            if (!line)
-                return;
-            let { latestInsertChar } = this;
-            let pre = string_1.byteSlice(line, 0, cursor[1] - 1);
-            if (!latestInsertChar || !pre.endsWith(latestInsertChar))
-                return;
-            if (sources_1.default.shouldTrigger(pre, doc.filetype)) {
-                await this.triggerCompletion(doc, pre, false);
-            }
-        }, 20));
-        workspace_1.default.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration('suggest')) {
-                Object.assign(this.config, this.getCompleteConfig());
-            }
-        }, null, this.disposables);
-    }
-    get option() {
-        if (!this.complete)
-            return null;
-        return this.complete.option;
-    }
-    addRecent(word, bufnr) {
-        if (!word)
-            return;
-        this.recentScores[`${bufnr}|${word}`] = Date.now();
-    }
-    async getPreviousContent(document) {
-        let [, lnum, col] = await this.nvim.call('getcurpos');
-        if (this.option && lnum != this.option.linenr)
-            return null;
-        let line = document.getline(lnum - 1);
-        return col == 1 ? '' : string_1.byteSlice(line, 0, col - 1);
-    }
-    getResumeInput(pre) {
-        let { option, activted } = this;
-        if (!activted || !pre)
-            return null;
-        let input = string_1.byteSlice(pre, option.col);
-        if (option.blacklist && option.blacklist.indexOf(input) !== -1)
-            return null;
-        return input;
-    }
-    get bufnr() {
-        let { option } = this;
-        return option ? option.bufnr : null;
-    }
-    get isActivted() {
-        return this.activted;
-    }
-    getCompleteConfig() {
-        let config = workspace_1.default.getConfiguration('coc.preferences');
-        let suggest = workspace_1.default.getConfiguration('suggest');
-        function getConfig(key, defaultValue) {
-            return config.get(key, suggest.get(key, defaultValue));
-        }
-        let keepCompleteopt = getConfig('keepCompleteopt', false);
-        let autoTrigger = getConfig('autoTrigger', 'always');
-        if (keepCompleteopt) {
-            let { completeOpt } = workspace_1.default;
-            if (!completeOpt.includes('noinsert') && !completeOpt.includes('noselect')) {
-                autoTrigger = 'none';
-            }
-        }
-        let acceptSuggestionOnCommitCharacter = workspace_1.default.env.pumevent && getConfig('acceptSuggestionOnCommitCharacter', false);
-        return {
-            autoTrigger,
-            keepCompleteopt,
-            disableMenuShortcut: getConfig('disableMenuShortcut', false),
-            acceptSuggestionOnCommitCharacter,
-            disableKind: getConfig('disableKind', false),
-            disableMenu: getConfig('disableMenu', false),
-            previewIsKeyword: getConfig('previewIsKeyword', '@,48-57,_192-255'),
-            enablePreview: getConfig('enablePreview', false),
-            maxPreviewWidth: getConfig('maxPreviewWidth', 50),
-            triggerAfterInsertEnter: getConfig('triggerAfterInsertEnter', false),
-            noselect: getConfig('noselect', true),
-            numberSelect: getConfig('numberSelect', false),
-            maxItemCount: getConfig('maxCompleteItemCount', 50),
-            timeout: getConfig('timeout', 500),
-            minTriggerInputLength: getConfig('minTriggerInputLength', 1),
-            snippetIndicator: getConfig('snippetIndicator', '~'),
-            fixInsertedWord: getConfig('fixInsertedWord', true),
-            localityBonus: getConfig('localityBonus', true),
-            highPrioritySourceLimit: getConfig('highPrioritySourceLimit', null),
-            lowPrioritySourceLimit: getConfig('lowPrioritySourceLimit', null),
-        };
-    }
-    async startCompletion(option) {
-        workspace_1.default.bufnr = option.bufnr;
-        let document = workspace_1.default.getDocument(option.bufnr);
-        if (!document)
-            return;
-        // use fixed filetype
-        option.filetype = document.filetype;
-        this.document = document;
-        try {
-            await this._doComplete(option);
-        }
-        catch (e) {
-            this.stop();
-            workspace_1.default.showMessage(`Error happens on complete: ${e.message}`, 'error');
-            logger.error(e.stack);
-        }
-    }
-    async resumeCompletion(pre, search, force = false) {
-        let { document, complete, activted } = this;
-        if (!activted || !complete.results)
-            return;
-        if (search == this.input && !force)
-            return;
-        let last = search == null ? '' : search.slice(-1);
-        if (last.length == 0 ||
-            /\s/.test(last) ||
-            sources_1.default.shouldTrigger(pre, document.filetype) ||
-            search.length < complete.input.length) {
-            this.stop();
-            return;
-        }
-        let { changedtick } = document;
-        this.input = search;
-        let items;
-        if (complete.isIncomplete && document.chars.isKeywordChar(last)) {
-            await document.patchChange();
-            document.forceSync();
-            await util_1.wait(30);
-            if (document.changedtick != changedtick)
-                return;
-            items = await complete.completeInComplete(search);
-            if (document.changedtick != changedtick)
-                return;
-        }
-        else {
-            items = complete.filterResults(search);
-        }
-        if (!this.isActivted)
-            return;
-        if (!complete.isCompleting && (!items || items.length === 0)) {
-            this.stop();
-            return;
-        }
-        await this.showCompletion(this.option.col, items);
-    }
-    hasSelected() {
-        if (workspace_1.default.env.pumevent)
-            return this.currItem != null;
-        if (this.config.noselect === false)
-            return true;
-        return this.isResolving;
-    }
-    async showCompletion(col, items) {
-        let { nvim, document } = this;
-        let { numberSelect, disableKind, disableMenuShortcut, disableMenu } = this.config;
-        if (numberSelect) {
-            items = items.map((item, i) => {
-                let idx = i + 1;
-                if (i < 9) {
-                    return Object.assign({}, item, {
-                        abbr: item.abbr ? `${idx} ${item.abbr}` : `${idx} ${item.word}`
-                    });
-                }
-                return item;
-            });
-        }
-        this.changedTick = document.changedtick;
-        if (this.config.numberSelect) {
-            nvim.call('coc#_map', [], true);
-        }
-        let validKeys = completeItemKeys.slice();
-        if (disableKind)
-            validKeys = validKeys.filter(s => s != 'kind');
-        if (disableMenu)
-            validKeys = validKeys.filter(s => s != 'menu');
-        let vimItems = items.map(item => {
-            let obj = { word: item.word, equal: 1 };
-            for (let key of validKeys) {
-                if (item.hasOwnProperty(key)) {
-                    if (disableMenuShortcut && key == 'menu') {
-                        obj[key] = item[key].replace(/\[\w+\]$/, '');
-                    }
-                    else {
-                        obj[key] = item[key];
-                    }
-                }
-            }
-            return obj;
-        });
-        nvim.call('coc#_do_complete', [col, vimItems], true);
-    }
-    async _doComplete(option) {
-        let { line, colnr, filetype, source, preserved } = option;
-        let { nvim, config, document } = this;
-        // current input
-        this.input = option.input;
-        let pre = string_1.byteSlice(line, 0, colnr - 1);
-        let isTriggered = source == null && option.triggerCharacter && sources_1.default.shouldTrigger(pre, filetype);
-        let arr = [];
-        if (source == null) {
-            arr = sources_1.default.getCompleteSources(option, isTriggered);
-        }
-        else {
-            let s = sources_1.default.getSource(source);
-            if (s)
-                arr.push(s);
-        }
-        if (!arr.length)
-            return;
-        let complete = new complete_1.default(option, document, this.recentScores, config, arr, nvim);
-        this.start(complete);
-        let items = await this.complete.doComplete(preserved);
-        if (complete.isCanceled)
-            return;
-        if (items.length == 0 && !complete.isCompleting) {
-            this.stop();
-            return;
-        }
-        complete.onDidComplete(async () => {
-            let content = await this.getPreviousContent(document);
-            let search = this.getResumeInput(content);
-            if (complete.isCanceled)
-                return;
-            let hasSelected = this.hasSelected();
-            if (hasSelected && this.completeOpt.indexOf('noselect') !== -1)
-                return;
-            if (search == this.option.input) {
-                let items = complete.filterResults(search, Math.floor(Date.now() / 1000));
-                await this.showCompletion(option.col, items);
-                return;
-            }
-            await this.resumeCompletion(content, search, true);
-        });
-        if (items.length) {
-            let content = await this.getPreviousContent(document);
-            let search = this.getResumeInput(content);
-            if (complete.isCanceled)
-                return;
-            if (search == this.option.input) {
-                await this.showCompletion(option.col, items);
-                return;
-            }
-            await this.resumeCompletion(content, search, true);
-        }
-    }
-    async onTextChangedP() {
-        let { option, document } = this;
-        if (!option)
-            return;
-        await document.patchChange();
-        let hasInsert = this.latestInsert != null;
-        this.lastInsert = null;
-        // avoid trigger filter on pumvisible
-        if (document.changedtick == this.changedTick)
-            return;
-        let line = document.getline(option.linenr - 1);
-        let curr = line.match(/^\s*/)[0];
-        let ind = option.line.match(/^\s*/)[0];
-        // indent change
-        if (ind.length != curr.length) {
-            this.stop();
-            return;
-        }
-        if (!hasInsert) {
-            // this could be wrong, but can't avoid.
-            this.isResolving = true;
-            return;
-        }
-        let col = await this.nvim.call('col', '.');
-        let search = string_1.byteSlice(line, option.col, col - 1);
-        let pre = string_1.byteSlice(line, 0, col - 1);
-        let last = pre.length ? pre[pre.length - 1] : '';
-        let isKeyword = last.length ? document.chars.isKeywordChar(last) : false;
-        let triggerSources = sources_1.default.getTriggerSources(pre, document.filetype);
-        let names = triggerSources.map(s => s.name);
-        if (names.length) {
-            let preserved = isKeyword ? this.complete.excludeResults(names) : [];
-            await this.triggerCompletion(document, pre, false, preserved);
-        }
-        else {
-            await this.resumeCompletion(pre, search);
-        }
-    }
-    async onTextChangedI(bufnr) {
-        let { nvim, latestInsertChar } = this;
-        this.lastInsert = null;
-        let document = workspace_1.default.getDocument(workspace_1.default.bufnr);
-        if (!document)
-            return;
-        await document.patchChange();
-        if (!this.isActivted) {
-            if (!latestInsertChar)
-                return;
-            let pre = await this.getPreviousContent(document);
-            await this.triggerCompletion(document, pre);
-            return;
-        }
-        if (bufnr !== this.bufnr)
-            return;
-        // check commit character
-        if (this.config.acceptSuggestionOnCommitCharacter
-            && this.currItem
-            && latestInsertChar
-            && !this.document.isWord(latestInsertChar)) {
-            let resolvedItem = this.getCompleteItem(this.currItem);
-            if (sources_1.default.shouldCommit(resolvedItem, latestInsertChar)) {
-                let { linenr, col, line, colnr } = this.option;
-                this.stop();
-                let { word } = resolvedItem;
-                let newLine = `${line.slice(0, col)}${word}${latestInsertChar}${line.slice(colnr - 1)}`;
-                await nvim.call('coc#util#setline', [linenr, newLine]);
-                let curcol = col + word.length + 2;
-                await nvim.call('cursor', [linenr, curcol]);
-                return;
-            }
-        }
-        let content = await this.getPreviousContent(document);
-        if (content == null) {
-            // cursor line changed
-            this.stop();
-            return;
-        }
-        // check trigger character
-        if (sources_1.default.shouldTrigger(content, document.filetype)) {
-            await this.triggerCompletion(document, content, false);
-            return;
-        }
-        if (!this.isActivted || this.complete.isEmpty)
-            return;
-        let search = content.slice(string_1.characterIndex(content, this.option.col));
-        return await this.resumeCompletion(content, search);
-    }
-    async triggerCompletion(document, pre, checkTrigger = true, preserved) {
-        // check trigger
-        if (checkTrigger) {
-            let shouldTrigger = await this.shouldTrigger(document, pre);
-            if (!shouldTrigger)
-                return;
-        }
-        let option = await this.nvim.call('coc#util#get_complete_option');
-        if (!option)
-            return;
-        option.triggerCharacter = pre.slice(-1);
-        option.preserved = preserved;
-        logger.debug('trigger completion with', option);
-        await this.startCompletion(option);
-    }
-    async onCompleteDone(item) {
-        let { document, nvim } = this;
-        if (this.floatTokenSource) {
-            this.floatTokenSource.cancel();
-            this.floatTokenSource = null;
-            this.floating.close();
-        }
-        if (!this.isActivted || !document || !item.hasOwnProperty('word'))
-            return;
-        let opt = Object.assign({}, this.option);
-        let resolvedItem = this.getCompleteItem(item);
-        this.stop();
-        if (!resolvedItem)
-            return;
-        let timestamp = this.insertCharTs;
-        let insertLeaveTs = this.insertLeaveTs;
-        try {
-            await sources_1.default.doCompleteResolve(resolvedItem, (new vscode_languageserver_protocol_1.CancellationTokenSource()).token);
-            this.addRecent(resolvedItem.word, document.bufnr);
-            await util_1.wait(50);
-            let mode = await nvim.call('mode');
-            if (mode != 'i' || this.insertCharTs != timestamp || this.insertLeaveTs != insertLeaveTs)
-                return;
-            await document.patchChange();
-            let content = await this.getPreviousContent(document);
-            if (!content.endsWith(resolvedItem.word))
-                return;
-            await sources_1.default.doCompleteDone(resolvedItem, opt);
-            document.forceSync();
-        }
-        catch (e) {
-            // tslint:disable-next-line:no-console
-            console.error(e.stack);
-            logger.error(`error on complete done`, e.stack);
-        }
-    }
-    async onInsertLeave(bufnr) {
-        this.insertLeaveTs = Date.now();
-        let doc = workspace_1.default.getDocument(bufnr);
-        if (doc)
-            doc.forceSync(true);
-        this.stop();
-    }
-    async onInsertEnter() {
-        if (!this.config.triggerAfterInsertEnter)
-            return;
-        let option = await this.nvim.call('coc#util#get_complete_option');
-        if (option && option.input.length >= this.config.minTriggerInputLength) {
-            await this.startCompletion(option);
-        }
-    }
-    async onInsertCharPre(character) {
-        this.lastInsert = {
-            character,
-            timestamp: Date.now(),
-        };
-        this.insertCharTs = this.lastInsert.timestamp;
-    }
-    get latestInsert() {
-        let { lastInsert } = this;
-        if (!lastInsert || Date.now() - lastInsert.timestamp > 200) {
-            return null;
-        }
-        return lastInsert;
-    }
-    get latestInsertChar() {
-        let { latestInsert } = this;
-        if (!latestInsert)
-            return '';
-        return latestInsert.character;
-    }
-    async shouldTrigger(document, pre) {
-        if (pre.length == 0 || /\s/.test(pre[pre.length - 1]))
-            return false;
-        let autoTrigger = this.config.autoTrigger;
-        if (autoTrigger == 'none')
-            return false;
-        if (sources_1.default.shouldTrigger(pre, document.filetype))
-            return true;
-        if (autoTrigger !== 'always')
-            return false;
-        if (document.isWord(pre.slice(-1))) {
-            let minLength = this.config.minTriggerInputLength;
-            if (minLength == 1)
-                return true;
-            let input = this.getInput(document, pre);
-            return input.length >= minLength;
-        }
-        return false;
-    }
-    async onPumChange(ev) {
-        if (!this.activted)
-            return;
-        if (this.resolveTokenSource) {
-            this.resolveTokenSource.cancel();
-            this.resolveTokenSource = null;
-        }
-        if (this.floatTokenSource) {
-            this.floatTokenSource.cancel();
-            this.floatTokenSource = null;
-        }
-        let { completed_item, col, row, height, width, scrollbar } = ev;
-        let bounding = { col, row, height, width, scrollbar };
-        this.currItem = completed_item.hasOwnProperty('word') ? completed_item : null;
-        // it's pum change by vim, ignore it
-        if (this.lastInsert)
-            return;
-        let resolvedItem = this.getCompleteItem(completed_item);
-        if (!resolvedItem) {
-            this.floating.close();
-            return;
-        }
-        let source = this.resolveTokenSource = new vscode_languageserver_protocol_1.CancellationTokenSource();
-        let { token } = source;
-        await sources_1.default.doCompleteResolve(resolvedItem, token);
-        if (token.isCancellationRequested)
-            return;
-        let docs = resolvedItem.documentation;
-        if (!docs && resolvedItem.info) {
-            let { info } = resolvedItem;
-            let isText = /^[\w-\s.,\t]+$/.test(info);
-            docs = [{ filetype: isText ? 'txt' : this.document.filetype, content: info }];
-        }
-        if (!docs || docs.length == 0) {
-            this.floating.close();
-        }
-        else {
-            if (token.isCancellationRequested || !this.isActivted)
-                return;
-            this.floatTokenSource = new vscode_languageserver_protocol_1.CancellationTokenSource();
-            await this.floating.show(docs, bounding, this.floatTokenSource.token);
-        }
-        this.resolveTokenSource = null;
-    }
-    start(complete) {
-        let { activted } = this;
-        this.activted = true;
-        this.isResolving = false;
-        if (activted) {
-            this.complete.dispose();
-        }
-        this.complete = complete;
-        if (!this.config.keepCompleteopt) {
-            this.nvim.command(`noa set completeopt=${this.completeOpt}`, true);
-        }
-        this.document.forceSync(true);
-        this.document.paused = true;
-    }
-    stop() {
-        let { nvim } = this;
-        if (!this.activted)
-            return;
-        if (this.resolveTokenSource) {
-            this.resolveTokenSource.cancel();
-            this.resolveTokenSource = null;
-        }
-        if (this.floatTokenSource) {
-            this.floatTokenSource.cancel();
-            this.floatTokenSource = null;
-        }
-        this.currItem = null;
-        this.activted = false;
-        this.document.paused = false;
-        this.document.fireContentChanges();
-        if (this.complete) {
-            this.complete.dispose();
-            this.complete = null;
-        }
-        nvim.pauseNotification();
-        if (this.config.numberSelect) {
-            nvim.call('coc#_unmap', [], true);
-        }
-        if (!this.config.keepCompleteopt) {
-            this.nvim.command(`noa set completeopt=${workspace_1.default.completeOpt}`, true);
-        }
-        nvim.command(`let g:coc#_context['candidates'] = []`, true);
-        nvim.call('coc#_hide', [], true);
-        nvim.resumeNotification(false, true).catch(_e => {
-            // noop
-        });
-    }
-    getInput(document, pre) {
-        let input = '';
-        for (let i = pre.length - 1; i >= 0; i--) {
-            let ch = i == 0 ? null : pre[i - 1];
-            if (!ch || !document.isWord(ch)) {
-                input = pre.slice(i, pre.length);
-                break;
-            }
-        }
-        return input;
-    }
-    get completeOpt() {
-        let { noselect, enablePreview } = this.config;
-        let preview = enablePreview && !workspace_1.default.env.pumevent ? ',preview' : '';
-        if (noselect)
-            return `noselect,menuone${preview}`;
-        return `noinsert,menuone${preview}`;
-    }
-    getCompleteItem(item) {
-        if (!this.isActivted)
-            return null;
-        return this.complete.resolveCompletionItem(item);
-    }
-    dispose() {
-        util_1.disposeAll(this.disposables);
-    }
-}
-exports.Completion = Completion;
-exports.default = new Completion();
-//# sourceMappingURL=index.js.map
-
-/***/ }),
 /* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const fast_diff_1 = tslib_1.__importDefault(__webpack_require__(209));
-const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
-const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const util_1 = tslib_1.__importDefault(__webpack_require__(40));
-const vscode_jsonrpc_1 = __webpack_require__(144);
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const extensions_1 = tslib_1.__importDefault(__webpack_require__(237));
-const source_1 = tslib_1.__importDefault(__webpack_require__(327));
-const source_vim_1 = tslib_1.__importDefault(__webpack_require__(328));
-const types_1 = __webpack_require__(188);
-const util_2 = __webpack_require__(168);
-const fs_2 = __webpack_require__(201);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const string_1 = __webpack_require__(210);
-const logger = __webpack_require__(179)('sources');
-// type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
-// priority,triggerPatterns,shortcut,enable,filetypes,disableSyntaxes,firstMatch
-class Sources {
-    constructor() {
-        this.sourceMap = new Map();
-        this.disposables = [];
-        this.remoteSourcePaths = [];
-    }
-    get nvim() {
-        return workspace_1.default.nvim;
-    }
-    async createNativeSources() {
-        try {
-            this.disposables.push((__webpack_require__(329)).regist(this.sourceMap));
-            this.disposables.push((__webpack_require__(330)).regist(this.sourceMap));
-            this.disposables.push((__webpack_require__(331)).regist(this.sourceMap));
-        }
-        catch (e) {
-            console.error('Create source error:' + e.message); // tslint:disable-line
-        }
-    }
-    async createVimSourceExtension(nvim, filepath) {
-        let name = path_1.default.basename(filepath, '.vim');
-        try {
-            await nvim.command(`source ${filepath}`);
-            let fns = await nvim.call('coc#util#remote_fns', name);
-            for (let fn of ['init', 'complete']) {
-                if (fns.indexOf(fn) == -1) {
-                    workspace_1.default.showMessage(`${fn} not found for source ${name}`, 'error');
-                    return null;
-                }
-            }
-            let props = await nvim.call(`coc#source#${name}#init`, []);
-            let packageJSON = {
-                name: `coc-source-${name}`,
-                activationEvents: props.filetypes ? props.filetypes.map(f => `onLanguage:${f}`) : ['*'],
-                contributes: {
-                    configuration: {
-                        properties: {
-                            [`coc.source.${name}.enable`]: {
-                                type: 'boolean',
-                                default: true
-                            },
-                            [`coc.source.${name}.priority`]: {
-                                type: 'number',
-                                default: props.priority || 9
-                            },
-                            [`coc.source.${name}.shortcut`]: {
-                                type: 'string',
-                                default: props.shortcut || name.slice(0, 3).toUpperCase(),
-                                description: 'Shortcut text shown in complete menu.'
-                            },
-                            [`coc.source.${name}.disableSyntaxes`]: {
-                                type: 'array',
-                                default: [],
-                                items: {
-                                    type: 'string'
-                                }
-                            },
-                            [`coc.source.${name}.filetypes`]: {
-                                type: 'array',
-                                default: props.filetypes || null,
-                                description: 'Enabled filetypes.',
-                                items: {
-                                    type: 'string'
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-            let source = new source_vim_1.default({
-                name,
-                filepath,
-                sourceType: types_1.SourceType.Remote,
-                optionalFns: fns.filter(n => ['init', 'complete'].indexOf(n) == -1)
-            });
-            let isActive = false;
-            let extension = {
-                id: packageJSON.name,
-                packageJSON,
-                exports: void 0,
-                extensionPath: filepath,
-                activate: async () => {
-                    isActive = true;
-                    this.addSource(source);
-                }
-            };
-            Object.defineProperty(extension, 'isActive', {
-                get: () => {
-                    return isActive;
-                }
-            });
-            extensions_1.default.registerExtension(extension, () => {
-                isActive = false;
-                this.removeSource(source);
-            });
-        }
-        catch (e) {
-            workspace_1.default.showMessage(`Error on create vim source ${name}: ${e.message}`, 'error');
-        }
-    }
-    async createRemoteSources() {
-        let { runtimepath } = workspace_1.default.env;
-        let paths = runtimepath.split(',');
-        for (let path of paths) {
-            await this.createVimSources(path);
-        }
-    }
-    async createVimSources(pluginPath) {
-        if (this.remoteSourcePaths.indexOf(pluginPath) != -1)
-            return;
-        this.remoteSourcePaths.push(pluginPath);
-        let folder = path_1.default.join(pluginPath, 'autoload/coc/source');
-        let stat = await fs_2.statAsync(folder);
-        if (stat && stat.isDirectory()) {
-            let arr = await util_1.default.promisify(fs_1.default.readdir)(folder);
-            arr = arr.filter(s => s.slice(-4) == '.vim');
-            let files = arr.map(s => path_1.default.join(folder, s));
-            if (files.length == 0)
-                return;
-            await Promise.all(files.map(p => {
-                return this.createVimSourceExtension(this.nvim, p);
-            }));
-        }
-    }
-    init() {
-        this.createNativeSources(); // tslint:disable-line
-        this.createRemoteSources(); // tslint:disable-line
-        events_1.default.on('BufEnter', this.onDocumentEnter, this, this.disposables);
-        workspace_1.default.watchOption('runtimepath', async (oldValue, newValue) => {
-            let result = fast_diff_1.default(oldValue, newValue);
-            for (let [changeType, value] of result) {
-                if (changeType == 1) {
-                    let paths = value.replace(/,$/, '').split(',');
-                    for (let p of paths) {
-                        await this.createVimSources(p);
-                    }
-                }
-            }
-        }, this.disposables);
-    }
-    get names() {
-        return Array.from(this.sourceMap.keys());
-    }
-    get sources() {
-        return Array.from(this.sourceMap.values());
-    }
-    has(name) {
-        return this.names.findIndex(o => o == name) != -1;
-    }
-    getSource(name) {
-        if (!name)
-            return null;
-        return this.sourceMap.get(name) || null;
-    }
-    async doCompleteResolve(item, token) {
-        let source = this.getSource(item.source);
-        if (source && typeof source.onCompleteResolve == 'function') {
-            try {
-                await Promise.resolve(source.onCompleteResolve(item, token));
-            }
-            catch (e) {
-                logger.error('Error on complete resolve:', e.stack);
-            }
-        }
-    }
-    async doCompleteDone(item, opt) {
-        let data = JSON.parse(item.user_data);
-        let source = this.getSource(data.source);
-        if (source && typeof source.onCompleteDone === 'function') {
-            await Promise.resolve(source.onCompleteDone(item, opt));
-        }
-    }
-    shouldCommit(item, commitCharacter) {
-        if (!item || !item.source)
-            return false;
-        let source = this.getSource(item.source);
-        if (source && source.sourceType == types_1.SourceType.Service && typeof source.shouldCommit === 'function') {
-            return source.shouldCommit(item, commitCharacter);
-        }
-        return false;
-    }
-    getCompleteSources(opt, isTriggered) {
-        let { filetype } = opt;
-        let pre = string_1.byteSlice(opt.line, 0, opt.colnr - 1);
-        if (isTriggered)
-            return this.getTriggerSources(pre, filetype);
-        return this.getSourcesForFiletype(filetype, isTriggered);
-    }
-    shouldTrigger(pre, languageId) {
-        if (pre.length == 0)
-            return false;
-        let last = pre[pre.length - 1];
-        let idx = this.sources.findIndex(s => {
-            let { enable, triggerCharacters, triggerPatterns, filetypes } = s;
-            if (!enable)
-                return false;
-            if ((filetypes && filetypes.indexOf(languageId) == -1))
-                return false;
-            if (triggerCharacters)
-                return triggerCharacters.indexOf(last) !== -1;
-            if (triggerPatterns)
-                return triggerPatterns.findIndex(p => p.test(pre)) !== -1;
-            return false;
-        });
-        return idx !== -1;
-    }
-    getTriggerSources(pre, languageId) {
-        let sources = this.getSourcesForFiletype(languageId, true);
-        let character = pre[pre.length - 1];
-        return sources.filter(o => {
-            if (o.triggerCharacters && o.triggerCharacters.indexOf(character) !== -1)
-                return true;
-            if (o.triggerPatterns && o.triggerPatterns.findIndex(p => p.test(pre)) !== -1)
-                return true;
-            return false;
-        });
-    }
-    getSourcesForFiletype(filetype, isTriggered) {
-        return this.sources.filter(source => {
-            let { filetypes } = source;
-            if (source.triggerOnly && isTriggered === false) {
-                return false;
-            }
-            if (source.enable && (!filetypes || filetypes.indexOf(filetype) !== -1)) {
-                return true;
-            }
-            return false;
-        });
-    }
-    addSource(source) {
-        let { name } = source;
-        if (this.names.indexOf(name) !== -1) {
-            workspace_1.default.showMessage(`Source "${name}" recreated`, 'warning');
-        }
-        this.sourceMap.set(name, source);
-        return vscode_jsonrpc_1.Disposable.create(() => {
-            this.sourceMap.delete(name);
-        });
-    }
-    removeSource(source) {
-        let name = typeof source == 'string' ? source : source.name;
-        if (source == this.sourceMap.get(name)) {
-            this.sourceMap.delete(name);
-        }
-    }
-    async refresh(name) {
-        for (let source of this.sources) {
-            if (!name || source.name == name) {
-                if (typeof source.refresh === 'function') {
-                    await Promise.resolve(source.refresh());
-                }
-            }
-        }
-    }
-    toggleSource(name) {
-        if (!name)
-            return;
-        let source = this.getSource(name);
-        if (!source)
-            return;
-        if (typeof source.toggle === 'function') {
-            source.toggle();
-        }
-    }
-    sourceStats() {
-        let res = [];
-        let items = this.sources;
-        for (let item of items) {
-            res.push({
-                name: item.name,
-                shortcut: item.shortcut || '',
-                filetypes: item.filetypes || [],
-                filepath: item.filepath || '',
-                type: item.sourceType == types_1.SourceType.Native
-                    ? 'native' : item.sourceType == types_1.SourceType.Remote
-                    ? 'remote' : 'service',
-                disabled: !item.enable
-            });
-        }
-        return res;
-    }
-    onDocumentEnter(bufnr) {
-        let { sources } = this;
-        for (let s of sources) {
-            if (!s.enable)
-                continue;
-            if (typeof s.onEnter == 'function') {
-                s.onEnter(bufnr);
-            }
-        }
-    }
-    createSource(config) {
-        if (!config.name || !config.doComplete) {
-            // tslint:disable-next-line: no-console
-            console.error(`name and doComplete required for createSource`);
-            return;
-        }
-        let source = new source_1.default(Object.assign({ sourceType: types_1.SourceType.Service }, config));
-        return this.addSource(source);
-    }
-    dispose() {
-        util_2.disposeAll(this.disposables);
-    }
-}
-exports.Sources = Sources;
-exports.default = new Sources();
-//# sourceMappingURL=sources.js.map
-
-/***/ }),
-/* 237 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const child_process_1 = __webpack_require__(169);
-const debounce_1 = __webpack_require__(170);
-const fast_diff_1 = tslib_1.__importDefault(__webpack_require__(209));
-const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
-const glob_1 = tslib_1.__importDefault(__webpack_require__(238));
-const isuri_1 = tslib_1.__importDefault(__webpack_require__(177));
-const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const semver_1 = tslib_1.__importDefault(__webpack_require__(1));
-const util_1 = tslib_1.__importDefault(__webpack_require__(40));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const db_1 = tslib_1.__importDefault(__webpack_require__(200));
-const memos_1 = tslib_1.__importDefault(__webpack_require__(249));
-const util_2 = __webpack_require__(168);
-const array_1 = __webpack_require__(212);
-const factory_1 = __webpack_require__(250);
-const fs_2 = __webpack_require__(201);
-const watchman_1 = tslib_1.__importDefault(__webpack_require__(225));
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-__webpack_require__(307);
-const createLogger = __webpack_require__(179);
-const logger = createLogger('extensions');
-const extensionFolder = global.hasOwnProperty('__TEST__') ? '' : 'node_modules';
-function loadJson(file) {
-    try {
-        let content = fs_1.default.readFileSync(file, 'utf8');
-        return JSON.parse(content);
-    }
-    catch (e) {
-        return null;
-    }
-}
-class Extensions {
-    constructor() {
-        this.list = [];
-        this.disabled = new Set();
-        this._onDidLoadExtension = new vscode_languageserver_protocol_1.Emitter();
-        this._onDidActiveExtension = new vscode_languageserver_protocol_1.Emitter();
-        this._onDidUnloadExtension = new vscode_languageserver_protocol_1.Emitter();
-        this._additionalSchemes = {};
-        this.activated = false;
-        this.ready = true;
-        this.onDidLoadExtension = this._onDidLoadExtension.event;
-        this.onDidActiveExtension = this._onDidActiveExtension.event;
-        this.onDidUnloadExtension = this._onDidUnloadExtension.event;
-    }
-    async init(nvim) {
-        this.root = await nvim.call('coc#util#extension_root');
-        if (!fs_1.default.existsSync(this.root)) {
-            await nvim.call('coc#util#init_extension_root', this.root);
-        }
-        if (global.hasOwnProperty('__TEST__')) {
-            this.root = path_1.default.join(__dirname, './__tests__/extensions');
-        }
-        let filepath = path_1.default.join(this.root, 'db.json');
-        let db = this.db = new db_1.default(filepath);
-        let data = loadJson(db.filepath) || {};
-        let keys = Object.keys(data.extension || {});
-        for (let key of keys) {
-            if (data.extension[key].disabled == true) {
-                this.disabled.add(key);
-            }
-        }
-        if (process.env.COC_NO_PLUGINS)
-            return;
-        let stats = await this.globalExtensionStats();
-        let localStats = await this.localExtensionStats(stats);
-        stats = stats.concat(localStats);
-        this.memos = new memos_1.default(path_1.default.resolve(this.root, '../memos.json'));
-        await this.loadFileExtensions();
-        await Promise.all(stats.map(stat => {
-            return this.loadExtension(stat.root, stat.isLocal).catch(e => {
-                workspace_1.default.showMessage(`Can't load extension from ${stat.root}: ${e.message}'`, 'error');
-            });
-        }));
-        // watch for new local extension
-        workspace_1.default.watchOption('runtimepath', async (oldValue, newValue) => {
-            let result = fast_diff_1.default(oldValue, newValue);
-            for (let [changeType, value] of result) {
-                if (changeType == 1) {
-                    let paths = value.replace(/,$/, '').split(',');
-                    for (let p of paths) {
-                        await this.loadExtension(p, true);
-                    }
-                }
-            }
-        });
-    }
-    activateExtensions() {
-        this.activated = true;
-        for (let item of this.list) {
-            let { id, packageJSON } = item.extension;
-            this.setupActiveEvents(id, packageJSON);
-        }
-        // check extensions need watch & install
-        this.checkExtensions().logError();
-        let config = workspace_1.default.getConfiguration('coc.preferences');
-        let interval = config.get('extensionUpdateCheck', 'daily');
-        if (interval != 'never')
-            this.updateExtensions(interval).logError();
-    }
-    async updateExtensions(interval, force = false) {
-        let now = new Date();
-        let { db } = this;
-        let day = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (interval == 'daily' ? 0 : 7));
-        let ts = await db.fetch('lastUpdate');
-        if (!force && ts && Number(ts) > day.getTime())
-            return;
-        if (global.hasOwnProperty('__TEST__') && !force)
-            return;
-        let stats = await this.globalExtensionStats();
-        await db.push('lastUpdate', Date.now());
-        let versionInfo = {};
-        stats = stats.filter(o => !o.exotic);
-        let yarncmd = await workspace_1.default.nvim.call('coc#util#yarn_cmd');
-        for (let stat of stats) {
-            if (stat.exotic)
-                continue;
-            let file = path_1.default.join(stat.root, 'package.json');
-            let obj = loadJson(file);
-            if (obj && obj.version) {
-                versionInfo[stat.id] = obj.version;
-            }
-        }
-        let outdated = [];
-        await Promise.all(Object.keys(versionInfo).map(id => {
-            let curr = versionInfo[id];
-            return util_2.runCommand(`${yarncmd} info ${id} --json`).then(content => {
-                let lines = content.trim().split('\n');
-                let json = JSON.parse(lines[lines.length - 1]);
-                let { version, engines } = json.data;
-                if (version == curr || !engines)
-                    return;
-                if (engines.hasOwnProperty('coc')) {
-                    let required = engines.coc.replace(/^\^/, '>=');
-                    if (!semver_1.default.satisfies(workspace_1.default.version, required))
-                        return;
-                    if (semver_1.default.gt(version, curr)) {
-                        outdated.push(id);
-                    }
-                }
-                else {
-                    outdated.push(id);
-                }
-            });
-        }));
-        if (!outdated.length)
-            return;
-        let status = workspace_1.default.createStatusBarItem(99, { progress: true });
-        logger.info(`Upgrading ${outdated.join(' ')}`);
-        status.text = `Upgrading ${outdated.join(' ')}`;
-        status.show();
-        if (!global.hasOwnProperty('__TEST__')) {
-            await util_2.runCommand(`${yarncmd} install`, { cwd: this.root });
-        }
-        const child = child_process_1.spawn(yarncmd, ['upgrade', ...outdated, '--latest', '--ignore-engines'], {
-            cwd: this.root,
-            detached: true,
-            stdio: 'ignore'
-        });
-        child.unref();
-        child.once('exit', () => {
-            status.dispose();
-        });
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            child.kill('SIGKILL');
-        });
-    }
-    async checkExtensions() {
-        let { globalExtensions, watchExtensions } = workspace_1.default.env;
-        if (globalExtensions && globalExtensions.length) {
-            this.installExtensions(globalExtensions).catch(_e => {
-                // noop
-            });
-        }
-        // watch for changes
-        if (watchExtensions && watchExtensions.length) {
-            let watchmanPath = workspace_1.default.getWatchmanPath();
-            if (!watchmanPath)
-                return;
-            let stats = await this.getExtensionStates();
-            for (let name of watchExtensions) {
-                let stat = stats.find(s => s.id == name);
-                if (stat && stat.state !== 'disabled') {
-                    let directory = await util_1.default.promisify(fs_1.default.realpath)(stat.root);
-                    let client = await watchman_1.default.createClient(watchmanPath, directory);
-                    client.subscribe('**/*.js', debounce_1.debounce(async () => {
-                        await this.reloadExtension(name);
-                        workspace_1.default.showMessage(`reloaded ${name}`);
-                    }, 100)).catch(_e => {
-                        // noop
-                    });
-                }
-            }
-        }
-    }
-    async installExtensions(list) {
-        if (list && list.length) {
-            let db = loadJson(this.db.filepath);
-            let extension = db ? db.extension : null;
-            list = array_1.distinct(list);
-            list = list.filter(name => {
-                if (this.has(name))
-                    return false;
-                if (/^\w+:/.test(name) && this.packageNameFromUrl(name))
-                    return false;
-                if (extension && extension[name] && extension[name].disabled == true)
-                    return false;
-                return true;
-            });
-            let cmd = global.hasOwnProperty('__TEST__') ? 'CocInstall -sync' : 'CocInstall';
-            if (list.length)
-                await workspace_1.default.nvim.command(`${cmd} ${list.join(' ')}`);
-        }
-    }
-    get all() {
-        return this.list.map(o => o.extension);
-    }
-    getExtension(id) {
-        return this.list.find(o => o.id == id);
-    }
-    get commands() {
-        let res = {};
-        for (let item of this.list) {
-            let { packageJSON } = item.extension;
-            if (packageJSON.contributes) {
-                let { commands } = packageJSON.contributes;
-                if (commands && commands.length) {
-                    for (let cmd of commands) {
-                        res[cmd.command] = cmd.title;
-                    }
-                }
-            }
-        }
-        return res;
-    }
-    getExtensionState(id) {
-        let disabled = this.isDisabled(id);
-        if (disabled)
-            return 'disabled';
-        let item = this.list.find(o => o.id == id);
-        if (!item)
-            return 'unknown';
-        let { extension } = item;
-        return extension.isActive ? 'activated' : 'loaded';
-    }
-    async getExtensionStates() {
-        let globalStats = await this.globalExtensionStats();
-        let localStats = await this.localExtensionStats(globalStats);
-        return globalStats.concat(localStats);
-    }
-    async toggleExtension(id) {
-        let state = this.getExtensionState(id);
-        if (state == null)
-            return;
-        if (state == 'activated') {
-            this.deactivate(id);
-        }
-        let key = `extension.${id}.disabled`;
-        await this.db.push(key, state == 'disabled' ? false : true);
-        if (state != 'disabled') {
-            this.disabled.add(id);
-            // unload
-            let idx = this.list.findIndex(o => o.id == id);
-            this.list.splice(idx, 1);
-        }
-        else {
-            this.disabled.delete(id);
-            let folder = path_1.default.join(this.root, extensionFolder, id);
-            try {
-                await this.loadExtension(folder);
-            }
-            catch (e) {
-                workspace_1.default.showMessage(`Can't load extension ${id}: ${e.message}'`, 'error');
-            }
-        }
-        await util_2.wait(200);
-    }
-    async reloadExtension(id) {
-        let idx = this.list.findIndex(o => o.id == id);
-        let directory = idx == -1 ? null : this.list[idx].directory;
-        this.deactivate(id);
-        if (idx != -1)
-            this.list.splice(idx, 1);
-        await util_2.wait(200);
-        if (directory) {
-            await this.loadExtension(directory);
-        }
-        else {
-            this.activate(id);
-        }
-    }
-    async uninstallExtension(ids) {
-        let status = workspace_1.default.createStatusBarItem(99, { progress: true });
-        status.text = `Uninstalling ${ids.join(' ')}`;
-        status.show();
-        for (let id of ids) {
-            if (!this.isGlobalExtension(id)) {
-                workspace_1.default.showMessage(`Global extension '${id}' not found.`, 'error');
-                return;
-            }
-            this.deactivate(id);
-        }
-        await util_2.wait(30);
-        let yarncmd = await workspace_1.default.nvim.call('coc#util#yarn_cmd');
-        if (!yarncmd)
-            return;
-        try {
-            if (!global.hasOwnProperty('__TEST__')) {
-                await workspace_1.default.runCommand(`${yarncmd} remove ${ids.join(' ')}`, this.root);
-            }
-            for (let id of ids) {
-                let idx = this.list.findIndex(o => o.id == id);
-                if (idx != -1)
-                    this.list.splice(idx, 1);
-                this._onDidUnloadExtension.fire(id);
-            }
-            status.dispose();
-            workspace_1.default.showMessage(`Extensions ${ids.join(' ')} removed`);
-        }
-        catch (e) {
-            status.dispose();
-            workspace_1.default.showMessage(`Uninstall failed: ${e.message}`, 'error');
-        }
-    }
-    isDisabled(id) {
-        return this.disabled.has(id);
-    }
-    async onExtensionInstall(id) {
-        if (/^\w+:/.test(id))
-            id = this.packageNameFromUrl(id);
-        if (!id || /^-/.test(id))
-            return;
-        let item = this.list.find(o => o.id == id);
-        if (item)
-            item.deactivate();
-        let folder = path_1.default.join(this.root, extensionFolder, id);
-        let stat = await fs_2.statAsync(folder);
-        if (stat && stat.isDirectory()) {
-            let jsonFile = path_1.default.join(folder, 'package.json');
-            let content = await fs_2.readFile(jsonFile, 'utf8');
-            let packageJSON = JSON.parse(content);
-            let { engines } = packageJSON;
-            if (!engines || (!engines.hasOwnProperty('coc') && !engines.hasOwnProperty('vscode')))
-                return;
-            await this.loadExtension(folder);
-        }
-    }
-    has(id) {
-        return this.list.find(o => o.id == id) != null;
-    }
-    isActivted(id) {
-        let item = this.list.find(o => o.id == id);
-        if (item && item.extension.isActive) {
-            return true;
-        }
-        return false;
-    }
-    async loadExtension(folder, isLocal = false) {
-        let jsonFile = path_1.default.join(folder, 'package.json');
-        let stat = await fs_2.statAsync(jsonFile);
-        if (!stat || !stat.isFile())
-            return;
-        let content = await fs_2.readFile(jsonFile, 'utf8');
-        let packageJSON = JSON.parse(content);
-        if (this.isDisabled(packageJSON.name))
-            return;
-        if (this.isActivted(packageJSON.name)) {
-            workspace_1.default.showMessage(`deactivate ${packageJSON.name}`);
-            this.deactivate(packageJSON.name);
-            await util_2.wait(200);
-        }
-        let { engines } = packageJSON;
-        if (engines && engines.hasOwnProperty('coc')) {
-            let required = engines.coc.replace(/^\^/, '>=');
-            if (!semver_1.default.satisfies(workspace_1.default.version, required)) {
-                workspace_1.default.showMessage(`Please update coc.nvim, ${packageJSON.name} requires coc.nvim ${engines.coc}`, 'warning');
-            }
-            this.createExtension(folder, Object.freeze(packageJSON), isLocal);
-        }
-        else if (engines && engines.hasOwnProperty('vscode')) {
-            this.createExtension(folder, Object.freeze(packageJSON), isLocal);
-        }
-        else {
-            logger.info(`engine coc & vscode not found in ${jsonFile}`);
-        }
-    }
-    async loadFileExtensions() {
-        if (global.hasOwnProperty('__TEST__'))
-            return;
-        let folder = path_1.default.join(process.env.VIMCONFIG, 'coc-extensions');
-        if (!fs_1.default.existsSync(folder))
-            return;
-        let files = await fs_2.readdirAsync(folder);
-        files = files.filter(f => f.endsWith('.js'));
-        for (let file of files) {
-            this.loadExtensionFile(path_1.default.join(folder, file));
-        }
-    }
-    /**
-     * Load single javascript file as extension.
-     */
-    loadExtensionFile(filepath) {
-        let filename = path_1.default.basename(filepath);
-        let name = path_1.default.basename(filepath, 'js');
-        if (this.isDisabled(name))
-            return;
-        let root = path_1.default.dirname(filepath);
-        let packageJSON = {
-            name,
-            main: filename,
-        };
-        this.createExtension(root, packageJSON);
-    }
-    activate(id, silent = true) {
-        if (this.isDisabled(id)) {
-            if (!silent)
-                workspace_1.default.showMessage(`Extension ${id} is disabled!`, 'error');
-            return;
-        }
-        let item = this.list.find(o => o.id == id);
-        if (!item) {
-            workspace_1.default.showMessage(`Extension ${id} not found!`, 'error');
-            return;
-        }
-        let { extension } = item;
-        if (extension.isActive)
-            return;
-        extension.activate().then(() => {
-            if (extension.isActive) {
-                this._onDidActiveExtension.fire(extension);
-            }
-        }, e => {
-            workspace_1.default.showMessage(`Error on activate ${extension.id}: ${e.message}`, 'error');
-            logger.error(`Error on activate extension ${extension.id}:`, e);
-        });
-    }
-    deactivate(id) {
-        let item = this.list.find(o => o.id == id);
-        if (!item)
-            return false;
-        if (item.extension.isActive && typeof item.deactivate == 'function') {
-            item.deactivate();
-            return true;
-        }
-        return false;
-    }
-    async call(id, method, args) {
-        let item = this.list.find(o => o.id == id);
-        if (!item)
-            return workspace_1.default.showMessage(`extension ${id} not found`, 'error');
-        let { extension } = item;
-        if (!extension.isActive) {
-            workspace_1.default.showMessage(`extension ${id} not activated`, 'error');
-            return;
-        }
-        let { exports } = extension;
-        if (!exports || !exports.hasOwnProperty(method)) {
-            workspace_1.default.showMessage(`method ${method} not found on extension ${id}`, 'error');
-            return;
-        }
-        return await Promise.resolve(exports[method].apply(null, args));
-    }
-    getExtensionApi(id) {
-        let item = this.list.find(o => o.id == id);
-        if (!item)
-            return null;
-        let { extension } = item;
-        return extension.isActive ? extension.exports : null;
-    }
-    registerExtension(extension, deactivate) {
-        let { id, packageJSON } = extension;
-        this.list.push({ id, extension, deactivate, isLocal: true });
-        let { contributes } = packageJSON;
-        if (contributes) {
-            let { configuration } = contributes;
-            if (configuration && configuration.properties) {
-                let { properties } = configuration;
-                let props = {};
-                for (let key of Object.keys(properties)) {
-                    let val = properties[key].default;
-                    if (val != null)
-                        props[key] = val;
-                }
-                workspace_1.default.configurations.extendsDefaults(props);
-            }
-        }
-        this._onDidLoadExtension.fire(extension);
-        this.setupActiveEvents(id, packageJSON);
-    }
-    get globalExtensions() {
-        let json = this.loadJson();
-        if (!json || !json.dependencies)
-            return [];
-        return Object.keys(json.dependencies);
-    }
-    async globalExtensionStats() {
-        let json = this.loadJson();
-        if (!json || !json.dependencies)
-            return [];
-        let res = await Promise.all(Object.keys(json.dependencies).map(key => {
-            return new Promise(async (resolve) => {
-                try {
-                    let val = json.dependencies[key];
-                    let root = path_1.default.join(this.root, extensionFolder, key);
-                    let jsonFile = path_1.default.join(root, 'package.json');
-                    let stat = await fs_2.statAsync(jsonFile);
-                    if (!stat || !stat.isFile())
-                        return resolve(null);
-                    let content = await fs_2.readFile(jsonFile, 'utf8');
-                    root = await fs_2.realpathAsync(root);
-                    let obj = JSON.parse(content);
-                    let { engines } = obj;
-                    if (!engines || (!engines.hasOwnProperty('coc') && !engines.hasOwnProperty('vscode'))) {
-                        return resolve(null);
-                    }
-                    let version = obj ? obj.version || '' : '';
-                    let description = obj ? obj.description || '' : '';
-                    resolve({
-                        id: key,
-                        isLocal: false,
-                        version,
-                        description,
-                        exotic: isuri_1.default.isValid(val),
-                        root,
-                        state: this.getExtensionState(key)
-                    });
-                }
-                catch (e) {
-                    logger.error(e);
-                    resolve(null);
-                }
-            });
-        }));
-        return res.filter(info => info != null);
-    }
-    async localExtensionStats(exclude) {
-        let runtimepath = await workspace_1.default.nvim.eval('&runtimepath');
-        let included = exclude.map(o => o.root);
-        let names = exclude.map(o => o.id);
-        let paths = runtimepath.split(',');
-        let res = await Promise.all(paths.map(root => {
-            return new Promise(async (resolve) => {
-                try {
-                    if (included.includes(root)) {
-                        return resolve(null);
-                    }
-                    let jsonFile = path_1.default.join(root, 'package.json');
-                    let stat = await fs_2.statAsync(jsonFile);
-                    if (!stat || !stat.isFile())
-                        return resolve(null);
-                    let content = await fs_2.readFile(jsonFile, 'utf8');
-                    let obj = JSON.parse(content);
-                    let { engines } = obj;
-                    if (!engines || (!engines.hasOwnProperty('coc') && !engines.hasOwnProperty('vscode'))) {
-                        return resolve(null);
-                    }
-                    if (names.indexOf(obj.name) !== -1) {
-                        workspace_1.default.showMessage(`Skipped extension  "${root}", please uninstall "${obj.name}" by :CocUninstall ${obj.name}`, 'warning');
-                        return resolve(null);
-                    }
-                    let version = obj ? obj.version || '' : '';
-                    let description = obj ? obj.description || '' : '';
-                    resolve({
-                        id: obj.name,
-                        isLocal: true,
-                        version,
-                        description,
-                        exotic: false,
-                        root,
-                        state: this.getExtensionState(obj.name)
-                    });
-                }
-                catch (e) {
-                    logger.error(e);
-                    resolve(null);
-                }
-            });
-        }));
-        return res.filter(info => info != null);
-    }
-    isGlobalExtension(id) {
-        return this.globalExtensions.indexOf(id) !== -1;
-    }
-    loadJson() {
-        let { root } = this;
-        let jsonFile = path_1.default.join(root, 'package.json');
-        if (!fs_1.default.existsSync(jsonFile))
-            return null;
-        return loadJson(jsonFile);
-    }
-    packageNameFromUrl(url) {
-        let json = this.loadJson();
-        if (!json || !json.dependencies)
-            return null;
-        for (let key of Object.keys(json.dependencies)) {
-            let val = json.dependencies[key];
-            if (val == url)
-                return key;
-        }
-        return null;
-    }
-    get schemes() {
-        return this._additionalSchemes;
-    }
-    addSchemeProperty(key, def) {
-        this._additionalSchemes[key] = def;
-        workspace_1.default.configurations.extendsDefaults({ [key]: def.default });
-    }
-    setupActiveEvents(id, packageJSON) {
-        let { activationEvents } = packageJSON;
-        if (!activationEvents || activationEvents.indexOf('*') !== -1 || !Array.isArray(activationEvents)) {
-            this.activate(id);
-            return;
-        }
-        let active = () => {
-            util_2.disposeAll(disposables);
-            this.activate(id);
-            active = () => { }; // tslint:disable-line
-        };
-        let disposables = [];
-        for (let eventName of activationEvents) {
-            let parts = eventName.split(':');
-            let ev = parts[0];
-            if (ev == 'onLanguage') {
-                if (workspace_1.default.filetypes.has(parts[1])) {
-                    active();
-                    return;
-                }
-                workspace_1.default.onDidOpenTextDocument(document => {
-                    if (document.languageId == parts[1]) {
-                        active();
-                    }
-                }, null, disposables);
-            }
-            else if (ev == 'onCommand') {
-                events_1.default.on('Command', command => {
-                    if (command == parts[1]) {
-                        active();
-                        // wait for service ready
-                        return new Promise(resolve => {
-                            setTimeout(resolve, 500);
-                        });
-                    }
-                }, null, disposables);
-            }
-            else if (ev == 'workspaceContains') {
-                let check = (cwd) => {
-                    glob_1.default(parts[1], { cwd }, (err, files) => {
-                        if (err)
-                            return;
-                        if (files && files.length) {
-                            active();
-                        }
-                    });
-                };
-                check(workspace_1.default.cwd);
-                events_1.default.on('DirChanged', check, null, disposables);
-            }
-            else if (ev == 'onFileSystem') {
-                for (let doc of workspace_1.default.documents) {
-                    let u = vscode_uri_1.default.parse(doc.uri);
-                    if (u.scheme == parts[1]) {
-                        return active();
-                    }
-                }
-                workspace_1.default.onDidOpenTextDocument(document => {
-                    let u = vscode_uri_1.default.parse(document.uri);
-                    if (u.scheme == parts[1]) {
-                        active();
-                    }
-                }, null, disposables);
-            }
-            else {
-                workspace_1.default.showMessage(`Unsupported event ${eventName} of ${id}`, 'error');
-            }
-        }
-    }
-    createExtension(root, packageJSON, isLocal = false) {
-        let id = `${packageJSON.name}`;
-        let isActive = false;
-        let exports = null;
-        let filename = path_1.default.join(root, packageJSON.main || 'index.js');
-        let ext;
-        let subscriptions = [];
-        let extension = {
-            activate: async () => {
-                if (isActive)
-                    return;
-                let context = {
-                    subscriptions,
-                    extensionPath: root,
-                    globalState: this.memos.createMemento(`${id}|global`),
-                    workspaceState: this.memos.createMemento(`${id}|${workspace_1.default.rootPath}`),
-                    asAbsolutePath: relativePath => {
-                        return path_1.default.join(root, relativePath);
-                    },
-                    storagePath: path_1.default.join(this.root, `${id}-data`),
-                    logger: createLogger(id)
-                };
-                isActive = true;
-                if (!ext) {
-                    try {
-                        ext = factory_1.createExtension(id, filename);
-                    }
-                    catch (e) {
-                        workspace_1.default.showMessage(`Error on load extension ${id} from ${filename}: ${e}`, 'error');
-                        logger.error(e);
-                        return;
-                    }
-                }
-                try {
-                    exports = await Promise.resolve(ext.activate(context));
-                }
-                catch (e) {
-                    isActive = false;
-                    workspace_1.default.showMessage(`Error on active extension ${id}: ${e}`, 'error');
-                    logger.error(e);
-                }
-                return exports;
-            }
-        };
-        Object.defineProperties(extension, {
-            id: {
-                get: () => id
-            },
-            packageJSON: {
-                get: () => packageJSON
-            },
-            extensionPath: {
-                get: () => root
-            },
-            isActive: {
-                get: () => isActive
-            },
-            exports: {
-                get: () => exports
-            }
-        });
-        this.list.push({
-            id,
-            isLocal,
-            extension,
-            directory: root,
-            deactivate: () => {
-                isActive = false;
-                if (ext && ext.deactivate) {
-                    Promise.resolve(ext.deactivate()).catch(e => {
-                        logger.error(`Error on ${id} deactivate: `, e.message);
-                    });
-                }
-                util_2.disposeAll(subscriptions);
-                subscriptions = [];
-            }
-        });
-        let { contributes } = packageJSON;
-        if (contributes) {
-            let { configuration, rootPatterns } = contributes;
-            if (configuration && configuration.properties) {
-                let { properties } = configuration;
-                let props = {};
-                for (let key of Object.keys(properties)) {
-                    let val = properties[key].default;
-                    if (val != null)
-                        props[key] = val;
-                }
-                workspace_1.default.configurations.extendsDefaults(props);
-            }
-            if (rootPatterns && rootPatterns.length) {
-                for (let item of rootPatterns) {
-                    workspace_1.default.addRootPatterns(item.filetype, item.patterns);
-                }
-            }
-        }
-        this._onDidLoadExtension.fire(extension);
-        if (this.activated) {
-            this.setupActiveEvents(id, packageJSON);
-        }
-        return id;
-    }
-}
-exports.Extensions = Extensions;
-exports.default = new Extensions();
-//# sourceMappingURL=extensions.js.map
-
-/***/ }),
-/* 238 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Approach:
-//
-// 1. Get the minimatch set
-// 2. For each pattern in the set, PROCESS(pattern, false)
-// 3. Store matches per-set, then uniq them
-//
-// PROCESS(pattern, inGlobStar)
-// Get the first [n] items from pattern that are all strings
-// Join these together.  This is PREFIX.
-//   If there is no more remaining, then stat(PREFIX) and
-//   add to matches if it succeeds.  END.
-//
-// If inGlobStar and PREFIX is symlink and points to dir
-//   set ENTRIES = []
-// else readdir(PREFIX) as ENTRIES
-//   If fail, END
-//
-// with ENTRIES
-//   If pattern[n] is GLOBSTAR
-//     // handle the case where the globstar match is empty
-//     // by pruning it out, and testing the resulting pattern
-//     PROCESS(pattern[0..n] + pattern[n+1 .. $], false)
-//     // handle other cases.
-//     for ENTRY in ENTRIES (not dotfiles)
-//       // attach globstar + tail onto the entry
-//       // Mark that this entry is a globstar match
-//       PROCESS(pattern[0..n] + ENTRY + pattern[n .. $], true)
-//
-//   else // not globstar
-//     for ENTRY in ENTRIES (not dotfiles, unless pattern[n] is dot)
-//       Test ENTRY against pattern[n]
-//       If fails, continue
-//       If passes, PROCESS(pattern[0..n] + item + pattern[n+1 .. $])
-//
-// Caveat:
-//   Cache all stats and readdirs results to minimize syscall.  Since all
-//   we ever care about is existence and directory-ness, we can just keep
-//   `true` for files, and [children,...] for directories, or `false` for
-//   things that don't exist.
-
-module.exports = glob
-
-var fs = __webpack_require__(54)
-var rp = __webpack_require__(239)
-var minimatch = __webpack_require__(202)
-var Minimatch = minimatch.Minimatch
-var inherits = __webpack_require__(241)
-var EE = __webpack_require__(49).EventEmitter
-var path = __webpack_require__(56)
-var assert = __webpack_require__(104)
-var isAbsolute = __webpack_require__(243)
-var globSync = __webpack_require__(244)
-var common = __webpack_require__(245)
-var alphasort = common.alphasort
-var alphasorti = common.alphasorti
-var setopts = common.setopts
-var ownProp = common.ownProp
-var inflight = __webpack_require__(246)
-var util = __webpack_require__(40)
-var childrenIgnored = common.childrenIgnored
-var isIgnored = common.isIgnored
-
-var once = __webpack_require__(248)
-
-function glob (pattern, options, cb) {
-  if (typeof options === 'function') cb = options, options = {}
-  if (!options) options = {}
-
-  if (options.sync) {
-    if (cb)
-      throw new TypeError('callback provided to sync glob')
-    return globSync(pattern, options)
-  }
-
-  return new Glob(pattern, options, cb)
-}
-
-glob.sync = globSync
-var GlobSync = glob.GlobSync = globSync.GlobSync
-
-// old api surface
-glob.glob = glob
-
-function extend (origin, add) {
-  if (add === null || typeof add !== 'object') {
-    return origin
-  }
-
-  var keys = Object.keys(add)
-  var i = keys.length
-  while (i--) {
-    origin[keys[i]] = add[keys[i]]
-  }
-  return origin
-}
-
-glob.hasMagic = function (pattern, options_) {
-  var options = extend({}, options_)
-  options.noprocess = true
-
-  var g = new Glob(pattern, options)
-  var set = g.minimatch.set
-
-  if (!pattern)
-    return false
-
-  if (set.length > 1)
-    return true
-
-  for (var j = 0; j < set[0].length; j++) {
-    if (typeof set[0][j] !== 'string')
-      return true
-  }
-
-  return false
-}
-
-glob.Glob = Glob
-inherits(Glob, EE)
-function Glob (pattern, options, cb) {
-  if (typeof options === 'function') {
-    cb = options
-    options = null
-  }
-
-  if (options && options.sync) {
-    if (cb)
-      throw new TypeError('callback provided to sync glob')
-    return new GlobSync(pattern, options)
-  }
-
-  if (!(this instanceof Glob))
-    return new Glob(pattern, options, cb)
-
-  setopts(this, pattern, options)
-  this._didRealPath = false
-
-  // process each pattern in the minimatch set
-  var n = this.minimatch.set.length
-
-  // The matches are stored as {<filename>: true,...} so that
-  // duplicates are automagically pruned.
-  // Later, we do an Object.keys() on these.
-  // Keep them as a list so we can fill in when nonull is set.
-  this.matches = new Array(n)
-
-  if (typeof cb === 'function') {
-    cb = once(cb)
-    this.on('error', cb)
-    this.on('end', function (matches) {
-      cb(null, matches)
-    })
-  }
-
-  var self = this
-  this._processing = 0
-
-  this._emitQueue = []
-  this._processQueue = []
-  this.paused = false
-
-  if (this.noprocess)
-    return this
-
-  if (n === 0)
-    return done()
-
-  var sync = true
-  for (var i = 0; i < n; i ++) {
-    this._process(this.minimatch.set[i], i, false, done)
-  }
-  sync = false
-
-  function done () {
-    --self._processing
-    if (self._processing <= 0) {
-      if (sync) {
-        process.nextTick(function () {
-          self._finish()
-        })
-      } else {
-        self._finish()
-      }
-    }
-  }
-}
-
-Glob.prototype._finish = function () {
-  assert(this instanceof Glob)
-  if (this.aborted)
-    return
-
-  if (this.realpath && !this._didRealpath)
-    return this._realpath()
-
-  common.finish(this)
-  this.emit('end', this.found)
-}
-
-Glob.prototype._realpath = function () {
-  if (this._didRealpath)
-    return
-
-  this._didRealpath = true
-
-  var n = this.matches.length
-  if (n === 0)
-    return this._finish()
-
-  var self = this
-  for (var i = 0; i < this.matches.length; i++)
-    this._realpathSet(i, next)
-
-  function next () {
-    if (--n === 0)
-      self._finish()
-  }
-}
-
-Glob.prototype._realpathSet = function (index, cb) {
-  var matchset = this.matches[index]
-  if (!matchset)
-    return cb()
-
-  var found = Object.keys(matchset)
-  var self = this
-  var n = found.length
-
-  if (n === 0)
-    return cb()
-
-  var set = this.matches[index] = Object.create(null)
-  found.forEach(function (p, i) {
-    // If there's a problem with the stat, then it means that
-    // one or more of the links in the realpath couldn't be
-    // resolved.  just return the abs value in that case.
-    p = self._makeAbs(p)
-    rp.realpath(p, self.realpathCache, function (er, real) {
-      if (!er)
-        set[real] = true
-      else if (er.syscall === 'stat')
-        set[p] = true
-      else
-        self.emit('error', er) // srsly wtf right here
-
-      if (--n === 0) {
-        self.matches[index] = set
-        cb()
-      }
-    })
-  })
-}
-
-Glob.prototype._mark = function (p) {
-  return common.mark(this, p)
-}
-
-Glob.prototype._makeAbs = function (f) {
-  return common.makeAbs(this, f)
-}
-
-Glob.prototype.abort = function () {
-  this.aborted = true
-  this.emit('abort')
-}
-
-Glob.prototype.pause = function () {
-  if (!this.paused) {
-    this.paused = true
-    this.emit('pause')
-  }
-}
-
-Glob.prototype.resume = function () {
-  if (this.paused) {
-    this.emit('resume')
-    this.paused = false
-    if (this._emitQueue.length) {
-      var eq = this._emitQueue.slice(0)
-      this._emitQueue.length = 0
-      for (var i = 0; i < eq.length; i ++) {
-        var e = eq[i]
-        this._emitMatch(e[0], e[1])
-      }
-    }
-    if (this._processQueue.length) {
-      var pq = this._processQueue.slice(0)
-      this._processQueue.length = 0
-      for (var i = 0; i < pq.length; i ++) {
-        var p = pq[i]
-        this._processing--
-        this._process(p[0], p[1], p[2], p[3])
-      }
-    }
-  }
-}
-
-Glob.prototype._process = function (pattern, index, inGlobStar, cb) {
-  assert(this instanceof Glob)
-  assert(typeof cb === 'function')
-
-  if (this.aborted)
-    return
-
-  this._processing++
-  if (this.paused) {
-    this._processQueue.push([pattern, index, inGlobStar, cb])
-    return
-  }
-
-  //console.error('PROCESS %d', this._processing, pattern)
-
-  // Get the first [n] parts of pattern that are all strings.
-  var n = 0
-  while (typeof pattern[n] === 'string') {
-    n ++
-  }
-  // now n is the index of the first one that is *not* a string.
-
-  // see if there's anything else
-  var prefix
-  switch (n) {
-    // if not, then this is rather simple
-    case pattern.length:
-      this._processSimple(pattern.join('/'), index, cb)
-      return
-
-    case 0:
-      // pattern *starts* with some non-trivial item.
-      // going to readdir(cwd), but not include the prefix in matches.
-      prefix = null
-      break
-
-    default:
-      // pattern has some string bits in the front.
-      // whatever it starts with, whether that's 'absolute' like /foo/bar,
-      // or 'relative' like '../baz'
-      prefix = pattern.slice(0, n).join('/')
-      break
-  }
-
-  var remain = pattern.slice(n)
-
-  // get the list of entries.
-  var read
-  if (prefix === null)
-    read = '.'
-  else if (isAbsolute(prefix) || isAbsolute(pattern.join('/'))) {
-    if (!prefix || !isAbsolute(prefix))
-      prefix = '/' + prefix
-    read = prefix
-  } else
-    read = prefix
-
-  var abs = this._makeAbs(read)
-
-  //if ignored, skip _processing
-  if (childrenIgnored(this, read))
-    return cb()
-
-  var isGlobStar = remain[0] === minimatch.GLOBSTAR
-  if (isGlobStar)
-    this._processGlobStar(prefix, read, abs, remain, index, inGlobStar, cb)
-  else
-    this._processReaddir(prefix, read, abs, remain, index, inGlobStar, cb)
-}
-
-Glob.prototype._processReaddir = function (prefix, read, abs, remain, index, inGlobStar, cb) {
-  var self = this
-  this._readdir(abs, inGlobStar, function (er, entries) {
-    return self._processReaddir2(prefix, read, abs, remain, index, inGlobStar, entries, cb)
-  })
-}
-
-Glob.prototype._processReaddir2 = function (prefix, read, abs, remain, index, inGlobStar, entries, cb) {
-
-  // if the abs isn't a dir, then nothing can match!
-  if (!entries)
-    return cb()
-
-  // It will only match dot entries if it starts with a dot, or if
-  // dot is set.  Stuff like @(.foo|.bar) isn't allowed.
-  var pn = remain[0]
-  var negate = !!this.minimatch.negate
-  var rawGlob = pn._glob
-  var dotOk = this.dot || rawGlob.charAt(0) === '.'
-
-  var matchedEntries = []
-  for (var i = 0; i < entries.length; i++) {
-    var e = entries[i]
-    if (e.charAt(0) !== '.' || dotOk) {
-      var m
-      if (negate && !prefix) {
-        m = !e.match(pn)
-      } else {
-        m = e.match(pn)
-      }
-      if (m)
-        matchedEntries.push(e)
-    }
-  }
-
-  //console.error('prd2', prefix, entries, remain[0]._glob, matchedEntries)
-
-  var len = matchedEntries.length
-  // If there are no matched entries, then nothing matches.
-  if (len === 0)
-    return cb()
-
-  // if this is the last remaining pattern bit, then no need for
-  // an additional stat *unless* the user has specified mark or
-  // stat explicitly.  We know they exist, since readdir returned
-  // them.
-
-  if (remain.length === 1 && !this.mark && !this.stat) {
-    if (!this.matches[index])
-      this.matches[index] = Object.create(null)
-
-    for (var i = 0; i < len; i ++) {
-      var e = matchedEntries[i]
-      if (prefix) {
-        if (prefix !== '/')
-          e = prefix + '/' + e
-        else
-          e = prefix + e
-      }
-
-      if (e.charAt(0) === '/' && !this.nomount) {
-        e = path.join(this.root, e)
-      }
-      this._emitMatch(index, e)
-    }
-    // This was the last one, and no stats were needed
-    return cb()
-  }
-
-  // now test all matched entries as stand-ins for that part
-  // of the pattern.
-  remain.shift()
-  for (var i = 0; i < len; i ++) {
-    var e = matchedEntries[i]
-    var newPattern
-    if (prefix) {
-      if (prefix !== '/')
-        e = prefix + '/' + e
-      else
-        e = prefix + e
-    }
-    this._process([e].concat(remain), index, inGlobStar, cb)
-  }
-  cb()
-}
-
-Glob.prototype._emitMatch = function (index, e) {
-  if (this.aborted)
-    return
-
-  if (isIgnored(this, e))
-    return
-
-  if (this.paused) {
-    this._emitQueue.push([index, e])
-    return
-  }
-
-  var abs = isAbsolute(e) ? e : this._makeAbs(e)
-
-  if (this.mark)
-    e = this._mark(e)
-
-  if (this.absolute)
-    e = abs
-
-  if (this.matches[index][e])
-    return
-
-  if (this.nodir) {
-    var c = this.cache[abs]
-    if (c === 'DIR' || Array.isArray(c))
-      return
-  }
-
-  this.matches[index][e] = true
-
-  var st = this.statCache[abs]
-  if (st)
-    this.emit('stat', e, st)
-
-  this.emit('match', e)
-}
-
-Glob.prototype._readdirInGlobStar = function (abs, cb) {
-  if (this.aborted)
-    return
-
-  // follow all symlinked directories forever
-  // just proceed as if this is a non-globstar situation
-  if (this.follow)
-    return this._readdir(abs, false, cb)
-
-  var lstatkey = 'lstat\0' + abs
-  var self = this
-  var lstatcb = inflight(lstatkey, lstatcb_)
-
-  if (lstatcb)
-    fs.lstat(abs, lstatcb)
-
-  function lstatcb_ (er, lstat) {
-    if (er && er.code === 'ENOENT')
-      return cb()
-
-    var isSym = lstat && lstat.isSymbolicLink()
-    self.symlinks[abs] = isSym
-
-    // If it's not a symlink or a dir, then it's definitely a regular file.
-    // don't bother doing a readdir in that case.
-    if (!isSym && lstat && !lstat.isDirectory()) {
-      self.cache[abs] = 'FILE'
-      cb()
-    } else
-      self._readdir(abs, false, cb)
-  }
-}
-
-Glob.prototype._readdir = function (abs, inGlobStar, cb) {
-  if (this.aborted)
-    return
-
-  cb = inflight('readdir\0'+abs+'\0'+inGlobStar, cb)
-  if (!cb)
-    return
-
-  //console.error('RD %j %j', +inGlobStar, abs)
-  if (inGlobStar && !ownProp(this.symlinks, abs))
-    return this._readdirInGlobStar(abs, cb)
-
-  if (ownProp(this.cache, abs)) {
-    var c = this.cache[abs]
-    if (!c || c === 'FILE')
-      return cb()
-
-    if (Array.isArray(c))
-      return cb(null, c)
-  }
-
-  var self = this
-  fs.readdir(abs, readdirCb(this, abs, cb))
-}
-
-function readdirCb (self, abs, cb) {
-  return function (er, entries) {
-    if (er)
-      self._readdirError(abs, er, cb)
-    else
-      self._readdirEntries(abs, entries, cb)
-  }
-}
-
-Glob.prototype._readdirEntries = function (abs, entries, cb) {
-  if (this.aborted)
-    return
-
-  // if we haven't asked to stat everything, then just
-  // assume that everything in there exists, so we can avoid
-  // having to stat it a second time.
-  if (!this.mark && !this.stat) {
-    for (var i = 0; i < entries.length; i ++) {
-      var e = entries[i]
-      if (abs === '/')
-        e = abs + e
-      else
-        e = abs + '/' + e
-      this.cache[e] = true
-    }
-  }
-
-  this.cache[abs] = entries
-  return cb(null, entries)
-}
-
-Glob.prototype._readdirError = function (f, er, cb) {
-  if (this.aborted)
-    return
-
-  // handle errors, and cache the information
-  switch (er.code) {
-    case 'ENOTSUP': // https://github.com/isaacs/node-glob/issues/205
-    case 'ENOTDIR': // totally normal. means it *does* exist.
-      var abs = this._makeAbs(f)
-      this.cache[abs] = 'FILE'
-      if (abs === this.cwdAbs) {
-        var error = new Error(er.code + ' invalid cwd ' + this.cwd)
-        error.path = this.cwd
-        error.code = er.code
-        this.emit('error', error)
-        this.abort()
-      }
-      break
-
-    case 'ENOENT': // not terribly unusual
-    case 'ELOOP':
-    case 'ENAMETOOLONG':
-    case 'UNKNOWN':
-      this.cache[this._makeAbs(f)] = false
-      break
-
-    default: // some unusual error.  Treat as failure.
-      this.cache[this._makeAbs(f)] = false
-      if (this.strict) {
-        this.emit('error', er)
-        // If the error is handled, then we abort
-        // if not, we threw out of here
-        this.abort()
-      }
-      if (!this.silent)
-        console.error('glob error', er)
-      break
-  }
-
-  return cb()
-}
-
-Glob.prototype._processGlobStar = function (prefix, read, abs, remain, index, inGlobStar, cb) {
-  var self = this
-  this._readdir(abs, inGlobStar, function (er, entries) {
-    self._processGlobStar2(prefix, read, abs, remain, index, inGlobStar, entries, cb)
-  })
-}
-
-
-Glob.prototype._processGlobStar2 = function (prefix, read, abs, remain, index, inGlobStar, entries, cb) {
-  //console.error('pgs2', prefix, remain[0], entries)
-
-  // no entries means not a dir, so it can never have matches
-  // foo.txt/** doesn't match foo.txt
-  if (!entries)
-    return cb()
-
-  // test without the globstar, and with every child both below
-  // and replacing the globstar.
-  var remainWithoutGlobStar = remain.slice(1)
-  var gspref = prefix ? [ prefix ] : []
-  var noGlobStar = gspref.concat(remainWithoutGlobStar)
-
-  // the noGlobStar pattern exits the inGlobStar state
-  this._process(noGlobStar, index, false, cb)
-
-  var isSym = this.symlinks[abs]
-  var len = entries.length
-
-  // If it's a symlink, and we're in a globstar, then stop
-  if (isSym && inGlobStar)
-    return cb()
-
-  for (var i = 0; i < len; i++) {
-    var e = entries[i]
-    if (e.charAt(0) === '.' && !this.dot)
-      continue
-
-    // these two cases enter the inGlobStar state
-    var instead = gspref.concat(entries[i], remainWithoutGlobStar)
-    this._process(instead, index, true, cb)
-
-    var below = gspref.concat(entries[i], remain)
-    this._process(below, index, true, cb)
-  }
-
-  cb()
-}
-
-Glob.prototype._processSimple = function (prefix, index, cb) {
-  // XXX review this.  Shouldn't it be doing the mounting etc
-  // before doing stat?  kinda weird?
-  var self = this
-  this._stat(prefix, function (er, exists) {
-    self._processSimple2(prefix, index, er, exists, cb)
-  })
-}
-Glob.prototype._processSimple2 = function (prefix, index, er, exists, cb) {
-
-  //console.error('ps2', prefix, exists)
-
-  if (!this.matches[index])
-    this.matches[index] = Object.create(null)
-
-  // If it doesn't exist, then just mark the lack of results
-  if (!exists)
-    return cb()
-
-  if (prefix && isAbsolute(prefix) && !this.nomount) {
-    var trail = /[\/\\]$/.test(prefix)
-    if (prefix.charAt(0) === '/') {
-      prefix = path.join(this.root, prefix)
-    } else {
-      prefix = path.resolve(this.root, prefix)
-      if (trail)
-        prefix += '/'
-    }
-  }
-
-  if (process.platform === 'win32')
-    prefix = prefix.replace(/\\/g, '/')
-
-  // Mark this as a match
-  this._emitMatch(index, prefix)
-  cb()
-}
-
-// Returns either 'DIR', 'FILE', or false
-Glob.prototype._stat = function (f, cb) {
-  var abs = this._makeAbs(f)
-  var needDir = f.slice(-1) === '/'
-
-  if (f.length > this.maxLength)
-    return cb()
-
-  if (!this.stat && ownProp(this.cache, abs)) {
-    var c = this.cache[abs]
-
-    if (Array.isArray(c))
-      c = 'DIR'
-
-    // It exists, but maybe not how we need it
-    if (!needDir || c === 'DIR')
-      return cb(null, c)
-
-    if (needDir && c === 'FILE')
-      return cb()
-
-    // otherwise we have to stat, because maybe c=true
-    // if we know it exists, but not what it is.
-  }
-
-  var exists
-  var stat = this.statCache[abs]
-  if (stat !== undefined) {
-    if (stat === false)
-      return cb(null, stat)
-    else {
-      var type = stat.isDirectory() ? 'DIR' : 'FILE'
-      if (needDir && type === 'FILE')
-        return cb()
-      else
-        return cb(null, type, stat)
-    }
-  }
-
-  var self = this
-  var statcb = inflight('stat\0' + abs, lstatcb_)
-  if (statcb)
-    fs.lstat(abs, statcb)
-
-  function lstatcb_ (er, lstat) {
-    if (lstat && lstat.isSymbolicLink()) {
-      // If it's a symlink, then treat it as the target, unless
-      // the target does not exist, then treat it as a file.
-      return fs.stat(abs, function (er, stat) {
-        if (er)
-          self._stat2(f, abs, null, lstat, cb)
-        else
-          self._stat2(f, abs, er, stat, cb)
-      })
-    } else {
-      self._stat2(f, abs, er, lstat, cb)
-    }
-  }
-}
-
-Glob.prototype._stat2 = function (f, abs, er, stat, cb) {
-  if (er && (er.code === 'ENOENT' || er.code === 'ENOTDIR')) {
-    this.statCache[abs] = false
-    return cb()
-  }
-
-  var needDir = f.slice(-1) === '/'
-  this.statCache[abs] = stat
-
-  if (abs.slice(-1) === '/' && stat && !stat.isDirectory())
-    return cb(null, false, stat)
-
-  var c = true
-  if (stat)
-    c = stat.isDirectory() ? 'DIR' : 'FILE'
-  this.cache[abs] = this.cache[abs] || c
-
-  if (needDir && c === 'FILE')
-    return cb()
-
-  return cb(null, c, stat)
-}
-
-
-/***/ }),
-/* 239 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = realpath
-realpath.realpath = realpath
-realpath.sync = realpathSync
-realpath.realpathSync = realpathSync
-realpath.monkeypatch = monkeypatch
-realpath.unmonkeypatch = unmonkeypatch
-
-var fs = __webpack_require__(54)
-var origRealpath = fs.realpath
-var origRealpathSync = fs.realpathSync
-
-var version = process.version
-var ok = /^v[0-5]\./.test(version)
-var old = __webpack_require__(240)
-
-function newError (er) {
-  return er && er.syscall === 'realpath' && (
-    er.code === 'ELOOP' ||
-    er.code === 'ENOMEM' ||
-    er.code === 'ENAMETOOLONG'
-  )
-}
-
-function realpath (p, cache, cb) {
-  if (ok) {
-    return origRealpath(p, cache, cb)
-  }
-
-  if (typeof cache === 'function') {
-    cb = cache
-    cache = null
-  }
-  origRealpath(p, cache, function (er, result) {
-    if (newError(er)) {
-      old.realpath(p, cache, cb)
-    } else {
-      cb(er, result)
-    }
-  })
-}
-
-function realpathSync (p, cache) {
-  if (ok) {
-    return origRealpathSync(p, cache)
-  }
-
-  try {
-    return origRealpathSync(p, cache)
-  } catch (er) {
-    if (newError(er)) {
-      return old.realpathSync(p, cache)
-    } else {
-      throw er
-    }
-  }
-}
-
-function monkeypatch () {
-  fs.realpath = realpath
-  fs.realpathSync = realpathSync
-}
-
-function unmonkeypatch () {
-  fs.realpath = origRealpath
-  fs.realpathSync = origRealpathSync
-}
-
-
-/***/ }),
-/* 240 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-var pathModule = __webpack_require__(56);
-var isWindows = process.platform === 'win32';
-var fs = __webpack_require__(54);
-
-// JavaScript implementation of realpath, ported from node pre-v6
-
-var DEBUG = process.env.NODE_DEBUG && /fs/.test(process.env.NODE_DEBUG);
-
-function rethrow() {
-  // Only enable in debug mode. A backtrace uses ~1000 bytes of heap space and
-  // is fairly slow to generate.
-  var callback;
-  if (DEBUG) {
-    var backtrace = new Error;
-    callback = debugCallback;
-  } else
-    callback = missingCallback;
-
-  return callback;
-
-  function debugCallback(err) {
-    if (err) {
-      backtrace.message = err.message;
-      err = backtrace;
-      missingCallback(err);
-    }
-  }
-
-  function missingCallback(err) {
-    if (err) {
-      if (process.throwDeprecation)
-        throw err;  // Forgot a callback but don't know where? Use NODE_DEBUG=fs
-      else if (!process.noDeprecation) {
-        var msg = 'fs: missing callback ' + (err.stack || err.message);
-        if (process.traceDeprecation)
-          console.trace(msg);
-        else
-          console.error(msg);
-      }
-    }
-  }
-}
-
-function maybeCallback(cb) {
-  return typeof cb === 'function' ? cb : rethrow();
-}
-
-var normalize = pathModule.normalize;
-
-// Regexp that finds the next partion of a (partial) path
-// result is [base_with_slash, base], e.g. ['somedir/', 'somedir']
-if (isWindows) {
-  var nextPartRe = /(.*?)(?:[\/\\]+|$)/g;
-} else {
-  var nextPartRe = /(.*?)(?:[\/]+|$)/g;
-}
-
-// Regex to find the device root, including trailing slash. E.g. 'c:\\'.
-if (isWindows) {
-  var splitRootRe = /^(?:[a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/][^\\\/]+)?[\\\/]*/;
-} else {
-  var splitRootRe = /^[\/]*/;
-}
-
-exports.realpathSync = function realpathSync(p, cache) {
-  // make p is absolute
-  p = pathModule.resolve(p);
-
-  if (cache && Object.prototype.hasOwnProperty.call(cache, p)) {
-    return cache[p];
-  }
-
-  var original = p,
-      seenLinks = {},
-      knownHard = {};
-
-  // current character position in p
-  var pos;
-  // the partial path so far, including a trailing slash if any
-  var current;
-  // the partial path without a trailing slash (except when pointing at a root)
-  var base;
-  // the partial path scanned in the previous round, with slash
-  var previous;
-
-  start();
-
-  function start() {
-    // Skip over roots
-    var m = splitRootRe.exec(p);
-    pos = m[0].length;
-    current = m[0];
-    base = m[0];
-    previous = '';
-
-    // On windows, check that the root exists. On unix there is no need.
-    if (isWindows && !knownHard[base]) {
-      fs.lstatSync(base);
-      knownHard[base] = true;
-    }
-  }
-
-  // walk down the path, swapping out linked pathparts for their real
-  // values
-  // NB: p.length changes.
-  while (pos < p.length) {
-    // find the next part
-    nextPartRe.lastIndex = pos;
-    var result = nextPartRe.exec(p);
-    previous = current;
-    current += result[0];
-    base = previous + result[1];
-    pos = nextPartRe.lastIndex;
-
-    // continue if not a symlink
-    if (knownHard[base] || (cache && cache[base] === base)) {
-      continue;
-    }
-
-    var resolvedLink;
-    if (cache && Object.prototype.hasOwnProperty.call(cache, base)) {
-      // some known symbolic link.  no need to stat again.
-      resolvedLink = cache[base];
-    } else {
-      var stat = fs.lstatSync(base);
-      if (!stat.isSymbolicLink()) {
-        knownHard[base] = true;
-        if (cache) cache[base] = base;
-        continue;
-      }
-
-      // read the link if it wasn't read before
-      // dev/ino always return 0 on windows, so skip the check.
-      var linkTarget = null;
-      if (!isWindows) {
-        var id = stat.dev.toString(32) + ':' + stat.ino.toString(32);
-        if (seenLinks.hasOwnProperty(id)) {
-          linkTarget = seenLinks[id];
-        }
-      }
-      if (linkTarget === null) {
-        fs.statSync(base);
-        linkTarget = fs.readlinkSync(base);
-      }
-      resolvedLink = pathModule.resolve(previous, linkTarget);
-      // track this, if given a cache.
-      if (cache) cache[base] = resolvedLink;
-      if (!isWindows) seenLinks[id] = linkTarget;
-    }
-
-    // resolve the link, then start over
-    p = pathModule.resolve(resolvedLink, p.slice(pos));
-    start();
-  }
-
-  if (cache) cache[original] = p;
-
-  return p;
-};
-
-
-exports.realpath = function realpath(p, cache, cb) {
-  if (typeof cb !== 'function') {
-    cb = maybeCallback(cache);
-    cache = null;
-  }
-
-  // make p is absolute
-  p = pathModule.resolve(p);
-
-  if (cache && Object.prototype.hasOwnProperty.call(cache, p)) {
-    return process.nextTick(cb.bind(null, null, cache[p]));
-  }
-
-  var original = p,
-      seenLinks = {},
-      knownHard = {};
-
-  // current character position in p
-  var pos;
-  // the partial path so far, including a trailing slash if any
-  var current;
-  // the partial path without a trailing slash (except when pointing at a root)
-  var base;
-  // the partial path scanned in the previous round, with slash
-  var previous;
-
-  start();
-
-  function start() {
-    // Skip over roots
-    var m = splitRootRe.exec(p);
-    pos = m[0].length;
-    current = m[0];
-    base = m[0];
-    previous = '';
-
-    // On windows, check that the root exists. On unix there is no need.
-    if (isWindows && !knownHard[base]) {
-      fs.lstat(base, function(err) {
-        if (err) return cb(err);
-        knownHard[base] = true;
-        LOOP();
-      });
-    } else {
-      process.nextTick(LOOP);
-    }
-  }
-
-  // walk down the path, swapping out linked pathparts for their real
-  // values
-  function LOOP() {
-    // stop if scanned past end of path
-    if (pos >= p.length) {
-      if (cache) cache[original] = p;
-      return cb(null, p);
-    }
-
-    // find the next part
-    nextPartRe.lastIndex = pos;
-    var result = nextPartRe.exec(p);
-    previous = current;
-    current += result[0];
-    base = previous + result[1];
-    pos = nextPartRe.lastIndex;
-
-    // continue if not a symlink
-    if (knownHard[base] || (cache && cache[base] === base)) {
-      return process.nextTick(LOOP);
-    }
-
-    if (cache && Object.prototype.hasOwnProperty.call(cache, base)) {
-      // known symbolic link.  no need to stat again.
-      return gotResolvedLink(cache[base]);
-    }
-
-    return fs.lstat(base, gotStat);
-  }
-
-  function gotStat(err, stat) {
-    if (err) return cb(err);
-
-    // if not a symlink, skip to the next path part
-    if (!stat.isSymbolicLink()) {
-      knownHard[base] = true;
-      if (cache) cache[base] = base;
-      return process.nextTick(LOOP);
-    }
-
-    // stat & read the link if not read before
-    // call gotTarget as soon as the link target is known
-    // dev/ino always return 0 on windows, so skip the check.
-    if (!isWindows) {
-      var id = stat.dev.toString(32) + ':' + stat.ino.toString(32);
-      if (seenLinks.hasOwnProperty(id)) {
-        return gotTarget(null, seenLinks[id], base);
-      }
-    }
-    fs.stat(base, function(err) {
-      if (err) return cb(err);
-
-      fs.readlink(base, function(err, target) {
-        if (!isWindows) seenLinks[id] = target;
-        gotTarget(err, target);
-      });
-    });
-  }
-
-  function gotTarget(err, target, base) {
-    if (err) return cb(err);
-
-    var resolvedLink = pathModule.resolve(previous, target);
-    if (cache) cache[base] = resolvedLink;
-    gotResolvedLink(resolvedLink);
-  }
-
-  function gotResolvedLink(resolvedLink) {
-    // resolve the link, then start over
-    p = pathModule.resolve(resolvedLink, p.slice(pos));
-    start();
-  }
-};
-
-
-/***/ }),
-/* 241 */
-/***/ (function(module, exports, __webpack_require__) {
-
-try {
-  var util = __webpack_require__(40);
-  if (typeof util.inherits !== 'function') throw '';
-  module.exports = util.inherits;
-} catch (e) {
-  module.exports = __webpack_require__(242);
-}
-
-
-/***/ }),
-/* 242 */
-/***/ (function(module, exports) {
-
-if (typeof Object.create === 'function') {
-  // implementation from standard node.js 'util' module
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    ctor.prototype = Object.create(superCtor.prototype, {
-      constructor: {
-        value: ctor,
-        enumerable: false,
-        writable: true,
-        configurable: true
-      }
-    });
-  };
-} else {
-  // old school shim for old browsers
-  module.exports = function inherits(ctor, superCtor) {
-    ctor.super_ = superCtor
-    var TempCtor = function () {}
-    TempCtor.prototype = superCtor.prototype
-    ctor.prototype = new TempCtor()
-    ctor.prototype.constructor = ctor
-  }
-}
-
-
-/***/ }),
-/* 243 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function posix(path) {
-	return path.charAt(0) === '/';
-}
-
-function win32(path) {
-	// https://github.com/nodejs/node/blob/b3fcc245fb25539909ef1d5eaa01dbf92e168633/lib/path.js#L56
-	var splitDeviceRe = /^([a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/]+[^\\\/]+)?([\\\/])?([\s\S]*?)$/;
-	var result = splitDeviceRe.exec(path);
-	var device = result[1] || '';
-	var isUnc = Boolean(device && device.charAt(1) !== ':');
-
-	// UNC paths are always absolute
-	return Boolean(result[2] || isUnc);
-}
-
-module.exports = process.platform === 'win32' ? win32 : posix;
-module.exports.posix = posix;
-module.exports.win32 = win32;
-
-
-/***/ }),
-/* 244 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = globSync
-globSync.GlobSync = GlobSync
-
-var fs = __webpack_require__(54)
-var rp = __webpack_require__(239)
-var minimatch = __webpack_require__(202)
-var Minimatch = minimatch.Minimatch
-var Glob = __webpack_require__(238).Glob
-var util = __webpack_require__(40)
-var path = __webpack_require__(56)
-var assert = __webpack_require__(104)
-var isAbsolute = __webpack_require__(243)
-var common = __webpack_require__(245)
-var alphasort = common.alphasort
-var alphasorti = common.alphasorti
-var setopts = common.setopts
-var ownProp = common.ownProp
-var childrenIgnored = common.childrenIgnored
-var isIgnored = common.isIgnored
-
-function globSync (pattern, options) {
-  if (typeof options === 'function' || arguments.length === 3)
-    throw new TypeError('callback provided to sync glob\n'+
-                        'See: https://github.com/isaacs/node-glob/issues/167')
-
-  return new GlobSync(pattern, options).found
-}
-
-function GlobSync (pattern, options) {
-  if (!pattern)
-    throw new Error('must provide pattern')
-
-  if (typeof options === 'function' || arguments.length === 3)
-    throw new TypeError('callback provided to sync glob\n'+
-                        'See: https://github.com/isaacs/node-glob/issues/167')
-
-  if (!(this instanceof GlobSync))
-    return new GlobSync(pattern, options)
-
-  setopts(this, pattern, options)
-
-  if (this.noprocess)
-    return this
-
-  var n = this.minimatch.set.length
-  this.matches = new Array(n)
-  for (var i = 0; i < n; i ++) {
-    this._process(this.minimatch.set[i], i, false)
-  }
-  this._finish()
-}
-
-GlobSync.prototype._finish = function () {
-  assert(this instanceof GlobSync)
-  if (this.realpath) {
-    var self = this
-    this.matches.forEach(function (matchset, index) {
-      var set = self.matches[index] = Object.create(null)
-      for (var p in matchset) {
-        try {
-          p = self._makeAbs(p)
-          var real = rp.realpathSync(p, self.realpathCache)
-          set[real] = true
-        } catch (er) {
-          if (er.syscall === 'stat')
-            set[self._makeAbs(p)] = true
-          else
-            throw er
-        }
-      }
-    })
-  }
-  common.finish(this)
-}
-
-
-GlobSync.prototype._process = function (pattern, index, inGlobStar) {
-  assert(this instanceof GlobSync)
-
-  // Get the first [n] parts of pattern that are all strings.
-  var n = 0
-  while (typeof pattern[n] === 'string') {
-    n ++
-  }
-  // now n is the index of the first one that is *not* a string.
-
-  // See if there's anything else
-  var prefix
-  switch (n) {
-    // if not, then this is rather simple
-    case pattern.length:
-      this._processSimple(pattern.join('/'), index)
-      return
-
-    case 0:
-      // pattern *starts* with some non-trivial item.
-      // going to readdir(cwd), but not include the prefix in matches.
-      prefix = null
-      break
-
-    default:
-      // pattern has some string bits in the front.
-      // whatever it starts with, whether that's 'absolute' like /foo/bar,
-      // or 'relative' like '../baz'
-      prefix = pattern.slice(0, n).join('/')
-      break
-  }
-
-  var remain = pattern.slice(n)
-
-  // get the list of entries.
-  var read
-  if (prefix === null)
-    read = '.'
-  else if (isAbsolute(prefix) || isAbsolute(pattern.join('/'))) {
-    if (!prefix || !isAbsolute(prefix))
-      prefix = '/' + prefix
-    read = prefix
-  } else
-    read = prefix
-
-  var abs = this._makeAbs(read)
-
-  //if ignored, skip processing
-  if (childrenIgnored(this, read))
-    return
-
-  var isGlobStar = remain[0] === minimatch.GLOBSTAR
-  if (isGlobStar)
-    this._processGlobStar(prefix, read, abs, remain, index, inGlobStar)
-  else
-    this._processReaddir(prefix, read, abs, remain, index, inGlobStar)
-}
-
-
-GlobSync.prototype._processReaddir = function (prefix, read, abs, remain, index, inGlobStar) {
-  var entries = this._readdir(abs, inGlobStar)
-
-  // if the abs isn't a dir, then nothing can match!
-  if (!entries)
-    return
-
-  // It will only match dot entries if it starts with a dot, or if
-  // dot is set.  Stuff like @(.foo|.bar) isn't allowed.
-  var pn = remain[0]
-  var negate = !!this.minimatch.negate
-  var rawGlob = pn._glob
-  var dotOk = this.dot || rawGlob.charAt(0) === '.'
-
-  var matchedEntries = []
-  for (var i = 0; i < entries.length; i++) {
-    var e = entries[i]
-    if (e.charAt(0) !== '.' || dotOk) {
-      var m
-      if (negate && !prefix) {
-        m = !e.match(pn)
-      } else {
-        m = e.match(pn)
-      }
-      if (m)
-        matchedEntries.push(e)
-    }
-  }
-
-  var len = matchedEntries.length
-  // If there are no matched entries, then nothing matches.
-  if (len === 0)
-    return
-
-  // if this is the last remaining pattern bit, then no need for
-  // an additional stat *unless* the user has specified mark or
-  // stat explicitly.  We know they exist, since readdir returned
-  // them.
-
-  if (remain.length === 1 && !this.mark && !this.stat) {
-    if (!this.matches[index])
-      this.matches[index] = Object.create(null)
-
-    for (var i = 0; i < len; i ++) {
-      var e = matchedEntries[i]
-      if (prefix) {
-        if (prefix.slice(-1) !== '/')
-          e = prefix + '/' + e
-        else
-          e = prefix + e
-      }
-
-      if (e.charAt(0) === '/' && !this.nomount) {
-        e = path.join(this.root, e)
-      }
-      this._emitMatch(index, e)
-    }
-    // This was the last one, and no stats were needed
-    return
-  }
-
-  // now test all matched entries as stand-ins for that part
-  // of the pattern.
-  remain.shift()
-  for (var i = 0; i < len; i ++) {
-    var e = matchedEntries[i]
-    var newPattern
-    if (prefix)
-      newPattern = [prefix, e]
-    else
-      newPattern = [e]
-    this._process(newPattern.concat(remain), index, inGlobStar)
-  }
-}
-
-
-GlobSync.prototype._emitMatch = function (index, e) {
-  if (isIgnored(this, e))
-    return
-
-  var abs = this._makeAbs(e)
-
-  if (this.mark)
-    e = this._mark(e)
-
-  if (this.absolute) {
-    e = abs
-  }
-
-  if (this.matches[index][e])
-    return
-
-  if (this.nodir) {
-    var c = this.cache[abs]
-    if (c === 'DIR' || Array.isArray(c))
-      return
-  }
-
-  this.matches[index][e] = true
-
-  if (this.stat)
-    this._stat(e)
-}
-
-
-GlobSync.prototype._readdirInGlobStar = function (abs) {
-  // follow all symlinked directories forever
-  // just proceed as if this is a non-globstar situation
-  if (this.follow)
-    return this._readdir(abs, false)
-
-  var entries
-  var lstat
-  var stat
-  try {
-    lstat = fs.lstatSync(abs)
-  } catch (er) {
-    if (er.code === 'ENOENT') {
-      // lstat failed, doesn't exist
-      return null
-    }
-  }
-
-  var isSym = lstat && lstat.isSymbolicLink()
-  this.symlinks[abs] = isSym
-
-  // If it's not a symlink or a dir, then it's definitely a regular file.
-  // don't bother doing a readdir in that case.
-  if (!isSym && lstat && !lstat.isDirectory())
-    this.cache[abs] = 'FILE'
-  else
-    entries = this._readdir(abs, false)
-
-  return entries
-}
-
-GlobSync.prototype._readdir = function (abs, inGlobStar) {
-  var entries
-
-  if (inGlobStar && !ownProp(this.symlinks, abs))
-    return this._readdirInGlobStar(abs)
-
-  if (ownProp(this.cache, abs)) {
-    var c = this.cache[abs]
-    if (!c || c === 'FILE')
-      return null
-
-    if (Array.isArray(c))
-      return c
-  }
-
-  try {
-    return this._readdirEntries(abs, fs.readdirSync(abs))
-  } catch (er) {
-    this._readdirError(abs, er)
-    return null
-  }
-}
-
-GlobSync.prototype._readdirEntries = function (abs, entries) {
-  // if we haven't asked to stat everything, then just
-  // assume that everything in there exists, so we can avoid
-  // having to stat it a second time.
-  if (!this.mark && !this.stat) {
-    for (var i = 0; i < entries.length; i ++) {
-      var e = entries[i]
-      if (abs === '/')
-        e = abs + e
-      else
-        e = abs + '/' + e
-      this.cache[e] = true
-    }
-  }
-
-  this.cache[abs] = entries
-
-  // mark and cache dir-ness
-  return entries
-}
-
-GlobSync.prototype._readdirError = function (f, er) {
-  // handle errors, and cache the information
-  switch (er.code) {
-    case 'ENOTSUP': // https://github.com/isaacs/node-glob/issues/205
-    case 'ENOTDIR': // totally normal. means it *does* exist.
-      var abs = this._makeAbs(f)
-      this.cache[abs] = 'FILE'
-      if (abs === this.cwdAbs) {
-        var error = new Error(er.code + ' invalid cwd ' + this.cwd)
-        error.path = this.cwd
-        error.code = er.code
-        throw error
-      }
-      break
-
-    case 'ENOENT': // not terribly unusual
-    case 'ELOOP':
-    case 'ENAMETOOLONG':
-    case 'UNKNOWN':
-      this.cache[this._makeAbs(f)] = false
-      break
-
-    default: // some unusual error.  Treat as failure.
-      this.cache[this._makeAbs(f)] = false
-      if (this.strict)
-        throw er
-      if (!this.silent)
-        console.error('glob error', er)
-      break
-  }
-}
-
-GlobSync.prototype._processGlobStar = function (prefix, read, abs, remain, index, inGlobStar) {
-
-  var entries = this._readdir(abs, inGlobStar)
-
-  // no entries means not a dir, so it can never have matches
-  // foo.txt/** doesn't match foo.txt
-  if (!entries)
-    return
-
-  // test without the globstar, and with every child both below
-  // and replacing the globstar.
-  var remainWithoutGlobStar = remain.slice(1)
-  var gspref = prefix ? [ prefix ] : []
-  var noGlobStar = gspref.concat(remainWithoutGlobStar)
-
-  // the noGlobStar pattern exits the inGlobStar state
-  this._process(noGlobStar, index, false)
-
-  var len = entries.length
-  var isSym = this.symlinks[abs]
-
-  // If it's a symlink, and we're in a globstar, then stop
-  if (isSym && inGlobStar)
-    return
-
-  for (var i = 0; i < len; i++) {
-    var e = entries[i]
-    if (e.charAt(0) === '.' && !this.dot)
-      continue
-
-    // these two cases enter the inGlobStar state
-    var instead = gspref.concat(entries[i], remainWithoutGlobStar)
-    this._process(instead, index, true)
-
-    var below = gspref.concat(entries[i], remain)
-    this._process(below, index, true)
-  }
-}
-
-GlobSync.prototype._processSimple = function (prefix, index) {
-  // XXX review this.  Shouldn't it be doing the mounting etc
-  // before doing stat?  kinda weird?
-  var exists = this._stat(prefix)
-
-  if (!this.matches[index])
-    this.matches[index] = Object.create(null)
-
-  // If it doesn't exist, then just mark the lack of results
-  if (!exists)
-    return
-
-  if (prefix && isAbsolute(prefix) && !this.nomount) {
-    var trail = /[\/\\]$/.test(prefix)
-    if (prefix.charAt(0) === '/') {
-      prefix = path.join(this.root, prefix)
-    } else {
-      prefix = path.resolve(this.root, prefix)
-      if (trail)
-        prefix += '/'
-    }
-  }
-
-  if (process.platform === 'win32')
-    prefix = prefix.replace(/\\/g, '/')
-
-  // Mark this as a match
-  this._emitMatch(index, prefix)
-}
-
-// Returns either 'DIR', 'FILE', or false
-GlobSync.prototype._stat = function (f) {
-  var abs = this._makeAbs(f)
-  var needDir = f.slice(-1) === '/'
-
-  if (f.length > this.maxLength)
-    return false
-
-  if (!this.stat && ownProp(this.cache, abs)) {
-    var c = this.cache[abs]
-
-    if (Array.isArray(c))
-      c = 'DIR'
-
-    // It exists, but maybe not how we need it
-    if (!needDir || c === 'DIR')
-      return c
-
-    if (needDir && c === 'FILE')
-      return false
-
-    // otherwise we have to stat, because maybe c=true
-    // if we know it exists, but not what it is.
-  }
-
-  var exists
-  var stat = this.statCache[abs]
-  if (!stat) {
-    var lstat
-    try {
-      lstat = fs.lstatSync(abs)
-    } catch (er) {
-      if (er && (er.code === 'ENOENT' || er.code === 'ENOTDIR')) {
-        this.statCache[abs] = false
-        return false
-      }
-    }
-
-    if (lstat && lstat.isSymbolicLink()) {
-      try {
-        stat = fs.statSync(abs)
-      } catch (er) {
-        stat = lstat
-      }
-    } else {
-      stat = lstat
-    }
-  }
-
-  this.statCache[abs] = stat
-
-  var c = true
-  if (stat)
-    c = stat.isDirectory() ? 'DIR' : 'FILE'
-
-  this.cache[abs] = this.cache[abs] || c
-
-  if (needDir && c === 'FILE')
-    return false
-
-  return c
-}
-
-GlobSync.prototype._mark = function (p) {
-  return common.mark(this, p)
-}
-
-GlobSync.prototype._makeAbs = function (f) {
-  return common.makeAbs(this, f)
-}
-
-
-/***/ }),
-/* 245 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports.alphasort = alphasort
-exports.alphasorti = alphasorti
-exports.setopts = setopts
-exports.ownProp = ownProp
-exports.makeAbs = makeAbs
-exports.finish = finish
-exports.mark = mark
-exports.isIgnored = isIgnored
-exports.childrenIgnored = childrenIgnored
-
-function ownProp (obj, field) {
-  return Object.prototype.hasOwnProperty.call(obj, field)
-}
-
-var path = __webpack_require__(56)
-var minimatch = __webpack_require__(202)
-var isAbsolute = __webpack_require__(243)
-var Minimatch = minimatch.Minimatch
-
-function alphasorti (a, b) {
-  return a.toLowerCase().localeCompare(b.toLowerCase())
-}
-
-function alphasort (a, b) {
-  return a.localeCompare(b)
-}
-
-function setupIgnores (self, options) {
-  self.ignore = options.ignore || []
-
-  if (!Array.isArray(self.ignore))
-    self.ignore = [self.ignore]
-
-  if (self.ignore.length) {
-    self.ignore = self.ignore.map(ignoreMap)
-  }
-}
-
-// ignore patterns are always in dot:true mode.
-function ignoreMap (pattern) {
-  var gmatcher = null
-  if (pattern.slice(-3) === '/**') {
-    var gpattern = pattern.replace(/(\/\*\*)+$/, '')
-    gmatcher = new Minimatch(gpattern, { dot: true })
-  }
-
-  return {
-    matcher: new Minimatch(pattern, { dot: true }),
-    gmatcher: gmatcher
-  }
-}
-
-function setopts (self, pattern, options) {
-  if (!options)
-    options = {}
-
-  // base-matching: just use globstar for that.
-  if (options.matchBase && -1 === pattern.indexOf("/")) {
-    if (options.noglobstar) {
-      throw new Error("base matching requires globstar")
-    }
-    pattern = "**/" + pattern
-  }
-
-  self.silent = !!options.silent
-  self.pattern = pattern
-  self.strict = options.strict !== false
-  self.realpath = !!options.realpath
-  self.realpathCache = options.realpathCache || Object.create(null)
-  self.follow = !!options.follow
-  self.dot = !!options.dot
-  self.mark = !!options.mark
-  self.nodir = !!options.nodir
-  if (self.nodir)
-    self.mark = true
-  self.sync = !!options.sync
-  self.nounique = !!options.nounique
-  self.nonull = !!options.nonull
-  self.nosort = !!options.nosort
-  self.nocase = !!options.nocase
-  self.stat = !!options.stat
-  self.noprocess = !!options.noprocess
-  self.absolute = !!options.absolute
-
-  self.maxLength = options.maxLength || Infinity
-  self.cache = options.cache || Object.create(null)
-  self.statCache = options.statCache || Object.create(null)
-  self.symlinks = options.symlinks || Object.create(null)
-
-  setupIgnores(self, options)
-
-  self.changedCwd = false
-  var cwd = process.cwd()
-  if (!ownProp(options, "cwd"))
-    self.cwd = cwd
-  else {
-    self.cwd = path.resolve(options.cwd)
-    self.changedCwd = self.cwd !== cwd
-  }
-
-  self.root = options.root || path.resolve(self.cwd, "/")
-  self.root = path.resolve(self.root)
-  if (process.platform === "win32")
-    self.root = self.root.replace(/\\/g, "/")
-
-  // TODO: is an absolute `cwd` supposed to be resolved against `root`?
-  // e.g. { cwd: '/test', root: __dirname } === path.join(__dirname, '/test')
-  self.cwdAbs = isAbsolute(self.cwd) ? self.cwd : makeAbs(self, self.cwd)
-  if (process.platform === "win32")
-    self.cwdAbs = self.cwdAbs.replace(/\\/g, "/")
-  self.nomount = !!options.nomount
-
-  // disable comments and negation in Minimatch.
-  // Note that they are not supported in Glob itself anyway.
-  options.nonegate = true
-  options.nocomment = true
-
-  self.minimatch = new Minimatch(pattern, options)
-  self.options = self.minimatch.options
-}
-
-function finish (self) {
-  var nou = self.nounique
-  var all = nou ? [] : Object.create(null)
-
-  for (var i = 0, l = self.matches.length; i < l; i ++) {
-    var matches = self.matches[i]
-    if (!matches || Object.keys(matches).length === 0) {
-      if (self.nonull) {
-        // do like the shell, and spit out the literal glob
-        var literal = self.minimatch.globSet[i]
-        if (nou)
-          all.push(literal)
-        else
-          all[literal] = true
-      }
-    } else {
-      // had matches
-      var m = Object.keys(matches)
-      if (nou)
-        all.push.apply(all, m)
-      else
-        m.forEach(function (m) {
-          all[m] = true
-        })
-    }
-  }
-
-  if (!nou)
-    all = Object.keys(all)
-
-  if (!self.nosort)
-    all = all.sort(self.nocase ? alphasorti : alphasort)
-
-  // at *some* point we statted all of these
-  if (self.mark) {
-    for (var i = 0; i < all.length; i++) {
-      all[i] = self._mark(all[i])
-    }
-    if (self.nodir) {
-      all = all.filter(function (e) {
-        var notDir = !(/\/$/.test(e))
-        var c = self.cache[e] || self.cache[makeAbs(self, e)]
-        if (notDir && c)
-          notDir = c !== 'DIR' && !Array.isArray(c)
-        return notDir
-      })
-    }
-  }
-
-  if (self.ignore.length)
-    all = all.filter(function(m) {
-      return !isIgnored(self, m)
-    })
-
-  self.found = all
-}
-
-function mark (self, p) {
-  var abs = makeAbs(self, p)
-  var c = self.cache[abs]
-  var m = p
-  if (c) {
-    var isDir = c === 'DIR' || Array.isArray(c)
-    var slash = p.slice(-1) === '/'
-
-    if (isDir && !slash)
-      m += '/'
-    else if (!isDir && slash)
-      m = m.slice(0, -1)
-
-    if (m !== p) {
-      var mabs = makeAbs(self, m)
-      self.statCache[mabs] = self.statCache[abs]
-      self.cache[mabs] = self.cache[abs]
-    }
-  }
-
-  return m
-}
-
-// lotta situps...
-function makeAbs (self, f) {
-  var abs = f
-  if (f.charAt(0) === '/') {
-    abs = path.join(self.root, f)
-  } else if (isAbsolute(f) || f === '') {
-    abs = f
-  } else if (self.changedCwd) {
-    abs = path.resolve(self.cwd, f)
-  } else {
-    abs = path.resolve(f)
-  }
-
-  if (process.platform === 'win32')
-    abs = abs.replace(/\\/g, '/')
-
-  return abs
-}
-
-
-// Return true, if pattern ends with globstar '**', for the accompanying parent directory.
-// Ex:- If node_modules/** is the pattern, add 'node_modules' to ignore list along with it's contents
-function isIgnored (self, path) {
-  if (!self.ignore.length)
-    return false
-
-  return self.ignore.some(function(item) {
-    return item.matcher.match(path) || !!(item.gmatcher && item.gmatcher.match(path))
-  })
-}
-
-function childrenIgnored (self, path) {
-  if (!self.ignore.length)
-    return false
-
-  return self.ignore.some(function(item) {
-    return !!(item.gmatcher && item.gmatcher.match(path))
-  })
-}
-
-
-/***/ }),
-/* 246 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var wrappy = __webpack_require__(247)
-var reqs = Object.create(null)
-var once = __webpack_require__(248)
-
-module.exports = wrappy(inflight)
-
-function inflight (key, cb) {
-  if (reqs[key]) {
-    reqs[key].push(cb)
-    return null
-  } else {
-    reqs[key] = [cb]
-    return makeres(key)
-  }
-}
-
-function makeres (key) {
-  return once(function RES () {
-    var cbs = reqs[key]
-    var len = cbs.length
-    var args = slice(arguments)
-
-    // XXX It's somewhat ambiguous whether a new callback added in this
-    // pass should be queued for later execution if something in the
-    // list of callbacks throws, or if it should just be discarded.
-    // However, it's such an edge case that it hardly matters, and either
-    // choice is likely as surprising as the other.
-    // As it happens, we do go ahead and schedule it for later execution.
-    try {
-      for (var i = 0; i < len; i++) {
-        cbs[i].apply(null, args)
-      }
-    } finally {
-      if (cbs.length > len) {
-        // added more in the interim.
-        // de-zalgo, just in case, but don't call again.
-        cbs.splice(0, len)
-        process.nextTick(function () {
-          RES.apply(null, args)
-        })
-      } else {
-        delete reqs[key]
-      }
-    }
-  })
-}
-
-function slice (args) {
-  var length = args.length
-  var array = []
-
-  for (var i = 0; i < length; i++) array[i] = args[i]
-  return array
-}
-
-
-/***/ }),
-/* 247 */
-/***/ (function(module, exports) {
-
-// Returns a wrapper function that returns a wrapped callback
-// The wrapper function should do some stuff, and return a
-// presumably different callback function.
-// This makes sure that own properties are retained, so that
-// decorations and such are not lost along the way.
-module.exports = wrappy
-function wrappy (fn, cb) {
-  if (fn && cb) return wrappy(fn)(cb)
-
-  if (typeof fn !== 'function')
-    throw new TypeError('need wrapper function')
-
-  Object.keys(fn).forEach(function (k) {
-    wrapper[k] = fn[k]
-  })
-
-  return wrapper
-
-  function wrapper() {
-    var args = new Array(arguments.length)
-    for (var i = 0; i < args.length; i++) {
-      args[i] = arguments[i]
-    }
-    var ret = fn.apply(this, args)
-    var cb = args[args.length-1]
-    if (typeof ret === 'function' && ret !== cb) {
-      Object.keys(cb).forEach(function (k) {
-        ret[k] = cb[k]
-      })
-    }
-    return ret
-  }
-}
-
-
-/***/ }),
-/* 248 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var wrappy = __webpack_require__(247)
-module.exports = wrappy(once)
-module.exports.strict = wrappy(onceStrict)
-
-once.proto = once(function () {
-  Object.defineProperty(Function.prototype, 'once', {
-    value: function () {
-      return once(this)
-    },
-    configurable: true
-  })
-
-  Object.defineProperty(Function.prototype, 'onceStrict', {
-    value: function () {
-      return onceStrict(this)
-    },
-    configurable: true
-  })
-})
-
-function once (fn) {
-  var f = function () {
-    if (f.called) return f.value
-    f.called = true
-    return f.value = fn.apply(this, arguments)
-  }
-  f.called = false
-  return f
-}
-
-function onceStrict (fn) {
-  var f = function () {
-    if (f.called)
-      throw new Error(f.onceError)
-    f.called = true
-    return f.value = fn.apply(this, arguments)
-  }
-  var name = fn.name || 'Function wrapped with `once`'
-  f.onceError = name + " shouldn't be called more than once"
-  f.called = false
-  return f
-}
-
-
-/***/ }),
-/* 249 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
-const object_1 = __webpack_require__(189);
-const logger = __webpack_require__(179)('model-memos');
-class Memos {
-    constructor(filepath) {
-        this.filepath = filepath;
-        if (!fs_1.default.existsSync(filepath)) {
-            fs_1.default.writeFileSync(filepath, '{}', 'utf8');
-        }
-    }
-    fetchContent(id, key) {
-        try {
-            let content = fs_1.default.readFileSync(this.filepath, 'utf8');
-            let res = JSON.parse(content);
-            let obj = res[id];
-            if (!obj)
-                return undefined;
-            return obj[key];
-        }
-        catch (e) {
-            return undefined;
-        }
-    }
-    async update(id, key, value) {
-        let { filepath } = this;
-        try {
-            let content = fs_1.default.readFileSync(filepath, 'utf8');
-            let current = content ? JSON.parse(content) : {};
-            current[id] = current[id] || {};
-            if (value !== undefined) {
-                current[id][key] = object_1.deepClone(value);
-            }
-            else {
-                delete current[id][key];
-            }
-            content = JSON.stringify(current, null, 2);
-            fs_1.default.writeFileSync(filepath, content, 'utf8');
-        }
-        catch (e) {
-            logger.error(`Error on update memos:`, e);
-        }
-    }
-    createMemento(id) {
-        return {
-            get: (key, defaultValue) => {
-                let res = this.fetchContent(id, key);
-                return res === undefined ? defaultValue : res;
-            },
-            update: async (key, value) => {
-                await this.update(id, key, value);
-            }
-        };
-    }
-}
-exports.default = Memos;
-//# sourceMappingURL=memos.js.map
-
-/***/ }),
-/* 250 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
-const path = tslib_1.__importStar(__webpack_require__(56));
-const vm = tslib_1.__importStar(__webpack_require__(251));
-const lodash_1 = __webpack_require__(252);
-const createLogger = __webpack_require__(179);
-const logger = createLogger('util-factoroy');
-const requireFunc =  true ? require : undefined;
-const Module = __webpack_require__(253);
-const REMOVED_GLOBALS = [
-    'reallyExit',
-    'abort',
-    'chdir',
-    'umask',
-    'setuid',
-    'setgid',
-    'setgroups',
-    '_fatalException',
-    'exit',
-    'kill',
-];
-function removedGlobalStub(name) {
-    return () => {
-        throw new Error(`process.${name}() is not allowed in extension sandbox`);
-    };
-}
-// @see node/lib/internal/module.js
-function makeRequireFunction() {
-    const req = (p) => {
-        if (p === 'coc.nvim') {
-            return __webpack_require__(254);
-        }
-        return this.require(p);
-    };
-    req.resolve = (request) => Module._resolveFilename(request, this);
-    req.main = process.mainModule;
-    // Enable support to add extra extension types
-    req.extensions = Module._extensions;
-    req.cache = Module._cache;
-    return req;
-}
-// @see node/lib/module.js
-function compileInSandbox(sandbox) {
-    // eslint-disable-next-line
-    return function (content, filename) {
-        const require = makeRequireFunction.call(this);
-        const dirname = path.dirname(filename);
-        // remove shebang
-        // eslint-disable-next-line
-        const newContent = content.replace(/^\#\!.*/, '');
-        const wrapper = Module.wrap(newContent);
-        const compiledWrapper = vm.runInContext(wrapper, sandbox, { filename });
-        const args = [this.exports, require, this, filename, dirname];
-        return compiledWrapper.apply(this.exports, args);
-    };
-}
-function createSandbox(filename, logger) {
-    const module = new Module(filename);
-    module.paths = Module._nodeModulePaths(filename);
-    const sandbox = vm.createContext({
-        module,
-        Buffer,
-        console: {
-            log: (...args) => {
-                logger.debug.apply(logger, args);
-            },
-            error: (...args) => {
-                logger.error.apply(logger, args);
-            },
-            info: (...args) => {
-                logger.info.apply(logger, args);
-            },
-            warn: (...args) => {
-                logger.warn.apply(logger, args);
-            }
-        }
-    });
-    lodash_1.defaults(sandbox, global);
-    sandbox.Reflect = Reflect;
-    sandbox.require = function sandboxRequire(p) {
-        const oldCompile = Module.prototype._compile;
-        Module.prototype._compile = compileInSandbox(sandbox);
-        const moduleExports = sandbox.module.require(p);
-        Module.prototype._compile = oldCompile;
-        return moduleExports;
-    };
-    // patch `require` in sandbox to run loaded module in sandbox context
-    // if you need any of these, it might be worth discussing spawning separate processes
-    sandbox.process = new process.constructor();
-    for (let key of Object.keys(process)) {
-        sandbox.process[key] = process[key];
-    }
-    REMOVED_GLOBALS.forEach(name => {
-        sandbox.process[name] = removedGlobalStub(name);
-    });
-    // read-only umask
-    sandbox.process.umask = (mask) => {
-        if (typeof mask !== 'undefined') {
-            throw new Error('Cannot use process.umask() to change mask (read-only)');
-        }
-        return process.umask();
-    };
-    return sandbox;
-}
-// inspiration drawn from Module
-function createExtension(id, filename) {
-    if (!fs_1.default.existsSync(filename)) {
-        // tslint:disable-next-line:no-empty
-        return { activate: () => { }, deactivate: null };
-    }
-    const sandbox = createSandbox(filename, createLogger(`extension-${id}`));
-    delete Module._cache[requireFunc.resolve(filename)];
-    // attempt to import plugin
-    // Require plugin to export activate & deactivate
-    const defaultImport = sandbox.require(filename);
-    const activate = (defaultImport && defaultImport.activate) || defaultImport;
-    if (typeof activate !== 'function') {
-        // tslint:disable-next-line:no-empty
-        return { activate: () => { }, deactivate: null };
-    }
-    return {
-        activate,
-        deactivate: typeof defaultImport.deactivate === 'function' ? defaultImport.deactivate : null
-    };
-}
-exports.createExtension = createExtension;
-//# sourceMappingURL=factory.js.map
-
-/***/ }),
-/* 251 */
-/***/ (function(module, exports) {
-
-module.exports = require("vm");
-
-/***/ }),
-/* 252 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-/** Used for built-in method references. */
-const objectProto = Object.prototype;
-/** Used to check objects for own properties. */
-const hasOwnProperty = objectProto.hasOwnProperty;
-/**
- * Assigns own and inherited enumerable string keyed properties of source
- * objects to the destination object for all destination properties that
- * resolve to `undefined`. Source objects are applied from left to right.
- * Once a property is set, additional values of the same property are ignored.
- *
- * **Note:** This method mutates `object`.
- *
- * @since 0.1.0
- * @category Object
- * @param {Object} object The destination object.
- * @param {...Object} [sources] The source objects.
- * @returns {Object} Returns `object`.
- * @see defaultsDeep
- * @example
- *
- * defaults({ 'a': 1 }, { 'b': 2 }, { 'a': 3 })
- * // => { 'a': 1, 'b': 2 }
- */
-function defaults(obj, ...sources) {
-    obj = Object(obj);
-    sources.forEach(source => {
-        if (source != null) {
-            source = Object(source);
-            for (const key in source) { // tslint:disable-line
-                const value = obj[key];
-                if (value === undefined ||
-                    (value === objectProto[key] && !hasOwnProperty.call(obj, key))) {
-                    obj[key] = source[key];
-                }
-            }
-        }
-    });
-    return obj;
-}
-exports.defaults = defaults;
-function omit(obj, properties) {
-    let o = {};
-    for (let key of Object.keys(obj)) {
-        if (properties.indexOf(key) == -1) {
-            o[key] = obj[key];
-        }
-    }
-    return o;
-}
-exports.omit = omit;
-//# sourceMappingURL=lodash.js.map
-
-/***/ }),
-/* 253 */
-/***/ (function(module, exports) {
-
-module.exports = require("module");
-
-/***/ }),
-/* 254 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const commands_1 = tslib_1.__importDefault(__webpack_require__(232));
-exports.commands = commands_1.default;
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-exports.events = events_1.default;
-const languages_1 = tslib_1.__importDefault(__webpack_require__(255));
-exports.languages = languages_1.default;
-const document_1 = tslib_1.__importDefault(__webpack_require__(207));
-exports.Document = document_1.default;
-const mru_1 = tslib_1.__importDefault(__webpack_require__(214));
-exports.Mru = mru_1.default;
-const floatBuffer_1 = tslib_1.__importDefault(__webpack_require__(258));
-exports.FloatBuffer = floatBuffer_1.default;
-const floatFactory_1 = tslib_1.__importDefault(__webpack_require__(257));
-exports.FloatFactory = floatFactory_1.default;
-const fileSystemWatcher_1 = tslib_1.__importDefault(__webpack_require__(213));
-exports.FileSystemWatcher = fileSystemWatcher_1.default;
-const services_1 = tslib_1.__importDefault(__webpack_require__(289));
-exports.services = services_1.default;
-const sources_1 = tslib_1.__importDefault(__webpack_require__(236));
-exports.sources = sources_1.default;
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-exports.workspace = workspace_1.default;
-const extensions_1 = tslib_1.__importDefault(__webpack_require__(237));
-exports.extensions = extensions_1.default;
-const manager_1 = tslib_1.__importDefault(__webpack_require__(302));
-exports.listManager = manager_1.default;
-const manager_2 = tslib_1.__importDefault(__webpack_require__(233));
-exports.snippetManager = manager_2.default;
-const basic_1 = tslib_1.__importDefault(__webpack_require__(310));
-exports.BasicList = basic_1.default;
-const manager_3 = tslib_1.__importDefault(__webpack_require__(256));
-exports.diagnosticManager = manager_3.default;
-const ansiparse_1 = __webpack_require__(325);
-exports.ansiparse = ansiparse_1.ansiparse;
-const watchman_1 = tslib_1.__importDefault(__webpack_require__(225));
-exports.Watchman = watchman_1.default;
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-exports.Uri = vscode_uri_1.default;
-const neovim_1 = __webpack_require__(4);
-exports.Neovim = neovim_1.Neovim;
-exports.Buffer = neovim_1.Buffer;
-exports.Window = neovim_1.Window;
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-exports.Disposable = vscode_languageserver_protocol_1.Disposable;
-exports.Event = vscode_languageserver_protocol_1.Event;
-exports.Emitter = vscode_languageserver_protocol_1.Emitter;
-tslib_1.__exportStar(__webpack_require__(188), exports);
-tslib_1.__exportStar(__webpack_require__(290), exports);
-var util_1 = __webpack_require__(168);
-exports.disposeAll = util_1.disposeAll;
-exports.runCommand = util_1.runCommand;
-exports.isRunning = util_1.isRunning;
-exports.executable = util_1.executable;
-//# sourceMappingURL=index.js.map
-
-/***/ }),
-/* 255 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const commands_1 = tslib_1.__importDefault(__webpack_require__(232));
-const manager_1 = tslib_1.__importDefault(__webpack_require__(256));
-const codeActionmanager_1 = tslib_1.__importDefault(__webpack_require__(266));
-const rangeManager_1 = tslib_1.__importDefault(__webpack_require__(268));
-const codeLensManager_1 = tslib_1.__importDefault(__webpack_require__(269));
-const declarationManager_1 = tslib_1.__importDefault(__webpack_require__(270));
-const definitionManager_1 = tslib_1.__importDefault(__webpack_require__(271));
-const documentColorManager_1 = tslib_1.__importDefault(__webpack_require__(272));
-const documentHighlightManager_1 = tslib_1.__importDefault(__webpack_require__(273));
-const documentLinkManager_1 = tslib_1.__importDefault(__webpack_require__(274));
-const documentSymbolManager_1 = tslib_1.__importDefault(__webpack_require__(275));
-const foldingRangeManager_1 = tslib_1.__importDefault(__webpack_require__(276));
-const formatManager_1 = tslib_1.__importDefault(__webpack_require__(277));
-const formatRangeManager_1 = tslib_1.__importDefault(__webpack_require__(278));
-const hoverManager_1 = tslib_1.__importDefault(__webpack_require__(279));
-const implementatioinManager_1 = tslib_1.__importDefault(__webpack_require__(280));
-const onTypeFormatManager_1 = tslib_1.__importDefault(__webpack_require__(281));
-const referenceManager_1 = tslib_1.__importDefault(__webpack_require__(282));
-const renameManager_1 = tslib_1.__importDefault(__webpack_require__(283));
-const signatureManager_1 = tslib_1.__importDefault(__webpack_require__(284));
-const typeDefinitionManager_1 = tslib_1.__importDefault(__webpack_require__(285));
-const workspaceSymbolsManager_1 = tslib_1.__importDefault(__webpack_require__(286));
-const manager_2 = tslib_1.__importDefault(__webpack_require__(233));
-const sources_1 = tslib_1.__importDefault(__webpack_require__(236));
-const types_1 = __webpack_require__(188);
-const util_1 = __webpack_require__(168);
-const complete = tslib_1.__importStar(__webpack_require__(287));
-const position_1 = __webpack_require__(229);
-const string_1 = __webpack_require__(210);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)('languages');
-function check(_target, key, descriptor) {
-    let fn = descriptor.value;
-    if (typeof fn !== 'function') {
-        return;
-    }
-    descriptor.value = function (...args) {
-        let { cancelTokenSource } = this;
-        this.cancelTokenSource = new vscode_languageserver_protocol_1.CancellationTokenSource();
-        return new Promise((resolve, reject) => {
-            let resolved = false;
-            let timer = setTimeout(() => {
-                cancelTokenSource.cancel();
-                logger.error(`${key} timeout after 5s`);
-                if (!resolved)
-                    reject(new Error(`${key} timeout after 5s`));
-            }, 5000);
-            Promise.resolve(fn.apply(this, args)).then(res => {
-                clearTimeout(timer);
-                resolve(res);
-            }, e => {
-                clearTimeout(timer);
-                reject(e);
-            });
-        });
-    };
-}
-exports.check = check;
-class Languages {
-    constructor() {
-        this.onTypeFormatManager = new onTypeFormatManager_1.default();
-        this.documentLinkManager = new documentLinkManager_1.default();
-        this.documentColorManager = new documentColorManager_1.default();
-        this.foldingRangeManager = new foldingRangeManager_1.default();
-        this.renameManager = new renameManager_1.default();
-        this.formatManager = new formatManager_1.default();
-        this.codeActionManager = new codeActionmanager_1.default();
-        this.workspaceSymbolsManager = new workspaceSymbolsManager_1.default();
-        this.formatRangeManager = new formatRangeManager_1.default();
-        this.hoverManager = new hoverManager_1.default();
-        this.signatureManager = new signatureManager_1.default();
-        this.documentSymbolManager = new documentSymbolManager_1.default();
-        this.documentHighlightManager = new documentHighlightManager_1.default();
-        this.definitionManager = new definitionManager_1.default();
-        this.declarationManager = new declarationManager_1.default();
-        this.typeDefinitionManager = new typeDefinitionManager_1.default();
-        this.referenceManager = new referenceManager_1.default();
-        this.implementatioinManager = new implementatioinManager_1.default();
-        this.codeLensManager = new codeLensManager_1.default();
-        this.selectionRangeManager = new rangeManager_1.default();
-        this.cancelTokenSource = new vscode_languageserver_protocol_1.CancellationTokenSource();
-        workspace_1.default.onWillSaveUntil(event => {
-            let config = workspace_1.default.getConfiguration('coc.preferences');
-            let filetypes = config.get('formatOnSaveFiletypes', []);
-            let { languageId } = event.document;
-            if (filetypes.indexOf(languageId) !== -1) {
-                let willSaveWaitUntil = async () => {
-                    let options = await workspace_1.default.getFormatOptions(event.document.uri);
-                    let textEdits = await this.provideDocumentFormattingEdits(event.document, options);
-                    return textEdits;
-                };
-                event.waitUntil(willSaveWaitUntil());
-            }
-        }, null, 'languageserver');
-        workspace_1.default.ready.then(() => {
-            this.loadCompleteConfig();
-        }, _e => {
-            // noop
-        });
-        workspace_1.default.onDidChangeConfiguration(this.loadCompleteConfig, this);
-    }
-    get nvim() {
-        return workspace_1.default.nvim;
-    }
-    loadCompleteConfig() {
-        let config = workspace_1.default.getConfiguration('coc.preferences');
-        let suggest = workspace_1.default.getConfiguration('suggest');
-        function getConfig(key, defaultValue) {
-            return config.get(key, suggest.get(key, defaultValue));
-        }
-        let labels = suggest.get('completionItemKindLabels', {});
-        this.completionItemKindMap = new Map([
-            [vscode_languageserver_protocol_1.CompletionItemKind.Text, labels['text'] || 'v'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Method, labels['method'] || 'f'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Function, labels['function'] || 'f'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Constructor, typeof labels['constructor'] == 'function' ? 'f' : labels['con' + 'structor']],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Field, labels['field'] || 'm'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Variable, labels['variable'] || 'v'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Class, labels['class'] || 'C'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Interface, labels['interface'] || 'I'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Module, labels['module'] || 'M'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Property, labels['property'] || 'm'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Unit, labels['unit'] || 'U'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Value, labels['value'] || 'v'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Enum, labels['enum'] || 'E'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Keyword, labels['keyword'] || 'k'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Snippet, labels['snippet'] || 'S'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Color, labels['color'] || 'v'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.File, labels['file'] || 'F'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Reference, labels['reference'] || 'r'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Folder, labels['folder'] || 'F'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.EnumMember, labels['enumMember'] || 'm'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Constant, labels['constant'] || 'v'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Struct, labels['struct'] || 'S'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Event, labels['event'] || 'E'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.Operator, labels['operator'] || 'O'],
-            [vscode_languageserver_protocol_1.CompletionItemKind.TypeParameter, labels['typeParameter'] || 'T'],
-        ]);
-        this.completeConfig = {
-            defaultKindText: labels['default'] || '',
-            priority: getConfig('languageSourcePriority', 99),
-            echodocSupport: getConfig('echodocSupport', false),
-            waitTime: getConfig('triggerCompletionWait', 60),
-            detailField: getConfig('detailField', 'abbr'),
-            detailMaxLength: getConfig('detailMaxLength', 50)
-        };
-    }
-    registerOnTypeFormattingEditProvider(selector, provider, triggerCharacters) {
-        return this.onTypeFormatManager.register(selector, provider, triggerCharacters);
-    }
-    registerCompletionItemProvider(name, shortcut, languageIds, provider, triggerCharacters = [], priority) {
-        languageIds = typeof languageIds == 'string' ? [languageIds] : languageIds;
-        let source = this.createCompleteSource(name, shortcut, provider, languageIds, triggerCharacters, priority);
-        sources_1.default.addSource(source);
-        logger.debug('created service source', name);
-        return {
-            dispose: () => {
-                sources_1.default.removeSource(source);
-            }
-        };
-    }
-    registerCodeActionProvider(selector, provider, clientId, codeActionKinds) {
-        return this.codeActionManager.register(selector, provider, clientId, codeActionKinds);
-    }
-    registerHoverProvider(selector, provider) {
-        return this.hoverManager.register(selector, provider);
-    }
-    registerSelectionRangeProvider(selector, provider) {
-        return this.selectionRangeManager.register(selector, provider);
-    }
-    registerSignatureHelpProvider(selector, provider, triggerCharacters) {
-        return this.signatureManager.register(selector, provider, triggerCharacters);
-    }
-    registerDocumentSymbolProvider(selector, provider) {
-        return this.documentSymbolManager.register(selector, provider);
-    }
-    registerFoldingRangeProvider(selector, provider) {
-        return this.foldingRangeManager.register(selector, provider);
-    }
-    registerDocumentHighlightProvider(selector, provider) {
-        return this.documentHighlightManager.register(selector, provider);
-    }
-    registerCodeLensProvider(selector, provider) {
-        return this.codeLensManager.register(selector, provider);
-    }
-    registerDocumentLinkProvider(selector, provider) {
-        return this.documentLinkManager.register(selector, provider);
-    }
-    registerDocumentColorProvider(selector, provider) {
-        return this.documentColorManager.register(selector, provider);
-    }
-    registerDefinitionProvider(selector, provider) {
-        return this.definitionManager.register(selector, provider);
-    }
-    registerDeclarationProvider(selector, provider) {
-        return this.declarationManager.register(selector, provider);
-    }
-    registerTypeDefinitionProvider(selector, provider) {
-        return this.typeDefinitionManager.register(selector, provider);
-    }
-    registerImplementationProvider(selector, provider) {
-        return this.implementatioinManager.register(selector, provider);
-    }
-    registerReferencesProvider(selector, provider) {
-        return this.referenceManager.register(selector, provider);
-    }
-    registerRenameProvider(selector, provider) {
-        return this.renameManager.register(selector, provider);
-    }
-    registerWorkspaceSymbolProvider(selector, provider) {
-        return this.workspaceSymbolsManager.register(selector, provider);
-    }
-    registerDocumentFormatProvider(selector, provider, priority = 0) {
-        return this.formatManager.register(selector, provider, priority);
-    }
-    registerDocumentRangeFormatProvider(selector, provider, priority = 0) {
-        return this.formatRangeManager.register(selector, provider, priority);
-    }
-    shouldTriggerSignatureHelp(document, triggerCharacter) {
-        return this.signatureManager.shouldTrigger(document, triggerCharacter);
-    }
-    async getHover(document, position) {
-        return await this.hoverManager.provideHover(document, position, this.token);
-    }
-    async getSignatureHelp(document, position, token) {
-        return await this.signatureManager.provideSignatureHelp(document, position, token);
-    }
-    async getDefinition(document, position) {
-        if (!this.definitionManager.hasProvider(document))
-            return null;
-        return await this.definitionManager.provideDefinition(document, position, this.token);
-    }
-    async getDeclaration(document, position) {
-        if (!this.declarationManager.hasProvider(document))
-            return null;
-        return await this.declarationManager.provideDeclaration(document, position, this.token);
-    }
-    async getTypeDefinition(document, position) {
-        if (!this.typeDefinitionManager.hasProvider(document))
-            return null;
-        return await this.typeDefinitionManager.provideTypeDefinition(document, position, this.token);
-    }
-    async getImplementation(document, position) {
-        if (!this.implementatioinManager.hasProvider(document))
-            return null;
-        return await this.implementatioinManager.provideReferences(document, position, this.token);
-    }
-    async getReferences(document, context, position) {
-        if (!this.referenceManager.hasProvider(document))
-            return null;
-        return await this.referenceManager.provideReferences(document, position, context, this.token);
-    }
-    async getDocumentSymbol(document) {
-        return await this.documentSymbolManager.provideDocumentSymbols(document, this.token);
-    }
-    async getSelectionRanges(document, positions) {
-        return await this.selectionRangeManager.provideSelectionRanges(document, positions, this.token);
-    }
-    async getWorkspaceSymbols(document, query) {
-        query = query || '';
-        return await this.workspaceSymbolsManager.provideWorkspaceSymbols(document, query, this.token);
-    }
-    async resolveWorkspaceSymbol(symbol) {
-        return await this.workspaceSymbolsManager.resolveWorkspaceSymbol(symbol, this.token);
-    }
-    async provideRenameEdits(document, position, newName) {
-        if (!this.renameManager.hasProvider(document)) {
-            let doc = workspace_1.default.getDocument(document.uri);
-            if (!doc)
-                return null;
-            let range = doc.getWordRangeAtPosition(position);
-            if (!range)
-                return null;
-            let word = doc.textDocument.getText(range);
-            let ranges = doc.getSymbolRanges(word);
-            if (!ranges.length)
-                return null;
-            return {
-                changes: {
-                    [doc.uri]: ranges.map(r => {
-                        return {
-                            range: r,
-                            newText: newName
-                        };
-                    })
-                }
-            };
-        }
-        return await this.renameManager.provideRenameEdits(document, position, newName, this.token);
-    }
-    async prepareRename(document, position) {
-        return await this.renameManager.prepareRename(document, position, this.token);
-    }
-    async provideDocumentFormattingEdits(document, options) {
-        if (!this.formatManager.hasProvider(document)) {
-            let hasRangeFormater = this.formatRangeManager.hasProvider(document);
-            if (!hasRangeFormater) {
-                logger.error('Format provider not found for current document', 'error');
-                return null;
-            }
-            let end = document.positionAt(document.getText().length);
-            let range = vscode_languageserver_protocol_1.Range.create(vscode_languageserver_protocol_1.Position.create(0, 0), end);
-            return await this.provideDocumentRangeFormattingEdits(document, range, options);
-        }
-        return await this.formatManager.provideDocumentFormattingEdits(document, options, this.token);
-    }
-    async provideDocumentRangeFormattingEdits(document, range, options) {
-        if (!this.formatRangeManager.hasProvider(document))
-            return null;
-        return await this.formatRangeManager.provideDocumentRangeFormattingEdits(document, range, options, this.token);
-    }
-    /**
-     * Get CodeAction list for current document
-     *
-     * @public
-     * @param {TextDocument} document
-     * @param {Range} range
-     * @param {CodeActionContext} context
-     * @returns {Promise<CodeAction[]>}
-     */
-    async getCodeActions(document, range, context, silent = false) {
-        if (!silent && !this.codeActionManager.hasProvider(document)) {
-            workspace_1.default.showMessage('Code action provider not found for current document', 'error');
-            return null;
-        }
-        return await this.codeActionManager.provideCodeActions(document, range, context, this.token);
-    }
-    async getDocumentHighLight(document, position) {
-        return await this.documentHighlightManager.provideDocumentHighlights(document, position, this.token);
-    }
-    async getDocumentLinks(document) {
-        if (!this.documentLinkManager.hasProvider(document)) {
-            return null;
-        }
-        return (await this.documentLinkManager.provideDocumentLinks(document, this.token)) || [];
-    }
-    async resolveDocumentLink(link) {
-        return await this.documentLinkManager.resolveDocumentLink(link, this.token);
-    }
-    async provideDocumentColors(document) {
-        return await this.documentColorManager.provideDocumentColors(document, this.token);
-    }
-    async provideFoldingRanges(document, context) {
-        if (!this.formatRangeManager.hasProvider(document)) {
-            workspace_1.default.showMessage('Folding ranges provider not found for current document', 'error');
-            return null;
-        }
-        return await this.foldingRangeManager.provideFoldingRanges(document, context, this.token);
-    }
-    async provideColorPresentations(color, document) {
-        return await this.documentColorManager.provideColorPresentations(color, document, this.token);
-    }
-    async getCodeLens(document) {
-        return await this.codeLensManager.provideCodeLenses(document, this.token);
-    }
-    async resolveCodeLens(codeLens) {
-        return await this.codeLensManager.resolveCodeLens(codeLens, this.token);
-    }
-    async provideDocumentOntTypeEdits(character, document, position) {
-        return this.onTypeFormatManager.onCharacterType(character, document, position, this.token);
-    }
-    hasOnTypeProvider(character, document) {
-        return this.onTypeFormatManager.getProvider(document, character) != null;
-    }
-    dispose() {
-        // noop
-    }
-    createDiagnosticCollection(owner) {
-        return manager_1.default.create(owner);
-    }
-    createCompleteSource(name, shortcut, provider, languageIds, triggerCharacters, priority) {
-        // track them for resolve
-        let completeItems = [];
-        // line used for TextEdit
-        let hasResolve = typeof provider.resolveCompletionItem === 'function';
-        priority = priority == null ? this.completeConfig.priority : priority;
-        // index set of resolved items
-        let resolvedIndexes = new Set();
-        let doc = null;
-        let waitTime = Math.min(Math.max(50, this.completeConfig.waitTime), 300);
-        let source = {
-            name,
-            priority,
-            shortcut,
-            enable: true,
-            sourceType: types_1.SourceType.Service,
-            filetypes: languageIds,
-            triggerCharacters: triggerCharacters || [],
-            doComplete: async (opt, token) => {
-                let { triggerCharacter, bufnr } = opt;
-                doc = workspace_1.default.getDocument(bufnr);
-                if (!doc)
-                    return null;
-                resolvedIndexes = new Set();
-                let isTrigger = triggerCharacters && triggerCharacters.indexOf(triggerCharacter) != -1;
-                let triggerKind = vscode_languageserver_protocol_1.CompletionTriggerKind.Invoked;
-                if (opt.triggerForInComplete) {
-                    triggerKind = vscode_languageserver_protocol_1.CompletionTriggerKind.TriggerForIncompleteCompletions;
-                }
-                else if (isTrigger) {
-                    triggerKind = vscode_languageserver_protocol_1.CompletionTriggerKind.TriggerCharacter;
-                }
-                if (opt.triggerCharacter)
-                    await util_1.wait(waitTime);
-                if (token.isCancellationRequested)
-                    return null;
-                let position = complete.getPosition(opt);
-                let context = { triggerKind, option: opt };
-                if (isTrigger)
-                    context.triggerCharacter = triggerCharacter;
-                let result;
-                try {
-                    result = await Promise.resolve(provider.provideCompletionItems(doc.textDocument, position, token, context));
-                }
-                catch (e) {
-                    // don't disturb user
-                    logger.error(`Source "${name}" complete error:`, e);
-                    return null;
-                }
-                if (!result || token.isCancellationRequested)
-                    return null;
-                completeItems = Array.isArray(result) ? result : result.items;
-                if (!completeItems || completeItems.length == 0)
-                    return null;
-                // used for fixed col
-                let option = Object.assign({}, opt);
-                if (typeof result.startcol == 'number') {
-                    option.col = result.startcol;
-                }
-                let items = completeItems.map((o, index) => {
-                    let item = this.convertVimCompleteItem(o, shortcut, option);
-                    item.index = index;
-                    return item;
-                });
-                return {
-                    startcol: result.startcol,
-                    isIncomplete: !!result.isIncomplete,
-                    items
-                };
-            },
-            onCompleteResolve: async (item, token) => {
-                let resolving = completeItems[item.index];
-                if (!resolving)
-                    return;
-                if (hasResolve && !resolvedIndexes.has(item.index)) {
-                    let resolved = await Promise.resolve(provider.resolveCompletionItem(resolving, token));
-                    if (token.isCancellationRequested)
-                        return;
-                    resolvedIndexes.add(item.index);
-                    if (resolved)
-                        Object.assign(resolving, resolved);
-                }
-                if (item.documentation == null) {
-                    let { documentation, detail } = resolving;
-                    if (!documentation && !detail)
-                        return;
-                    let docs = [];
-                    if (detail && !item.detailShown && detail != item.word) {
-                        detail = detail.replace(/\n\s*/g, ' ');
-                        if (detail.length) {
-                            let isText = /^[\w-\s.,\t]+$/.test(detail);
-                            docs.push({ filetype: isText ? 'txt' : doc.filetype, content: detail });
-                        }
-                    }
-                    if (documentation) {
-                        if (typeof documentation == 'string') {
-                            docs.push({
-                                filetype: 'markdown',
-                                content: documentation
-                            });
-                        }
-                        else if (documentation.value) {
-                            docs.push({
-                                filetype: documentation.kind == 'markdown' ? 'markdown' : 'txt',
-                                content: documentation.value
-                            });
-                        }
-                    }
-                    item.documentation = docs;
-                }
-            },
-            onCompleteDone: async (vimItem, opt) => {
-                let item = completeItems[vimItem.index];
-                if (!item)
-                    return;
-                let line = opt.linenr - 1;
-                // tslint:disable-next-line: deprecation
-                if (item.insertText && !item.textEdit) {
-                    item.textEdit = {
-                        range: vscode_languageserver_protocol_1.Range.create(line, opt.col, line, opt.colnr - 1),
-                        // tslint:disable-next-line: deprecation
-                        newText: item.insertText
-                    };
-                }
-                if (vimItem.line)
-                    Object.assign(opt, { line: vimItem.line });
-                let snippet = await this.applyTextEdit(item, opt);
-                let { additionalTextEdits } = item;
-                if (additionalTextEdits && item.textEdit) {
-                    let r = item.textEdit.range;
-                    additionalTextEdits = additionalTextEdits.filter(edit => {
-                        if (position_1.rangeOverlap(r, edit.range)) {
-                            logger.info('Filtered overlap additionalTextEdit:', edit);
-                            return false;
-                        }
-                        return true;
-                    });
-                }
-                await this.applyAdditionalEdits(additionalTextEdits, opt.bufnr, snippet);
-                if (snippet && !manager_2.default.isPlainText(item.textEdit.newText)) {
-                    await manager_2.default.selectCurrentPlaceholder();
-                }
-                if (item.command)
-                    commands_1.default.execute(item.command);
-                doc = null;
-            },
-            shouldCommit: (item, character) => {
-                let completeItem = completeItems[item.index];
-                if (!completeItem)
-                    return false;
-                let { commitCharacters } = completeItem;
-                if (commitCharacters && commitCharacters.indexOf(character) !== -1) {
-                    return true;
-                }
-                return false;
-            }
-        };
-        return source;
-    }
-    get token() {
-        this.cancelTokenSource = new vscode_languageserver_protocol_1.CancellationTokenSource();
-        return this.cancelTokenSource.token;
-    }
-    async applyTextEdit(item, option) {
-        let { nvim } = this;
-        let { textEdit } = item;
-        if (!textEdit)
-            return false;
-        let { line, bufnr, linenr } = option;
-        let { range, newText } = textEdit;
-        let isSnippet = item.insertTextFormat === vscode_languageserver_protocol_1.InsertTextFormat.Snippet;
-        // replace inserted word
-        let start = line.substr(0, range.start.character);
-        let end = line.substr(range.end.character);
-        if (isSnippet) {
-            let doc = workspace_1.default.getDocument(bufnr);
-            await doc.applyEdits(nvim, [{
-                    range: vscode_languageserver_protocol_1.Range.create(linenr - 1, 0, linenr, 0),
-                    newText: `${start}${end}\n`
-                }]);
-            // can't select, since additionalTextEdits would break selection
-            let pos = vscode_languageserver_protocol_1.Position.create(linenr - 1, range.start.character);
-            return await manager_2.default.insertSnippet(newText, false, vscode_languageserver_protocol_1.Range.create(pos, pos));
-        }
-        let newLines = `${start}${newText}${end}`.split('\n');
-        if (newLines.length == 1) {
-            await nvim.call('coc#util#setline', [linenr, newLines[0]]);
-            await workspace_1.default.moveTo(vscode_languageserver_protocol_1.Position.create(linenr - 1, (start + newText).length));
-        }
-        else {
-            let document = workspace_1.default.getDocument(bufnr);
-            if (document) {
-                await document.buffer.setLines(newLines, {
-                    start: linenr - 1,
-                    end: linenr,
-                    strictIndexing: false
-                });
-            }
-            let line = linenr - 1 + newLines.length - 1;
-            let character = newLines[newLines.length - 1].length - end.length;
-            await workspace_1.default.moveTo({ line, character });
-        }
-        return false;
-    }
-    async applyAdditionalEdits(textEdits, bufnr, snippet) {
-        if (!textEdits || textEdits.length == 0)
-            return;
-        let document = workspace_1.default.getDocument(bufnr);
-        if (!document)
-            return;
-        await util_1.wait(workspace_1.default.isVim ? 100 : 10);
-        // how to move cursor after edit
-        let changed = null;
-        let pos = await workspace_1.default.getCursorPosition();
-        if (!snippet)
-            changed = position_1.getChangedFromEdits(pos, textEdits);
-        await document.applyEdits(this.nvim, textEdits);
-        if (changed) {
-            await workspace_1.default.moveTo(vscode_languageserver_protocol_1.Position.create(pos.line + changed.line, pos.character + changed.character));
-        }
-    }
-    convertVimCompleteItem(item, shortcut, opt) {
-        let { echodocSupport, detailField, detailMaxLength } = this.completeConfig;
-        let hasAdditionalEdit = item.additionalTextEdits && item.additionalTextEdits.length > 0;
-        let isSnippet = item.insertTextFormat === vscode_languageserver_protocol_1.InsertTextFormat.Snippet || hasAdditionalEdit;
-        let label = item.label.trim();
-        // tslint:disable-next-line:deprecation
-        if (isSnippet && item.insertText && item.insertText.indexOf('$') == -1 && !hasAdditionalEdit) {
-            // fix wrong insert format
-            isSnippet = false;
-            item.insertTextFormat = vscode_languageserver_protocol_1.InsertTextFormat.PlainText;
-        }
-        let obj = {
-            word: complete.getWord(item, opt),
-            abbr: label,
-            menu: `[${shortcut}]`,
-            kind: complete.completionKindString(item.kind, this.completionItemKindMap, this.completeConfig.defaultKindText),
-            sortText: item.sortText || null,
-            filterText: item.filterText || label,
-            isSnippet,
-            dup: 1
-        };
-        if (item && item.detail && detailField != 'preview') {
-            let detail = item.detail.replace(/\n\s*/g, ' ');
-            if (string_1.byteLength(detail) < detailMaxLength) {
-                if (detailField == 'menu') {
-                    obj.menu = `${detail} ${obj.menu}`;
-                }
-                else if (detailField == 'abbr') {
-                    obj.abbr = `${obj.abbr} - ${detail}`;
-                }
-                obj.detailShown = 1;
-            }
-        }
-        if (item.documentation) {
-            obj.info = typeof item.documentation == 'string' ? item.documentation : item.documentation.value;
-        }
-        if (!obj.word)
-            obj.empty = 1;
-        if (item.textEdit)
-            obj.line = opt.line;
-        if (item.kind == vscode_languageserver_protocol_1.CompletionItemKind.Folder && !obj.abbr.endsWith('/')) {
-            obj.abbr = obj.abbr + '/';
-        }
-        if (echodocSupport && item.kind >= 2 && item.kind <= 4) {
-            let fields = [item.detail || '', obj.abbr, obj.word];
-            for (let s of fields) {
-                if (s.indexOf('(') !== -1) {
-                    obj.signature = s;
-                    break;
-                }
-            }
-        }
-        if (item.preselect)
-            obj.preselect = true;
-        item.data = item.data || {};
-        if (item.data.optional)
-            obj.abbr = obj.abbr + '?';
-        return obj;
-    }
-}
-tslib_1.__decorate([
-    check
-], Languages.prototype, "getHover", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "getDefinition", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "getDeclaration", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "getTypeDefinition", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "getImplementation", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "getReferences", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "getDocumentSymbol", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "getSelectionRanges", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "getWorkspaceSymbols", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "resolveWorkspaceSymbol", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "provideRenameEdits", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "prepareRename", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "provideDocumentFormattingEdits", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "provideDocumentRangeFormattingEdits", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "getCodeActions", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "getDocumentHighLight", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "getDocumentLinks", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "resolveDocumentLink", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "provideDocumentColors", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "provideFoldingRanges", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "provideColorPresentations", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "getCodeLens", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "resolveCodeLens", null);
-tslib_1.__decorate([
-    check
-], Languages.prototype, "provideDocumentOntTypeEdits", null);
-exports.default = new Languages();
-//# sourceMappingURL=languages.js.map
-
-/***/ }),
-/* 256 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const floatFactory_1 = tslib_1.__importDefault(__webpack_require__(257));
-const util_1 = __webpack_require__(168);
-const position_1 = __webpack_require__(229);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const buffer_1 = __webpack_require__(262);
-const collection_1 = tslib_1.__importDefault(__webpack_require__(265));
-const util_2 = __webpack_require__(264);
-const logger = __webpack_require__(179)('diagnostic-manager');
-class DiagnosticManager {
-    constructor() {
-        this.enabled = true;
-        this.buffers = [];
-        this.collections = [];
-        this.disposables = [];
-        this.lastMessage = '';
-    }
-    init() {
-        this.setConfiguration();
-        let { nvim } = workspace_1.default;
-        let { maxWindowHeight, joinMessageLines } = this.config;
-        this.floatFactory = new floatFactory_1.default(nvim, workspace_1.default.env, false, maxWindowHeight, joinMessageLines);
-        this.disposables.push(vscode_languageserver_protocol_1.Disposable.create(() => {
-            if (this.timer)
-                clearTimeout(this.timer);
-        }));
-        events_1.default.on('CursorMoved', async () => {
-            if (this.timer)
-                clearTimeout(this.timer);
-            this.timer = setTimeout(async () => {
-                if (!this.config || this.config.enableMessage != 'always')
-                    return;
-                await this.echoMessage(true);
-            }, 500);
-        }, null, this.disposables);
-        events_1.default.on('InsertEnter', async () => {
-            this.floatFactory.close();
-            if (this.timer)
-                clearTimeout(this.timer);
-        }, null, this.disposables);
-        events_1.default.on('InsertLeave', async (bufnr) => {
-            this.floatFactory.close();
-            let doc = workspace_1.default.getDocument(bufnr);
-            if (!doc || !this.shouldValidate(doc))
-                return;
-            let { refreshOnInsertMode, refreshAfterSave } = this.config;
-            if (!refreshOnInsertMode && !refreshAfterSave) {
-                await util_1.wait(500);
-                this.refreshBuffer(doc.uri);
-            }
-        }, null, this.disposables);
-        events_1.default.on('BufEnter', async (bufnr) => {
-            if (this.timer)
-                clearTimeout(this.timer);
-            if (!this.config || !this.enabled || !this.config.locationlist)
-                return;
-            let doc = workspace_1.default.getDocument(bufnr);
-            if (!this.shouldValidate(doc) || doc.bufnr != bufnr)
-                return;
-            let refreshed = this.refreshBuffer(doc.uri);
-            if (!refreshed) {
-                let winid = await nvim.call('win_getid');
-                let curr = await nvim.call('getloclist', [winid, { title: 1 }]);
-                if ((curr.title && curr.title.indexOf('Diagnostics of coc') != -1)) {
-                    nvim.call('setloclist', [winid, [], 'f'], true);
-                }
-            }
-        }, null, this.disposables);
-        events_1.default.on('BufUnload', async (bufnr) => {
-            let idx = this.buffers.findIndex(buf => buf.bufnr == bufnr);
-            if (idx == -1)
-                return;
-            let buf = this.buffers[idx];
-            buf.dispose();
-            this.buffers.splice(idx, 1);
-            for (let collection of this.collections) {
-                collection.delete(buf.uri);
-            }
-            await buf.clear();
-        }, null, this.disposables);
-        events_1.default.on('BufWritePost', async (bufnr) => {
-            let buf = this.buffers.find(buf => buf.bufnr == bufnr);
-            if (buf)
-                await buf.checkSigns();
-            await util_1.wait(100);
-            if (this.config.refreshAfterSave) {
-                this.refreshBuffer(buf.uri);
-            }
-        }, null, this.disposables);
-        workspace_1.default.onDidChangeConfiguration(async (e) => {
-            this.setConfiguration(e);
-        }, null, this.disposables);
-        let { errorSign, warningSign, infoSign, hintSign } = this.config;
-        nvim.command(`sign define CocError   text=${errorSign}   linehl=CocErrorLine texthl=CocErrorSign`, true);
-        nvim.command(`sign define CocWarning text=${warningSign} linehl=CocWarningLine texthl=CocWarningSign`, true);
-        nvim.command(`sign define CocInfo    text=${infoSign}    linehl=CocInfoLine  texthl=CocInfoSign`, true);
-        nvim.command(`sign define CocHint    text=${hintSign}    linehl=CocHintLine  texthl=CocHintSign`, true);
-        // create buffers
-        for (let doc of workspace_1.default.documents) {
-            this.createDiagnosticBuffer(doc);
-        }
-        workspace_1.default.onDidOpenTextDocument(textDocument => {
-            let doc = workspace_1.default.getDocument(textDocument.uri);
-            this.createDiagnosticBuffer(doc);
-        }, null, this.disposables);
-        this.setConfigurationErrors(true);
-        workspace_1.default.configurations.onError(async () => {
-            this.setConfigurationErrors();
-        }, null, this.disposables);
-    }
-    createDiagnosticBuffer(doc) {
-        if (!this.shouldValidate(doc))
-            return;
-        let idx = this.buffers.findIndex(b => b.bufnr == doc.bufnr);
-        if (idx == -1) {
-            let buf = new buffer_1.DiagnosticBuffer(doc, this.config);
-            this.buffers.push(buf);
-            buf.onDidRefresh(() => {
-                if (workspace_1.default.insertMode)
-                    return;
-                this.echoMessage(true).catch(_e => {
-                    // noop
-                });
-            });
-        }
-    }
-    setConfigurationErrors(init) {
-        let collections = this.collections;
-        let collection = collections.find(o => o.name == 'config');
-        if (!collection) {
-            collection = this.create('config');
-        }
-        else {
-            collection.clear();
-        }
-        let { errorItems } = workspace_1.default.configurations;
-        if (errorItems && errorItems.length) {
-            if (init)
-                workspace_1.default.showMessage(`settings file parse error, run ':CocList diagnostics'`, 'error');
-            let entries = new Map();
-            for (let item of errorItems) {
-                let { uri } = item.location;
-                let diagnostics = entries.get(uri) || [];
-                diagnostics.push(vscode_languageserver_protocol_1.Diagnostic.create(item.location.range, item.message, vscode_languageserver_protocol_1.DiagnosticSeverity.Error));
-                entries.set(uri, diagnostics);
-            }
-            collection.set(Array.from(entries));
-        }
-    }
-    /**
-     * Create collection by name
-     */
-    create(name) {
-        let collection = new collection_1.default(name);
-        this.collections.push(collection);
-        let disposable = collection.onDidDiagnosticsChange(async (uri) => {
-            if (this.config.refreshAfterSave)
-                return;
-            this.refreshBuffer(uri);
-        });
-        let dispose = collection.onDidDiagnosticsClear(uris => {
-            for (let uri of uris) {
-                this.refreshBuffer(uri);
-            }
-        });
-        collection.onDispose(() => {
-            disposable.dispose();
-            dispose.dispose();
-            let idx = this.collections.findIndex(o => o == collection);
-            if (idx !== -1)
-                this.collections.splice(idx, 1);
-            collection.forEach((uri, diagnostics) => {
-                if (diagnostics && diagnostics.length)
-                    this.refreshBuffer(uri);
-            });
-        });
-        return collection;
-    }
-    /**
-     * Get diagnostics ranges from document
-     */
-    getSortedRanges(uri) {
-        let collections = this.getCollections(uri);
-        let res = [];
-        for (let collection of collections) {
-            let ranges = collection.get(uri).map(o => o.range);
-            res.push(...ranges);
-        }
-        res.sort((a, b) => {
-            if (a.start.line != b.start.line) {
-                return a.start.line - b.start.line;
-            }
-            return a.start.character - b.start.character;
-        });
-        return res;
-    }
-    /**
-     * Get readonly diagnostics for a buffer
-     */
-    getDiagnostics(uri) {
-        let collections = this.getCollections(uri);
-        let { level } = this.config;
-        let res = [];
-        for (let collection of collections) {
-            let items = collection.get(uri);
-            if (!items)
-                continue;
-            if (level && level < vscode_languageserver_protocol_1.DiagnosticSeverity.Hint) {
-                items = items.filter(s => s.severity == null || s.severity <= level);
-            }
-            res.push(...items);
-        }
-        res.sort((a, b) => {
-            if (a.severity == b.severity) {
-                let d = position_1.comparePosition(a.range.start, b.range.start);
-                if (d != 0)
-                    return d;
-                if (a.source == b.source)
-                    return a.message > b.message ? 1 : -1;
-                return a.source > b.source ? 1 : -1;
-            }
-            return a.severity - b.severity;
-        });
-        return res;
-    }
-    getDiagnosticsInRange(document, range) {
-        let collections = this.getCollections(document.uri);
-        let res = [];
-        for (let collection of collections) {
-            let items = collection.get(document.uri);
-            if (!items)
-                continue;
-            for (let item of items) {
-                if (position_1.rangeIntersect(item.range, range)) {
-                    res.push(item);
-                }
-            }
-        }
-        return res;
-    }
-    /**
-     * Jump to previouse diagnostic position
-     */
-    async jumpPrevious() {
-        let buffer = await this.nvim.buffer;
-        let document = workspace_1.default.getDocument(buffer.id);
-        if (!document)
-            return;
-        let offset = await workspace_1.default.getOffset();
-        if (offset == null)
-            return;
-        let ranges = this.getSortedRanges(document.uri);
-        if (ranges.length == 0) {
-            workspace_1.default.showMessage('Empty diagnostics', 'warning');
-            return;
-        }
-        let { textDocument } = document;
-        for (let i = ranges.length - 1; i >= 0; i--) {
-            if (textDocument.offsetAt(ranges[i].end) < offset) {
-                await this.jumpTo(ranges[i]);
-                return;
-            }
-        }
-        await this.jumpTo(ranges[ranges.length - 1]);
-    }
-    /**
-     * Jump to next diagnostic position
-     */
-    async jumpNext() {
-        let buffer = await this.nvim.buffer;
-        let document = workspace_1.default.getDocument(buffer.id);
-        let offset = await workspace_1.default.getOffset();
-        let ranges = this.getSortedRanges(document.uri);
-        if (ranges.length == 0) {
-            workspace_1.default.showMessage('Empty diagnostics', 'warning');
-            return;
-        }
-        let { textDocument } = document;
-        for (let i = 0; i <= ranges.length - 1; i++) {
-            if (textDocument.offsetAt(ranges[i].start) > offset) {
-                await this.jumpTo(ranges[i]);
-                return;
-            }
-        }
-        await this.jumpTo(ranges[0]);
-    }
-    /**
-     * All diagnostics of current workspace
-     */
-    getDiagnosticList() {
-        let res = [];
-        for (let collection of this.collections) {
-            collection.forEach((uri, diagnostics) => {
-                let file = vscode_uri_1.default.parse(uri).fsPath;
-                for (let diagnostic of diagnostics) {
-                    let { start } = diagnostic.range;
-                    let o = {
-                        file,
-                        lnum: start.line + 1,
-                        col: start.character + 1,
-                        message: `[${diagnostic.source || collection.name}${diagnostic.code ? ' ' + diagnostic.code : ''}] ${diagnostic.message}`,
-                        severity: util_2.getSeverityName(diagnostic.severity),
-                        level: diagnostic.severity || 0,
-                        location: vscode_languageserver_protocol_1.Location.create(uri, diagnostic.range)
-                    };
-                    res.push(o);
-                }
-            });
-        }
-        res.sort((a, b) => {
-            if (a.level !== b.level) {
-                return a.level - b.level;
-            }
-            if (a.file !== b.file) {
-                return a.file > b.file ? 1 : -1;
-            }
-            else {
-                if (a.lnum != b.lnum) {
-                    return a.lnum - b.lnum;
-                }
-                return a.col - b.col;
-            }
-        });
-        return res;
-    }
-    /**
-     * Echo diagnostic message of currrent position
-     */
-    async echoMessage(truncate = false) {
-        if (!this.enabled || this.config.enableMessage == 'never')
-            return;
-        if (this.timer)
-            clearTimeout(this.timer);
-        let buf = await this.nvim.buffer;
-        let pos = await workspace_1.default.getCursorPosition();
-        let buffer = this.buffers.find(o => o.bufnr == buf.id);
-        if (!buffer)
-            return;
-        let { checkCurrentLine } = this.config;
-        let useFloat = workspace_1.default.env.floating && this.config.messageTarget == 'float';
-        let diagnostics = buffer.diagnostics.filter(o => {
-            if (checkCurrentLine)
-                return position_1.lineInRange(pos.line, o.range);
-            return position_1.positionInRange(pos, o.range) == 0;
-        });
-        if (diagnostics.length == 0) {
-            if (useFloat) {
-                this.floatFactory.close();
-            }
-            else {
-                let echoLine = await this.nvim.call('coc#util#echo_line');
-                if (this.lastMessage && this.lastMessage == echoLine.trim()) {
-                    this.nvim.command('echo ""', true);
-                }
-                this.lastMessage = '';
-            }
-            return;
-        }
-        if (truncate && workspace_1.default.insertMode)
-            return;
-        let lines = [];
-        let docs = [];
-        diagnostics.forEach(diagnostic => {
-            let { source, code, severity, message } = diagnostic;
-            let s = util_2.getSeverityName(severity)[0];
-            let str = `[${source}${code ? ' ' + code : ''}] [${s}] ${message}`;
-            let filetype = 'Error';
-            switch (diagnostic.severity) {
-                case vscode_languageserver_protocol_1.DiagnosticSeverity.Hint:
-                    filetype = 'Hint';
-                    break;
-                case vscode_languageserver_protocol_1.DiagnosticSeverity.Warning:
-                    filetype = 'Warning';
-                    break;
-                case vscode_languageserver_protocol_1.DiagnosticSeverity.Information:
-                    filetype = 'Info';
-                    break;
-            }
-            docs.push({ filetype, content: str });
-            lines.push(...str.split('\n'));
-        });
-        if (useFloat) {
-            if (floatFactory_1.default.isCreating)
-                return;
-            let hasFloat = await this.nvim.call('coc#util#has_float');
-            if (hasFloat)
-                return;
-            await this.floatFactory.create(docs);
-        }
-        else {
-            this.lastMessage = lines[0];
-            await this.nvim.command('echo ""');
-            await workspace_1.default.echoLines(lines, truncate);
-        }
-    }
-    hideFloat() {
-        if (this.floatFactory) {
-            this.floatFactory.close();
-        }
-    }
-    dispose() {
-        for (let collection of this.collections) {
-            collection.dispose();
-        }
-        this.buffers.splice(0, this.buffers.length);
-        this.collections = [];
-        this.floatFactory.dispose();
-        util_1.disposeAll(this.disposables);
-    }
-    get nvim() {
-        return workspace_1.default.nvim;
-    }
-    setConfiguration(event) {
-        if (event && !event.affectsConfiguration('diagnostic'))
-            return;
-        let preferences = workspace_1.default.getConfiguration('coc.preferences.diagnostic');
-        let config = workspace_1.default.getConfiguration('diagnostic');
-        function getConfig(key, defaultValue) {
-            return preferences.get(key, config.get(key, defaultValue));
-        }
-        this.config = {
-            srcId: workspace_1.default.createNameSpace('coc-diagnostic') || 1000,
-            virtualTextSrcId: workspace_1.default.createNameSpace('diagnostic-virtualText'),
-            checkCurrentLine: getConfig('checkCurrentLine', false),
-            enableSign: getConfig('enableSign', true),
-            maxWindowHeight: getConfig('maxWindowHeight', 10),
-            enableMessage: getConfig('enableMessage', 'always'),
-            joinMessageLines: getConfig('joinMessageLines', false),
-            messageTarget: getConfig('messageTarget', 'float'),
-            virtualText: getConfig('virtualText', false),
-            virtualTextPrefix: getConfig('virtualTextPrefix', " "),
-            virtualTextLineSeparator: getConfig('virtualTextLineSeparator', " \\ "),
-            virtualTextLines: getConfig('virtualTextLines', 3),
-            displayByAle: getConfig('displayByAle', false),
-            level: util_2.severityLevel(getConfig('level', 'hint')),
-            locationlist: getConfig('locationlist', true),
-            signOffset: getConfig('signOffset', 1000),
-            errorSign: getConfig('errorSign', '>>'),
-            warningSign: getConfig('warningSign', '>>'),
-            infoSign: getConfig('infoSign', '>>'),
-            hintSign: getConfig('hintSign', '>>'),
-            refreshAfterSave: getConfig('refreshAfterSave', false),
-            refreshOnInsertMode: getConfig('refreshOnInsertMode', false),
-        };
-        this.enabled = getConfig('enable', true);
-        if (this.config.displayByAle) {
-            this.enabled = false;
-        }
-        if (event) {
-            for (let severity of ['error', 'info', 'warning', 'hint']) {
-                let key = `diagnostic.${severity}Sign`;
-                if (event.affectsConfiguration(key)) {
-                    let text = config.get(`${severity}Sign`, '>>');
-                    let name = severity[0].toUpperCase() + severity.slice(1);
-                    this.nvim.command(`sign define Coc${name}   text=${text}   linehl=Coc${name}Line texthl=Coc${name}Sign`, true);
-                }
-            }
-        }
-    }
-    getCollections(uri) {
-        return this.collections.filter(c => c.has(uri));
-    }
-    shouldValidate(doc) {
-        return doc != null && doc.buftype == '';
-    }
-    refreshBuffer(uri) {
-        // vim has issue with diagnostic update
-        if (workspace_1.default.insertMode && !this.config.refreshOnInsertMode)
-            return;
-        let buf = this.buffers.find(buf => buf.uri == uri);
-        let { displayByAle } = this.config;
-        if (buf) {
-            if (displayByAle) {
-                let { nvim } = this;
-                let allDiagnostics = new Map();
-                for (let collection of this.collections) {
-                    let diagnostics = collection.get(uri);
-                    let aleItems = diagnostics.map(o => {
-                        let { range } = o;
-                        return {
-                            text: o.message,
-                            code: o.code,
-                            lnum: range.start.line + 1,
-                            col: range.start.character + 1,
-                            end_lnum: range.end.line + 1,
-                            end_col: range.end.character + 1,
-                            type: util_2.getSeverityType(o.severity)
-                        };
-                    });
-                    let exists = allDiagnostics.get(collection.name);
-                    if (exists) {
-                        exists.push(...aleItems);
-                    }
-                    else {
-                        allDiagnostics.set(collection.name, aleItems);
-                    }
-                }
-                nvim.pauseNotification();
-                for (let key of allDiagnostics.keys()) {
-                    this.nvim.call('ale#other_source#ShowResults', [buf.bufnr, key, allDiagnostics.get(key)], true);
-                }
-                nvim.resumeNotification(false, true).catch(_e => {
-                    // noop
-                });
-            }
-            else {
-                let diagnostics = this.getDiagnostics(uri);
-                if (this.enabled) {
-                    buf.refresh(diagnostics);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    async jumpTo(range) {
-        if (!range)
-            return;
-        let { start } = range;
-        await this.nvim.call('cursor', [start.line + 1, start.character + 1]);
-        await this.echoMessage();
-    }
-}
-exports.DiagnosticManager = DiagnosticManager;
-exports.default = new DiagnosticManager();
-//# sourceMappingURL=manager.js.map
-
-/***/ }),
-/* 257 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const manager_1 = tslib_1.__importDefault(__webpack_require__(233));
-const util_1 = __webpack_require__(168);
-const object_1 = __webpack_require__(189);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const floatBuffer_1 = tslib_1.__importDefault(__webpack_require__(258));
-const uuid = __webpack_require__(219);
-const logger = __webpack_require__(179)('model-float');
-const creatingIds = new Set();
-// factory class for floating window
-class FloatFactory {
-    constructor(nvim, env, preferTop = false, maxHeight = 999, joinLines = true, maxWidth) {
-        this.nvim = nvim;
-        this.env = env;
-        this.preferTop = preferTop;
-        this.maxHeight = maxHeight;
-        this.joinLines = joinLines;
-        this.maxWidth = maxWidth;
-        this.disposables = [];
-        this.promise = Promise.resolve(undefined);
-        this.alignTop = false;
-        this._creating = false;
-        this.moving = false;
-        this.createTs = 0;
-        this.cursor = [0, 0];
-        if (!env.floating)
-            return;
-        events_1.default.on('BufEnter', bufnr => {
-            if (this.buffer && bufnr == this.buffer.id)
-                return;
-            if (bufnr == this.targetBufnr)
-                return;
-            this.close();
-        }, null, this.disposables);
-        events_1.default.on('InsertLeave', bufnr => {
-            if (this.buffer && bufnr == this.buffer.id)
-                return;
-            if (this.moving)
-                return;
-            this.close();
-        }, null, this.disposables);
-        events_1.default.on('MenuPopupChanged', async (ev, cursorline) => {
-            if (cursorline < ev.row && !this.alignTop) {
-                this.close();
-            }
-            else if (cursorline > ev.row && this.alignTop) {
-                this.close();
-            }
-        }, null, this.disposables);
-        events_1.default.on('CursorMovedI', this.onCursorMoved, this, this.disposables);
-        events_1.default.on('CursorMoved', this.onCursorMoved, this, this.disposables);
-    }
-    onCursorMoved(bufnr, cursor) {
-        if (this.buffer && bufnr == this.buffer.id)
-            return;
-        if (this.moving || (bufnr == this.targetBufnr && object_1.equals(cursor, this.cursor)))
-            return;
-        if (workspace_1.default.insertMode) {
-            if (!this.window)
-                return;
-            let ts = Date.now();
-            setTimeout(() => {
-                if (this.createTs > ts)
-                    return;
-                this.close();
-            }, 2000);
-        }
-        else {
-            this.close();
-        }
-    }
-    async checkFloatBuffer() {
-        let { floatBuffer } = this;
-        if (floatBuffer) {
-            let valid = await floatBuffer.valid;
-            if (valid)
-                return;
-        }
-        let buf = await this.nvim.createNewBuffer(false, true);
-        await buf.setOption('buftype', 'nofile');
-        await buf.setOption('bufhidden', 'hide');
-        this.floatBuffer = new floatBuffer_1.default(buf, this.nvim, this.joinLines);
-    }
-    get columns() {
-        return this.env.columns;
-    }
-    get lines() {
-        return this.env.lines - this.env.cmdheight - 1;
-    }
-    async getBoundings(docs) {
-        let { nvim, preferTop } = this;
-        let { columns, lines } = this;
-        let alignTop = false;
-        let offsetX = 0;
-        let [row, col] = await nvim.call('coc#util#win_position');
-        let maxWidth = this.maxWidth || Math.min(columns - 10, 80);
-        let height = this.floatBuffer.getHeight(docs, maxWidth);
-        height = Math.min(height, this.maxHeight);
-        if (!preferTop) {
-            if (lines - row < height && row > height) {
-                alignTop = true;
-            }
-        }
-        else {
-            if (row >= height || row >= lines - row) {
-                alignTop = true;
-            }
-        }
-        if (alignTop)
-            docs.reverse();
-        await this.floatBuffer.setDocuments(docs, maxWidth);
-        let { width, highlightOffset } = this.floatBuffer;
-        if (col + width > columns) {
-            offsetX = col + width - columns;
-        }
-        offsetX = Math.max(offsetX, highlightOffset);
-        offsetX = Math.min(col, offsetX);
-        this.alignTop = alignTop;
-        return {
-            height: alignTop ? Math.min(row, height) : Math.min(height, (lines - row)),
-            width: Math.min(columns, width),
-            row: alignTop ? -height : 1,
-            col: offsetX == 0 ? 0 : -offsetX,
-            relative: 'cursor'
-        };
-    }
-    async create(docs, allowSelection = false) {
-        if (!this.env.floating)
-            return;
-        this.createTs = Date.now();
-        let id = uuid();
-        creatingIds.add(id);
-        this.targetBufnr = workspace_1.default.bufnr;
-        let tokenSource = this.tokenSource = new vscode_languageserver_protocol_1.CancellationTokenSource();
-        let token = tokenSource.token;
-        this._creating = true;
-        this.promise = this.promise.then(() => {
-            if (token.isCancellationRequested)
-                return;
-            return this._create(docs, allowSelection, token).then(() => {
-                creatingIds.delete(id);
-                this._creating = false;
-            }, e => {
-                creatingIds.delete(id);
-                logger.error('Error on create float window:', e);
-                this._creating = false;
-            });
-        });
-        await this.promise;
-    }
-    async _create(docs, allowSelection = false, token) {
-        if (docs.length == 0)
-            return;
-        let [, line, col] = await this.nvim.call('getpos', ['.']);
-        this.cursor = [line, col];
-        await this.checkFloatBuffer();
-        let config = await this.getBoundings(docs);
-        if (!config || token.isCancellationRequested)
-            return;
-        let mode = await this.nvim.call('mode');
-        allowSelection = mode == 's' && allowSelection;
-        if (token.isCancellationRequested)
-            return;
-        if (['i', 'n', 'ic'].indexOf(mode) !== -1 || allowSelection) {
-            let { nvim, alignTop } = this;
-            // change to normal
-            if (mode == 's')
-                await nvim.call('feedkeys', ['\x1b', 'in']);
-            // helps to fix undo issue, don't know why.
-            if (mode.startsWith('i'))
-                await nvim.eval('feedkeys("\\<C-g>u")');
-            if (token.isCancellationRequested)
-                return;
-            let reuse = false;
-            if (this.window)
-                reuse = await this.window.valid;
-            nvim.pauseNotification();
-            if (!reuse) {
-                nvim.notify('nvim_open_win', [this.buffer, true, config]);
-                nvim.command(`let w:float = 1`, true);
-                nvim.command(`setl nospell nolist nowrap previewwindow foldcolumn=0`, true);
-                nvim.command(`setl nonumber norelativenumber nocursorline nocursorcolumn`, true);
-                nvim.command(`setl signcolumn=no conceallevel=2 listchars=eol:\\ `, true);
-                nvim.command(`setl winhl=Normal:CocFloating,NormalNC:CocFloating`, true);
-                nvim.command(`silent doautocmd User CocOpenFloat`, true);
-            }
-            else {
-                this.window.setConfig(config, true);
-                nvim.command(`noa call win_gotoid(${this.window.id})`, true);
-            }
-            this.floatBuffer.setLines();
-            nvim.command(`normal! ${alignTop ? 'G' : 'gg'}0`, true);
-            nvim.command('noa wincmd p', true);
-            let res = await nvim.resumeNotification();
-            if (!reuse)
-                this.window = res[0][0];
-            this.moving = true;
-            if (mode == 's')
-                await manager_1.default.selectCurrentPlaceholder(false);
-            this.moving = false;
-        }
-    }
-    /**
-     * Close float window
-     */
-    close() {
-        if (!this.env.floating)
-            return;
-        if (this.tokenSource) {
-            this.tokenSource.cancel();
-            this.tokenSource = null;
-        }
-        this.closeWindow(this.window);
-    }
-    closeWindow(window) {
-        if (!window)
-            return;
-        this.nvim.call('coc#util#close_win', window.id, true);
-        this.window = null;
-        let count = 0;
-        let interval = setInterval(() => {
-            count++;
-            if (count == 5)
-                clearInterval(interval);
-            window.valid.then(valid => {
-                if (valid) {
-                    this.nvim.call('coc#util#close_win', window.id, true);
-                }
-                else {
-                    clearInterval(interval);
-                }
-            }, _e => {
-                clearInterval(interval);
-            });
-        }, 200);
-    }
-    dispose() {
-        if (this.tokenSource) {
-            this.tokenSource.cancel();
-        }
-        util_1.disposeAll(this.disposables);
-    }
-    get creating() {
-        return this._creating;
-    }
-    get buffer() {
-        return this.floatBuffer ? this.floatBuffer.buffer : null;
-    }
-    static get isCreating() {
-        return creatingIds.size > 0;
-    }
-    async activated() {
-        if (!this.window)
-            return false;
-        let valid = await this.window.valid;
-        return valid;
-    }
-}
-exports.default = FloatFactory;
-//# sourceMappingURL=floatFactory.js.map
-
-/***/ }),
-/* 258 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const highlight_1 = __webpack_require__(259);
-const string_1 = __webpack_require__(210);
-const array_1 = __webpack_require__(212);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const chars_1 = __webpack_require__(211);
-const logger = __webpack_require__(179)('model-floatBuffer');
-class FloatBuffer {
-    constructor(buffer, nvim, joinLines = true) {
-        this.buffer = buffer;
-        this.nvim = nvim;
-        this.joinLines = joinLines;
-        this.lines = [];
-        this.chars = new chars_1.Chars('@,48-57,_192-255,<,>,$,#,-,`,*');
-        this.positions = [];
-        this.enableHighlight = true;
-        this.width = 0;
-        let config = workspace_1.default.getConfiguration('coc.preferences');
-        this.enableHighlight = config.get('enableFloatHighlight', true);
-    }
-    getHeight(docs, maxWidth) {
-        this.calculateFragments(docs, maxWidth);
-        return this.lines.length;
-    }
-    get valid() {
-        return this.buffer.valid;
-    }
-    get highlightOffset() {
-        if (this.positions.length == 0)
-            return 0;
-        let vals = this.positions.map(s => s[1] - 1);
-        return Math.min(...vals);
-    }
-    calculateFragments(docs, maxWidth) {
-        let fragments = [];
-        let idx = 0;
-        let currLine = 0;
-        let newLines = [];
-        let fill = false;
-        let positions = this.positions = [];
-        for (let doc of docs) {
-            let lines = [];
-            let content = doc.content.replace(/\s+$/, '');
-            let arr = content.split(/\r?\n/);
-            let inBlock = false;
-            if (['Error', 'Info', 'Warning', 'Hint'].indexOf(doc.filetype) !== -1) {
-                fill = true;
-            }
-            if (this.joinLines) {
-                // join the lines when necessary
-                arr = arr.reduce((list, curr) => {
-                    if (!curr)
-                        return list;
-                    if (/^\s*```/.test(curr)) {
-                        inBlock = !inBlock;
-                    }
-                    if (list.length) {
-                        let pre = list[list.length - 1];
-                        if (!inBlock && !isSingleLine(pre) && !isBreakCharacter(curr[0])) {
-                            list[list.length - 1] = pre + ' ' + curr;
-                            return list;
-                        }
-                    }
-                    list.push(curr);
-                    return list;
-                }, []);
-            }
-            let start = doc.active ? doc.active[0] : null;
-            let end = doc.active ? doc.active[1] : null;
-            // let [start, end] = doc.active || []
-            for (let str of arr) {
-                let len = string_1.byteLength(str);
-                if (len > maxWidth - 2) {
-                    // don't split on word
-                    let parts = this.softSplit(str, maxWidth - 2);
-                    if (start != null) {
-                        let count = 0;
-                        let inLine = false;
-                        let idx = 1;
-                        let total = end - start;
-                        for (let line of parts) {
-                            if (count >= total)
-                                break;
-                            if (!inLine && start < line.length) {
-                                inLine = true;
-                                let len = line.length > end ? total : line.length - start;
-                                count = len;
-                                positions.push([currLine + idx, start + 2, len]);
-                            }
-                            else if (inLine && total > count) {
-                                let len = (total - count) > line.length ? line.length : total - count;
-                                count = count + len;
-                                positions.push([currLine + idx, 2, len]);
-                            }
-                            else if (!inLine) {
-                                start = start - line.length;
-                                end = end - line.length;
-                            }
-                            idx = idx + 1;
-                        }
-                    }
-                    lines.push(...parts);
-                }
-                else {
-                    lines.push(str);
-                    if (start != null)
-                        positions.push([currLine + 1, start + 2, end - start]);
-                }
-            }
-            lines = lines.map(s => s.length ? ' ' + s : '');
-            fragments.push({
-                start: currLine,
-                lines,
-                filetype: doc.filetype
-            });
-            newLines.push(...lines.filter(s => !/^\s*```/.test(s)));
-            if (idx != docs.length - 1) {
-                newLines.push('—');
-                currLine = newLines.length;
-            }
-            idx = idx + 1;
-        }
-        let width = this.width = Math.max(...newLines.map(s => string_1.byteLength(s))) + 1;
-        this.lines = newLines.map(s => {
-            if (s == '—')
-                return '—'.repeat(width);
-            if (fill)
-                return s + ' '.repeat(width - string_1.byteLength(s));
-            return s;
-        });
-        return fragments;
-    }
-    async setDocuments(docs, maxWidth) {
-        let fragments = this.calculateFragments(docs, maxWidth);
-        let filetype = await this.nvim.eval('&filetype');
-        fragments = fragments.reduce((p, c) => {
-            p.push(...this.splitFragment(c, filetype));
-            return p;
-        }, []);
-        if (this.enableHighlight) {
-            let arr = await Promise.all(fragments.map(f => {
-                return highlight_1.getHiglights(f.lines, f.filetype).then(highlights => {
-                    return highlights.map(highlight => {
-                        return Object.assign({}, highlight, { line: highlight.line + f.start });
-                    });
-                });
-            }));
-            this.highlights = arr.reduce((p, c) => p.concat(c), []);
-        }
-        else {
-            this.highlights = [];
-        }
-    }
-    splitFragment(fragment, defaultFileType) {
-        let res = [];
-        let filetype = fragment.filetype;
-        let lines = [];
-        let curr = fragment.start;
-        let inBlock = false;
-        for (let line of fragment.lines) {
-            let ms = line.match(/^\s*```\s*(\w+)?/);
-            if (ms != null) {
-                if (lines.length) {
-                    res.push({ lines, filetype: this.fixFiletype(filetype), start: curr - lines.length });
-                    lines = [];
-                }
-                inBlock = !inBlock;
-                filetype = inBlock ? ms[1] || defaultFileType : fragment.filetype;
-            }
-            else {
-                lines.push(line);
-                curr = curr + 1;
-            }
-        }
-        if (lines.length) {
-            res.push({ lines, filetype: this.fixFiletype(filetype), start: curr - lines.length });
-            lines = [];
-        }
-        return res;
-    }
-    fixFiletype(filetype) {
-        if (filetype == 'ts')
-            return 'typescript';
-        if (filetype == 'js')
-            return 'javascript';
-        if (filetype == 'bash')
-            return 'sh';
-        return filetype;
-    }
-    get height() {
-        return this.lines.length;
-    }
-    setLines() {
-        let { buffer, lines, nvim, highlights } = this;
-        nvim.call('clearmatches', [], true);
-        buffer.clearNamespace(-1, 0, -1);
-        buffer.setLines(lines, { start: 0, end: -1, strictIndexing: false }, true);
-        if (highlights.length) {
-            let positions = [];
-            for (let highlight of highlights) {
-                nvim.call('matchaddpos', [highlight.hlGroup, [[highlight.line + 1, highlight.colStart + 1, highlight.colEnd - highlight.colStart]], 10], true);
-                if (highlight.isMarkdown) {
-                    let line = lines[highlight.line];
-                    let before = line[string_1.characterIndex(line, highlight.colStart)];
-                    let after = line[string_1.characterIndex(line, highlight.colEnd) - 1];
-                    if (before == after && ['_', '`', '*'].indexOf(before) !== -1) {
-                        positions.push([highlight.line + 1, highlight.colStart + 1]);
-                        positions.push([highlight.line + 1, highlight.colEnd]);
-                    }
-                    if (highlight.colEnd - highlight.colStart == 2 && before == '\\') {
-                        positions.push([highlight.line + 1, highlight.colStart + 1]);
-                    }
-                }
-            }
-            for (let arr of array_1.group(positions, 8)) {
-                nvim.call('matchaddpos', ['Conceal', arr, 11], true);
-            }
-        }
-        if (this.positions.length) {
-            for (let pos of this.positions) {
-                if (pos[2] == 0)
-                    continue;
-                buffer.addHighlight({
-                    srcId: -1,
-                    hlGroup: 'CocUnderline',
-                    line: pos[0] - 1,
-                    colStart: pos[1] - 1,
-                    colEnd: pos[1] + pos[2] - 1
-                }).catch(_e => {
-                    // noop
-                });
-            }
-        }
-    }
-    softSplit(line, maxWidth) {
-        let { chars } = this;
-        let res = [];
-        let finished = false;
-        let start = 0;
-        do {
-            let len = 0;
-            let lastNonKeyword = 0;
-            for (let i = start; i < line.length; i++) {
-                let ch = line[i];
-                let code = ch.charCodeAt(0);
-                let iskeyword = code < 255 && chars.isKeywordCode(code);
-                if (len >= maxWidth) {
-                    if (iskeyword && lastNonKeyword) {
-                        res.push(line.slice(start, lastNonKeyword + 1));
-                        start = lastNonKeyword + 1;
-                    }
-                    else {
-                        let end = len == maxWidth ? i : i - 1;
-                        res.push(line.slice(start, end));
-                        start = end;
-                    }
-                    break;
-                }
-                len = len + string_1.byteLength(ch);
-                if (!iskeyword)
-                    lastNonKeyword = i;
-                if (i == line.length - 1) {
-                    let content = line.slice(start, i + 1);
-                    if (content.length)
-                        res.push(content);
-                    finished = true;
-                }
-            }
-        } while (!finished);
-        return res;
-    }
-}
-exports.default = FloatBuffer;
-function isSingleLine(line) {
-    if (line.trim().length == 0)
-        return true;
-    let str = line.trim();
-    if (str.startsWith('```') || str.length == 0)
-        return true;
-    if (str.startsWith('-'))
-        return true;
-    if (str.startsWith('*'))
-        return true;
-    if (str.startsWith('#'))
-        return true;
-    return false;
-}
-function isBreakCharacter(ch) {
-    let code = ch.charCodeAt(0);
-    if (code > 255)
-        return false;
-    if (code >= 48 && code <= 57)
-        return false;
-    if (code >= 97 && code <= 122)
-        return false;
-    if (code >= 65 && code <= 90)
-        return false;
-    return true;
-}
-//# sourceMappingURL=floatBuffer.js.map
-
-/***/ }),
-/* 259 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const neovim_1 = __webpack_require__(4);
-const cp = tslib_1.__importStar(__webpack_require__(169));
-const crypto_1 = __webpack_require__(153);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const lodash_1 = __webpack_require__(252);
-const os_1 = tslib_1.__importDefault(__webpack_require__(55));
-const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
-const string_1 = __webpack_require__(210);
-const processes_1 = __webpack_require__(260);
-const uuid = __webpack_require__(261);
-const logger = __webpack_require__(179)('util-highlights');
-const diagnosticFiletypes = ['Error', 'Warning', 'Info', 'Hint'];
-const cache = {};
-let env = null;
-// get highlights by send text to another neovim instance.
-function getHiglights(lines, filetype) {
-    const hlMap = new Map();
-    const content = lines.join('\n');
-    if (diagnosticFiletypes.indexOf(filetype) != -1) {
-        let highlights = lines.map((_line, i) => {
-            return {
-                line: i,
-                colStart: 0,
-                colEnd: -1,
-                hlGroup: `Coc${filetype}Float`
-            };
-        });
-        return Promise.resolve(highlights);
-    }
-    if (filetype == 'javascriptreact') {
-        filetype = 'javascript';
-    }
-    if (filetype == 'typescriptreact') {
-        filetype = 'typescript';
-    }
-    const id = crypto_1.createHash('md5').update(content).digest('hex');
-    if (cache[id])
-        return Promise.resolve(cache[id]);
-    const res = [];
-    let nvim;
-    return new Promise(async (resolve) => {
-        if (!env) {
-            env = await workspace_1.default.nvim.call('coc#util#highlight_options');
-            if (!env)
-                resolve([]);
-            let paths = env.runtimepath.split(',');
-            let dirs = paths.filter(p => {
-                if (env.colorscheme) {
-                    let schemeFile = path_1.default.join(p, `colors/${env.colorscheme}.vim`);
-                    if (fs_1.default.existsSync(schemeFile))
-                        return true;
-                }
-                if (fs_1.default.existsSync(path_1.default.join(p, 'syntax')))
-                    return true;
-                if (fs_1.default.existsSync(path_1.default.join(p, 'after/syntax')))
-                    return true;
-                return false;
-            });
-            env.runtimepath = dirs.join(',');
-        }
-        let proc = cp.spawn('nvim', ['-u', 'NORC', '-i', 'NONE', '--embed', uuid()], {
-            shell: false,
-            cwd: os_1.default.tmpdir(),
-            env: lodash_1.omit(process.env, ['NVIM_LISTEN_ADDRESS'])
-        });
-        let timer;
-        let exited = false;
-        const exit = () => {
-            if (exited)
-                return;
-            exited = true;
-            if (timer)
-                clearTimeout(timer);
-            if (nvim) {
-                nvim.command('qa!').catch(() => {
-                    let killed = processes_1.terminate(proc);
-                    if (!killed) {
-                        setTimeout(() => {
-                            processes_1.terminate(proc);
-                        }, 50);
-                    }
-                });
-            }
-        };
-        try {
-            proc.once('exit', () => {
-                if (exited)
-                    return;
-                logger.info('highlight nvim exited.');
-                resolve([]);
-            });
-            timer = setTimeout(() => {
-                exit();
-                resolve([]);
-            }, 500);
-            nvim = neovim_1.attach({ proc }, null, false);
-            const callback = (method, args) => {
-                if (method == 'redraw') {
-                    for (let arr of args) {
-                        let [name, ...list] = arr;
-                        if (name == 'hl_attr_define') {
-                            for (let item of list) {
-                                let id = item[0];
-                                let { hi_name } = item[item.length - 1][0];
-                                hlMap.set(id, hi_name);
-                            }
-                        }
-                        if (name == 'grid_line') {
-                            // logger.debug('list:', JSON.stringify(list, null, 2))
-                            for (let def of list) {
-                                let [, line, col, cells] = def;
-                                if (line >= lines.length)
-                                    continue;
-                                let colStart = 0;
-                                let hlGroup = '';
-                                let currId = 0;
-                                // tslint:disable-next-line: prefer-for-of
-                                for (let i = 0; i < cells.length; i++) {
-                                    let cell = cells[i];
-                                    let [ch, hlId, repeat] = cell;
-                                    repeat = repeat || 1;
-                                    let len = string_1.byteLength(ch.repeat(repeat));
-                                    // append result
-                                    if (hlId == 0 || (hlId > 0 && hlId != currId)) {
-                                        if (hlGroup) {
-                                            res.push({
-                                                line,
-                                                hlGroup,
-                                                colStart: colStart + 1,
-                                                colEnd: col + 1,
-                                                isMarkdown: filetype == 'markdown'
-                                            });
-                                        }
-                                        colStart = col;
-                                        hlGroup = hlId == 0 ? '' : hlMap.get(hlId);
-                                    }
-                                    if (hlId != null)
-                                        currId = hlId;
-                                    col = col + len;
-                                }
-                                if (hlGroup) {
-                                    res.push({
-                                        hlGroup,
-                                        line,
-                                        colStart: colStart + 1,
-                                        colEnd: col + 1,
-                                        isMarkdown: filetype == 'markdown'
-                                    });
-                                }
-                            }
-                            cache[id] = res;
-                            exit();
-                            resolve(res);
-                        }
-                    }
-                }
-            };
-            nvim.on('notification', callback);
-            await nvim.callAtomic([
-                ['nvim_set_option', ['runtimepath', env.runtimepath]],
-                ['nvim_command', [`runtime syntax/${filetype}.vim`]],
-                ['nvim_command', [`colorscheme ${env.colorscheme || 'default'}`]],
-                ['nvim_command', [`set background=${env.background}`]],
-                ['nvim_command', ['set nowrap']],
-                ['nvim_command', ['set noswapfile']],
-                ['nvim_command', ['set nobackup']],
-                ['nvim_command', ['set noshowmode']],
-                ['nvim_command', ['set noruler']],
-                ['nvim_command', ['set laststatus=0']],
-            ]);
-            let buf = await nvim.buffer;
-            await buf.setLines(lines.map(s => s.slice(1)), { start: 0, end: -1, strictIndexing: false });
-            await buf.setOption('filetype', filetype);
-            await nvim.uiAttach(200, lines.length + 1, {
-                ext_hlstate: true,
-                ext_linegrid: true
-            });
-        }
-        catch (e) {
-            logger.error(e);
-            exit();
-            resolve([]);
-        }
-    });
-}
-exports.getHiglights = getHiglights;
-//# sourceMappingURL=highlight.js.map
-
-/***/ }),
-/* 260 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-const cp = tslib_1.__importStar(__webpack_require__(169));
-const path_1 = __webpack_require__(56);
-const isWebpack = typeof __webpack_require__ === "function";
-const isWindows = process.platform === 'win32';
-const isMacintosh = process.platform === 'darwin';
-const isLinux = process.platform === 'linux';
-const pluginRoot = isWebpack ? path_1.dirname(__dirname) : path_1.resolve(__dirname, '../..');
-function terminate(process, cwd) {
-    if (isWindows) {
-        try {
-            // This we run in Atom execFileSync is available.
-            // Ignore stderr since this is otherwise piped to parent.stderr
-            // which might be already closed.
-            let options = {
-                stdio: ['pipe', 'pipe', 'ignore']
-            };
-            if (cwd) {
-                options.cwd = cwd;
-            }
-            cp.execFileSync('taskkill', ['/T', '/F', '/PID', process.pid.toString()], options);
-            return true;
-        }
-        catch (err) {
-            return false;
-        }
-    }
-    else if (isLinux || isMacintosh) {
-        try {
-            let cmd = path_1.join(pluginRoot, 'bin/terminateProcess.sh');
-            let result = cp.spawnSync(cmd, [process.pid.toString()]);
-            return result.error ? false : true;
-        }
-        catch (err) {
-            return false;
-        }
-    }
-    else {
-        process.kill('SIGKILL');
-        return true;
-    }
-}
-exports.terminate = terminate;
-//# sourceMappingURL=processes.js.map
-
-/***/ }),
-/* 261 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var rng = __webpack_require__(220);
-var bytesToUuid = __webpack_require__(221);
-
-function v4(options, buf, offset) {
-  var i = buf && offset || 0;
-
-  if (typeof(options) == 'string') {
-    buf = options === 'binary' ? new Array(16) : null;
-    options = null;
-  }
-  options = options || {};
-
-  var rnds = options.random || (options.rng || rng)();
-
-  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-  rnds[6] = (rnds[6] & 0x0f) | 0x40;
-  rnds[8] = (rnds[8] & 0x3f) | 0x80;
-
-  // Copy bytes to buffer, if provided
-  if (buf) {
-    for (var ii = 0; ii < 16; ++ii) {
-      buf[i + ii] = rnds[ii];
-    }
-  }
-
-  return buf || bytesToUuid(rnds);
-}
-
-module.exports = v4;
-
-
-/***/ }),
-/* 262 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const callSequence_1 = tslib_1.__importDefault(__webpack_require__(263));
-const object_1 = __webpack_require__(189);
-const string_1 = __webpack_require__(210);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const util_1 = __webpack_require__(264);
-const logger = __webpack_require__(179)('diagnostic-buffer');
-const severityNames = ['CocError', 'CocWarning', 'CocInfo', 'CocHint'];
-const STARTMATCHID = 1090;
-// maintains sign and highlightId
-class DiagnosticBuffer {
-    constructor(doc, config) {
-        this.config = config;
-        this.matchIds = new Set();
-        this.signIds = new Set();
-        this.sequence = null;
-        this.matchId = STARTMATCHID;
-        this._onDidRefresh = new vscode_languageserver_protocol_1.Emitter();
-        this.diagnostics = [];
-        this.onDidRefresh = this._onDidRefresh.event;
-        this.bufnr = doc.bufnr;
-        this.uri = doc.uri;
-        let timer = null;
-        let time = Date.now();
-        this.refresh = (diagnostics) => {
-            time = Date.now();
-            if (timer)
-                clearTimeout(timer);
-            timer = setTimeout(async () => {
-                let current = time;
-                if (this.sequence) {
-                    await this.sequence.cancel();
-                }
-                // staled
-                if (current != time)
-                    return;
-                this._refresh(diagnostics);
-            }, global.hasOwnProperty('__TEST__') ? 30 : 50);
-        };
-    }
-    get nvim() {
-        return workspace_1.default.nvim;
-    }
-    _refresh(diagnostics) {
-        if (object_1.equals(this.diagnostics, diagnostics))
-            return;
-        let sequence = this.sequence = new callSequence_1.default();
-        let winid;
-        sequence.addFunction(async () => {
-            let valid = await this.nvim.call('coc#util#valid_state');
-            return valid ? false : true;
-        });
-        sequence.addFunction(async () => {
-            let { nvim, bufnr } = this;
-            winid = await nvim.call('bufwinid', bufnr);
-        });
-        sequence.addFunction(async () => {
-            this.nvim.pauseNotification();
-            this.setDiagnosticInfo(diagnostics);
-            this.addDiagnosticVText(diagnostics);
-            this.setLocationlist(diagnostics, winid);
-            this.addSigns(diagnostics);
-            this.addHighlight(diagnostics, winid);
-            await this.nvim.resumeNotification();
-        });
-        sequence.start().then(async (canceled) => {
-            if (!canceled) {
-                this.diagnostics = diagnostics;
-                this._onDidRefresh.fire(void 0);
-            }
-        }, e => {
-            logger.error(e);
-        });
-    }
-    setLocationlist(diagnostics, winid) {
-        if (!this.config.locationlist)
-            return;
-        let { nvim, bufnr } = this;
-        // not shown
-        if (winid == -1)
-            return;
-        let items = [];
-        for (let diagnostic of diagnostics) {
-            let item = util_1.getLocationListItem(diagnostic.source, bufnr, diagnostic);
-            items.push(item);
-        }
-        nvim.call('setloclist', [winid, [], ' ', { title: 'Diagnostics of coc', items }], true);
-    }
-    clearSigns() {
-        let { nvim, signIds, bufnr } = this;
-        if (signIds.size > 0) {
-            nvim.call('coc#util#unplace_signs', [bufnr, Array.from(signIds)], true);
-            signIds.clear();
-        }
-    }
-    async checkSigns() {
-        let { nvim, bufnr, signIds } = this;
-        try {
-            let content = await this.nvim.call('execute', [`sign place buffer=${bufnr}`]);
-            let lines = content.split('\n');
-            let ids = [];
-            for (let line of lines) {
-                let ms = line.match(/^\s*line=\d+\s+id=(\d+)\s+name=(\w+)/);
-                if (!ms)
-                    continue;
-                let [, id, name] = ms;
-                if (!signIds.has(Number(id)) && severityNames.indexOf(name) != -1) {
-                    ids.push(id);
-                }
-            }
-            await nvim.call('coc#util#unplace_signs', [bufnr, ids]);
-        }
-        catch (e) {
-            // noop
-        }
-    }
-    addSigns(diagnostics) {
-        if (!this.config.enableSign)
-            return;
-        this.clearSigns();
-        let { nvim, bufnr, signIds } = this;
-        let signId = this.config.signOffset;
-        signIds.clear();
-        let lines = new Set();
-        for (let diagnostic of diagnostics) {
-            let { range, severity } = diagnostic;
-            let line = range.start.line;
-            if (lines.has(line))
-                continue;
-            lines.add(line);
-            let name = util_1.getNameFromSeverity(severity);
-            nvim.command(`sign place ${signId} line=${line + 1} name=${name} buffer=${bufnr}`, true);
-            signIds.add(signId);
-            signId = signId + 1;
-        }
-    }
-    setDiagnosticInfo(diagnostics) {
-        let info = { error: 0, warning: 0, information: 0, hint: 0 };
-        for (let diagnostic of diagnostics) {
-            switch (diagnostic.severity) {
-                case vscode_languageserver_protocol_1.DiagnosticSeverity.Warning:
-                    info.warning = info.warning + 1;
-                    break;
-                case vscode_languageserver_protocol_1.DiagnosticSeverity.Information:
-                    info.information = info.information + 1;
-                    break;
-                case vscode_languageserver_protocol_1.DiagnosticSeverity.Hint:
-                    info.hint = info.hint + 1;
-                    break;
-                default:
-                    info.error = info.error + 1;
-            }
-        }
-        let buffer = this.nvim.createBuffer(this.bufnr);
-        buffer.setVar('coc_diagnostic_info', info, true);
-        if (!workspace_1.default.getDocument(this.bufnr))
-            return;
-        if (workspace_1.default.bufnr == this.bufnr)
-            this.nvim.command('redraws', true);
-        this.nvim.command('silent doautocmd User CocDiagnosticChange', true);
-    }
-    addDiagnosticVText(diagnostics) {
-        let { bufnr, nvim } = this;
-        if (!this.config.virtualText)
-            return;
-        if (!nvim.hasFunction('nvim_buf_set_virtual_text'))
-            return;
-        let buffer = this.nvim.createBuffer(bufnr);
-        let lines = new Set();
-        let srcId = this.config.virtualTextSrcId;
-        let prefix = this.config.virtualTextPrefix;
-        buffer.clearNamespace(srcId);
-        for (let diagnostic of diagnostics) {
-            let { line } = diagnostic.range.start;
-            if (lines.has(line))
-                continue;
-            lines.add(line);
-            let highlight = util_1.getNameFromSeverity(diagnostic.severity) + 'Sign';
-            let msg = diagnostic.message.split(/\n/)
-                .map((l) => l.trim())
-                .filter((l) => l.length > 0)
-                .slice(0, this.config.virtualTextLines)
-                .join(this.config.virtualTextLineSeparator);
-            buffer.setVirtualText(srcId, line, [[prefix + msg, highlight]], {}).catch(_e => {
-                // noop
-            });
-        }
-    }
-    clearHighlight() {
-        let { bufnr, nvim, matchIds } = this;
-        if (workspace_1.default.isVim) {
-            nvim.call('coc#util#clearmatches', [Array.from(matchIds)], true);
-            this.matchId = STARTMATCHID;
-        }
-        else {
-            let buffer = nvim.createBuffer(bufnr);
-            if (this.nvim.hasFunction('nvim_create_namespace')) {
-                buffer.clearNamespace(this.config.srcId);
-            }
-            else {
-                buffer.clearHighlight({ srcId: this.config.srcId });
-            }
-        }
-        this.matchIds.clear();
-    }
-    addHighlight(diagnostics, winid) {
-        this.clearHighlight();
-        if (diagnostics.length == 0)
-            return;
-        if (winid == -1 && workspace_1.default.isVim)
-            return;
-        for (let diagnostic of diagnostics.slice().reverse()) {
-            let { range, severity } = diagnostic;
-            if (workspace_1.default.isVim) {
-                this.addHighlightVim(winid, range, severity);
-            }
-            else {
-                this.addHighlightNvim(range, severity);
-            }
-        }
-    }
-    addHighlightNvim(range, severity) {
-        let { srcId } = this.config;
-        let { start, end } = range;
-        let document = workspace_1.default.getDocument(this.bufnr);
-        if (!document)
-            return;
-        let { buffer } = document;
-        for (let i = start.line; i <= end.line; i++) {
-            let line = document.getline(i);
-            if (!line || !line.length)
-                continue;
-            let s = i == start.line ? start.character : 0;
-            let e = i == end.line ? end.character : -1;
-            buffer.addHighlight({
-                srcId,
-                hlGroup: util_1.getNameFromSeverity(severity) + 'Highlight',
-                line: i,
-                colStart: s == 0 ? 0 : string_1.byteIndex(line, s),
-                colEnd: e == -1 ? -1 : string_1.byteIndex(line, e),
-            }).catch(_e => {
-                // noop
-            });
-        }
-        this.matchIds.add(srcId);
-    }
-    addHighlightVim(winid, range, severity) {
-        let { start, end } = range;
-        let { matchIds } = this;
-        let document = workspace_1.default.getDocument(this.bufnr);
-        if (!document)
-            return;
-        try {
-            let list = [];
-            for (let i = start.line; i <= end.line; i++) {
-                let line = document.getline(i);
-                if (!line || !line.length)
-                    continue;
-                if (list.length == 8)
-                    break;
-                if (i == start.line && i == end.line) {
-                    let s = string_1.byteIndex(line, start.character) + 1;
-                    let e = string_1.byteIndex(line, end.character) + 1;
-                    list.push([i + 1, s, e - s]);
-                }
-                else if (i == start.line) {
-                    let s = string_1.byteIndex(line, start.character) + 1;
-                    let l = string_1.byteLength(line);
-                    list.push([i + 1, s, l - s + 1]);
-                }
-                else if (i == end.line) {
-                    let e = string_1.byteIndex(line, end.character) + 1;
-                    list.push([i + 1, 0, e]);
-                }
-                else {
-                    list.push(i + 1);
-                }
-            }
-            this.nvim.callTimer('matchaddpos', [util_1.getNameFromSeverity(severity) + 'highlight', list, 99, this.matchId, { window: winid }], true);
-            matchIds.add(this.matchId);
-            this.matchId = this.matchId + 1;
-        }
-        catch (e) {
-            logger.error(e.stack);
-        }
-    }
-    /**
-     * Used on buffer unload
-     *
-     * @public
-     * @returns {Promise<void>}
-     */
-    async clear() {
-        if (this.sequence)
-            await this.sequence.cancel();
-        this.setDiagnosticInfo([]);
-        this.clearHighlight();
-        this.clearSigns();
-        // clear locationlist
-        if (this.config.locationlist) {
-            let winid = await this.nvim.call('bufwinid', this.bufnr);
-            // not shown
-            if (winid == -1)
-                return;
-            let curr = await this.nvim.call('getloclist', [winid, { title: 1 }]);
-            if ((curr.title && curr.title.indexOf('Diagnostics of coc') != -1)) {
-                this.nvim.call('setloclist', [winid, [], 'f'], true);
-            }
-        }
-        if (this.config.virtualText) {
-            let buffer = this.nvim.createBuffer(this.bufnr);
-            buffer.clearNamespace(this.config.virtualTextSrcId);
-        }
-        this.nvim.command('silent doautocmd User CocDiagnosticChange', true);
-    }
-    hasMatch(match) {
-        return this.matchIds.has(match);
-    }
-    dispose() {
-        if (this.sequence) {
-            this.sequence.cancel().catch(_e => {
-                // noop
-            });
-        }
-        this._onDidRefresh.dispose();
-    }
-}
-exports.DiagnosticBuffer = DiagnosticBuffer;
-//# sourceMappingURL=buffer.js.map
-
-/***/ }),
-/* 263 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-class CallSequence {
-    constructor() {
-        this.funcs = new Set();
-        this._canceled = false;
-        this._resolved = false;
-    }
-    addFunction(fn) {
-        this.funcs.add(fn);
-    }
-    start() {
-        this.promise = new Promise(async (resolve, reject) => {
-            for (let fn of this.funcs) {
-                if (this._canceled)
-                    return resolve(true);
-                try {
-                    let cancel = await Promise.resolve(fn());
-                    if (cancel === true) {
-                        this._canceled = true;
-                        return resolve(true);
-                    }
-                }
-                catch (e) {
-                    reject(e);
-                }
-            }
-            this._resolved = true;
-            resolve(false);
-        });
-        return this.promise;
-    }
-    ready() {
-        return this.promise;
-    }
-    cancel() {
-        if (this._resolved)
-            return Promise.resolve(void 0);
-        if (this._canceled)
-            return this.promise;
-        this._canceled = true;
-        return this.promise;
-    }
-}
-exports.default = CallSequence;
-//# sourceMappingURL=callSequence.js.map
-
-/***/ }),
-/* 264 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-function getSeverityName(severity) {
-    switch (severity) {
-        case vscode_languageserver_protocol_1.DiagnosticSeverity.Error:
-            return 'Error';
-        case vscode_languageserver_protocol_1.DiagnosticSeverity.Warning:
-            return 'Warning';
-        case vscode_languageserver_protocol_1.DiagnosticSeverity.Information:
-            return 'Information';
-        case vscode_languageserver_protocol_1.DiagnosticSeverity.Hint:
-            return 'Hint';
-        default:
-            return 'Error';
-    }
-}
-exports.getSeverityName = getSeverityName;
-function getSeverityType(severity) {
-    switch (severity) {
-        case vscode_languageserver_protocol_1.DiagnosticSeverity.Error:
-            return 'E';
-        case vscode_languageserver_protocol_1.DiagnosticSeverity.Warning:
-            return 'W';
-        case vscode_languageserver_protocol_1.DiagnosticSeverity.Information:
-            return 'I';
-        case vscode_languageserver_protocol_1.DiagnosticSeverity.Hint:
-            return 'I';
-        default:
-            return 'Error';
-    }
-}
-exports.getSeverityType = getSeverityType;
-function severityLevel(level) {
-    switch (level) {
-        case 'hint':
-            return vscode_languageserver_protocol_1.DiagnosticSeverity.Hint;
-        case 'information':
-            return vscode_languageserver_protocol_1.DiagnosticSeverity.Information;
-        case 'warning':
-            return vscode_languageserver_protocol_1.DiagnosticSeverity.Warning;
-        case 'error':
-            return vscode_languageserver_protocol_1.DiagnosticSeverity.Error;
-        default:
-            return vscode_languageserver_protocol_1.DiagnosticSeverity.Hint;
-    }
-}
-exports.severityLevel = severityLevel;
-function getNameFromSeverity(severity) {
-    switch (severity) {
-        case vscode_languageserver_protocol_1.DiagnosticSeverity.Error:
-            return 'CocError';
-        case vscode_languageserver_protocol_1.DiagnosticSeverity.Warning:
-            return 'CocWarning';
-        case vscode_languageserver_protocol_1.DiagnosticSeverity.Information:
-            return 'CocInfo';
-        case vscode_languageserver_protocol_1.DiagnosticSeverity.Hint:
-            return 'CocHint';
-        default:
-            return 'CocError';
-    }
-}
-exports.getNameFromSeverity = getNameFromSeverity;
-function getLocationListItem(owner, bufnr, diagnostic) {
-    let { start } = diagnostic.range;
-    let msg = diagnostic.message.split('\n')[0];
-    let type = getSeverityName(diagnostic.severity).slice(0, 1).toUpperCase();
-    return {
-        bufnr,
-        lnum: start.line + 1,
-        col: start.character + 1,
-        text: `[${owner}${diagnostic.code ? ' ' + diagnostic.code : ''}] ${msg} [${type}]`,
-        type
-    };
-}
-exports.getLocationListItem = getLocationListItem;
-//# sourceMappingURL=util.js.map
-
-/***/ }),
-/* 265 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const position_1 = __webpack_require__(229);
-const logger = __webpack_require__(179)('diagnostic-collection');
-class Collection {
-    constructor(owner) {
-        this.diagnosticsMap = new Map();
-        this._onDispose = new vscode_languageserver_protocol_1.Emitter();
-        this._onDidDiagnosticsChange = new vscode_languageserver_protocol_1.Emitter();
-        this._onDidDiagnosticsClear = new vscode_languageserver_protocol_1.Emitter();
-        this.onDispose = this._onDispose.event;
-        this.onDidDiagnosticsChange = this._onDidDiagnosticsChange.event;
-        this.onDidDiagnosticsClear = this._onDidDiagnosticsClear.event;
-        this.name = owner;
-    }
-    set(entries, diagnostics) {
-        if (Array.isArray(entries)) {
-            let map = new Map();
-            for (let item of entries) {
-                let [file, diagnostics] = item;
-                let exists = map.get(file) || [];
-                if (diagnostics != null) {
-                    for (let diagnostic of diagnostics) {
-                        exists.push(diagnostic);
-                    }
-                }
-                else {
-                    exists = [];
-                }
-                map.set(file, exists);
-            }
-            for (let key of map.keys()) {
-                this.set(key, map.get(key));
-            }
-            return;
-        }
-        let uri = entries;
-        uri = vscode_uri_1.default.parse(uri).toString();
-        if (diagnostics) {
-            diagnostics.forEach(o => {
-                if (position_1.emptyRange(o.range)) {
-                    o.range.end = {
-                        line: o.range.end.line,
-                        character: o.range.end.character + 1
-                    };
-                }
-                o.source = o.source || this.name;
-            });
-        }
-        this.diagnosticsMap.set(uri, diagnostics || []);
-        this._onDidDiagnosticsChange.fire(uri);
-        return;
-    }
-    delete(uri) {
-        this.diagnosticsMap.delete(uri);
-        this._onDidDiagnosticsChange.fire(uri);
-    }
-    clear() {
-        let uris = Array.from(this.diagnosticsMap.keys());
-        this.diagnosticsMap.clear();
-        this._onDidDiagnosticsClear.fire(uris);
-    }
-    forEach(callback, thisArg) {
-        for (let uri of this.diagnosticsMap.keys()) {
-            let diagnostics = this.diagnosticsMap.get(uri);
-            callback.call(thisArg, uri, diagnostics, this);
-        }
-    }
-    get(uri) {
-        let arr = this.diagnosticsMap.get(uri);
-        return arr == null ? [] : arr;
-    }
-    has(uri) {
-        return this.diagnosticsMap.has(uri);
-    }
-    dispose() {
-        this.clear();
-        this._onDispose.fire(void 0);
-        this._onDispose.dispose();
-        this._onDidDiagnosticsClear.dispose();
-        this._onDidDiagnosticsChange.dispose();
-    }
-}
-exports.default = Collection;
-//# sourceMappingURL=collection.js.map
-
-/***/ }),
-/* 266 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-const logger = __webpack_require__(179)('codeActionManager');
-class CodeActionManager extends manager_1.default {
-    register(selector, provider, clientId, codeActionKinds) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider,
-            kinds: codeActionKinds,
-            clientId
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideCodeActions(document, range, context, token) {
-        let providers = this.getProviders(document);
-        if (!providers.length)
-            return null;
-        if (context.only) {
-            let { only } = context;
-            providers = providers.filter(p => {
-                if (p.kinds && !p.kinds.some(kind => only.indexOf(kind) != -1)) {
-                    return false;
-                }
-                return true;
-            });
-        }
-        let res = new Map();
-        await Promise.all(providers.map(item => {
-            let { provider, clientId } = item;
-            clientId = clientId || uuid();
-            return Promise.resolve(provider.provideCodeActions(document, range, context, token)).then(actions => {
-                if (!actions || actions.length == 0)
-                    return;
-                let codeActions = res.get(clientId) || [];
-                for (let action of actions) {
-                    if (vscode_languageserver_protocol_1.Command.is(action)) {
-                        codeActions.push(vscode_languageserver_protocol_1.CodeAction.create(action.title, action));
-                    }
-                    else {
-                        let idx = codeActions.findIndex(o => o.title == action.title);
-                        if (idx == -1)
-                            codeActions.push(action);
-                    }
-                }
-                res.set(clientId, codeActions);
-            });
-        }));
-        return res;
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = CodeActionManager;
-//# sourceMappingURL=codeActionmanager.js.map
-
-/***/ }),
-/* 267 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)('provider-manager');
-class Manager {
-    constructor() {
-        this.providers = new Set();
-    }
-    hasProvider(document) {
-        return this.getProvider(document) != null;
-    }
-    getProvider(document) {
-        let currScore = 0;
-        let providerItem;
-        for (let item of this.providers) {
-            let { selector, priority } = item;
-            let score = workspace_1.default.match(selector, document);
-            if (score == 0)
-                continue;
-            if (typeof priority == 'number') {
-                score = priority;
-            }
-            if (score < currScore)
-                continue;
-            currScore = score;
-            providerItem = item;
-        }
-        return providerItem;
-    }
-    poviderById(id) {
-        let item = Array.from(this.providers).find(o => o.id == id);
-        return item ? item.provider : null;
-    }
-    getProviders(document) {
-        let items = Array.from(this.providers);
-        items = items.filter(item => {
-            return workspace_1.default.match(item.selector, document) > 0;
-        });
-        return items.sort((a, b) => {
-            return workspace_1.default.match(b.selector, document) - workspace_1.default.match(a.selector, document);
-        });
-    }
-    mergeDefinitions(arr) {
-        let res = [];
-        for (let def of arr) {
-            if (!def)
-                continue;
-            if (vscode_languageserver_protocol_1.Location.is(def)) {
-                let { uri, range } = def;
-                let idx = res.findIndex(l => l.uri == uri && l.range.start.line == range.start.line);
-                if (idx == -1) {
-                    res.push(def);
-                }
-            }
-            else if (Array.isArray(def)) {
-                for (let d of def) {
-                    let { uri, range } = d;
-                    let idx = res.findIndex(l => l.uri == uri && l.range.start.line == range.start.line);
-                    if (idx == -1) {
-                        res.push(d);
-                    }
-                }
-            }
-            else {
-                workspace_1.default.showMessage(`Bad definition ${JSON.stringify(def)}`, 'error');
-            }
-        }
-        return res;
-    }
-}
-exports.default = Manager;
-//# sourceMappingURL=manager.js.map
-
-/***/ }),
-/* 268 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class SelectionRangeManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideSelectionRanges(document, positions, token) {
-        let item = this.getProvider(document);
-        if (!item)
-            return null;
-        let { provider } = item;
-        return await Promise.resolve(provider.provideSelectionRanges(document, positions, token));
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = SelectionRangeManager;
-//# sourceMappingURL=rangeManager.js.map
-
-/***/ }),
-/* 269 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-const lodash_1 = __webpack_require__(252);
-// const logger = require('../util/logger')('codeActionManager')
-class CodeLensManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideCodeLenses(document, token) {
-        let providers = this.getProviders(document);
-        if (!providers.length)
-            return null;
-        let arr = await Promise.all(providers.map(item => {
-            let { provider, id } = item;
-            return Promise.resolve(provider.provideCodeLenses(document, token)).then(res => {
-                if (Array.isArray(res)) {
-                    for (let item of res) {
-                        item.source = id;
-                    }
-                }
-                return res || [];
-            });
-        }));
-        return [].concat(...arr);
-    }
-    async resolveCodeLens(codeLens, token) {
-        // no need to resolve
-        if (codeLens.command)
-            return codeLens;
-        let { source } = codeLens;
-        let provider = this.poviderById(source);
-        if (!provider || typeof provider.resolveCodeLens != 'function') {
-            // tslint:disable-next-line:no-console
-            console.error(`CodeLens Resolve not supported`);
-            return codeLens;
-        }
-        let res = await Promise.resolve(provider.resolveCodeLens(lodash_1.omit(codeLens, ['source']), token));
-        Object.assign(codeLens, res);
-        return codeLens;
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = CodeLensManager;
-//# sourceMappingURL=codeLensManager.js.map
-
-/***/ }),
-/* 270 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-const logger = __webpack_require__(179)('definitionManager');
-class DeclarationManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideDeclaration(document, position, token) {
-        let item = this.getProvider(document);
-        if (!item)
-            return null;
-        let { provider } = item;
-        return await Promise.resolve(provider.provideDeclaration(document, position, token));
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = DeclarationManager;
-//# sourceMappingURL=declarationManager.js.map
-
-/***/ }),
-/* 271 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-const logger = __webpack_require__(179)('definitionManager');
-class DefinitionManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideDefinition(document, position, token) {
-        let providers = this.getProviders(document);
-        if (!providers.length)
-            return null;
-        let arr = await Promise.all(providers.map(item => {
-            let { provider } = item;
-            return Promise.resolve(provider.provideDefinition(document, position, token));
-        }));
-        return this.mergeDefinitions(arr);
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = DefinitionManager;
-//# sourceMappingURL=definitionManager.js.map
-
-/***/ }),
-/* 272 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class DocumentColorManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideDocumentColors(document, token) {
-        let item = this.getProvider(document);
-        if (!item)
-            return null;
-        let { provider } = item;
-        let res = await Promise.resolve(provider.provideDocumentColors(document, token));
-        return res;
-    }
-    async provideColorPresentations(colorInformation, document, token) {
-        let { range, color } = colorInformation;
-        let item = this.getProvider(document);
-        if (!item)
-            return null;
-        let { provider } = item;
-        let res = await Promise.resolve(provider.provideColorPresentations(color, { document, range }, token));
-        return res;
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = DocumentColorManager;
-//# sourceMappingURL=documentColorManager.js.map
-
-/***/ }),
-/* 273 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class DocumentHighlightManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideDocumentHighlights(document, position, token) {
-        let item = this.getProvider(document);
-        if (!item)
-            return null;
-        let { provider } = item;
-        return await Promise.resolve(provider.provideDocumentHighlights(document, position, token));
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = DocumentHighlightManager;
-//# sourceMappingURL=documentHighlightManager.js.map
-
-/***/ }),
-/* 274 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class DocumentLinkManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async _provideDocumentLinks(item, document, token) {
-        let { provider, id } = item;
-        let items = await Promise.resolve(provider.provideDocumentLinks(document, token));
-        if (!items || !items.length)
-            return [];
-        items.forEach(item => {
-            item.data = item.data || {};
-            item.data.source = id;
-        });
-        return items;
-    }
-    async provideDocumentLinks(document, token) {
-        let items = this.getProviders(document);
-        if (items.length == 0)
-            return [];
-        const arr = await Promise.all(items.map(item => {
-            return this._provideDocumentLinks(item, document, token);
-        }));
-        return [].concat(...arr);
-    }
-    async resolveDocumentLink(link, token) {
-        let { data } = link;
-        if (!data || !data.source)
-            return null;
-        for (let item of this.providers) {
-            if (item.id == data.source) {
-                let { provider } = item;
-                link = await Promise.resolve(provider.resolveDocumentLink(link, token));
-                return link;
-            }
-        }
-        return null;
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = DocumentLinkManager;
-//# sourceMappingURL=documentLinkManager.js.map
-
-/***/ }),
-/* 275 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class DocumentSymbolManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideDocumentSymbols(document, token) {
-        let item = this.getProvider(document);
-        if (!item)
-            return null;
-        let { provider } = item;
-        return (await Promise.resolve(provider.provideDocumentSymbols(document, token))) || [];
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = DocumentSymbolManager;
-//# sourceMappingURL=documentSymbolManager.js.map
-
-/***/ }),
-/* 276 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class FoldingRangeManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideFoldingRanges(document, context, token) {
-        let item = this.getProvider(document);
-        if (!item)
-            return null;
-        let { provider } = item;
-        return await Promise.resolve(provider.provideFoldingRanges(document, context, token));
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = FoldingRangeManager;
-//# sourceMappingURL=foldingRangeManager.js.map
-
-/***/ }),
-/* 277 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class FormatManager extends manager_1.default {
-    register(selector, provider, priority = 0) {
-        let item = {
-            id: uuid(),
-            selector,
-            priority,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideDocumentFormattingEdits(document, options, token) {
-        let item = this.getProvider(document);
-        if (!item)
-            return null;
-        let { provider } = item;
-        return await Promise.resolve(provider.provideDocumentFormattingEdits(document, options, token));
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = FormatManager;
-//# sourceMappingURL=formatManager.js.map
-
-/***/ }),
-/* 278 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class FormatRangeManager extends manager_1.default {
-    register(selector, provider, priority = 0) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider,
-            priority
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideDocumentRangeFormattingEdits(document, range, options, token) {
-        let item = this.getProvider(document);
-        if (!item)
-            return null;
-        let { provider } = item;
-        return await Promise.resolve(provider.provideDocumentRangeFormattingEdits(document, range, options, token));
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = FormatRangeManager;
-//# sourceMappingURL=formatRangeManager.js.map
-
-/***/ }),
-/* 279 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class HoverManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideHover(document, position, token) {
-        let items = this.getProviders(document);
-        if (items.length === 0)
-            return null;
-        let res = [];
-        for (let i = 0, len = items.length; i < len; i += 1) {
-            const item = items[i];
-            let hover = await Promise.resolve(item.provider.provideHover(document, position, token));
-            if (hover)
-                res.push(hover);
-        }
-        return res;
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = HoverManager;
-//# sourceMappingURL=hoverManager.js.map
-
-/***/ }),
-/* 280 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class ImplementationManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideReferences(document, position, token) {
-        let providers = this.getProviders(document);
-        if (!providers.length)
-            return null;
-        let arr = await Promise.all(providers.map(item => {
-            let { provider } = item;
-            return Promise.resolve(provider.provideImplementation(document, position, token));
-        }));
-        return this.mergeDefinitions(arr);
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = ImplementationManager;
-//# sourceMappingURL=implementatioinManager.js.map
-
-/***/ }),
-/* 281 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const string_1 = __webpack_require__(210);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)('onTypeFormatManager');
-class OnTypeFormatManager {
-    constructor() {
-        this.providers = new Set();
-    }
-    register(selector, provider, triggerCharacters) {
-        let item = {
-            triggerCharacters,
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    getProvider(document, triggerCharacter) {
-        for (let o of this.providers) {
-            let { triggerCharacters, selector } = o;
-            if (workspace_1.default.match(selector, document) > 0 && triggerCharacters.indexOf(triggerCharacter) > -1) {
-                return o.provider;
-            }
-        }
-        return null;
-    }
-    async onCharacterType(character, document, position, token) {
-        if (string_1.isWord(character))
-            return;
-        let provider = this.getProvider(document, character);
-        if (!provider)
-            return;
-        let formatOpts = await workspace_1.default.getFormatOptions(document.uri);
-        return await Promise.resolve(provider.provideOnTypeFormattingEdits(document, position, character, formatOpts, token));
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = OnTypeFormatManager;
-//# sourceMappingURL=onTypeFormatManager.js.map
-
-/***/ }),
-/* 282 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class ReferenceManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideReferences(document, position, context, token) {
-        let providers = this.getProviders(document);
-        if (!providers.length)
-            return null;
-        let arr = await Promise.all(providers.map(item => {
-            let { provider } = item;
-            return Promise.resolve(provider.provideReferences(document, position, context, token));
-        }));
-        return this.mergeDefinitions(arr);
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = ReferenceManager;
-//# sourceMappingURL=referenceManager.js.map
-
-/***/ }),
-/* 283 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class RenameManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideRenameEdits(document, position, newName, token) {
-        let item = this.getProvider(document);
-        if (!item)
-            return null;
-        let { provider } = item;
-        return await Promise.resolve(provider.provideRenameEdits(document, position, newName, token));
-    }
-    async prepareRename(document, position, token) {
-        let item = this.getProvider(document);
-        if (!item)
-            return null;
-        let { provider } = item;
-        if (provider.prepareRename == null)
-            return null;
-        let res = await Promise.resolve(provider.prepareRename(document, position, token));
-        // can not rename
-        if (res == null)
-            false;
-        return res;
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = RenameManager;
-//# sourceMappingURL=renameManager.js.map
-
-/***/ }),
-/* 284 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class SignatureManager extends manager_1.default {
-    register(selector, provider, triggerCharacters) {
-        let characters = triggerCharacters.reduce((p, c) => {
-            return p.concat(c.split(/\s*/g));
-        }, []);
-        let item = {
-            id: uuid(),
-            selector,
-            provider,
-            triggerCharacters: characters
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    shouldTrigger(document, triggerCharacter) {
-        let item = this.getProvider(document);
-        if (!item)
-            return false;
-        let { triggerCharacters } = item;
-        return triggerCharacters && triggerCharacters.indexOf(triggerCharacter) != -1;
-    }
-    async provideSignatureHelp(document, position, token) {
-        let item = this.getProvider(document);
-        if (!item)
-            return null;
-        let res = await Promise.resolve(item.provider.provideSignatureHelp(document, position, token));
-        if (res && res.signatures && res.signatures.length)
-            return res;
-        return null;
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = SignatureManager;
-//# sourceMappingURL=signatureManager.js.map
-
-/***/ }),
-/* 285 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class TypeDefinitionManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideTypeDefinition(document, position, token) {
-        let providers = this.getProviders(document);
-        if (!providers.length)
-            return null;
-        let arr = await Promise.all(providers.map(item => {
-            let { provider } = item;
-            return Promise.resolve(provider.provideTypeDefinition(document, position, token));
-        }));
-        return this.mergeDefinitions(arr);
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = TypeDefinitionManager;
-//# sourceMappingURL=typeDefinitionManager.js.map
-
-/***/ }),
-/* 286 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const manager_1 = tslib_1.__importDefault(__webpack_require__(267));
-const uuid = __webpack_require__(261);
-class WorkspaceSymbolManager extends manager_1.default {
-    register(selector, provider) {
-        let item = {
-            id: uuid(),
-            selector,
-            provider
-        };
-        this.providers.add(item);
-        return vscode_languageserver_protocol_1.Disposable.create(() => {
-            this.providers.delete(item);
-        });
-    }
-    async provideWorkspaceSymbols(document, query, token) {
-        let item = this.getProvider(document);
-        if (!item)
-            return null;
-        let { provider } = item;
-        let res = await Promise.resolve(provider.provideWorkspaceSymbols(query, token));
-        res = res || [];
-        for (let sym of res) {
-            sym.source = item.id;
-        }
-        return res;
-    }
-    async resolveWorkspaceSymbol(symbolInfo, token) {
-        let item = Array.from(this.providers).find(o => o.id == symbolInfo.source);
-        if (!item)
-            return;
-        let { provider } = item;
-        if (typeof provider.resolveWorkspaceSymbol != 'function') {
-            return Promise.resolve(symbolInfo);
-        }
-        return await Promise.resolve(provider.resolveWorkspaceSymbol(symbolInfo, token));
-    }
-    dispose() {
-        this.providers = new Set();
-    }
-}
-exports.default = WorkspaceSymbolManager;
-//# sourceMappingURL=workspaceSymbolsManager.js.map
-
-/***/ }),
-/* 287 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_languageserver_types_1 = __webpack_require__(155);
-const parser_1 = __webpack_require__(288);
-const string_1 = __webpack_require__(210);
-const logger = __webpack_require__(179)('util-complete');
-const invalidInsertCharacters = ['(', '<', '{', '[', '\r', '\n'];
-function getPosition(opt) {
-    let { line, linenr, colnr } = opt;
-    let part = string_1.byteSlice(line, 0, colnr - 1);
-    return {
-        line: linenr - 1,
-        character: part.length
-    };
-}
-exports.getPosition = getPosition;
-function getWord(item, opt) {
-    // tslint:disable-next-line: deprecation
-    let { label, data, insertTextFormat, insertText, textEdit } = item;
-    let word;
-    let newText;
-    if (data && data.word)
-        return data.word;
-    if (textEdit) {
-        let { range } = textEdit;
-        newText = textEdit.newText;
-        if (range && range.start.line == range.end.line) {
-            let { line, col, colnr } = opt;
-            let character = string_1.characterIndex(line, col);
-            if (range.start.character > character) {
-                let before = line.slice(character - range.start.character);
-                newText = before + newText;
-            }
-            else {
-                let start = line.slice(range.start.character, character);
-                if (start.length && newText.startsWith(start)) {
-                    newText = newText.slice(start.length);
-                }
-            }
-            character = string_1.characterIndex(line, colnr - 1);
-            if (range.end.character > character) {
-                let end = line.slice(character, range.end.character);
-                if (newText.endsWith(end)) {
-                    newText = newText.slice(0, -end.length);
-                }
-            }
-        }
-    }
-    else {
-        newText = insertText;
-    }
-    if (insertTextFormat == vscode_languageserver_types_1.InsertTextFormat.Snippet
-        && newText
-        && newText.indexOf('$') !== -1) {
-        let parser = new parser_1.SnippetParser();
-        let snippet = parser.text(newText);
-        word = snippet ? getValidWord(snippet, invalidInsertCharacters) : label;
-    }
-    else {
-        word = getValidWord(newText, invalidInsertCharacters) || label;
-    }
-    return word;
-}
-exports.getWord = getWord;
-function getDocumentation(item) {
-    let { documentation } = item;
-    if (!documentation)
-        return '';
-    if (typeof documentation === 'string')
-        return documentation;
-    return documentation.value;
-}
-exports.getDocumentation = getDocumentation;
-function completionKindString(kind, map, defaultValue = '') {
-    return map.get(kind) || defaultValue;
-}
-exports.completionKindString = completionKindString;
-function getSnippetDocumentation(languageId, body) {
-    languageId = languageId.replace(/react$/, '');
-    let str = body.replace(/\$\d+/g, '').replace(/\$\{\d+(?::([^{]+))?\}/, '$1');
-    str = '``` ' + languageId + '\n' + str + '\n' + '```';
-    return str;
-}
-exports.getSnippetDocumentation = getSnippetDocumentation;
-function getValidWord(text, invalidChars) {
-    if (!text)
-        return '';
-    for (let i = 0; i < text.length; i++) {
-        let c = text[i];
-        if (invalidChars.indexOf(c) !== -1) {
-            return text.slice(0, i);
-        }
-    }
-    return text;
-}
-exports.getValidWord = getValidWord;
-//# sourceMappingURL=complete.js.map
-
-/***/ }),
-/* 288 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-const logger = __webpack_require__(179)('snippets-parser');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const logger = __webpack_require__(182)('snippets-parser');
 class Scanner {
     constructor() {
         this.text('');
@@ -63183,18 +55485,16 @@ class TextmateSnippet extends Marker {
             return nums[1];
         return nums[0] || 0;
     }
-    insertSnippet(snippet, id, offset, insertFinal) {
+    insertSnippet(snippet, id, range) {
         let placeholder = this.placeholders[id];
         if (!placeholder)
             return;
         let { index } = placeholder;
-        let str = placeholder.toString();
-        if (!insertFinal)
-            snippet = snippet.replace(/\$0$/, '');
-        snippet = `${str.slice(0, offset)}${snippet}${offset == str.length ? '' : str.slice(offset - str.length)}`;
-        let nested = new SnippetParser().parse(snippet, insertFinal);
+        const document = vscode_languageserver_protocol_1.TextDocument.create('untitled:/1', 'snippet', 0, placeholder.toString());
+        snippet = vscode_languageserver_protocol_1.TextDocument.applyEdits(document, [{ range, newText: snippet.replace(/\$0$/, '') }]);
+        let nested = new SnippetParser().parse(snippet, false);
         let maxIndexAdded = nested.maxIndexNumber;
-        let totalAdd = maxIndexAdded + (insertFinal ? 1 : 0) - 1;
+        let totalAdd = maxIndexAdded + -1;
         for (let p of nested.placeholders) {
             if (p.isFinalTabstop) {
                 p.index = maxIndexAdded + index + 1;
@@ -63731,7 +56031,6041 @@ exports.SnippetParser = SnippetParser;
 //# sourceMappingURL=parser.js.map
 
 /***/ }),
-/* 289 */
+/* 237 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const completion_1 = tslib_1.__importDefault(__webpack_require__(238));
+const util_1 = __webpack_require__(171);
+const position_1 = __webpack_require__(231);
+const string_1 = __webpack_require__(212);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const snippet_1 = __webpack_require__(328);
+const variableResolve_1 = __webpack_require__(329);
+const logger = __webpack_require__(182)('snippets-session');
+class SnippetSession {
+    constructor(nvim, bufnr) {
+        this.nvim = nvim;
+        this.bufnr = bufnr;
+        this._isActive = false;
+        this._currId = 0;
+        // Get state of line where we inserted
+        this.version = 0;
+        this.preferComplete = false;
+        this._snippet = null;
+        this._onCancelEvent = new vscode_languageserver_protocol_1.Emitter();
+        this.onCancel = this._onCancelEvent.event;
+        let config = workspace_1.default.getConfiguration('coc.preferences');
+        let suggest = workspace_1.default.getConfiguration('suggest');
+        this.preferComplete = config.get('preferCompleteThanJumpPlaceholder', suggest.get('preferCompleteThanJumpPlaceholder', false));
+    }
+    async start(snippetString, select = true, range) {
+        const { document, nvim } = this;
+        if (!document)
+            return false;
+        if (!range) {
+            let position = await workspace_1.default.getCursorPosition();
+            range = vscode_languageserver_protocol_1.Range.create(position, position);
+        }
+        let position = range.start;
+        const formatOptions = await workspace_1.default.getFormatOptions(this.document.uri);
+        const currentLine = document.getline(position.line);
+        const currentIndent = currentLine.match(/^\s*/)[0];
+        let inserted = normalizeSnippetString(snippetString, currentIndent, formatOptions);
+        const resolver = new variableResolve_1.SnippetVariableResolver();
+        await resolver.init(document);
+        const snippet = new snippet_1.CocSnippet(inserted, position, resolver);
+        const edit = vscode_languageserver_protocol_1.TextEdit.replace(range, snippet.toString());
+        if (snippetString.endsWith('\n')
+            && currentLine.slice(position.character).length) {
+            // make next line same indent
+            edit.newText = edit.newText + currentIndent;
+            inserted = inserted + currentIndent;
+        }
+        if (snippet.isPlainText) {
+            // insert as text
+            await document.applyEdits(nvim, [edit]);
+            let placeholder = snippet.finalPlaceholder;
+            await workspace_1.default.moveTo(placeholder.range.start);
+            return this._isActive;
+        }
+        await document.patchChange();
+        document.forceSync();
+        this.version = document.version;
+        await document.applyEdits(nvim, [edit]);
+        if (this._isActive) {
+            // insert check
+            let placeholder = this.findPlaceholder(range);
+            // insert to placeholder
+            if (placeholder && !placeholder.isFinalTabstop) {
+                // don't repeat snippet insert
+                let index = this.snippet.insertSnippet(placeholder, inserted, range);
+                let p = this.snippet.getPlaceholder(index);
+                this._currId = p.id;
+                if (select)
+                    await this.selectPlaceholder(p);
+                return true;
+            }
+        }
+        // new snippet
+        this._snippet = snippet;
+        this._currId = snippet.firstPlaceholder.id;
+        if (select)
+            await this.selectPlaceholder(snippet.firstPlaceholder);
+        this.activate();
+        return true;
+    }
+    activate() {
+        if (this._isActive)
+            return;
+        this._isActive = true;
+        this.nvim.call('coc#snippet#enable', [], true);
+    }
+    deactivate() {
+        if (this._isActive) {
+            this._isActive = false;
+            this._snippet = null;
+            this.nvim.call('coc#snippet#disable', [], true);
+            logger.debug("[SnippetManager::cancel]");
+        }
+        this._onCancelEvent.fire(void 0);
+        this._onCancelEvent.dispose();
+    }
+    get isActive() {
+        return this._isActive;
+    }
+    async nextPlaceholder() {
+        await this.documentSynchronize();
+        if (!this.isActive)
+            return;
+        let curr = this.placeholder;
+        let next = this.snippet.getNextPlaceholder(curr.index);
+        await this.selectPlaceholder(next);
+    }
+    async previousPlaceholder() {
+        await this.documentSynchronize();
+        if (!this.isActive)
+            return;
+        let curr = this.placeholder;
+        let prev = this.snippet.getPrevPlaceholder(curr.index);
+        await this.selectPlaceholder(prev);
+    }
+    async synchronizeUpdatedPlaceholders(change) {
+        if (!this.isActive || !this.document || this.document.version - this.version == 1)
+            return;
+        let edit = { range: change.range, newText: change.text };
+        let { snippet } = this;
+        // change outside range
+        let adjusted = snippet.adjustTextEdit(edit);
+        if (adjusted)
+            return;
+        if (position_1.comparePosition(edit.range.start, snippet.range.end) > 0) {
+            if (!edit.newText)
+                return;
+            logger.info('Content add after snippet, cancelling snippet session');
+            this.deactivate();
+            return;
+        }
+        let placeholder = this.findPlaceholder(edit.range);
+        if (!placeholder) {
+            logger.info('Change outside placeholder, cancelling snippet session');
+            this.deactivate();
+            return;
+        }
+        if (placeholder.isFinalTabstop) {
+            logger.info('Change final placeholder, cancelling snippet session');
+            this.deactivate();
+            return;
+        }
+        this._currId = placeholder.id;
+        let { edits, delta } = snippet.updatePlaceholder(placeholder, edit);
+        if (!edits.length)
+            return;
+        this.version = this.document.version;
+        // let pos = await workspace.getCursorPosition()
+        await this.document.applyEdits(this.nvim, edits);
+        if (delta) {
+            await this.nvim.call('coc#util#move_cursor', delta);
+        }
+    }
+    async selectCurrentPlaceholder(triggerAutocmd = true) {
+        let placeholder = this.snippet.getPlaceholderById(this._currId);
+        if (placeholder)
+            await this.selectPlaceholder(placeholder, triggerAutocmd);
+    }
+    async selectPlaceholder(placeholder, triggerAutocmd = true) {
+        let { nvim, document } = this;
+        if (!document || !placeholder)
+            return;
+        let { start, end } = placeholder.range;
+        const len = end.character - start.character;
+        const col = string_1.byteLength(document.getline(start.line).slice(0, start.character)) + 1;
+        this._currId = placeholder.id;
+        if (placeholder.choice) {
+            await nvim.call('coc#snippet#show_choices', [start.line + 1, col, len, placeholder.choice]);
+        }
+        else {
+            await this.select(placeholder.range, placeholder.value, triggerAutocmd);
+        }
+    }
+    async select(range, text, triggerAutocmd = true) {
+        let { document, nvim } = this;
+        let { start, end } = range;
+        let { textDocument } = document;
+        let len = textDocument.offsetAt(end) - textDocument.offsetAt(start);
+        let line = document.getline(start.line);
+        let col = line ? string_1.byteLength(line.slice(0, start.character)) : 0;
+        let endLine = document.getline(end.line);
+        let endCol = endLine ? string_1.byteLength(endLine.slice(0, end.character)) : 0;
+        nvim.setVar('coc_last_placeholder', {
+            current_text: text,
+            start: { line: start.line, col },
+            end: { line: end.line, col: endCol }
+        }, true);
+        let [ve, selection, pumvisible, mode] = await nvim.eval('[&virtualedit, &selection, pumvisible(), mode()]');
+        let move_cmd = '';
+        if (pumvisible && this.preferComplete) {
+            let pre = completion_1.default.hasSelected() ? '' : '\\<C-n>';
+            await nvim.eval(`feedkeys("${pre}\\<C-y>", 'in')`);
+            return;
+        }
+        let resetVirtualEdit = false;
+        if (mode != 'n')
+            move_cmd += "\\<Esc>";
+        if (len == 0) {
+            if (col == 0 || (!mode.startsWith('i') && col < string_1.byteLength(line))) {
+                move_cmd += 'i';
+            }
+            else {
+                move_cmd += 'a';
+            }
+        }
+        else {
+            move_cmd += 'v';
+            endCol = await this.getVirtualCol(end.line + 1, endCol);
+            if (selection == 'inclusive') {
+                if (end.character == 0) {
+                    move_cmd += `${end.line}G`;
+                }
+                else {
+                    move_cmd += `${end.line + 1}G${endCol}|`;
+                }
+            }
+            else if (selection == 'old') {
+                move_cmd += `${end.line + 1}G${endCol}|`;
+            }
+            else {
+                move_cmd += `${end.line + 1}G${endCol + 1}|`;
+            }
+            col = await this.getVirtualCol(start.line + 1, col);
+            move_cmd += `o${start.line + 1}G${col + 1}|o\\<c-g>`;
+        }
+        nvim.pauseNotification();
+        if (ve != 'onemore') {
+            resetVirtualEdit = true;
+            nvim.setOption('virtualedit', 'onemore', true);
+        }
+        nvim.command(`noa call cursor(${start.line + 1},${col + (move_cmd == 'a' ? 0 : 1)})`, true);
+        nvim.call('eval', [`feedkeys("${move_cmd}", 'in')`], true);
+        if (resetVirtualEdit)
+            nvim.setOption('virtualedit', ve, true);
+        if (workspace_1.default.env.isVim)
+            nvim.command('redraw', true);
+        await nvim.resumeNotification();
+        if (triggerAutocmd)
+            nvim.command('silent doautocmd User CocJumpPlaceholder', true);
+    }
+    async getVirtualCol(line, col) {
+        let { nvim } = this;
+        return await nvim.eval(`virtcol([${line}, ${col}])`);
+    }
+    async documentSynchronize() {
+        if (!this.isActive)
+            return;
+        await this.document.patchChange();
+        this.document.forceSync();
+        await util_1.wait(50);
+    }
+    async checkPosition() {
+        if (!this.isActive)
+            return;
+        let position = await workspace_1.default.getCursorPosition();
+        if (this.snippet && position_1.positionInRange(position, this.snippet.range) != 0) {
+            logger.info('Cursor insert out of range, cancelling snippet session');
+            this.deactivate();
+        }
+    }
+    findPlaceholder(range) {
+        if (!this.snippet)
+            return null;
+        let { placeholder } = this;
+        if (position_1.rangeInRange(range, placeholder.range))
+            return placeholder;
+        return this.snippet.getPlaceholderByRange(range) || null;
+    }
+    get placeholder() {
+        if (!this.snippet)
+            return;
+        return this.snippet.getPlaceholderById(this._currId);
+    }
+    get snippet() {
+        return this._snippet;
+    }
+    get document() {
+        return workspace_1.default.getDocument(this.bufnr);
+    }
+}
+exports.SnippetSession = SnippetSession;
+function normalizeSnippetString(snippet, indent, opts) {
+    let lines = snippet.split(/\r?\n/);
+    let ind = opts.insertSpaces ? ' '.repeat(opts.tabSize) : '\t';
+    let tabSize = opts.tabSize || 2;
+    lines = lines.map((line, idx) => {
+        let space = line.match(/^\s*/)[0];
+        let pre = space;
+        let isTab = space.startsWith('\t');
+        if (isTab && opts.insertSpaces) {
+            pre = ind.repeat(space.length);
+        }
+        else if (!isTab && !opts.insertSpaces) {
+            pre = ind.repeat(space.length / tabSize);
+        }
+        return (idx == 0 || line.length == 0 ? '' : indent) + pre + line.slice(space.length);
+    });
+    return lines.join('\n');
+}
+exports.normalizeSnippetString = normalizeSnippetString;
+//# sourceMappingURL=session.js.map
+
+/***/ }),
+/* 238 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const debounce_1 = tslib_1.__importDefault(__webpack_require__(173));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const sources_1 = tslib_1.__importDefault(__webpack_require__(239));
+const util_1 = __webpack_require__(171);
+const string_1 = __webpack_require__(212);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const complete_1 = tslib_1.__importDefault(__webpack_require__(325));
+const floating_1 = tslib_1.__importDefault(__webpack_require__(327));
+const logger = __webpack_require__(182)('completion');
+const completeItemKeys = ['abbr', 'menu', 'info', 'kind', 'icase', 'dup', 'empty', 'user_data'];
+class Completion {
+    constructor() {
+        // current input string
+        this.activted = false;
+        this.disposables = [];
+        this.complete = null;
+        this.recentScores = {};
+        this.changedTick = 0;
+        this.insertCharTs = 0;
+        this.insertLeaveTs = 0;
+        // only used when no pum change event
+        this.isResolving = false;
+    }
+    init(nvim) {
+        this.nvim = nvim;
+        this.config = this.getCompleteConfig();
+        this.floating = new floating_1.default(nvim);
+        events_1.default.on('InsertCharPre', this.onInsertCharPre, this, this.disposables);
+        events_1.default.on('InsertLeave', this.onInsertLeave, this, this.disposables);
+        events_1.default.on('InsertEnter', this.onInsertEnter, this, this.disposables);
+        events_1.default.on('TextChangedP', this.onTextChangedP, this, this.disposables);
+        events_1.default.on('TextChangedI', this.onTextChangedI, this, this.disposables);
+        events_1.default.on('CompleteDone', this.onCompleteDone, this, this.disposables);
+        events_1.default.on('MenuPopupChanged', this.onPumChange, this, this.disposables);
+        events_1.default.on('CursorMovedI', debounce_1.default(async (bufnr, cursor) => {
+            // try trigger completion
+            let doc = workspace_1.default.getDocument(bufnr);
+            if (this.isActivted || !doc || cursor[1] == 1)
+                return;
+            let line = doc.getline(cursor[0] - 1);
+            if (!line)
+                return;
+            let { latestInsertChar } = this;
+            let pre = string_1.byteSlice(line, 0, cursor[1] - 1);
+            if (!latestInsertChar || !pre.endsWith(latestInsertChar))
+                return;
+            if (sources_1.default.shouldTrigger(pre, doc.filetype)) {
+                await this.triggerCompletion(doc, pre, false);
+            }
+        }, 20));
+        workspace_1.default.onDidChangeConfiguration(e => {
+            if (e.affectsConfiguration('suggest')) {
+                Object.assign(this.config, this.getCompleteConfig());
+            }
+        }, null, this.disposables);
+    }
+    get option() {
+        if (!this.complete)
+            return null;
+        return this.complete.option;
+    }
+    addRecent(word, bufnr) {
+        if (!word)
+            return;
+        this.recentScores[`${bufnr}|${word}`] = Date.now();
+    }
+    async getPreviousContent(document) {
+        let [, lnum, col] = await this.nvim.call('getcurpos');
+        if (this.option && lnum != this.option.linenr)
+            return null;
+        let line = document.getline(lnum - 1);
+        return col == 1 ? '' : string_1.byteSlice(line, 0, col - 1);
+    }
+    getResumeInput(pre) {
+        let { option, activted } = this;
+        if (!activted)
+            return null;
+        if (!pre)
+            return '';
+        let input = string_1.byteSlice(pre, option.col);
+        if (option.blacklist && option.blacklist.indexOf(input) !== -1)
+            return null;
+        return input;
+    }
+    get bufnr() {
+        let { option } = this;
+        return option ? option.bufnr : null;
+    }
+    get isActivted() {
+        return this.activted;
+    }
+    getCompleteConfig() {
+        let config = workspace_1.default.getConfiguration('coc.preferences');
+        let suggest = workspace_1.default.getConfiguration('suggest');
+        function getConfig(key, defaultValue) {
+            return config.get(key, suggest.get(key, defaultValue));
+        }
+        let keepCompleteopt = getConfig('keepCompleteopt', false);
+        let autoTrigger = getConfig('autoTrigger', 'always');
+        if (keepCompleteopt) {
+            let { completeOpt } = workspace_1.default;
+            if (!completeOpt.includes('noinsert') && !completeOpt.includes('noselect')) {
+                autoTrigger = 'none';
+            }
+        }
+        let acceptSuggestionOnCommitCharacter = workspace_1.default.env.pumevent && getConfig('acceptSuggestionOnCommitCharacter', false);
+        return {
+            autoTrigger,
+            keepCompleteopt,
+            disableMenuShortcut: getConfig('disableMenuShortcut', false),
+            acceptSuggestionOnCommitCharacter,
+            disableKind: getConfig('disableKind', false),
+            disableMenu: getConfig('disableMenu', false),
+            previewIsKeyword: getConfig('previewIsKeyword', '@,48-57,_192-255'),
+            enablePreview: getConfig('enablePreview', false),
+            maxPreviewWidth: getConfig('maxPreviewWidth', 50),
+            labelMaxLength: getConfig('labelMaxLength', 100),
+            triggerAfterInsertEnter: getConfig('triggerAfterInsertEnter', false),
+            noselect: getConfig('noselect', true),
+            numberSelect: getConfig('numberSelect', false),
+            maxItemCount: getConfig('maxCompleteItemCount', 50),
+            timeout: getConfig('timeout', 500),
+            minTriggerInputLength: getConfig('minTriggerInputLength', 1),
+            snippetIndicator: getConfig('snippetIndicator', '~'),
+            fixInsertedWord: getConfig('fixInsertedWord', true),
+            localityBonus: getConfig('localityBonus', true),
+            highPrioritySourceLimit: getConfig('highPrioritySourceLimit', null),
+            lowPrioritySourceLimit: getConfig('lowPrioritySourceLimit', null),
+        };
+    }
+    async startCompletion(option) {
+        workspace_1.default.bufnr = option.bufnr;
+        let document = workspace_1.default.getDocument(option.bufnr);
+        if (!document)
+            return;
+        // use fixed filetype
+        option.filetype = document.filetype;
+        this.document = document;
+        try {
+            await this._doComplete(option);
+        }
+        catch (e) {
+            this.stop();
+            workspace_1.default.showMessage(`Error happens on complete: ${e.message}`, 'error');
+            logger.error(e.stack);
+        }
+    }
+    async resumeCompletion(pre, search, force = false) {
+        let { document, complete, activted } = this;
+        if (!activted || !complete.results)
+            return;
+        if (search == this.input && !force)
+            return;
+        let last = search == null ? '' : search.slice(-1);
+        if (last.length == 0 ||
+            /\s/.test(last) ||
+            sources_1.default.shouldTrigger(pre, document.filetype) ||
+            search.length < complete.input.length) {
+            this.stop();
+            return;
+        }
+        let { changedtick } = document;
+        this.input = search;
+        let items;
+        if (complete.isIncomplete && document.chars.isKeywordChar(last)) {
+            await document.patchChange();
+            document.forceSync();
+            await util_1.wait(30);
+            if (document.changedtick != changedtick)
+                return;
+            items = await complete.completeInComplete(search);
+            if (document.changedtick != changedtick)
+                return;
+        }
+        else {
+            items = complete.filterResults(search);
+        }
+        if (!this.isActivted)
+            return;
+        if (!complete.isCompleting && (!items || items.length === 0)) {
+            this.stop();
+            return;
+        }
+        await this.showCompletion(this.option.col, items);
+    }
+    hasSelected() {
+        if (workspace_1.default.env.pumevent)
+            return this.currItem != null;
+        if (this.config.noselect === false)
+            return true;
+        return this.isResolving;
+    }
+    async showCompletion(col, items) {
+        let { nvim, document } = this;
+        let { numberSelect, disableKind, labelMaxLength, disableMenuShortcut, disableMenu } = this.config;
+        if (numberSelect) {
+            items = items.map((item, i) => {
+                let idx = i + 1;
+                if (i < 9) {
+                    return Object.assign({}, item, {
+                        abbr: item.abbr ? `${idx} ${item.abbr}` : `${idx} ${item.word}`
+                    });
+                }
+                return item;
+            });
+        }
+        this.changedTick = document.changedtick;
+        if (this.config.numberSelect) {
+            nvim.call('coc#_map', [], true);
+        }
+        let validKeys = completeItemKeys.slice();
+        if (disableKind)
+            validKeys = validKeys.filter(s => s != 'kind');
+        if (disableMenu)
+            validKeys = validKeys.filter(s => s != 'menu');
+        let vimItems = items.map(item => {
+            let obj = { word: item.word, equal: 1 };
+            for (let key of validKeys) {
+                if (item.hasOwnProperty(key)) {
+                    if (disableMenuShortcut && key == 'menu') {
+                        obj[key] = item[key].replace(/\[\w+\]$/, '');
+                    }
+                    else if (key == 'abbr' && item[key].length > labelMaxLength) {
+                        obj[key] = item[key].slice(0, labelMaxLength);
+                    }
+                    else {
+                        obj[key] = item[key];
+                    }
+                }
+            }
+            return obj;
+        });
+        nvim.call('coc#_do_complete', [col, vimItems], true);
+    }
+    async _doComplete(option) {
+        let { source } = option;
+        let { nvim, config, document } = this;
+        // current input
+        this.input = option.input;
+        let arr = [];
+        if (source == null) {
+            arr = sources_1.default.getCompleteSources(option);
+        }
+        else {
+            let s = sources_1.default.getSource(source);
+            if (s)
+                arr.push(s);
+        }
+        if (!arr.length)
+            return;
+        let complete = new complete_1.default(option, document, this.recentScores, config, arr, nvim);
+        this.start(complete);
+        let items = await this.complete.doComplete();
+        if (complete.isCanceled)
+            return;
+        if (items.length == 0 && !complete.isCompleting) {
+            this.stop();
+            return;
+        }
+        complete.onDidComplete(async () => {
+            let content = await this.getPreviousContent(document);
+            let search = this.getResumeInput(content);
+            if (complete.isCanceled)
+                return;
+            let hasSelected = this.hasSelected();
+            if (hasSelected && this.completeOpt.indexOf('noselect') !== -1)
+                return;
+            if (search == this.option.input) {
+                let items = complete.filterResults(search, Math.floor(Date.now() / 1000));
+                await this.showCompletion(option.col, items);
+                return;
+            }
+            await this.resumeCompletion(content, search, true);
+        });
+        if (items.length) {
+            let content = await this.getPreviousContent(document);
+            let search = this.getResumeInput(content);
+            if (complete.isCanceled)
+                return;
+            if (search == this.option.input) {
+                await this.showCompletion(option.col, items);
+                return;
+            }
+            await this.resumeCompletion(content, search, true);
+        }
+    }
+    async onTextChangedP() {
+        let { option, document } = this;
+        if (!option)
+            return;
+        await document.patchChange();
+        let hasInsert = this.latestInsert != null;
+        this.lastInsert = null;
+        // avoid trigger filter on pumvisible
+        if (document.changedtick == this.changedTick)
+            return;
+        let line = document.getline(option.linenr - 1);
+        let curr = line.match(/^\s*/)[0];
+        let ind = option.line.match(/^\s*/)[0];
+        // indent change
+        if (ind.length != curr.length) {
+            this.stop();
+            return;
+        }
+        if (!hasInsert) {
+            // this could be wrong, but can't avoid.
+            this.isResolving = true;
+            return;
+        }
+        let col = await this.nvim.call('col', '.');
+        let search = string_1.byteSlice(line, option.col, col - 1);
+        let pre = string_1.byteSlice(line, 0, col - 1);
+        if (sources_1.default.shouldTrigger(pre, document.filetype)) {
+            await this.triggerCompletion(document, pre, false);
+        }
+        else {
+            await this.resumeCompletion(pre, search);
+        }
+    }
+    async onTextChangedI(bufnr) {
+        let { nvim, latestInsertChar } = this;
+        this.lastInsert = null;
+        let document = workspace_1.default.getDocument(workspace_1.default.bufnr);
+        if (!document)
+            return;
+        await document.patchChange();
+        if (!this.isActivted) {
+            if (!latestInsertChar)
+                return;
+            let pre = await this.getPreviousContent(document);
+            await this.triggerCompletion(document, pre);
+            return;
+        }
+        if (bufnr !== this.bufnr)
+            return;
+        // check commit character
+        if (this.config.acceptSuggestionOnCommitCharacter
+            && this.currItem
+            && latestInsertChar
+            && !this.document.isWord(latestInsertChar)) {
+            let resolvedItem = this.getCompleteItem(this.currItem);
+            if (sources_1.default.shouldCommit(resolvedItem, latestInsertChar)) {
+                let { linenr, col, line, colnr } = this.option;
+                this.stop();
+                let { word } = resolvedItem;
+                let newLine = `${line.slice(0, col)}${word}${latestInsertChar}${line.slice(colnr - 1)}`;
+                await nvim.call('coc#util#setline', [linenr, newLine]);
+                let curcol = col + word.length + 2;
+                await nvim.call('cursor', [linenr, curcol]);
+                return;
+            }
+        }
+        let content = await this.getPreviousContent(document);
+        if (content == null) {
+            // cursor line changed
+            this.stop();
+            return;
+        }
+        // check trigger character
+        if (sources_1.default.shouldTrigger(content, document.filetype)) {
+            await this.triggerCompletion(document, content, false);
+            return;
+        }
+        if (!this.isActivted || this.complete.isEmpty)
+            return;
+        let search = content.slice(string_1.characterIndex(content, this.option.col));
+        return await this.resumeCompletion(content, search);
+    }
+    async triggerCompletion(document, pre, checkTrigger = true) {
+        // check trigger
+        if (checkTrigger) {
+            let shouldTrigger = await this.shouldTrigger(document, pre);
+            if (!shouldTrigger)
+                return;
+        }
+        let option = await this.nvim.call('coc#util#get_complete_option');
+        if (!option)
+            return;
+        option.triggerCharacter = pre.slice(-1);
+        logger.debug('trigger completion with', option);
+        await this.startCompletion(option);
+    }
+    async onCompleteDone(item) {
+        let { document } = this;
+        if (!this.isActivted || !document || !item.hasOwnProperty('word'))
+            return;
+        let opt = Object.assign({}, this.option);
+        let resolvedItem = this.getCompleteItem(item);
+        this.stop();
+        if (!resolvedItem)
+            return;
+        let timestamp = this.insertCharTs;
+        let insertLeaveTs = this.insertLeaveTs;
+        try {
+            await sources_1.default.doCompleteResolve(resolvedItem, (new vscode_languageserver_protocol_1.CancellationTokenSource()).token);
+            this.addRecent(resolvedItem.word, document.bufnr);
+            await util_1.wait(50);
+            if (this.insertCharTs != timestamp
+                || this.insertLeaveTs != insertLeaveTs)
+                return;
+            await document.patchChange();
+            let content = await this.getPreviousContent(document);
+            if (!content.endsWith(resolvedItem.word))
+                return;
+            await sources_1.default.doCompleteDone(resolvedItem, opt);
+            document.forceSync();
+        }
+        catch (e) {
+            // tslint:disable-next-line:no-console
+            console.error(e.stack);
+            logger.error(`error on complete done`, e.stack);
+        }
+    }
+    async onInsertLeave(bufnr) {
+        this.insertLeaveTs = Date.now();
+        let doc = workspace_1.default.getDocument(bufnr);
+        if (doc)
+            doc.forceSync(true);
+        this.stop();
+    }
+    async onInsertEnter() {
+        if (!this.config.triggerAfterInsertEnter)
+            return;
+        let option = await this.nvim.call('coc#util#get_complete_option');
+        if (option && option.input.length >= this.config.minTriggerInputLength) {
+            await this.startCompletion(option);
+        }
+    }
+    async onInsertCharPre(character) {
+        this.lastInsert = {
+            character,
+            timestamp: Date.now(),
+        };
+        this.insertCharTs = this.lastInsert.timestamp;
+    }
+    get latestInsert() {
+        let { lastInsert } = this;
+        if (!lastInsert || Date.now() - lastInsert.timestamp > 200) {
+            return null;
+        }
+        return lastInsert;
+    }
+    get latestInsertChar() {
+        let { latestInsert } = this;
+        if (!latestInsert)
+            return '';
+        return latestInsert.character;
+    }
+    async shouldTrigger(document, pre) {
+        if (pre.length == 0 || /\s/.test(pre[pre.length - 1]))
+            return false;
+        let autoTrigger = this.config.autoTrigger;
+        if (autoTrigger == 'none')
+            return false;
+        if (sources_1.default.shouldTrigger(pre, document.filetype))
+            return true;
+        if (autoTrigger !== 'always')
+            return false;
+        let last = pre.slice(-1);
+        if (last && (document.isWord(pre.slice(-1)) || last.codePointAt(0) > 255)) {
+            let minLength = this.config.minTriggerInputLength;
+            if (minLength == 1)
+                return true;
+            let input = this.getInput(document, pre);
+            return input.length >= minLength;
+        }
+        return false;
+    }
+    async onPumChange(ev) {
+        if (!this.activted)
+            return;
+        this.cancel();
+        let { completed_item, col, row, height, width, scrollbar } = ev;
+        let bounding = { col, row, height, width, scrollbar };
+        this.currItem = completed_item.hasOwnProperty('word') ? completed_item : null;
+        // it's pum change by vim, ignore it
+        if (this.lastInsert)
+            return;
+        let resolvedItem = this.getCompleteItem(completed_item);
+        if (!resolvedItem) {
+            this.floating.close();
+            return;
+        }
+        let source = this.resolveTokenSource = new vscode_languageserver_protocol_1.CancellationTokenSource();
+        let { token } = source;
+        await sources_1.default.doCompleteResolve(resolvedItem, token);
+        if (token.isCancellationRequested)
+            return;
+        let docs = resolvedItem.documentation;
+        if (!docs && resolvedItem.info) {
+            let { info } = resolvedItem;
+            let isText = /^[\w-\s.,\t]+$/.test(info);
+            docs = [{ filetype: isText ? 'txt' : this.document.filetype, content: info }];
+        }
+        if (!docs || docs.length == 0) {
+            this.floating.close();
+        }
+        else {
+            if (token.isCancellationRequested)
+                return;
+            await this.floating.show(docs, bounding, token);
+        }
+        this.resolveTokenSource = null;
+    }
+    start(complete) {
+        let { activted } = this;
+        this.activted = true;
+        this.isResolving = false;
+        if (activted) {
+            this.complete.dispose();
+        }
+        this.complete = complete;
+        if (!this.config.keepCompleteopt) {
+            this.nvim.command(`noa set completeopt=${this.completeOpt}`, true);
+        }
+        this.document.forceSync(true);
+        this.document.paused = true;
+    }
+    cancel() {
+        if (this.resolveTokenSource) {
+            this.resolveTokenSource.cancel();
+            this.resolveTokenSource = null;
+        }
+    }
+    stop() {
+        let { nvim } = this;
+        if (!this.activted)
+            return;
+        this.cancel();
+        this.currItem = null;
+        this.activted = false;
+        this.document.paused = false;
+        this.document.fireContentChanges();
+        if (this.complete) {
+            this.complete.dispose();
+            this.complete = null;
+        }
+        nvim.pauseNotification();
+        if (this.config.numberSelect) {
+            nvim.call('coc#_unmap', [], true);
+        }
+        if (!this.config.keepCompleteopt) {
+            this.nvim.command(`noa set completeopt=${workspace_1.default.completeOpt}`, true);
+        }
+        nvim.command(`let g:coc#_context['candidates'] = []`, true);
+        nvim.call('coc#_hide', [], true);
+        nvim.resumeNotification(false, true).catch(_e => {
+            // noop
+        });
+    }
+    getInput(document, pre) {
+        let input = '';
+        for (let i = pre.length - 1; i >= 0; i--) {
+            let ch = i == 0 ? null : pre[i - 1];
+            if (!ch || !document.isWord(ch)) {
+                input = pre.slice(i, pre.length);
+                break;
+            }
+        }
+        return input;
+    }
+    get completeOpt() {
+        let { noselect, enablePreview } = this.config;
+        let preview = enablePreview && !workspace_1.default.env.pumevent ? ',preview' : '';
+        if (noselect)
+            return `noselect,menuone${preview}`;
+        return `noinsert,menuone${preview}`;
+    }
+    getCompleteItem(item) {
+        if (!this.isActivted)
+            return null;
+        return this.complete.resolveCompletionItem(item);
+    }
+    dispose() {
+        util_1.disposeAll(this.disposables);
+    }
+}
+exports.Completion = Completion;
+exports.default = new Completion();
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 239 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const fast_diff_1 = tslib_1.__importDefault(__webpack_require__(211));
+const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
+const path_1 = tslib_1.__importDefault(__webpack_require__(56));
+const util_1 = tslib_1.__importDefault(__webpack_require__(40));
+const vscode_jsonrpc_1 = __webpack_require__(147);
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const extensions_1 = tslib_1.__importDefault(__webpack_require__(240));
+const source_1 = tslib_1.__importDefault(__webpack_require__(320));
+const source_vim_1 = tslib_1.__importDefault(__webpack_require__(321));
+const types_1 = __webpack_require__(190);
+const util_2 = __webpack_require__(171);
+const fs_2 = __webpack_require__(201);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const string_1 = __webpack_require__(212);
+const logger = __webpack_require__(182)('sources');
+// type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
+// priority,triggerPatterns,shortcut,enable,filetypes,disableSyntaxes,firstMatch
+class Sources {
+    constructor() {
+        this.sourceMap = new Map();
+        this.disposables = [];
+        this.remoteSourcePaths = [];
+    }
+    get nvim() {
+        return workspace_1.default.nvim;
+    }
+    async createNativeSources() {
+        try {
+            this.disposables.push((__webpack_require__(322)).regist(this.sourceMap));
+            this.disposables.push((__webpack_require__(323)).regist(this.sourceMap));
+            this.disposables.push((__webpack_require__(324)).regist(this.sourceMap));
+        }
+        catch (e) {
+            console.error('Create source error:' + e.message); // tslint:disable-line
+        }
+    }
+    async createVimSourceExtension(nvim, filepath) {
+        let name = path_1.default.basename(filepath, '.vim');
+        try {
+            await nvim.command(`source ${filepath}`);
+            let fns = await nvim.call('coc#util#remote_fns', name);
+            for (let fn of ['init', 'complete']) {
+                if (fns.indexOf(fn) == -1) {
+                    workspace_1.default.showMessage(`${fn} not found for source ${name}`, 'error');
+                    return null;
+                }
+            }
+            let props = await nvim.call(`coc#source#${name}#init`, []);
+            let packageJSON = {
+                name: `coc-source-${name}`,
+                activationEvents: props.filetypes ? props.filetypes.map(f => `onLanguage:${f}`) : ['*'],
+                contributes: {
+                    configuration: {
+                        properties: {
+                            [`coc.source.${name}.enable`]: {
+                                type: 'boolean',
+                                default: true
+                            },
+                            [`coc.source.${name}.priority`]: {
+                                type: 'number',
+                                default: props.priority || 9
+                            },
+                            [`coc.source.${name}.shortcut`]: {
+                                type: 'string',
+                                default: props.shortcut || name.slice(0, 3).toUpperCase(),
+                                description: 'Shortcut text shown in complete menu.'
+                            },
+                            [`coc.source.${name}.disableSyntaxes`]: {
+                                type: 'array',
+                                default: [],
+                                items: {
+                                    type: 'string'
+                                }
+                            },
+                            [`coc.source.${name}.filetypes`]: {
+                                type: 'array',
+                                default: props.filetypes || null,
+                                description: 'Enabled filetypes.',
+                                items: {
+                                    type: 'string'
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            let source = new source_vim_1.default({
+                name,
+                filepath,
+                sourceType: types_1.SourceType.Remote,
+                optionalFns: fns.filter(n => ['init', 'complete'].indexOf(n) == -1)
+            });
+            let isActive = false;
+            let extension = {
+                id: packageJSON.name,
+                packageJSON,
+                exports: void 0,
+                extensionPath: filepath,
+                activate: async () => {
+                    isActive = true;
+                    this.addSource(source);
+                }
+            };
+            Object.defineProperty(extension, 'isActive', {
+                get: () => {
+                    return isActive;
+                }
+            });
+            extensions_1.default.registerExtension(extension, () => {
+                isActive = false;
+                this.removeSource(source);
+            });
+        }
+        catch (e) {
+            workspace_1.default.showMessage(`Error on create vim source ${name}: ${e.message}`, 'error');
+        }
+    }
+    async createRemoteSources() {
+        let { runtimepath } = workspace_1.default.env;
+        let paths = runtimepath.split(',');
+        for (let path of paths) {
+            await this.createVimSources(path);
+        }
+    }
+    async createVimSources(pluginPath) {
+        if (this.remoteSourcePaths.indexOf(pluginPath) != -1)
+            return;
+        this.remoteSourcePaths.push(pluginPath);
+        let folder = path_1.default.join(pluginPath, 'autoload/coc/source');
+        let stat = await fs_2.statAsync(folder);
+        if (stat && stat.isDirectory()) {
+            let arr = await util_1.default.promisify(fs_1.default.readdir)(folder);
+            arr = arr.filter(s => s.slice(-4) == '.vim');
+            let files = arr.map(s => path_1.default.join(folder, s));
+            if (files.length == 0)
+                return;
+            await Promise.all(files.map(p => {
+                return this.createVimSourceExtension(this.nvim, p);
+            }));
+        }
+    }
+    init() {
+        this.createNativeSources(); // tslint:disable-line
+        this.createRemoteSources(); // tslint:disable-line
+        events_1.default.on('BufEnter', this.onDocumentEnter, this, this.disposables);
+        workspace_1.default.watchOption('runtimepath', async (oldValue, newValue) => {
+            let result = fast_diff_1.default(oldValue, newValue);
+            for (let [changeType, value] of result) {
+                if (changeType == 1) {
+                    let paths = value.replace(/,$/, '').split(',');
+                    for (let p of paths) {
+                        await this.createVimSources(p);
+                    }
+                }
+            }
+        }, this.disposables);
+    }
+    get names() {
+        return Array.from(this.sourceMap.keys());
+    }
+    get sources() {
+        return Array.from(this.sourceMap.values());
+    }
+    has(name) {
+        return this.names.findIndex(o => o == name) != -1;
+    }
+    getSource(name) {
+        if (!name)
+            return null;
+        return this.sourceMap.get(name) || null;
+    }
+    async doCompleteResolve(item, token) {
+        let source = this.getSource(item.source);
+        if (source && typeof source.onCompleteResolve == 'function') {
+            try {
+                await Promise.resolve(source.onCompleteResolve(item, token));
+            }
+            catch (e) {
+                logger.error('Error on complete resolve:', e.stack);
+            }
+        }
+    }
+    async doCompleteDone(item, opt) {
+        let data = JSON.parse(item.user_data);
+        let source = this.getSource(data.source);
+        if (source && typeof source.onCompleteDone === 'function') {
+            await Promise.resolve(source.onCompleteDone(item, opt));
+        }
+    }
+    shouldCommit(item, commitCharacter) {
+        if (!item || !item.source)
+            return false;
+        let source = this.getSource(item.source);
+        if (source && source.sourceType == types_1.SourceType.Service && typeof source.shouldCommit === 'function') {
+            return source.shouldCommit(item, commitCharacter);
+        }
+        return false;
+    }
+    getCompleteSources(opt) {
+        let { filetype } = opt;
+        let pre = string_1.byteSlice(opt.line, 0, opt.colnr - 1);
+        let isTriggered = opt.input == '' && opt.triggerCharacter;
+        if (isTriggered)
+            return this.getTriggerSources(pre, filetype);
+        let character = pre.length ? pre[pre.length - 1] : '';
+        return this.sources.filter(source => {
+            let { filetypes, triggerOnly, enable } = source;
+            if (!enable || (filetypes && filetypes.indexOf(filetype) == -1)) {
+                return false;
+            }
+            if (triggerOnly && !this.checkTrigger(source, pre, character)) {
+                return false;
+            }
+            return true;
+        });
+    }
+    checkTrigger(source, pre, character) {
+        let { triggerCharacters, triggerPatterns } = source;
+        if (!triggerCharacters && !triggerPatterns)
+            return false;
+        if (character && triggerCharacters && triggerCharacters.indexOf(character) !== -1) {
+            return true;
+        }
+        if (triggerPatterns && triggerPatterns.findIndex(p => p.test(pre)) !== -1) {
+            return true;
+        }
+        return false;
+    }
+    shouldTrigger(pre, languageId) {
+        let last = pre.length ? pre[pre.length - 1] : '';
+        let idx = this.sources.findIndex(s => {
+            let { enable, triggerCharacters, triggerPatterns, filetypes } = s;
+            if (!enable || (filetypes && filetypes.indexOf(languageId) == -1))
+                return false;
+            if (last && triggerCharacters)
+                return triggerCharacters.indexOf(last) !== -1;
+            if (triggerPatterns)
+                return triggerPatterns.findIndex(p => p.test(pre)) !== -1;
+            return false;
+        });
+        return idx !== -1;
+    }
+    getTriggerSources(pre, languageId) {
+        let character = pre.length ? pre[pre.length - 1] : '';
+        return this.sources.filter(source => {
+            let { filetypes, enable } = source;
+            if (!enable || (filetypes && filetypes.indexOf(languageId) == -1)) {
+                return false;
+            }
+            return this.checkTrigger(source, pre, character);
+        });
+    }
+    getSourcesForFiletype(filetype, isTriggered) {
+        return this.sources.filter(source => {
+            let { filetypes } = source;
+            if (source.triggerOnly && isTriggered === false) {
+                return false;
+            }
+            if (source.enable && (!filetypes || filetypes.indexOf(filetype) !== -1)) {
+                return true;
+            }
+            return false;
+        });
+    }
+    addSource(source) {
+        let { name } = source;
+        if (this.names.indexOf(name) !== -1) {
+            workspace_1.default.showMessage(`Source "${name}" recreated`, 'warning');
+        }
+        this.sourceMap.set(name, source);
+        return vscode_jsonrpc_1.Disposable.create(() => {
+            this.sourceMap.delete(name);
+        });
+    }
+    removeSource(source) {
+        let name = typeof source == 'string' ? source : source.name;
+        if (source == this.sourceMap.get(name)) {
+            this.sourceMap.delete(name);
+        }
+    }
+    async refresh(name) {
+        for (let source of this.sources) {
+            if (!name || source.name == name) {
+                if (typeof source.refresh === 'function') {
+                    await Promise.resolve(source.refresh());
+                }
+            }
+        }
+    }
+    toggleSource(name) {
+        if (!name)
+            return;
+        let source = this.getSource(name);
+        if (!source)
+            return;
+        if (typeof source.toggle === 'function') {
+            source.toggle();
+        }
+    }
+    sourceStats() {
+        let res = [];
+        let items = this.sources;
+        for (let item of items) {
+            res.push({
+                name: item.name,
+                shortcut: item.shortcut || '',
+                filetypes: item.filetypes || [],
+                filepath: item.filepath || '',
+                type: item.sourceType == types_1.SourceType.Native
+                    ? 'native' : item.sourceType == types_1.SourceType.Remote
+                    ? 'remote' : 'service',
+                disabled: !item.enable
+            });
+        }
+        return res;
+    }
+    onDocumentEnter(bufnr) {
+        let { sources } = this;
+        for (let s of sources) {
+            if (!s.enable)
+                continue;
+            if (typeof s.onEnter == 'function') {
+                s.onEnter(bufnr);
+            }
+        }
+    }
+    createSource(config) {
+        if (!config.name || !config.doComplete) {
+            // tslint:disable-next-line: no-console
+            console.error(`name and doComplete required for createSource`);
+            return;
+        }
+        let source = new source_1.default(Object.assign({ sourceType: types_1.SourceType.Service }, config));
+        return this.addSource(source);
+    }
+    dispose() {
+        util_2.disposeAll(this.disposables);
+    }
+}
+exports.Sources = Sources;
+exports.default = new Sources();
+//# sourceMappingURL=sources.js.map
+
+/***/ }),
+/* 240 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const child_process_1 = __webpack_require__(172);
+const debounce_1 = __webpack_require__(173);
+const fast_diff_1 = tslib_1.__importDefault(__webpack_require__(211));
+const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
+const isuri_1 = tslib_1.__importDefault(__webpack_require__(180));
+const path_1 = tslib_1.__importDefault(__webpack_require__(56));
+const semver_1 = tslib_1.__importDefault(__webpack_require__(1));
+const util_1 = tslib_1.__importDefault(__webpack_require__(40));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const vscode_uri_1 = __webpack_require__(174);
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const db_1 = tslib_1.__importDefault(__webpack_require__(207));
+const memos_1 = tslib_1.__importDefault(__webpack_require__(241));
+const util_2 = __webpack_require__(171);
+const array_1 = __webpack_require__(214);
+const factory_1 = __webpack_require__(242);
+const fs_2 = __webpack_require__(201);
+const watchman_1 = tslib_1.__importDefault(__webpack_require__(227));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const commands_1 = tslib_1.__importDefault(__webpack_require__(234));
+__webpack_require__(298);
+const createLogger = __webpack_require__(182);
+const logger = createLogger('extensions');
+const extensionFolder = global.hasOwnProperty('__TEST__') ? '' : 'node_modules';
+function loadJson(file) {
+    try {
+        let content = fs_1.default.readFileSync(file, 'utf8');
+        return JSON.parse(content);
+    }
+    catch (e) {
+        return null;
+    }
+}
+class Extensions {
+    constructor() {
+        this.list = [];
+        this.disabled = new Set();
+        this._onDidLoadExtension = new vscode_languageserver_protocol_1.Emitter();
+        this._onDidActiveExtension = new vscode_languageserver_protocol_1.Emitter();
+        this._onDidUnloadExtension = new vscode_languageserver_protocol_1.Emitter();
+        this._additionalSchemes = {};
+        this.activated = false;
+        this.ready = true;
+        this.onDidLoadExtension = this._onDidLoadExtension.event;
+        this.onDidActiveExtension = this._onDidActiveExtension.event;
+        this.onDidUnloadExtension = this._onDidUnloadExtension.event;
+    }
+    async init(nvim) {
+        this.root = await nvim.call('coc#util#extension_root');
+        if (!fs_1.default.existsSync(this.root)) {
+            await nvim.call('coc#util#init_extension_root', this.root);
+        }
+        if (global.hasOwnProperty('__TEST__')) {
+            this.root = path_1.default.join(__dirname, './__tests__/extensions');
+        }
+        let filepath = path_1.default.join(this.root, 'db.json');
+        let db = this.db = new db_1.default(filepath);
+        let data = loadJson(db.filepath) || {};
+        let keys = Object.keys(data.extension || {});
+        for (let key of keys) {
+            if (data.extension[key].disabled == true) {
+                this.disabled.add(key);
+            }
+        }
+        if (process.env.COC_NO_PLUGINS)
+            return;
+        let stats = await this.globalExtensionStats();
+        let localStats = await this.localExtensionStats(stats);
+        stats = stats.concat(localStats);
+        this.memos = new memos_1.default(path_1.default.resolve(this.root, '../memos.json'));
+        await this.loadFileExtensions();
+        await Promise.all(stats.map(stat => {
+            return this.loadExtension(stat.root, stat.isLocal).catch(e => {
+                workspace_1.default.showMessage(`Can't load extension from ${stat.root}: ${e.message}'`, 'error');
+            });
+        }));
+        // watch for new local extension
+        workspace_1.default.watchOption('runtimepath', async (oldValue, newValue) => {
+            let result = fast_diff_1.default(oldValue, newValue);
+            for (let [changeType, value] of result) {
+                if (changeType == 1) {
+                    let paths = value.replace(/,$/, '').split(',');
+                    for (let p of paths) {
+                        await this.loadExtension(p, true);
+                    }
+                }
+            }
+        });
+    }
+    activateExtensions() {
+        this.activated = true;
+        for (let item of this.list) {
+            let { id, packageJSON } = item.extension;
+            this.setupActiveEvents(id, packageJSON);
+        }
+        // check extensions need watch & install
+        this.checkExtensions().logError();
+        let config = workspace_1.default.getConfiguration('coc.preferences');
+        let interval = config.get('extensionUpdateCheck', 'daily');
+        if (interval != 'never')
+            this.updateExtensions(interval).logError();
+    }
+    async updateExtensions(interval, force = false) {
+        let now = new Date();
+        let { db } = this;
+        let day = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (interval == 'daily' ? 0 : 7));
+        let ts = await db.fetch('lastUpdate');
+        if (!force && ts && Number(ts) > day.getTime())
+            return;
+        if (global.hasOwnProperty('__TEST__') && !force)
+            return;
+        let stats = await this.globalExtensionStats();
+        await db.push('lastUpdate', Date.now());
+        let versionInfo = {};
+        stats = stats.filter(o => !o.exotic);
+        let yarncmd = await workspace_1.default.nvim.call('coc#util#yarn_cmd');
+        for (let stat of stats) {
+            if (stat.exotic)
+                continue;
+            let file = path_1.default.join(stat.root, 'package.json');
+            let obj = loadJson(file);
+            if (obj && obj.version) {
+                versionInfo[stat.id] = obj.version;
+            }
+        }
+        let outdated = [];
+        await Promise.all(Object.keys(versionInfo).map(id => {
+            let curr = versionInfo[id];
+            return util_2.runCommand(`${yarncmd} info ${id} --json`).then(content => {
+                let lines = content.trim().split('\n');
+                let json = JSON.parse(lines[lines.length - 1]);
+                let { version, engines } = json.data;
+                if (version == curr || !engines)
+                    return;
+                if (engines.hasOwnProperty('coc')) {
+                    let required = engines.coc.replace(/^\^/, '>=');
+                    if (!semver_1.default.satisfies(workspace_1.default.version, required))
+                        return;
+                    if (semver_1.default.gt(version, curr)) {
+                        outdated.push(id);
+                    }
+                }
+                else {
+                    outdated.push(id);
+                }
+            });
+        }));
+        if (!outdated.length)
+            return;
+        let status = workspace_1.default.createStatusBarItem(99, { progress: true });
+        logger.info(`Upgrading ${outdated.join(' ')}`);
+        status.text = `Upgrading ${outdated.join(' ')}`;
+        status.show();
+        if (!global.hasOwnProperty('__TEST__')) {
+            await util_2.runCommand(`${yarncmd} install`, { cwd: this.root });
+        }
+        const child = child_process_1.spawn(yarncmd, ['upgrade', ...outdated, '--latest', '--ignore-engines'], {
+            cwd: this.root,
+            detached: true,
+            stdio: 'ignore'
+        });
+        child.unref();
+        child.once('exit', () => {
+            status.dispose();
+        });
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            child.kill('SIGKILL');
+        });
+    }
+    async checkExtensions() {
+        let { globalExtensions, watchExtensions } = workspace_1.default.env;
+        if (globalExtensions && globalExtensions.length) {
+            this.installExtensions(globalExtensions).catch(_e => {
+                // noop
+            });
+        }
+        // watch for changes
+        if (watchExtensions && watchExtensions.length) {
+            let watchmanPath = workspace_1.default.getWatchmanPath();
+            if (!watchmanPath)
+                return;
+            let stats = await this.getExtensionStates();
+            for (let name of watchExtensions) {
+                let stat = stats.find(s => s.id == name);
+                if (stat && stat.state !== 'disabled') {
+                    let directory = await util_1.default.promisify(fs_1.default.realpath)(stat.root);
+                    let client = await watchman_1.default.createClient(watchmanPath, directory);
+                    client.subscribe('**/*.js', debounce_1.debounce(async () => {
+                        await this.reloadExtension(name);
+                        workspace_1.default.showMessage(`reloaded ${name}`);
+                    }, 100)).catch(_e => {
+                        // noop
+                    });
+                }
+            }
+        }
+    }
+    async installExtensions(list) {
+        if (list && list.length) {
+            let db = loadJson(this.db.filepath);
+            let extension = db ? db.extension : null;
+            list = array_1.distinct(list);
+            list = list.filter(name => {
+                if (this.has(name))
+                    return false;
+                if (/^\w+:/.test(name) && this.packageNameFromUrl(name))
+                    return false;
+                if (extension && extension[name] && extension[name].disabled == true)
+                    return false;
+                return true;
+            });
+            let cmd = global.hasOwnProperty('__TEST__') ? 'CocInstall -sync' : 'CocInstall';
+            if (list.length)
+                await workspace_1.default.nvim.command(`${cmd} ${list.join(' ')}`);
+        }
+    }
+    get all() {
+        return this.list.map(o => o.extension);
+    }
+    getExtension(id) {
+        return this.list.find(o => o.id == id);
+    }
+    getExtensionState(id) {
+        let disabled = this.isDisabled(id);
+        if (disabled)
+            return 'disabled';
+        let item = this.list.find(o => o.id == id);
+        if (!item)
+            return 'unknown';
+        let { extension } = item;
+        return extension.isActive ? 'activated' : 'loaded';
+    }
+    async getExtensionStates() {
+        let globalStats = await this.globalExtensionStats();
+        let localStats = await this.localExtensionStats(globalStats);
+        return globalStats.concat(localStats);
+    }
+    async toggleExtension(id) {
+        let state = this.getExtensionState(id);
+        if (state == null)
+            return;
+        if (state == 'activated') {
+            this.deactivate(id);
+        }
+        let key = `extension.${id}.disabled`;
+        await this.db.push(key, state == 'disabled' ? false : true);
+        if (state != 'disabled') {
+            this.disabled.add(id);
+            // unload
+            let idx = this.list.findIndex(o => o.id == id);
+            this.list.splice(idx, 1);
+        }
+        else {
+            this.disabled.delete(id);
+            let folder = path_1.default.join(this.root, extensionFolder, id);
+            try {
+                await this.loadExtension(folder);
+            }
+            catch (e) {
+                workspace_1.default.showMessage(`Can't load extension ${id}: ${e.message}'`, 'error');
+            }
+        }
+        await util_2.wait(200);
+    }
+    async reloadExtension(id) {
+        let idx = this.list.findIndex(o => o.id == id);
+        let directory = idx == -1 ? null : this.list[idx].directory;
+        this.deactivate(id);
+        if (idx != -1)
+            this.list.splice(idx, 1);
+        await util_2.wait(200);
+        if (directory) {
+            await this.loadExtension(directory);
+        }
+        else {
+            this.activate(id);
+        }
+    }
+    async uninstallExtension(ids) {
+        let status = workspace_1.default.createStatusBarItem(99, { progress: true });
+        status.text = `Uninstalling ${ids.join(' ')}`;
+        status.show();
+        for (let id of ids) {
+            if (!this.isGlobalExtension(id)) {
+                workspace_1.default.showMessage(`Global extension '${id}' not found.`, 'error');
+                return;
+            }
+            this.deactivate(id);
+        }
+        await util_2.wait(30);
+        let yarncmd = await workspace_1.default.nvim.call('coc#util#yarn_cmd');
+        if (!yarncmd)
+            return;
+        try {
+            if (!global.hasOwnProperty('__TEST__')) {
+                await workspace_1.default.runCommand(`${yarncmd} remove ${ids.join(' ')}`, this.root);
+            }
+            for (let id of ids) {
+                let idx = this.list.findIndex(o => o.id == id);
+                if (idx != -1)
+                    this.list.splice(idx, 1);
+                this._onDidUnloadExtension.fire(id);
+            }
+            status.dispose();
+            workspace_1.default.showMessage(`Extensions ${ids.join(' ')} removed`);
+        }
+        catch (e) {
+            status.dispose();
+            workspace_1.default.showMessage(`Uninstall failed: ${e.message}`, 'error');
+        }
+    }
+    isDisabled(id) {
+        return this.disabled.has(id);
+    }
+    async onExtensionInstall(id) {
+        if (/^\w+:/.test(id))
+            id = this.packageNameFromUrl(id);
+        if (!id || /^-/.test(id))
+            return;
+        let item = this.list.find(o => o.id == id);
+        if (item)
+            item.deactivate();
+        let folder = path_1.default.join(this.root, extensionFolder, id);
+        let stat = await fs_2.statAsync(folder);
+        if (stat && stat.isDirectory()) {
+            let jsonFile = path_1.default.join(folder, 'package.json');
+            let content = await fs_2.readFile(jsonFile, 'utf8');
+            let packageJSON = JSON.parse(content);
+            let { engines } = packageJSON;
+            if (!engines || (!engines.hasOwnProperty('coc') && !engines.hasOwnProperty('vscode')))
+                return;
+            await this.loadExtension(folder);
+        }
+    }
+    has(id) {
+        return this.list.find(o => o.id == id) != null;
+    }
+    isActivted(id) {
+        let item = this.list.find(o => o.id == id);
+        if (item && item.extension.isActive) {
+            return true;
+        }
+        return false;
+    }
+    async loadExtension(folder, isLocal = false) {
+        let jsonFile = path_1.default.join(folder, 'package.json');
+        let stat = await fs_2.statAsync(jsonFile);
+        if (!stat || !stat.isFile())
+            return;
+        let content = await fs_2.readFile(jsonFile, 'utf8');
+        let packageJSON = JSON.parse(content);
+        if (this.isDisabled(packageJSON.name))
+            return;
+        if (this.isActivted(packageJSON.name)) {
+            workspace_1.default.showMessage(`deactivate ${packageJSON.name}`);
+            this.deactivate(packageJSON.name);
+            await util_2.wait(200);
+        }
+        let { engines } = packageJSON;
+        if (engines && engines.hasOwnProperty('coc')) {
+            let required = engines.coc.replace(/^\^/, '>=');
+            if (!semver_1.default.satisfies(workspace_1.default.version, required)) {
+                workspace_1.default.showMessage(`Please update coc.nvim, ${packageJSON.name} requires coc.nvim ${engines.coc}`, 'warning');
+            }
+            this.createExtension(folder, Object.freeze(packageJSON), isLocal);
+        }
+        else if (engines && engines.hasOwnProperty('vscode')) {
+            this.createExtension(folder, Object.freeze(packageJSON), isLocal);
+        }
+        else {
+            logger.info(`engine coc & vscode not found in ${jsonFile}`);
+        }
+    }
+    async loadFileExtensions() {
+        if (global.hasOwnProperty('__TEST__'))
+            return;
+        let folder = path_1.default.join(process.env.VIMCONFIG, 'coc-extensions');
+        if (!fs_1.default.existsSync(folder))
+            return;
+        let files = await fs_2.readdirAsync(folder);
+        files = files.filter(f => f.endsWith('.js'));
+        for (let file of files) {
+            this.loadExtensionFile(path_1.default.join(folder, file));
+        }
+    }
+    /**
+     * Load single javascript file as extension.
+     */
+    loadExtensionFile(filepath) {
+        let filename = path_1.default.basename(filepath);
+        let name = path_1.default.basename(filepath, 'js');
+        if (this.isDisabled(name))
+            return;
+        let root = path_1.default.dirname(filepath);
+        let packageJSON = {
+            name,
+            main: filename,
+        };
+        this.createExtension(root, packageJSON);
+    }
+    activate(id, silent = true) {
+        if (this.isDisabled(id)) {
+            if (!silent)
+                workspace_1.default.showMessage(`Extension ${id} is disabled!`, 'error');
+            return;
+        }
+        let item = this.list.find(o => o.id == id);
+        if (!item) {
+            workspace_1.default.showMessage(`Extension ${id} not found!`, 'error');
+            return;
+        }
+        let { extension } = item;
+        if (extension.isActive)
+            return;
+        extension.activate().then(() => {
+            if (extension.isActive) {
+                this._onDidActiveExtension.fire(extension);
+            }
+        }, e => {
+            workspace_1.default.showMessage(`Error on activate ${extension.id}: ${e.message}`, 'error');
+            logger.error(`Error on activate extension ${extension.id}:`, e);
+        });
+    }
+    deactivate(id) {
+        let item = this.list.find(o => o.id == id);
+        if (!item)
+            return false;
+        if (item.extension.isActive && typeof item.deactivate == 'function') {
+            item.deactivate();
+            return true;
+        }
+        return false;
+    }
+    async call(id, method, args) {
+        let item = this.list.find(o => o.id == id);
+        if (!item)
+            return workspace_1.default.showMessage(`extension ${id} not found`, 'error');
+        let { extension } = item;
+        if (!extension.isActive) {
+            workspace_1.default.showMessage(`extension ${id} not activated`, 'error');
+            return;
+        }
+        let { exports } = extension;
+        if (!exports || !exports.hasOwnProperty(method)) {
+            workspace_1.default.showMessage(`method ${method} not found on extension ${id}`, 'error');
+            return;
+        }
+        return await Promise.resolve(exports[method].apply(null, args));
+    }
+    getExtensionApi(id) {
+        let item = this.list.find(o => o.id == id);
+        if (!item)
+            return null;
+        let { extension } = item;
+        return extension.isActive ? extension.exports : null;
+    }
+    registerExtension(extension, deactivate) {
+        let { id, packageJSON } = extension;
+        this.list.push({ id, extension, deactivate, isLocal: true });
+        let { contributes } = packageJSON;
+        if (contributes) {
+            let { configuration } = contributes;
+            if (configuration && configuration.properties) {
+                let { properties } = configuration;
+                let props = {};
+                for (let key of Object.keys(properties)) {
+                    let val = properties[key].default;
+                    if (val != null)
+                        props[key] = val;
+                }
+                workspace_1.default.configurations.extendsDefaults(props);
+            }
+        }
+        this._onDidLoadExtension.fire(extension);
+        this.setupActiveEvents(id, packageJSON);
+    }
+    get globalExtensions() {
+        let json = this.loadJson();
+        if (!json || !json.dependencies)
+            return [];
+        return Object.keys(json.dependencies);
+    }
+    async globalExtensionStats() {
+        let json = this.loadJson();
+        if (!json || !json.dependencies)
+            return [];
+        let res = await Promise.all(Object.keys(json.dependencies).map(key => {
+            return new Promise(async (resolve) => {
+                try {
+                    let val = json.dependencies[key];
+                    let root = path_1.default.join(this.root, extensionFolder, key);
+                    let jsonFile = path_1.default.join(root, 'package.json');
+                    let stat = await fs_2.statAsync(jsonFile);
+                    if (!stat || !stat.isFile())
+                        return resolve(null);
+                    let content = await fs_2.readFile(jsonFile, 'utf8');
+                    root = await fs_2.realpathAsync(root);
+                    let obj = JSON.parse(content);
+                    let { engines } = obj;
+                    if (!engines || (!engines.hasOwnProperty('coc') && !engines.hasOwnProperty('vscode'))) {
+                        return resolve(null);
+                    }
+                    let version = obj ? obj.version || '' : '';
+                    let description = obj ? obj.description || '' : '';
+                    resolve({
+                        id: key,
+                        isLocal: false,
+                        version,
+                        description,
+                        exotic: isuri_1.default.isValid(val),
+                        root,
+                        state: this.getExtensionState(key)
+                    });
+                }
+                catch (e) {
+                    logger.error(e);
+                    resolve(null);
+                }
+            });
+        }));
+        return res.filter(info => info != null);
+    }
+    async localExtensionStats(exclude) {
+        let runtimepath = await workspace_1.default.nvim.eval('&runtimepath');
+        let included = exclude.map(o => o.root);
+        let names = exclude.map(o => o.id);
+        let paths = runtimepath.split(',');
+        let res = await Promise.all(paths.map(root => {
+            return new Promise(async (resolve) => {
+                try {
+                    if (included.includes(root)) {
+                        return resolve(null);
+                    }
+                    let jsonFile = path_1.default.join(root, 'package.json');
+                    let stat = await fs_2.statAsync(jsonFile);
+                    if (!stat || !stat.isFile())
+                        return resolve(null);
+                    let content = await fs_2.readFile(jsonFile, 'utf8');
+                    let obj = JSON.parse(content);
+                    let { engines } = obj;
+                    if (!engines || (!engines.hasOwnProperty('coc') && !engines.hasOwnProperty('vscode'))) {
+                        return resolve(null);
+                    }
+                    if (names.indexOf(obj.name) !== -1) {
+                        workspace_1.default.showMessage(`Skipped extension  "${root}", please uninstall "${obj.name}" by :CocUninstall ${obj.name}`, 'warning');
+                        return resolve(null);
+                    }
+                    let version = obj ? obj.version || '' : '';
+                    let description = obj ? obj.description || '' : '';
+                    resolve({
+                        id: obj.name,
+                        isLocal: true,
+                        version,
+                        description,
+                        exotic: false,
+                        root,
+                        state: this.getExtensionState(obj.name)
+                    });
+                }
+                catch (e) {
+                    logger.error(e);
+                    resolve(null);
+                }
+            });
+        }));
+        return res.filter(info => info != null);
+    }
+    isGlobalExtension(id) {
+        return this.globalExtensions.indexOf(id) !== -1;
+    }
+    loadJson() {
+        let { root } = this;
+        let jsonFile = path_1.default.join(root, 'package.json');
+        if (!fs_1.default.existsSync(jsonFile))
+            return null;
+        return loadJson(jsonFile);
+    }
+    packageNameFromUrl(url) {
+        let json = this.loadJson();
+        if (!json || !json.dependencies)
+            return null;
+        for (let key of Object.keys(json.dependencies)) {
+            let val = json.dependencies[key];
+            if (val == url)
+                return key;
+        }
+        return null;
+    }
+    get schemes() {
+        return this._additionalSchemes;
+    }
+    addSchemeProperty(key, def) {
+        this._additionalSchemes[key] = def;
+        workspace_1.default.configurations.extendsDefaults({ [key]: def.default });
+    }
+    setupActiveEvents(id, packageJSON) {
+        let { activationEvents } = packageJSON;
+        if (!activationEvents || activationEvents.indexOf('*') !== -1 || !Array.isArray(activationEvents)) {
+            this.activate(id);
+            return;
+        }
+        let active = () => {
+            util_2.disposeAll(disposables);
+            this.activate(id);
+            active = () => { }; // tslint:disable-line
+        };
+        let disposables = [];
+        for (let eventName of activationEvents) {
+            let parts = eventName.split(':');
+            let ev = parts[0];
+            if (ev == 'onLanguage') {
+                if (workspace_1.default.filetypes.has(parts[1])) {
+                    active();
+                    return;
+                }
+                workspace_1.default.onDidOpenTextDocument(document => {
+                    if (document.languageId == parts[1]) {
+                        active();
+                    }
+                }, null, disposables);
+            }
+            else if (ev == 'onCommand') {
+                events_1.default.on('Command', command => {
+                    if (command == parts[1]) {
+                        active();
+                        // wait for service ready
+                        return new Promise(resolve => {
+                            setTimeout(resolve, 500);
+                        });
+                    }
+                }, null, disposables);
+            }
+            else if (ev == 'workspaceContains') {
+                let check = () => {
+                    let folders = workspace_1.default.workspaceFolders.map(o => vscode_uri_1.URI.parse(o.uri).fsPath);
+                    for (let folder of folders) {
+                        if (fs_2.inDirectory(folder, parts[1].split(/\s+/))) {
+                            active();
+                            break;
+                        }
+                    }
+                };
+                check();
+                workspace_1.default.onDidChangeWorkspaceFolders(check, null, disposables);
+            }
+            else if (ev == 'onFileSystem') {
+                for (let doc of workspace_1.default.documents) {
+                    let u = vscode_uri_1.URI.parse(doc.uri);
+                    if (u.scheme == parts[1]) {
+                        return active();
+                    }
+                }
+                workspace_1.default.onDidOpenTextDocument(document => {
+                    let u = vscode_uri_1.URI.parse(document.uri);
+                    if (u.scheme == parts[1]) {
+                        active();
+                    }
+                }, null, disposables);
+            }
+            else {
+                workspace_1.default.showMessage(`Unsupported event ${eventName} of ${id}`, 'error');
+            }
+        }
+    }
+    createExtension(root, packageJSON, isLocal = false) {
+        let id = `${packageJSON.name}`;
+        let isActive = false;
+        let exports = null;
+        let filename = path_1.default.join(root, packageJSON.main || 'index.js');
+        let ext;
+        let subscriptions = [];
+        let extension = {
+            activate: async () => {
+                if (isActive)
+                    return;
+                let context = {
+                    subscriptions,
+                    extensionPath: root,
+                    globalState: this.memos.createMemento(`${id}|global`),
+                    workspaceState: this.memos.createMemento(`${id}|${workspace_1.default.rootPath}`),
+                    asAbsolutePath: relativePath => {
+                        return path_1.default.join(root, relativePath);
+                    },
+                    storagePath: path_1.default.join(this.root, `${id}-data`),
+                    logger: createLogger(id)
+                };
+                isActive = true;
+                if (!ext) {
+                    try {
+                        ext = factory_1.createExtension(id, filename);
+                    }
+                    catch (e) {
+                        workspace_1.default.showMessage(`Error on load extension ${id} from ${filename}: ${e}`, 'error');
+                        logger.error(e);
+                        return;
+                    }
+                }
+                try {
+                    exports = await Promise.resolve(ext.activate(context));
+                }
+                catch (e) {
+                    isActive = false;
+                    workspace_1.default.showMessage(`Error on active extension ${id}: ${e}`, 'error');
+                    logger.error(e);
+                }
+                return exports;
+            }
+        };
+        Object.defineProperties(extension, {
+            id: {
+                get: () => id
+            },
+            packageJSON: {
+                get: () => packageJSON
+            },
+            extensionPath: {
+                get: () => root
+            },
+            isActive: {
+                get: () => isActive
+            },
+            exports: {
+                get: () => exports
+            }
+        });
+        this.list.push({
+            id,
+            isLocal,
+            extension,
+            directory: root,
+            deactivate: () => {
+                isActive = false;
+                if (ext && ext.deactivate) {
+                    Promise.resolve(ext.deactivate()).catch(e => {
+                        logger.error(`Error on ${id} deactivate: `, e.message);
+                    });
+                }
+                util_2.disposeAll(subscriptions);
+                subscriptions = [];
+            }
+        });
+        let { contributes } = packageJSON;
+        if (contributes) {
+            let { configuration, rootPatterns, commands } = contributes;
+            if (configuration && configuration.properties) {
+                let { properties } = configuration;
+                let props = {};
+                for (let key of Object.keys(properties)) {
+                    let val = properties[key].default;
+                    if (val != null)
+                        props[key] = val;
+                }
+                workspace_1.default.configurations.extendsDefaults(props);
+            }
+            if (rootPatterns && rootPatterns.length) {
+                for (let item of rootPatterns) {
+                    workspace_1.default.addRootPatterns(item.filetype, item.patterns);
+                }
+            }
+            if (commands && commands.length) {
+                for (let cmd of commands) {
+                    commands_1.default.titles.set(cmd.command, cmd.title);
+                }
+            }
+        }
+        this._onDidLoadExtension.fire(extension);
+        if (this.activated) {
+            this.setupActiveEvents(id, packageJSON);
+        }
+        return id;
+    }
+}
+exports.Extensions = Extensions;
+exports.default = new Extensions();
+//# sourceMappingURL=extensions.js.map
+
+/***/ }),
+/* 241 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
+const object_1 = __webpack_require__(191);
+const logger = __webpack_require__(182)('model-memos');
+class Memos {
+    constructor(filepath) {
+        this.filepath = filepath;
+        if (!fs_1.default.existsSync(filepath)) {
+            fs_1.default.writeFileSync(filepath, '{}', 'utf8');
+        }
+    }
+    fetchContent(id, key) {
+        try {
+            let content = fs_1.default.readFileSync(this.filepath, 'utf8');
+            let res = JSON.parse(content);
+            let obj = res[id];
+            if (!obj)
+                return undefined;
+            return obj[key];
+        }
+        catch (e) {
+            return undefined;
+        }
+    }
+    async update(id, key, value) {
+        let { filepath } = this;
+        try {
+            let content = fs_1.default.readFileSync(filepath, 'utf8');
+            let current = content ? JSON.parse(content) : {};
+            current[id] = current[id] || {};
+            if (value !== undefined) {
+                current[id][key] = object_1.deepClone(value);
+            }
+            else {
+                delete current[id][key];
+            }
+            content = JSON.stringify(current, null, 2);
+            fs_1.default.writeFileSync(filepath, content, 'utf8');
+        }
+        catch (e) {
+            logger.error(`Error on update memos:`, e);
+        }
+    }
+    createMemento(id) {
+        return {
+            get: (key, defaultValue) => {
+                let res = this.fetchContent(id, key);
+                return res === undefined ? defaultValue : res;
+            },
+            update: async (key, value) => {
+                await this.update(id, key, value);
+            }
+        };
+    }
+}
+exports.default = Memos;
+//# sourceMappingURL=memos.js.map
+
+/***/ }),
+/* 242 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
+const path = tslib_1.__importStar(__webpack_require__(56));
+const vm = tslib_1.__importStar(__webpack_require__(243));
+const lodash_1 = __webpack_require__(244);
+const createLogger = __webpack_require__(182);
+const logger = createLogger('util-factoroy');
+const requireFunc =  true ? require : undefined;
+const Module = __webpack_require__(245);
+const REMOVED_GLOBALS = [
+    'reallyExit',
+    'abort',
+    'chdir',
+    'umask',
+    'setuid',
+    'setgid',
+    'setgroups',
+    '_fatalException',
+    'exit',
+    'kill',
+];
+function removedGlobalStub(name) {
+    return () => {
+        throw new Error(`process.${name}() is not allowed in extension sandbox`);
+    };
+}
+// @see node/lib/internal/module.js
+function makeRequireFunction() {
+    const req = (p) => {
+        if (p === 'coc.nvim') {
+            return __webpack_require__(246);
+        }
+        return this.require(p);
+    };
+    req.resolve = (request) => Module._resolveFilename(request, this);
+    req.main = process.mainModule;
+    // Enable support to add extra extension types
+    req.extensions = Module._extensions;
+    req.cache = Module._cache;
+    return req;
+}
+// @see node/lib/module.js
+function compileInSandbox(sandbox) {
+    // eslint-disable-next-line
+    return function (content, filename) {
+        const require = makeRequireFunction.call(this);
+        const dirname = path.dirname(filename);
+        // remove shebang
+        // eslint-disable-next-line
+        const newContent = content.replace(/^\#\!.*/, '');
+        const wrapper = Module.wrap(newContent);
+        const compiledWrapper = vm.runInContext(wrapper, sandbox, { filename });
+        const args = [this.exports, require, this, filename, dirname];
+        return compiledWrapper.apply(this.exports, args);
+    };
+}
+function createSandbox(filename, logger) {
+    const module = new Module(filename);
+    module.paths = Module._nodeModulePaths(filename);
+    const sandbox = vm.createContext({
+        module,
+        Buffer,
+        console: {
+            log: (...args) => {
+                logger.debug.apply(logger, args);
+            },
+            error: (...args) => {
+                logger.error.apply(logger, args);
+            },
+            info: (...args) => {
+                logger.info.apply(logger, args);
+            },
+            warn: (...args) => {
+                logger.warn.apply(logger, args);
+            }
+        }
+    });
+    lodash_1.defaults(sandbox, global);
+    sandbox.Reflect = Reflect;
+    sandbox.require = function sandboxRequire(p) {
+        const oldCompile = Module.prototype._compile;
+        Module.prototype._compile = compileInSandbox(sandbox);
+        const moduleExports = sandbox.module.require(p);
+        Module.prototype._compile = oldCompile;
+        return moduleExports;
+    };
+    // patch `require` in sandbox to run loaded module in sandbox context
+    // if you need any of these, it might be worth discussing spawning separate processes
+    sandbox.process = new process.constructor();
+    for (let key of Object.keys(process)) {
+        sandbox.process[key] = process[key];
+    }
+    REMOVED_GLOBALS.forEach(name => {
+        sandbox.process[name] = removedGlobalStub(name);
+    });
+    // read-only umask
+    sandbox.process.umask = (mask) => {
+        if (typeof mask !== 'undefined') {
+            throw new Error('Cannot use process.umask() to change mask (read-only)');
+        }
+        return process.umask();
+    };
+    return sandbox;
+}
+// inspiration drawn from Module
+function createExtension(id, filename) {
+    if (!fs_1.default.existsSync(filename)) {
+        // tslint:disable-next-line:no-empty
+        return { activate: () => { }, deactivate: null };
+    }
+    const sandbox = createSandbox(filename, createLogger(`extension-${id}`));
+    delete Module._cache[requireFunc.resolve(filename)];
+    // attempt to import plugin
+    // Require plugin to export activate & deactivate
+    const defaultImport = sandbox.require(filename);
+    const activate = (defaultImport && defaultImport.activate) || defaultImport;
+    if (typeof activate !== 'function') {
+        // tslint:disable-next-line:no-empty
+        return { activate: () => { }, deactivate: null };
+    }
+    return {
+        activate,
+        deactivate: typeof defaultImport.deactivate === 'function' ? defaultImport.deactivate : null
+    };
+}
+exports.createExtension = createExtension;
+//# sourceMappingURL=factory.js.map
+
+/***/ }),
+/* 243 */
+/***/ (function(module, exports) {
+
+module.exports = require("vm");
+
+/***/ }),
+/* 244 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+/** Used for built-in method references. */
+const objectProto = Object.prototype;
+/** Used to check objects for own properties. */
+const hasOwnProperty = objectProto.hasOwnProperty;
+/**
+ * Assigns own and inherited enumerable string keyed properties of source
+ * objects to the destination object for all destination properties that
+ * resolve to `undefined`. Source objects are applied from left to right.
+ * Once a property is set, additional values of the same property are ignored.
+ *
+ * **Note:** This method mutates `object`.
+ *
+ * @since 0.1.0
+ * @category Object
+ * @param {Object} object The destination object.
+ * @param {...Object} [sources] The source objects.
+ * @returns {Object} Returns `object`.
+ * @see defaultsDeep
+ * @example
+ *
+ * defaults({ 'a': 1 }, { 'b': 2 }, { 'a': 3 })
+ * // => { 'a': 1, 'b': 2 }
+ */
+function defaults(obj, ...sources) {
+    obj = Object(obj);
+    sources.forEach(source => {
+        if (source != null) {
+            source = Object(source);
+            for (const key in source) { // tslint:disable-line
+                const value = obj[key];
+                if (value === undefined ||
+                    (value === objectProto[key] && !hasOwnProperty.call(obj, key))) {
+                    obj[key] = source[key];
+                }
+            }
+        }
+    });
+    return obj;
+}
+exports.defaults = defaults;
+function omit(obj, properties) {
+    let o = {};
+    for (let key of Object.keys(obj)) {
+        if (properties.indexOf(key) == -1) {
+            o[key] = obj[key];
+        }
+    }
+    return o;
+}
+exports.omit = omit;
+//# sourceMappingURL=lodash.js.map
+
+/***/ }),
+/* 245 */
+/***/ (function(module, exports) {
+
+module.exports = require("module");
+
+/***/ }),
+/* 246 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const commands_1 = tslib_1.__importDefault(__webpack_require__(234));
+exports.commands = commands_1.default;
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+exports.events = events_1.default;
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
+exports.languages = languages_1.default;
+const document_1 = tslib_1.__importDefault(__webpack_require__(209));
+exports.Document = document_1.default;
+const mru_1 = tslib_1.__importDefault(__webpack_require__(216));
+exports.Mru = mru_1.default;
+const floatBuffer_1 = tslib_1.__importDefault(__webpack_require__(250));
+exports.FloatBuffer = floatBuffer_1.default;
+const floatFactory_1 = tslib_1.__importDefault(__webpack_require__(249));
+exports.FloatFactory = floatFactory_1.default;
+const fileSystemWatcher_1 = tslib_1.__importDefault(__webpack_require__(215));
+exports.FileSystemWatcher = fileSystemWatcher_1.default;
+const services_1 = tslib_1.__importDefault(__webpack_require__(280));
+exports.services = services_1.default;
+const sources_1 = tslib_1.__importDefault(__webpack_require__(239));
+exports.sources = sources_1.default;
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+exports.workspace = workspace_1.default;
+const extensions_1 = tslib_1.__importDefault(__webpack_require__(240));
+exports.extensions = extensions_1.default;
+const manager_1 = tslib_1.__importDefault(__webpack_require__(293));
+exports.listManager = manager_1.default;
+const manager_2 = tslib_1.__importDefault(__webpack_require__(235));
+exports.snippetManager = manager_2.default;
+const basic_1 = tslib_1.__importDefault(__webpack_require__(301));
+exports.BasicList = basic_1.default;
+const manager_3 = tslib_1.__importDefault(__webpack_require__(248));
+exports.diagnosticManager = manager_3.default;
+const ansiparse_1 = __webpack_require__(317);
+exports.ansiparse = ansiparse_1.ansiparse;
+const watchman_1 = tslib_1.__importDefault(__webpack_require__(227));
+exports.Watchman = watchman_1.default;
+const vscode_uri_1 = __webpack_require__(174);
+exports.Uri = vscode_uri_1.URI;
+const neovim_1 = __webpack_require__(4);
+exports.Neovim = neovim_1.Neovim;
+exports.Buffer = neovim_1.Buffer;
+exports.Window = neovim_1.Window;
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+exports.Disposable = vscode_languageserver_protocol_1.Disposable;
+exports.Event = vscode_languageserver_protocol_1.Event;
+exports.Emitter = vscode_languageserver_protocol_1.Emitter;
+tslib_1.__exportStar(__webpack_require__(190), exports);
+tslib_1.__exportStar(__webpack_require__(281), exports);
+var util_1 = __webpack_require__(171);
+exports.disposeAll = util_1.disposeAll;
+exports.runCommand = util_1.runCommand;
+exports.isRunning = util_1.isRunning;
+exports.executable = util_1.executable;
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+/* 247 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const commands_1 = tslib_1.__importDefault(__webpack_require__(234));
+const manager_1 = tslib_1.__importDefault(__webpack_require__(248));
+const codeActionmanager_1 = tslib_1.__importDefault(__webpack_require__(258));
+const rangeManager_1 = tslib_1.__importDefault(__webpack_require__(260));
+const codeLensManager_1 = tslib_1.__importDefault(__webpack_require__(261));
+const declarationManager_1 = tslib_1.__importDefault(__webpack_require__(262));
+const definitionManager_1 = tslib_1.__importDefault(__webpack_require__(263));
+const documentColorManager_1 = tslib_1.__importDefault(__webpack_require__(264));
+const documentHighlightManager_1 = tslib_1.__importDefault(__webpack_require__(265));
+const documentLinkManager_1 = tslib_1.__importDefault(__webpack_require__(266));
+const documentSymbolManager_1 = tslib_1.__importDefault(__webpack_require__(267));
+const foldingRangeManager_1 = tslib_1.__importDefault(__webpack_require__(268));
+const formatManager_1 = tslib_1.__importDefault(__webpack_require__(269));
+const formatRangeManager_1 = tslib_1.__importDefault(__webpack_require__(270));
+const hoverManager_1 = tslib_1.__importDefault(__webpack_require__(271));
+const implementatioinManager_1 = tslib_1.__importDefault(__webpack_require__(272));
+const onTypeFormatManager_1 = tslib_1.__importDefault(__webpack_require__(273));
+const referenceManager_1 = tslib_1.__importDefault(__webpack_require__(274));
+const renameManager_1 = tslib_1.__importDefault(__webpack_require__(275));
+const signatureManager_1 = tslib_1.__importDefault(__webpack_require__(276));
+const typeDefinitionManager_1 = tslib_1.__importDefault(__webpack_require__(277));
+const workspaceSymbolsManager_1 = tslib_1.__importDefault(__webpack_require__(278));
+const manager_2 = tslib_1.__importDefault(__webpack_require__(235));
+const sources_1 = tslib_1.__importDefault(__webpack_require__(239));
+const types_1 = __webpack_require__(190);
+const util_1 = __webpack_require__(171);
+const complete = tslib_1.__importStar(__webpack_require__(279));
+const position_1 = __webpack_require__(231);
+const string_1 = __webpack_require__(212);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('languages');
+function fixDocumentation(str) {
+    return str.replace(/&nbsp;/g, ' ');
+}
+function check(_target, key, descriptor) {
+    let fn = descriptor.value;
+    if (typeof fn !== 'function') {
+        return;
+    }
+    descriptor.value = function (...args) {
+        let { cancelTokenSource } = this;
+        this.cancelTokenSource = new vscode_languageserver_protocol_1.CancellationTokenSource();
+        return new Promise((resolve, reject) => {
+            let resolved = false;
+            let timer = setTimeout(() => {
+                cancelTokenSource.cancel();
+                logger.error(`${key} timeout after 5s`);
+                if (!resolved)
+                    reject(new Error(`${key} timeout after 5s`));
+            }, 5000);
+            Promise.resolve(fn.apply(this, args)).then(res => {
+                clearTimeout(timer);
+                resolve(res);
+            }, e => {
+                clearTimeout(timer);
+                reject(e);
+            });
+        });
+    };
+}
+exports.check = check;
+class Languages {
+    constructor() {
+        this.onTypeFormatManager = new onTypeFormatManager_1.default();
+        this.documentLinkManager = new documentLinkManager_1.default();
+        this.documentColorManager = new documentColorManager_1.default();
+        this.foldingRangeManager = new foldingRangeManager_1.default();
+        this.renameManager = new renameManager_1.default();
+        this.formatManager = new formatManager_1.default();
+        this.codeActionManager = new codeActionmanager_1.default();
+        this.workspaceSymbolsManager = new workspaceSymbolsManager_1.default();
+        this.formatRangeManager = new formatRangeManager_1.default();
+        this.hoverManager = new hoverManager_1.default();
+        this.signatureManager = new signatureManager_1.default();
+        this.documentSymbolManager = new documentSymbolManager_1.default();
+        this.documentHighlightManager = new documentHighlightManager_1.default();
+        this.definitionManager = new definitionManager_1.default();
+        this.declarationManager = new declarationManager_1.default();
+        this.typeDefinitionManager = new typeDefinitionManager_1.default();
+        this.referenceManager = new referenceManager_1.default();
+        this.implementatioinManager = new implementatioinManager_1.default();
+        this.codeLensManager = new codeLensManager_1.default();
+        this.selectionRangeManager = new rangeManager_1.default();
+        this.cancelTokenSource = new vscode_languageserver_protocol_1.CancellationTokenSource();
+        workspace_1.default.onWillSaveUntil(event => {
+            let config = workspace_1.default.getConfiguration('coc.preferences');
+            let filetypes = config.get('formatOnSaveFiletypes', []);
+            let { languageId } = event.document;
+            if (filetypes.indexOf(languageId) !== -1) {
+                let willSaveWaitUntil = async () => {
+                    let options = await workspace_1.default.getFormatOptions(event.document.uri);
+                    let textEdits = await this.provideDocumentFormattingEdits(event.document, options);
+                    return textEdits;
+                };
+                event.waitUntil(willSaveWaitUntil());
+            }
+        }, null, 'languageserver');
+        workspace_1.default.ready.then(() => {
+            this.loadCompleteConfig();
+        }, _e => {
+            // noop
+        });
+        workspace_1.default.onDidChangeConfiguration(this.loadCompleteConfig, this);
+    }
+    get nvim() {
+        return workspace_1.default.nvim;
+    }
+    loadCompleteConfig() {
+        let config = workspace_1.default.getConfiguration('coc.preferences');
+        let suggest = workspace_1.default.getConfiguration('suggest');
+        function getConfig(key, defaultValue) {
+            return config.get(key, suggest.get(key, defaultValue));
+        }
+        let labels = suggest.get('completionItemKindLabels', {});
+        this.completionItemKindMap = new Map([
+            [vscode_languageserver_protocol_1.CompletionItemKind.Text, labels['text'] || 'v'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Method, labels['method'] || 'f'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Function, labels['function'] || 'f'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Constructor, typeof labels['constructor'] == 'function' ? 'f' : labels['con' + 'structor']],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Field, labels['field'] || 'm'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Variable, labels['variable'] || 'v'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Class, labels['class'] || 'C'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Interface, labels['interface'] || 'I'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Module, labels['module'] || 'M'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Property, labels['property'] || 'm'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Unit, labels['unit'] || 'U'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Value, labels['value'] || 'v'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Enum, labels['enum'] || 'E'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Keyword, labels['keyword'] || 'k'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Snippet, labels['snippet'] || 'S'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Color, labels['color'] || 'v'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.File, labels['file'] || 'F'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Reference, labels['reference'] || 'r'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Folder, labels['folder'] || 'F'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.EnumMember, labels['enumMember'] || 'm'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Constant, labels['constant'] || 'v'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Struct, labels['struct'] || 'S'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Event, labels['event'] || 'E'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.Operator, labels['operator'] || 'O'],
+            [vscode_languageserver_protocol_1.CompletionItemKind.TypeParameter, labels['typeParameter'] || 'T'],
+        ]);
+        this.completeConfig = {
+            defaultKindText: labels['default'] || '',
+            priority: getConfig('languageSourcePriority', 99),
+            echodocSupport: getConfig('echodocSupport', false),
+            waitTime: getConfig('triggerCompletionWait', 60),
+            detailField: getConfig('detailField', 'abbr'),
+            detailMaxLength: getConfig('detailMaxLength', 50)
+        };
+    }
+    registerOnTypeFormattingEditProvider(selector, provider, triggerCharacters) {
+        return this.onTypeFormatManager.register(selector, provider, triggerCharacters);
+    }
+    registerCompletionItemProvider(name, shortcut, languageIds, provider, triggerCharacters = [], priority) {
+        languageIds = typeof languageIds == 'string' ? [languageIds] : languageIds;
+        let source = this.createCompleteSource(name, shortcut, provider, languageIds, triggerCharacters, priority);
+        sources_1.default.addSource(source);
+        logger.debug('created service source', name);
+        return {
+            dispose: () => {
+                sources_1.default.removeSource(source);
+            }
+        };
+    }
+    registerCodeActionProvider(selector, provider, clientId, codeActionKinds) {
+        return this.codeActionManager.register(selector, provider, clientId, codeActionKinds);
+    }
+    registerHoverProvider(selector, provider) {
+        return this.hoverManager.register(selector, provider);
+    }
+    registerSelectionRangeProvider(selector, provider) {
+        return this.selectionRangeManager.register(selector, provider);
+    }
+    registerSignatureHelpProvider(selector, provider, triggerCharacters) {
+        return this.signatureManager.register(selector, provider, triggerCharacters);
+    }
+    registerDocumentSymbolProvider(selector, provider) {
+        return this.documentSymbolManager.register(selector, provider);
+    }
+    registerFoldingRangeProvider(selector, provider) {
+        return this.foldingRangeManager.register(selector, provider);
+    }
+    registerDocumentHighlightProvider(selector, provider) {
+        return this.documentHighlightManager.register(selector, provider);
+    }
+    registerCodeLensProvider(selector, provider) {
+        return this.codeLensManager.register(selector, provider);
+    }
+    registerDocumentLinkProvider(selector, provider) {
+        return this.documentLinkManager.register(selector, provider);
+    }
+    registerDocumentColorProvider(selector, provider) {
+        return this.documentColorManager.register(selector, provider);
+    }
+    registerDefinitionProvider(selector, provider) {
+        return this.definitionManager.register(selector, provider);
+    }
+    registerDeclarationProvider(selector, provider) {
+        return this.declarationManager.register(selector, provider);
+    }
+    registerTypeDefinitionProvider(selector, provider) {
+        return this.typeDefinitionManager.register(selector, provider);
+    }
+    registerImplementationProvider(selector, provider) {
+        return this.implementatioinManager.register(selector, provider);
+    }
+    registerReferencesProvider(selector, provider) {
+        return this.referenceManager.register(selector, provider);
+    }
+    registerRenameProvider(selector, provider) {
+        return this.renameManager.register(selector, provider);
+    }
+    registerWorkspaceSymbolProvider(selector, provider) {
+        return this.workspaceSymbolsManager.register(selector, provider);
+    }
+    registerDocumentFormatProvider(selector, provider, priority = 0) {
+        return this.formatManager.register(selector, provider, priority);
+    }
+    registerDocumentRangeFormatProvider(selector, provider, priority = 0) {
+        return this.formatRangeManager.register(selector, provider, priority);
+    }
+    shouldTriggerSignatureHelp(document, triggerCharacter) {
+        return this.signatureManager.shouldTrigger(document, triggerCharacter);
+    }
+    async getHover(document, position) {
+        return await this.hoverManager.provideHover(document, position, this.token);
+    }
+    async getSignatureHelp(document, position, token) {
+        return await this.signatureManager.provideSignatureHelp(document, position, token);
+    }
+    async getDefinition(document, position) {
+        if (!this.definitionManager.hasProvider(document))
+            return null;
+        return await this.definitionManager.provideDefinition(document, position, this.token);
+    }
+    async getDeclaration(document, position) {
+        if (!this.declarationManager.hasProvider(document))
+            return null;
+        return await this.declarationManager.provideDeclaration(document, position, this.token);
+    }
+    async getTypeDefinition(document, position) {
+        if (!this.typeDefinitionManager.hasProvider(document))
+            return null;
+        return await this.typeDefinitionManager.provideTypeDefinition(document, position, this.token);
+    }
+    async getImplementation(document, position) {
+        if (!this.implementatioinManager.hasProvider(document))
+            return null;
+        return await this.implementatioinManager.provideReferences(document, position, this.token);
+    }
+    async getReferences(document, context, position) {
+        if (!this.referenceManager.hasProvider(document))
+            return null;
+        return await this.referenceManager.provideReferences(document, position, context, this.token);
+    }
+    async getDocumentSymbol(document) {
+        return await this.documentSymbolManager.provideDocumentSymbols(document, this.token);
+    }
+    async getSelectionRanges(document, positions) {
+        return await this.selectionRangeManager.provideSelectionRanges(document, positions, this.token);
+    }
+    async getWorkspaceSymbols(document, query) {
+        query = query || '';
+        return await this.workspaceSymbolsManager.provideWorkspaceSymbols(document, query, this.token);
+    }
+    async resolveWorkspaceSymbol(symbol) {
+        return await this.workspaceSymbolsManager.resolveWorkspaceSymbol(symbol, this.token);
+    }
+    async provideRenameEdits(document, position, newName) {
+        if (!this.renameManager.hasProvider(document)) {
+            let doc = workspace_1.default.getDocument(document.uri);
+            if (!doc)
+                return null;
+            let range = doc.getWordRangeAtPosition(position);
+            if (!range)
+                return null;
+            let word = doc.textDocument.getText(range);
+            let ranges = doc.getSymbolRanges(word);
+            if (!ranges.length)
+                return null;
+            return {
+                changes: {
+                    [doc.uri]: ranges.map(r => {
+                        return {
+                            range: r,
+                            newText: newName
+                        };
+                    })
+                }
+            };
+        }
+        return await this.renameManager.provideRenameEdits(document, position, newName, this.token);
+    }
+    async prepareRename(document, position) {
+        return await this.renameManager.prepareRename(document, position, this.token);
+    }
+    async provideDocumentFormattingEdits(document, options) {
+        if (!this.formatManager.hasProvider(document)) {
+            let hasRangeFormater = this.formatRangeManager.hasProvider(document);
+            if (!hasRangeFormater) {
+                logger.error('Format provider not found for current document', 'error');
+                return null;
+            }
+            let end = document.positionAt(document.getText().length);
+            let range = vscode_languageserver_protocol_1.Range.create(vscode_languageserver_protocol_1.Position.create(0, 0), end);
+            return await this.provideDocumentRangeFormattingEdits(document, range, options);
+        }
+        return await this.formatManager.provideDocumentFormattingEdits(document, options, this.token);
+    }
+    async provideDocumentRangeFormattingEdits(document, range, options) {
+        if (!this.formatRangeManager.hasProvider(document))
+            return null;
+        return await this.formatRangeManager.provideDocumentRangeFormattingEdits(document, range, options, this.token);
+    }
+    /**
+     * Get CodeAction list for current document
+     *
+     * @public
+     * @param {TextDocument} document
+     * @param {Range} range
+     * @param {CodeActionContext} context
+     * @returns {Promise<CodeAction[]>}
+     */
+    async getCodeActions(document, range, context, silent = false) {
+        if (!silent && !this.codeActionManager.hasProvider(document)) {
+            return null;
+        }
+        return await this.codeActionManager.provideCodeActions(document, range, context, this.token);
+    }
+    async getDocumentHighLight(document, position) {
+        return await this.documentHighlightManager.provideDocumentHighlights(document, position, this.token);
+    }
+    async getDocumentLinks(document) {
+        if (!this.documentLinkManager.hasProvider(document)) {
+            return null;
+        }
+        return (await this.documentLinkManager.provideDocumentLinks(document, this.token)) || [];
+    }
+    async resolveDocumentLink(link) {
+        return await this.documentLinkManager.resolveDocumentLink(link, this.token);
+    }
+    async provideDocumentColors(document) {
+        return await this.documentColorManager.provideDocumentColors(document, this.token);
+    }
+    async provideFoldingRanges(document, context) {
+        if (!this.formatRangeManager.hasProvider(document)) {
+            return null;
+        }
+        return await this.foldingRangeManager.provideFoldingRanges(document, context, this.token);
+    }
+    async provideColorPresentations(color, document) {
+        return await this.documentColorManager.provideColorPresentations(color, document, this.token);
+    }
+    async getCodeLens(document) {
+        return await this.codeLensManager.provideCodeLenses(document, this.token);
+    }
+    async resolveCodeLens(codeLens) {
+        return await this.codeLensManager.resolveCodeLens(codeLens, this.token);
+    }
+    async provideDocumentOntTypeEdits(character, document, position) {
+        return this.onTypeFormatManager.onCharacterType(character, document, position, this.token);
+    }
+    hasOnTypeProvider(character, document) {
+        return this.onTypeFormatManager.getProvider(document, character) != null;
+    }
+    dispose() {
+        // noop
+    }
+    createDiagnosticCollection(owner) {
+        return manager_1.default.create(owner);
+    }
+    createCompleteSource(name, shortcut, provider, languageIds, triggerCharacters, priority) {
+        // track them for resolve
+        let completeItems = [];
+        // line used for TextEdit
+        let hasResolve = typeof provider.resolveCompletionItem === 'function';
+        priority = priority == null ? this.completeConfig.priority : priority;
+        // index set of resolved items
+        let resolvedIndexes = new Set();
+        let doc = null;
+        let waitTime = Math.min(Math.max(50, this.completeConfig.waitTime), 300);
+        let source = {
+            name,
+            priority,
+            shortcut,
+            enable: true,
+            sourceType: types_1.SourceType.Service,
+            filetypes: languageIds,
+            triggerCharacters: triggerCharacters || [],
+            doComplete: async (opt, token) => {
+                let { triggerCharacter, bufnr } = opt;
+                doc = workspace_1.default.getDocument(bufnr);
+                if (!doc)
+                    return null;
+                resolvedIndexes = new Set();
+                let isTrigger = triggerCharacters && triggerCharacters.indexOf(triggerCharacter) != -1;
+                let triggerKind = vscode_languageserver_protocol_1.CompletionTriggerKind.Invoked;
+                if (opt.triggerForInComplete) {
+                    triggerKind = vscode_languageserver_protocol_1.CompletionTriggerKind.TriggerForIncompleteCompletions;
+                }
+                else if (isTrigger) {
+                    triggerKind = vscode_languageserver_protocol_1.CompletionTriggerKind.TriggerCharacter;
+                }
+                if (opt.triggerCharacter)
+                    await util_1.wait(waitTime);
+                if (token.isCancellationRequested)
+                    return null;
+                let position = complete.getPosition(opt);
+                let context = { triggerKind, option: opt };
+                if (isTrigger)
+                    context.triggerCharacter = triggerCharacter;
+                let result;
+                try {
+                    result = await Promise.resolve(provider.provideCompletionItems(doc.textDocument, position, token, context));
+                }
+                catch (e) {
+                    // don't disturb user
+                    logger.error(`Source "${name}" complete error:`, e);
+                    return null;
+                }
+                if (!result || token.isCancellationRequested)
+                    return null;
+                completeItems = Array.isArray(result) ? result : result.items;
+                if (!completeItems || completeItems.length == 0)
+                    return null;
+                // used for fixed col
+                let option = Object.assign({}, opt);
+                if (typeof result.startcol == 'number') {
+                    option.col = result.startcol;
+                }
+                let items = completeItems.map((o, index) => {
+                    let item = this.convertVimCompleteItem(o, shortcut, option);
+                    item.index = index;
+                    return item;
+                });
+                return {
+                    startcol: result.startcol,
+                    isIncomplete: !!result.isIncomplete,
+                    items
+                };
+            },
+            onCompleteResolve: async (item, token) => {
+                let resolving = completeItems[item.index];
+                if (!resolving)
+                    return;
+                if (hasResolve && !resolvedIndexes.has(item.index)) {
+                    let resolved = await Promise.resolve(provider.resolveCompletionItem(resolving, token));
+                    if (token.isCancellationRequested)
+                        return;
+                    resolvedIndexes.add(item.index);
+                    if (resolved)
+                        Object.assign(resolving, resolved);
+                }
+                if (item.documentation == null) {
+                    let { documentation, detail } = resolving;
+                    if (!documentation && !detail)
+                        return;
+                    let docs = [];
+                    if (detail && !item.detailShown && detail != item.word) {
+                        detail = detail.replace(/\n\s*/g, ' ');
+                        if (detail.length) {
+                            let isText = /^[\w-\s.,\t]+$/.test(detail);
+                            docs.push({ filetype: isText ? 'txt' : doc.filetype, content: detail });
+                        }
+                    }
+                    if (documentation) {
+                        if (typeof documentation == 'string') {
+                            docs.push({
+                                filetype: 'markdown',
+                                content: fixDocumentation(documentation)
+                            });
+                        }
+                        else if (documentation.value) {
+                            docs.push({
+                                filetype: documentation.kind == 'markdown' ? 'markdown' : 'txt',
+                                content: fixDocumentation(documentation.value)
+                            });
+                        }
+                    }
+                    item.documentation = docs;
+                }
+            },
+            onCompleteDone: async (vimItem, opt) => {
+                let item = completeItems[vimItem.index];
+                if (!item)
+                    return;
+                let line = opt.linenr - 1;
+                // tslint:disable-next-line: deprecation
+                if (item.insertText && !item.textEdit) {
+                    item.textEdit = {
+                        range: vscode_languageserver_protocol_1.Range.create(line, opt.col, line, opt.colnr - 1),
+                        // tslint:disable-next-line: deprecation
+                        newText: item.insertText
+                    };
+                }
+                if (vimItem.line)
+                    Object.assign(opt, { line: vimItem.line });
+                let snippet = await this.applyTextEdit(item, opt);
+                let { additionalTextEdits } = item;
+                if (additionalTextEdits && item.textEdit) {
+                    let r = item.textEdit.range;
+                    additionalTextEdits = additionalTextEdits.filter(edit => {
+                        if (position_1.rangeOverlap(r, edit.range)) {
+                            logger.info('Filtered overlap additionalTextEdit:', edit);
+                            return false;
+                        }
+                        return true;
+                    });
+                }
+                await this.applyAdditionalEdits(additionalTextEdits, opt.bufnr, snippet);
+                if (snippet && !manager_2.default.isPlainText(item.textEdit.newText)) {
+                    await manager_2.default.selectCurrentPlaceholder();
+                }
+                if (item.command)
+                    commands_1.default.execute(item.command);
+                doc = null;
+            },
+            shouldCommit: (item, character) => {
+                let completeItem = completeItems[item.index];
+                if (!completeItem)
+                    return false;
+                let { commitCharacters } = completeItem;
+                if (commitCharacters && commitCharacters.indexOf(character) !== -1) {
+                    return true;
+                }
+                return false;
+            }
+        };
+        return source;
+    }
+    get token() {
+        this.cancelTokenSource = new vscode_languageserver_protocol_1.CancellationTokenSource();
+        return this.cancelTokenSource.token;
+    }
+    async applyTextEdit(item, option) {
+        let { nvim } = this;
+        let { textEdit } = item;
+        if (!textEdit)
+            return false;
+        let { line, bufnr, linenr } = option;
+        let { range, newText } = textEdit;
+        let isSnippet = item.insertTextFormat === vscode_languageserver_protocol_1.InsertTextFormat.Snippet;
+        // replace inserted word
+        let start = line.substr(0, range.start.character);
+        let end = line.substr(range.end.character);
+        if (isSnippet) {
+            let doc = workspace_1.default.getDocument(bufnr);
+            await doc.applyEdits(nvim, [{
+                    range: vscode_languageserver_protocol_1.Range.create(linenr - 1, 0, linenr, 0),
+                    newText: `${start}${end}\n`
+                }]);
+            // can't select, since additionalTextEdits would break selection
+            let pos = vscode_languageserver_protocol_1.Position.create(linenr - 1, range.start.character);
+            return await manager_2.default.insertSnippet(newText, false, vscode_languageserver_protocol_1.Range.create(pos, pos));
+        }
+        let newLines = `${start}${newText}${end}`.split('\n');
+        if (newLines.length == 1) {
+            await nvim.call('coc#util#setline', [linenr, newLines[0]]);
+            await workspace_1.default.moveTo(vscode_languageserver_protocol_1.Position.create(linenr - 1, (start + newText).length));
+        }
+        else {
+            let document = workspace_1.default.getDocument(bufnr);
+            if (document) {
+                await document.buffer.setLines(newLines, {
+                    start: linenr - 1,
+                    end: linenr,
+                    strictIndexing: false
+                });
+            }
+            let line = linenr - 1 + newLines.length - 1;
+            let character = newLines[newLines.length - 1].length - end.length;
+            await workspace_1.default.moveTo({ line, character });
+        }
+        return false;
+    }
+    async applyAdditionalEdits(textEdits, bufnr, snippet) {
+        if (!textEdits || textEdits.length == 0)
+            return;
+        let document = workspace_1.default.getDocument(bufnr);
+        if (!document)
+            return;
+        await util_1.wait(workspace_1.default.isVim ? 100 : 10);
+        // how to move cursor after edit
+        let changed = null;
+        let pos = await workspace_1.default.getCursorPosition();
+        if (!snippet)
+            changed = position_1.getChangedFromEdits(pos, textEdits);
+        await document.applyEdits(this.nvim, textEdits);
+        if (changed) {
+            await workspace_1.default.moveTo(vscode_languageserver_protocol_1.Position.create(pos.line + changed.line, pos.character + changed.character));
+        }
+    }
+    convertVimCompleteItem(item, shortcut, opt) {
+        let { echodocSupport, detailField, detailMaxLength } = this.completeConfig;
+        let hasAdditionalEdit = item.additionalTextEdits && item.additionalTextEdits.length > 0;
+        let isSnippet = item.insertTextFormat === vscode_languageserver_protocol_1.InsertTextFormat.Snippet || hasAdditionalEdit;
+        let label = item.label.trim();
+        // tslint:disable-next-line:deprecation
+        if (isSnippet && item.insertText && item.insertText.indexOf('$') == -1 && !hasAdditionalEdit) {
+            // fix wrong insert format
+            isSnippet = false;
+            item.insertTextFormat = vscode_languageserver_protocol_1.InsertTextFormat.PlainText;
+        }
+        let obj = {
+            word: complete.getWord(item, opt),
+            abbr: label,
+            menu: `[${shortcut}]`,
+            kind: complete.completionKindString(item.kind, this.completionItemKindMap, this.completeConfig.defaultKindText),
+            sortText: item.sortText || null,
+            filterText: item.filterText || label,
+            isSnippet,
+            dup: 1
+        };
+        if (item && item.detail && detailField != 'preview') {
+            let detail = item.detail.replace(/\n\s*/g, ' ');
+            if (string_1.byteLength(detail) < detailMaxLength) {
+                if (detailField == 'menu') {
+                    obj.menu = `${detail} ${obj.menu}`;
+                }
+                else if (detailField == 'abbr') {
+                    obj.abbr = `${obj.abbr} - ${detail}`;
+                }
+                obj.detailShown = 1;
+            }
+        }
+        if (item.documentation) {
+            obj.info = typeof item.documentation == 'string' ? item.documentation : item.documentation.value;
+        }
+        if (!obj.word)
+            obj.empty = 1;
+        if (item.textEdit)
+            obj.line = opt.line;
+        if (item.kind == vscode_languageserver_protocol_1.CompletionItemKind.Folder && !obj.abbr.endsWith('/')) {
+            obj.abbr = obj.abbr + '/';
+        }
+        if (echodocSupport && item.kind >= 2 && item.kind <= 4) {
+            let fields = [item.detail || '', obj.abbr, obj.word];
+            for (let s of fields) {
+                if (s.indexOf('(') !== -1) {
+                    obj.signature = s;
+                    break;
+                }
+            }
+        }
+        if (item.preselect)
+            obj.preselect = true;
+        item.data = item.data || {};
+        if (item.data.optional)
+            obj.abbr = obj.abbr + '?';
+        return obj;
+    }
+}
+tslib_1.__decorate([
+    check
+], Languages.prototype, "getHover", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "getDefinition", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "getDeclaration", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "getTypeDefinition", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "getImplementation", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "getReferences", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "getDocumentSymbol", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "getSelectionRanges", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "getWorkspaceSymbols", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "resolveWorkspaceSymbol", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "provideRenameEdits", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "prepareRename", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "provideDocumentFormattingEdits", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "provideDocumentRangeFormattingEdits", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "getCodeActions", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "getDocumentHighLight", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "getDocumentLinks", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "resolveDocumentLink", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "provideDocumentColors", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "provideFoldingRanges", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "provideColorPresentations", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "getCodeLens", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "resolveCodeLens", null);
+tslib_1.__decorate([
+    check
+], Languages.prototype, "provideDocumentOntTypeEdits", null);
+exports.default = new Languages();
+//# sourceMappingURL=languages.js.map
+
+/***/ }),
+/* 248 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const vscode_uri_1 = __webpack_require__(174);
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const floatFactory_1 = tslib_1.__importDefault(__webpack_require__(249));
+const util_1 = __webpack_require__(171);
+const position_1 = __webpack_require__(231);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const buffer_1 = __webpack_require__(254);
+const collection_1 = tslib_1.__importDefault(__webpack_require__(257));
+const util_2 = __webpack_require__(256);
+const logger = __webpack_require__(182)('diagnostic-manager');
+class DiagnosticManager {
+    constructor() {
+        this.enabled = true;
+        this.buffers = [];
+        this.collections = [];
+        this.disposables = [];
+        this.lastMessage = '';
+    }
+    init() {
+        this.setConfiguration();
+        let { nvim } = workspace_1.default;
+        let { maxWindowHeight } = this.config;
+        this.floatFactory = new floatFactory_1.default(nvim, workspace_1.default.env, false, maxWindowHeight);
+        this.disposables.push(vscode_languageserver_protocol_1.Disposable.create(() => {
+            if (this.timer)
+                clearTimeout(this.timer);
+        }));
+        let hasFloat = workspace_1.default.env.floating;
+        events_1.default.on('CursorMoved', async () => {
+            if (this.timer)
+                clearTimeout(this.timer);
+            this.timer = setTimeout(async () => {
+                if (this.config.enableMessage != 'always')
+                    return;
+                if (hasFloat && this.config.messageTarget == 'float')
+                    return;
+                await this.echoMessage(true);
+            }, 500);
+        }, null, this.disposables);
+        if (hasFloat) {
+            this.disposables.push(workspace_1.default.registerAutocmd({
+                event: 'CursorHold',
+                request: true,
+                callback: async () => {
+                    if (this.config.messageTarget == 'float') {
+                        await this.echoMessage(true);
+                    }
+                }
+            }));
+        }
+        events_1.default.on('InsertEnter', async () => {
+            this.floatFactory.close();
+            if (this.timer)
+                clearTimeout(this.timer);
+        }, null, this.disposables);
+        events_1.default.on('InsertLeave', async (bufnr) => {
+            this.floatFactory.close();
+            let doc = workspace_1.default.getDocument(bufnr);
+            if (!doc || !this.shouldValidate(doc))
+                return;
+            let { refreshOnInsertMode, refreshAfterSave } = this.config;
+            if (!refreshOnInsertMode && !refreshAfterSave) {
+                await util_1.wait(500);
+                this.refreshBuffer(doc.uri);
+            }
+        }, null, this.disposables);
+        events_1.default.on('BufEnter', async (bufnr) => {
+            if (this.timer)
+                clearTimeout(this.timer);
+            if (!this.config || !this.enabled || !this.config.locationlist)
+                return;
+            let doc = workspace_1.default.getDocument(bufnr);
+            if (!this.shouldValidate(doc) || doc.bufnr != bufnr)
+                return;
+            let refreshed = this.refreshBuffer(doc.uri);
+            if (!refreshed) {
+                let winid = await nvim.call('win_getid');
+                let curr = await nvim.call('getloclist', [winid, { title: 1 }]);
+                if ((curr.title && curr.title.indexOf('Diagnostics of coc') != -1)) {
+                    nvim.call('setloclist', [winid, [], 'f'], true);
+                }
+            }
+        }, null, this.disposables);
+        events_1.default.on('BufUnload', async (bufnr) => {
+            let idx = this.buffers.findIndex(buf => buf.bufnr == bufnr);
+            if (idx == -1)
+                return;
+            let buf = this.buffers[idx];
+            buf.dispose();
+            this.buffers.splice(idx, 1);
+            for (let collection of this.collections) {
+                collection.delete(buf.uri);
+            }
+            await buf.clear();
+        }, null, this.disposables);
+        events_1.default.on('BufWritePost', async (bufnr) => {
+            let buf = this.buffers.find(buf => buf.bufnr == bufnr);
+            if (buf)
+                await buf.checkSigns();
+            await util_1.wait(100);
+            if (this.config.refreshAfterSave) {
+                this.refreshBuffer(buf.uri);
+            }
+        }, null, this.disposables);
+        workspace_1.default.onDidChangeConfiguration(async (e) => {
+            this.setConfiguration(e);
+        }, null, this.disposables);
+        // create buffers
+        for (let doc of workspace_1.default.documents) {
+            this.createDiagnosticBuffer(doc);
+        }
+        workspace_1.default.onDidOpenTextDocument(textDocument => {
+            let doc = workspace_1.default.getDocument(textDocument.uri);
+            this.createDiagnosticBuffer(doc);
+        }, null, this.disposables);
+        this.setConfigurationErrors(true);
+        workspace_1.default.configurations.onError(async () => {
+            this.setConfigurationErrors();
+        }, null, this.disposables);
+        let { errorSign, warningSign, infoSign, hintSign } = this.config;
+        nvim.pauseNotification();
+        nvim.command(`sign define CocError   text=${errorSign}   linehl=CocErrorLine texthl=CocErrorSign`, true);
+        nvim.command(`sign define CocWarning text=${warningSign} linehl=CocWarningLine texthl=CocWarningSign`, true);
+        nvim.command(`sign define CocInfo    text=${infoSign}    linehl=CocInfoLine  texthl=CocInfoSign`, true);
+        nvim.command(`sign define CocHint    text=${hintSign}    linehl=CocHintLine  texthl=CocHintSign`, true);
+        if (this.config.virtualText) {
+            nvim.call('coc#util#init_virtual_hl', [], true);
+        }
+        nvim.resumeNotification(false, true).catch(_e => {
+            // noop
+        });
+    }
+    createDiagnosticBuffer(doc) {
+        if (!this.shouldValidate(doc))
+            return;
+        let idx = this.buffers.findIndex(b => b.bufnr == doc.bufnr);
+        if (idx == -1) {
+            let buf = new buffer_1.DiagnosticBuffer(doc, this.config);
+            this.buffers.push(buf);
+            buf.onDidRefresh(() => {
+                if (workspace_1.default.insertMode)
+                    return;
+                this.echoMessage(true).catch(_e => {
+                    // noop
+                });
+            });
+        }
+    }
+    setConfigurationErrors(init) {
+        let collections = this.collections;
+        let collection = collections.find(o => o.name == 'config');
+        if (!collection) {
+            collection = this.create('config');
+        }
+        else {
+            collection.clear();
+        }
+        let { errorItems } = workspace_1.default.configurations;
+        if (errorItems && errorItems.length) {
+            if (init)
+                workspace_1.default.showMessage(`settings file parse error, run ':CocList diagnostics'`, 'error');
+            let entries = new Map();
+            for (let item of errorItems) {
+                let { uri } = item.location;
+                let diagnostics = entries.get(uri) || [];
+                diagnostics.push(vscode_languageserver_protocol_1.Diagnostic.create(item.location.range, item.message, vscode_languageserver_protocol_1.DiagnosticSeverity.Error));
+                entries.set(uri, diagnostics);
+            }
+            collection.set(Array.from(entries));
+        }
+    }
+    /**
+     * Create collection by name
+     */
+    create(name) {
+        let collection = new collection_1.default(name);
+        this.collections.push(collection);
+        let disposable = collection.onDidDiagnosticsChange(async (uri) => {
+            if (this.config.refreshAfterSave)
+                return;
+            this.refreshBuffer(uri);
+        });
+        let dispose = collection.onDidDiagnosticsClear(uris => {
+            for (let uri of uris) {
+                this.refreshBuffer(uri);
+            }
+        });
+        collection.onDispose(() => {
+            disposable.dispose();
+            dispose.dispose();
+            let idx = this.collections.findIndex(o => o == collection);
+            if (idx !== -1)
+                this.collections.splice(idx, 1);
+            collection.forEach((uri, diagnostics) => {
+                if (diagnostics && diagnostics.length)
+                    this.refreshBuffer(uri);
+            });
+        });
+        return collection;
+    }
+    /**
+     * Get diagnostics ranges from document
+     */
+    getSortedRanges(uri) {
+        let collections = this.getCollections(uri);
+        let res = [];
+        for (let collection of collections) {
+            let ranges = collection.get(uri).map(o => o.range);
+            res.push(...ranges);
+        }
+        res.sort((a, b) => {
+            if (a.start.line != b.start.line) {
+                return a.start.line - b.start.line;
+            }
+            return a.start.character - b.start.character;
+        });
+        return res;
+    }
+    /**
+     * Get readonly diagnostics for a buffer
+     */
+    getDiagnostics(uri) {
+        let collections = this.getCollections(uri);
+        let { level } = this.config;
+        let res = [];
+        for (let collection of collections) {
+            let items = collection.get(uri);
+            if (!items)
+                continue;
+            if (level && level < vscode_languageserver_protocol_1.DiagnosticSeverity.Hint) {
+                items = items.filter(s => s.severity == null || s.severity <= level);
+            }
+            res.push(...items);
+        }
+        res.sort((a, b) => {
+            if (a.severity == b.severity) {
+                let d = position_1.comparePosition(a.range.start, b.range.start);
+                if (d != 0)
+                    return d;
+                if (a.source == b.source)
+                    return a.message > b.message ? 1 : -1;
+                return a.source > b.source ? 1 : -1;
+            }
+            return a.severity - b.severity;
+        });
+        return res;
+    }
+    getDiagnosticsInRange(document, range) {
+        let collections = this.getCollections(document.uri);
+        let res = [];
+        for (let collection of collections) {
+            let items = collection.get(document.uri);
+            if (!items)
+                continue;
+            for (let item of items) {
+                if (position_1.rangeIntersect(item.range, range)) {
+                    res.push(item);
+                }
+            }
+        }
+        return res;
+    }
+    /**
+     * Jump to previouse diagnostic position
+     */
+    async jumpPrevious() {
+        let buffer = await this.nvim.buffer;
+        let document = workspace_1.default.getDocument(buffer.id);
+        if (!document)
+            return;
+        let offset = await workspace_1.default.getOffset();
+        if (offset == null)
+            return;
+        let ranges = this.getSortedRanges(document.uri);
+        if (ranges.length == 0) {
+            workspace_1.default.showMessage('Empty diagnostics', 'warning');
+            return;
+        }
+        let { textDocument } = document;
+        for (let i = ranges.length - 1; i >= 0; i--) {
+            if (textDocument.offsetAt(ranges[i].end) < offset) {
+                await this.jumpTo(ranges[i]);
+                return;
+            }
+        }
+        await this.jumpTo(ranges[ranges.length - 1]);
+    }
+    /**
+     * Jump to next diagnostic position
+     */
+    async jumpNext() {
+        let buffer = await this.nvim.buffer;
+        let document = workspace_1.default.getDocument(buffer.id);
+        let offset = await workspace_1.default.getOffset();
+        let ranges = this.getSortedRanges(document.uri);
+        if (ranges.length == 0) {
+            workspace_1.default.showMessage('Empty diagnostics', 'warning');
+            return;
+        }
+        let { textDocument } = document;
+        for (let i = 0; i <= ranges.length - 1; i++) {
+            if (textDocument.offsetAt(ranges[i].start) > offset) {
+                await this.jumpTo(ranges[i]);
+                return;
+            }
+        }
+        await this.jumpTo(ranges[0]);
+    }
+    /**
+     * All diagnostics of current workspace
+     */
+    getDiagnosticList() {
+        let res = [];
+        for (let collection of this.collections) {
+            collection.forEach((uri, diagnostics) => {
+                let file = vscode_uri_1.URI.parse(uri).fsPath;
+                for (let diagnostic of diagnostics) {
+                    let { start } = diagnostic.range;
+                    let o = {
+                        file,
+                        lnum: start.line + 1,
+                        col: start.character + 1,
+                        message: `[${diagnostic.source || collection.name}${diagnostic.code ? ' ' + diagnostic.code : ''}] ${diagnostic.message}`,
+                        severity: util_2.getSeverityName(diagnostic.severity),
+                        level: diagnostic.severity || 0,
+                        location: vscode_languageserver_protocol_1.Location.create(uri, diagnostic.range)
+                    };
+                    res.push(o);
+                }
+            });
+        }
+        res.sort((a, b) => {
+            if (a.level !== b.level) {
+                return a.level - b.level;
+            }
+            if (a.file !== b.file) {
+                return a.file > b.file ? 1 : -1;
+            }
+            else {
+                if (a.lnum != b.lnum) {
+                    return a.lnum - b.lnum;
+                }
+                return a.col - b.col;
+            }
+        });
+        return res;
+    }
+    /**
+     * Echo diagnostic message of currrent position
+     */
+    async echoMessage(truncate = false) {
+        if (!this.enabled || this.config.enableMessage == 'never')
+            return;
+        if (this.timer)
+            clearTimeout(this.timer);
+        let buf = await this.nvim.buffer;
+        let pos = await workspace_1.default.getCursorPosition();
+        let buffer = this.buffers.find(o => o.bufnr == buf.id);
+        if (!buffer)
+            return;
+        let { checkCurrentLine } = this.config;
+        let useFloat = workspace_1.default.env.floating && this.config.messageTarget == 'float';
+        let diagnostics = buffer.diagnostics.filter(o => {
+            if (checkCurrentLine)
+                return position_1.lineInRange(pos.line, o.range);
+            return position_1.positionInRange(pos, o.range) == 0;
+        });
+        if (diagnostics.length == 0) {
+            if (useFloat) {
+                this.floatFactory.close();
+            }
+            else {
+                let echoLine = await this.nvim.call('coc#util#echo_line');
+                if (this.lastMessage && this.lastMessage == echoLine.trim()) {
+                    this.nvim.command('echo ""', true);
+                }
+                this.lastMessage = '';
+            }
+            return;
+        }
+        if (truncate && workspace_1.default.insertMode)
+            return;
+        let lines = [];
+        let docs = [];
+        diagnostics.forEach(diagnostic => {
+            let { source, code, severity, message } = diagnostic;
+            let s = util_2.getSeverityName(severity)[0];
+            let str = `[${source}${code ? ' ' + code : ''}] [${s}] ${message}`;
+            let filetype = 'Error';
+            switch (diagnostic.severity) {
+                case vscode_languageserver_protocol_1.DiagnosticSeverity.Hint:
+                    filetype = 'Hint';
+                    break;
+                case vscode_languageserver_protocol_1.DiagnosticSeverity.Warning:
+                    filetype = 'Warning';
+                    break;
+                case vscode_languageserver_protocol_1.DiagnosticSeverity.Information:
+                    filetype = 'Info';
+                    break;
+            }
+            docs.push({ filetype, content: str });
+            lines.push(...str.split('\n'));
+        });
+        if (useFloat) {
+            let hasFloat = await this.nvim.call('coc#util#has_float');
+            if (hasFloat)
+                return;
+            await this.floatFactory.create(docs);
+        }
+        else {
+            this.lastMessage = lines[0];
+            await this.nvim.command('echo ""');
+            await workspace_1.default.echoLines(lines, truncate);
+        }
+    }
+    hideFloat() {
+        if (this.floatFactory) {
+            this.floatFactory.close();
+        }
+    }
+    dispose() {
+        for (let collection of this.collections) {
+            collection.dispose();
+        }
+        this.buffers.splice(0, this.buffers.length);
+        this.collections = [];
+        this.floatFactory.dispose();
+        util_1.disposeAll(this.disposables);
+    }
+    get nvim() {
+        return workspace_1.default.nvim;
+    }
+    setConfiguration(event) {
+        if (event && !event.affectsConfiguration('diagnostic'))
+            return;
+        let preferences = workspace_1.default.getConfiguration('coc.preferences.diagnostic');
+        let config = workspace_1.default.getConfiguration('diagnostic');
+        function getConfig(key, defaultValue) {
+            return preferences.get(key, config.get(key, defaultValue));
+        }
+        this.config = {
+            srcId: workspace_1.default.createNameSpace('coc-diagnostic') || 1000,
+            virtualTextSrcId: workspace_1.default.createNameSpace('diagnostic-virtualText'),
+            checkCurrentLine: getConfig('checkCurrentLine', false),
+            enableSign: getConfig('enableSign', true),
+            maxWindowHeight: getConfig('maxWindowHeight', 10),
+            enableMessage: getConfig('enableMessage', 'always'),
+            joinMessageLines: getConfig('joinMessageLines', false),
+            messageTarget: getConfig('messageTarget', 'float'),
+            virtualText: getConfig('virtualText', false),
+            virtualTextPrefix: getConfig('virtualTextPrefix', " "),
+            virtualTextLineSeparator: getConfig('virtualTextLineSeparator', " \\ "),
+            virtualTextLines: getConfig('virtualTextLines', 3),
+            displayByAle: getConfig('displayByAle', false),
+            level: util_2.severityLevel(getConfig('level', 'hint')),
+            locationlist: getConfig('locationlist', true),
+            signOffset: getConfig('signOffset', 1000),
+            errorSign: getConfig('errorSign', '>>'),
+            warningSign: getConfig('warningSign', '>>'),
+            infoSign: getConfig('infoSign', '>>'),
+            hintSign: getConfig('hintSign', '>>'),
+            refreshAfterSave: getConfig('refreshAfterSave', false),
+            refreshOnInsertMode: getConfig('refreshOnInsertMode', false),
+        };
+        this.enabled = getConfig('enable', true);
+        if (this.config.displayByAle) {
+            this.enabled = false;
+        }
+        if (event) {
+            for (let severity of ['error', 'info', 'warning', 'hint']) {
+                let key = `diagnostic.${severity}Sign`;
+                if (event.affectsConfiguration(key)) {
+                    let text = config.get(`${severity}Sign`, '>>');
+                    let name = severity[0].toUpperCase() + severity.slice(1);
+                    this.nvim.command(`sign define Coc${name}   text=${text}   linehl=Coc${name}Line texthl=Coc${name}Sign`, true);
+                }
+            }
+        }
+    }
+    getCollections(uri) {
+        return this.collections.filter(c => c.has(uri));
+    }
+    shouldValidate(doc) {
+        return doc != null && doc.buftype == '';
+    }
+    refreshBuffer(uri) {
+        // vim has issue with diagnostic update
+        if (workspace_1.default.insertMode && !this.config.refreshOnInsertMode)
+            return;
+        let buf = this.buffers.find(buf => buf.uri == uri);
+        let { displayByAle } = this.config;
+        if (buf) {
+            if (displayByAle) {
+                let { nvim } = this;
+                let allDiagnostics = new Map();
+                for (let collection of this.collections) {
+                    let diagnostics = collection.get(uri);
+                    let aleItems = diagnostics.map(o => {
+                        let { range } = o;
+                        return {
+                            text: o.message,
+                            code: o.code,
+                            lnum: range.start.line + 1,
+                            col: range.start.character + 1,
+                            end_lnum: range.end.line + 1,
+                            end_col: range.end.character,
+                            type: util_2.getSeverityType(o.severity)
+                        };
+                    });
+                    let exists = allDiagnostics.get(collection.name);
+                    if (exists) {
+                        exists.push(...aleItems);
+                    }
+                    else {
+                        allDiagnostics.set(collection.name, aleItems);
+                    }
+                }
+                nvim.pauseNotification();
+                for (let key of allDiagnostics.keys()) {
+                    this.nvim.call('ale#other_source#ShowResults', [buf.bufnr, key, allDiagnostics.get(key)], true);
+                }
+                nvim.resumeNotification(false, true).catch(_e => {
+                    // noop
+                });
+            }
+            else {
+                let diagnostics = this.getDiagnostics(uri);
+                if (this.enabled) {
+                    buf.refresh(diagnostics);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    async jumpTo(range) {
+        if (!range)
+            return;
+        let { start } = range;
+        await this.nvim.call('cursor', [start.line + 1, start.character + 1]);
+        await this.echoMessage();
+    }
+}
+exports.DiagnosticManager = DiagnosticManager;
+exports.default = new DiagnosticManager();
+//# sourceMappingURL=manager.js.map
+
+/***/ }),
+/* 249 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const manager_1 = tslib_1.__importDefault(__webpack_require__(235));
+const util_1 = __webpack_require__(171);
+const object_1 = __webpack_require__(191);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const floatBuffer_1 = tslib_1.__importDefault(__webpack_require__(250));
+const debounce_1 = tslib_1.__importDefault(__webpack_require__(173));
+const logger = __webpack_require__(182)('model-float');
+// factory class for floating window
+class FloatFactory {
+    constructor(nvim, env, preferTop = false, maxHeight = 999, maxWidth) {
+        this.nvim = nvim;
+        this.env = env;
+        this.preferTop = preferTop;
+        this.maxHeight = maxHeight;
+        this.maxWidth = maxWidth;
+        this.disposables = [];
+        this.alignTop = false;
+        this.createTs = 0;
+        this.cursor = [0, 0];
+        if (!env.floating)
+            return;
+        events_1.default.on('BufEnter', bufnr => {
+            if (this.buffer && bufnr == this.buffer.id)
+                return;
+            if (bufnr == this.targetBufnr)
+                return;
+            this.close();
+        }, null, this.disposables);
+        events_1.default.on('InsertLeave', bufnr => {
+            if (this.buffer && bufnr == this.buffer.id)
+                return;
+            if (manager_1.default.isActived(bufnr))
+                return;
+            this.close();
+        }, null, this.disposables);
+        events_1.default.on('MenuPopupChanged', async (ev, cursorline) => {
+            if (cursorline < ev.row && !this.alignTop) {
+                this.close();
+            }
+            else if (cursorline > ev.row && this.alignTop) {
+                this.close();
+            }
+        }, null, this.disposables);
+        let onCursorMoved = debounce_1.default(this.onCursorMoved.bind(this), 100);
+        events_1.default.on('CursorMovedI', onCursorMoved, this, this.disposables);
+        events_1.default.on('CursorMoved', onCursorMoved, this, this.disposables);
+    }
+    onCursorMoved(bufnr, cursor) {
+        if (!this.window)
+            return;
+        if (this.buffer && bufnr == this.buffer.id)
+            return;
+        if (bufnr == this.targetBufnr && object_1.equals(cursor, this.cursor))
+            return;
+        if (!workspace_1.default.insertMode || bufnr != this.targetBufnr) {
+            this.close();
+            return;
+        }
+        let ts = Date.now();
+        setTimeout(() => {
+            if (this.createTs > ts)
+                return;
+            this.close();
+        }, 500);
+    }
+    async checkFloatBuffer() {
+        let { floatBuffer } = this;
+        if (floatBuffer) {
+            let valid = await floatBuffer.valid;
+            if (valid)
+                return;
+        }
+        let buf = await this.nvim.createNewBuffer(false, true);
+        await buf.setOption('buftype', 'nofile');
+        await buf.setOption('bufhidden', 'hide');
+        this.floatBuffer = new floatBuffer_1.default(buf, this.nvim);
+    }
+    get columns() {
+        return this.env.columns;
+    }
+    get lines() {
+        return this.env.lines - this.env.cmdheight - 1;
+    }
+    async getBoundings(docs, offsetX = 0) {
+        let { nvim, preferTop } = this;
+        let { columns, lines } = this;
+        let alignTop = false;
+        let [row, col] = await nvim.call('coc#util#win_position');
+        let maxWidth = this.maxWidth || Math.min(columns - 10, 82);
+        let height = this.floatBuffer.getHeight(docs, maxWidth);
+        height = Math.min(height, this.maxHeight);
+        if (!preferTop) {
+            if (lines - row < height && row > height) {
+                alignTop = true;
+            }
+        }
+        else {
+            if (row >= height || row >= lines - row) {
+                alignTop = true;
+            }
+        }
+        if (alignTop)
+            docs.reverse();
+        await this.floatBuffer.setDocuments(docs, maxWidth);
+        let { width } = this.floatBuffer;
+        offsetX = Math.min(col - 1, offsetX);
+        if (col - offsetX + width > columns) {
+            offsetX = col - offsetX + width - columns;
+        }
+        this.alignTop = alignTop;
+        return {
+            height: alignTop ? Math.min(row, height) : Math.min(height, (lines - row)),
+            width: Math.min(columns, width),
+            row: alignTop ? -height : 1,
+            col: offsetX == 0 ? 0 : -offsetX,
+            relative: 'cursor'
+        };
+    }
+    async create(docs, allowSelection = false, offsetX = 0) {
+        if (!this.env.floating)
+            return;
+        if (docs.length == 0) {
+            this.close();
+            return;
+        }
+        if (this.tokenSource) {
+            this.tokenSource.cancel();
+        }
+        this.createTs = Date.now();
+        this.targetBufnr = workspace_1.default.bufnr;
+        let tokenSource = this.tokenSource = new vscode_languageserver_protocol_1.CancellationTokenSource();
+        let token = tokenSource.token;
+        await this.checkFloatBuffer();
+        let config = await this.getBoundings(docs, offsetX);
+        let [mode, line, col] = await this.nvim.eval('[mode(),line("."),col(".")]');
+        this.cursor = [line, col];
+        if (!config || token.isCancellationRequested)
+            return;
+        allowSelection = mode == 's' && allowSelection;
+        if (token.isCancellationRequested)
+            return;
+        if (['i', 'n', 'ic'].indexOf(mode) !== -1 || allowSelection) {
+            let { nvim, alignTop } = this;
+            // change to normal
+            if (mode == 's')
+                await nvim.call('feedkeys', ['\x1b', 'in']);
+            // helps to fix undo issue, don't know why.
+            if (mode.startsWith('i'))
+                await nvim.eval('feedkeys("\\<C-g>u")');
+            let reuse = false;
+            if (this.window)
+                reuse = await this.window.valid;
+            if (token.isCancellationRequested)
+                return;
+            nvim.pauseNotification();
+            if (!reuse) {
+                nvim.notify('nvim_open_win', [this.buffer, true, config]);
+                nvim.command(`let w:float = 1`, true);
+                nvim.command(`setl nospell nolist wrap linebreak foldcolumn=1`, true);
+                nvim.command(`setl nonumber norelativenumber nocursorline nocursorcolumn`, true);
+                nvim.command(`setl signcolumn=no conceallevel=2`, true);
+                nvim.command(`setl winhl=Normal:CocFloating,NormalNC:CocFloating,FoldColumn:CocFloating`, true);
+                nvim.command(`silent doautocmd User CocOpenFloat`, true);
+            }
+            else {
+                this.window.setConfig(config, true);
+                nvim.command(`noa call win_gotoid(${this.window.id})`, true);
+            }
+            this.floatBuffer.setLines();
+            nvim.command(`normal! ${alignTop ? 'G' : 'gg'}0`, true);
+            nvim.command('noa wincmd p', true);
+            let [res, err] = await nvim.resumeNotification();
+            if (err) {
+                workspace_1.default.showMessage(`Error on ${err[0]}: ${err[1]} - ${err[2]}`, 'error');
+                return;
+            }
+            if (!reuse)
+                this.window = res[0];
+            if (mode == 's')
+                await manager_1.default.selectCurrentPlaceholder(false);
+        }
+    }
+    /**
+     * Close float window
+     */
+    close() {
+        if (!this.env.floating)
+            return;
+        if (this.tokenSource) {
+            this.tokenSource.cancel();
+            this.tokenSource = null;
+        }
+        this.closeWindow(this.window);
+    }
+    closeWindow(window) {
+        if (!window)
+            return;
+        this.nvim.call('coc#util#close_win', window.id, true);
+        this.window = null;
+        let count = 0;
+        let interval = setInterval(() => {
+            count++;
+            if (count == 5)
+                clearInterval(interval);
+            window.valid.then(valid => {
+                if (valid) {
+                    this.nvim.call('coc#util#close_win', window.id, true);
+                }
+                else {
+                    clearInterval(interval);
+                }
+            }, _e => {
+                clearInterval(interval);
+            });
+        }, 200);
+    }
+    dispose() {
+        if (this.tokenSource) {
+            this.tokenSource.cancel();
+        }
+        util_1.disposeAll(this.disposables);
+    }
+    get buffer() {
+        return this.floatBuffer ? this.floatBuffer.buffer : null;
+    }
+    async activated() {
+        if (!this.window)
+            return false;
+        let valid = await this.window.valid;
+        return valid;
+    }
+}
+exports.default = FloatFactory;
+//# sourceMappingURL=floatFactory.js.map
+
+/***/ }),
+/* 250 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const highlight_1 = __webpack_require__(251);
+const string_1 = __webpack_require__(212);
+const array_1 = __webpack_require__(214);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('model-floatBuffer');
+class FloatBuffer {
+    constructor(buffer, nvim) {
+        this.buffer = buffer;
+        this.nvim = nvim;
+        this.lines = [];
+        this.positions = [];
+        this.enableHighlight = true;
+        this.width = 0;
+        let config = workspace_1.default.getConfiguration('coc.preferences');
+        this.enableHighlight = config.get('enableFloatHighlight', true);
+    }
+    getHeight(docs, maxWidth) {
+        let l = 0;
+        for (let doc of docs) {
+            let lines = doc.content.split(/\r?\n/);
+            if (doc.filetype == 'markdown') {
+                lines = lines.filter(s => !s.startsWith('```'));
+            }
+            for (let line of lines) {
+                l = l + Math.max(1, Math.ceil(string_1.byteLength(line) / (maxWidth - 4)));
+            }
+        }
+        return l + docs.length - 1;
+    }
+    get valid() {
+        return this.buffer.valid;
+    }
+    calculateFragments(docs, maxWidth) {
+        let fragments = [];
+        let idx = 0;
+        let currLine = 0;
+        let newLines = [];
+        let fill = false;
+        let positions = this.positions = [];
+        for (let doc of docs) {
+            let lines = [];
+            let content = doc.content.replace(/\s+$/, '');
+            let arr = content.split(/\r?\n/);
+            if (['Error', 'Info', 'Warning', 'Hint'].indexOf(doc.filetype) !== -1) {
+                fill = true;
+            }
+            // let [start, end] = doc.active || []
+            for (let str of arr) {
+                lines.push(str);
+                if (doc.active) {
+                    let part = str.slice(doc.active[0], doc.active[1]);
+                    positions.push([currLine + 1, doc.active[0] + 1, string_1.byteLength(part)]);
+                }
+            }
+            fragments.push({
+                start: currLine,
+                lines,
+                filetype: doc.filetype
+            });
+            newLines.push(...lines.filter(s => !/^\s*```/.test(s)));
+            if (idx != docs.length - 1) {
+                newLines.push('—');
+                currLine = newLines.length;
+            }
+            idx = idx + 1;
+        }
+        let width = this.width = Math.min(Math.max(...newLines.map(s => string_1.byteLength(s))) + 2, maxWidth);
+        this.lines = newLines.map(s => {
+            if (s == '—')
+                return '—'.repeat(width - 2);
+            return s;
+        });
+        return fragments;
+    }
+    async setDocuments(docs, maxWidth) {
+        let fragments = this.calculateFragments(docs, maxWidth);
+        let filetype = await this.nvim.eval('&filetype');
+        fragments = fragments.reduce((p, c) => {
+            p.push(...this.splitFragment(c, filetype));
+            return p;
+        }, []);
+        if (this.enableHighlight) {
+            let arr = await Promise.all(fragments.map(f => {
+                return highlight_1.getHiglights(f.lines, f.filetype).then(highlights => {
+                    return highlights.map(highlight => {
+                        return Object.assign({}, highlight, { line: highlight.line + f.start });
+                    });
+                });
+            }));
+            this.highlights = arr.reduce((p, c) => p.concat(c), []);
+        }
+        else {
+            this.highlights = [];
+        }
+    }
+    splitFragment(fragment, defaultFileType) {
+        let res = [];
+        let filetype = fragment.filetype;
+        let lines = [];
+        let curr = fragment.start;
+        let inBlock = false;
+        for (let line of fragment.lines) {
+            let ms = line.match(/^\s*```\s*(\w+)?/);
+            if (ms != null) {
+                if (lines.length) {
+                    res.push({ lines, filetype: this.fixFiletype(filetype), start: curr - lines.length });
+                    lines = [];
+                }
+                inBlock = !inBlock;
+                filetype = inBlock ? ms[1] || defaultFileType : fragment.filetype;
+            }
+            else {
+                lines.push(line);
+                curr = curr + 1;
+            }
+        }
+        if (lines.length) {
+            res.push({ lines, filetype: this.fixFiletype(filetype), start: curr - lines.length });
+            lines = [];
+        }
+        return res;
+    }
+    fixFiletype(filetype) {
+        if (filetype == 'ts')
+            return 'typescript';
+        if (filetype == 'js')
+            return 'javascript';
+        if (filetype == 'bash')
+            return 'sh';
+        return filetype;
+    }
+    setLines() {
+        let { buffer, lines, nvim, highlights } = this;
+        nvim.call('clearmatches', [], true);
+        buffer.clearNamespace(-1, 0, -1);
+        buffer.setLines(lines, { start: 0, end: -1, strictIndexing: false }, true);
+        if (highlights.length) {
+            let positions = [];
+            for (let highlight of highlights) {
+                buffer.addHighlight(Object.assign({ srcId: workspace_1.default.createNameSpace('coc-float') }, highlight)).catch(_e => {
+                    // noop
+                });
+                if (highlight.isMarkdown) {
+                    let line = lines[highlight.line];
+                    let before = line[string_1.characterIndex(line, highlight.colStart)];
+                    let after = line[string_1.characterIndex(line, highlight.colEnd) - 1];
+                    if (before == after && ['_', '`', '*'].indexOf(before) !== -1) {
+                        positions.push([highlight.line + 1, highlight.colStart + 1]);
+                        positions.push([highlight.line + 1, highlight.colEnd]);
+                    }
+                    if (highlight.colEnd - highlight.colStart == 2 && before == '\\') {
+                        positions.push([highlight.line + 1, highlight.colStart + 1]);
+                    }
+                }
+            }
+            for (let arr of array_1.group(positions, 8)) {
+                nvim.call('matchaddpos', ['Conceal', arr, 11], true);
+            }
+        }
+        for (let arr of array_1.group(this.positions || [], 8)) {
+            arr = arr.filter(o => o[2] != 0);
+            if (arr.length)
+                nvim.call('matchaddpos', ['CocUnderline', arr, 12], true);
+        }
+    }
+}
+exports.default = FloatBuffer;
+//# sourceMappingURL=floatBuffer.js.map
+
+/***/ }),
+/* 251 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const neovim_1 = __webpack_require__(4);
+const cp = tslib_1.__importStar(__webpack_require__(172));
+const crypto_1 = __webpack_require__(156);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const path_1 = tslib_1.__importDefault(__webpack_require__(56));
+const lodash_1 = __webpack_require__(244);
+const os_1 = tslib_1.__importDefault(__webpack_require__(55));
+const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
+const string_1 = __webpack_require__(212);
+const processes_1 = __webpack_require__(252);
+const uuid = __webpack_require__(253);
+const logger = __webpack_require__(182)('util-highlights');
+const diagnosticFiletypes = ['Error', 'Warning', 'Info', 'Hint'];
+const cache = {};
+let env = null;
+// get highlights by send text to another neovim instance.
+function getHiglights(lines, filetype) {
+    const hlMap = new Map();
+    const content = lines.join('\n');
+    if (diagnosticFiletypes.indexOf(filetype) != -1) {
+        let highlights = lines.map((_line, i) => {
+            return {
+                line: i,
+                colStart: 0,
+                colEnd: -1,
+                hlGroup: `Coc${filetype}Float`
+            };
+        });
+        return Promise.resolve(highlights);
+    }
+    if (filetype == 'javascriptreact') {
+        filetype = 'javascript';
+    }
+    if (filetype == 'typescriptreact') {
+        filetype = 'typescript';
+    }
+    const id = crypto_1.createHash('md5').update(content).digest('hex');
+    if (cache[id])
+        return Promise.resolve(cache[id]);
+    const res = [];
+    let nvim;
+    return new Promise(async (resolve) => {
+        if (!env) {
+            env = await workspace_1.default.nvim.call('coc#util#highlight_options');
+            if (!env)
+                resolve([]);
+            let paths = env.runtimepath.split(',');
+            let dirs = paths.filter(p => {
+                if (env.colorscheme) {
+                    let schemeFile = path_1.default.join(p, `colors/${env.colorscheme}.vim`);
+                    if (fs_1.default.existsSync(schemeFile))
+                        return true;
+                }
+                if (fs_1.default.existsSync(path_1.default.join(p, 'syntax')))
+                    return true;
+                if (fs_1.default.existsSync(path_1.default.join(p, 'after/syntax')))
+                    return true;
+                return false;
+            });
+            env.runtimepath = dirs.join(',');
+        }
+        let proc = cp.spawn('nvim', ['-u', 'NORC', '-i', 'NONE', '--embed', uuid()], {
+            shell: false,
+            cwd: os_1.default.tmpdir(),
+            env: lodash_1.omit(process.env, ['NVIM_LISTEN_ADDRESS'])
+        });
+        let timer;
+        let exited = false;
+        const exit = () => {
+            if (exited)
+                return;
+            exited = true;
+            if (timer)
+                clearTimeout(timer);
+            if (nvim) {
+                nvim.command('qa!').catch(() => {
+                    let killed = processes_1.terminate(proc);
+                    if (!killed) {
+                        setTimeout(() => {
+                            processes_1.terminate(proc);
+                        }, 50);
+                    }
+                });
+            }
+        };
+        try {
+            proc.once('exit', () => {
+                if (exited)
+                    return;
+                logger.info('highlight nvim exited.');
+                resolve([]);
+            });
+            timer = setTimeout(() => {
+                exit();
+                resolve([]);
+            }, 500);
+            nvim = neovim_1.attach({ proc }, null, false);
+            const callback = (method, args) => {
+                if (method == 'redraw') {
+                    for (let arr of args) {
+                        let [name, ...list] = arr;
+                        if (name == 'hl_attr_define') {
+                            for (let item of list) {
+                                let id = item[0];
+                                let { hi_name } = item[item.length - 1][0];
+                                hlMap.set(id, hi_name);
+                            }
+                        }
+                        if (name == 'grid_line') {
+                            // logger.debug('list:', JSON.stringify(list, null, 2))
+                            for (let def of list) {
+                                let [, line, col, cells] = def;
+                                if (line >= lines.length)
+                                    continue;
+                                let colStart = 0;
+                                let hlGroup = '';
+                                let currId = 0;
+                                // tslint:disable-next-line: prefer-for-of
+                                for (let i = 0; i < cells.length; i++) {
+                                    let cell = cells[i];
+                                    let [ch, hlId, repeat] = cell;
+                                    repeat = repeat || 1;
+                                    let len = string_1.byteLength(ch.repeat(repeat));
+                                    // append result
+                                    if (hlId == 0 || (hlId > 0 && hlId != currId)) {
+                                        if (hlGroup) {
+                                            res.push({
+                                                line,
+                                                hlGroup,
+                                                colStart,
+                                                colEnd: col,
+                                                isMarkdown: filetype == 'markdown'
+                                            });
+                                        }
+                                        colStart = col;
+                                        hlGroup = hlId == 0 ? '' : hlMap.get(hlId);
+                                    }
+                                    if (hlId != null)
+                                        currId = hlId;
+                                    col = col + len;
+                                }
+                                if (hlGroup) {
+                                    res.push({
+                                        hlGroup,
+                                        line,
+                                        colStart,
+                                        colEnd: col,
+                                        isMarkdown: filetype == 'markdown'
+                                    });
+                                }
+                            }
+                            cache[id] = res;
+                            exit();
+                            resolve(res);
+                        }
+                    }
+                }
+            };
+            nvim.on('notification', callback);
+            await nvim.callAtomic([
+                ['nvim_set_option', ['runtimepath', env.runtimepath]],
+                ['nvim_command', [`runtime syntax/${filetype}.vim`]],
+                ['nvim_command', [`colorscheme ${env.colorscheme || 'default'}`]],
+                ['nvim_command', [`set background=${env.background}`]],
+                ['nvim_command', ['set nowrap']],
+                ['nvim_command', ['set noswapfile']],
+                ['nvim_command', ['set nobackup']],
+                ['nvim_command', ['set noshowmode']],
+                ['nvim_command', ['set noruler']],
+                ['nvim_command', ['set laststatus=0']],
+            ]);
+            let buf = await nvim.buffer;
+            await buf.setLines(lines, { start: 0, end: -1, strictIndexing: false });
+            await buf.setOption('filetype', filetype);
+            await nvim.uiAttach(200, lines.length + 1, {
+                ext_hlstate: true,
+                ext_linegrid: true
+            });
+        }
+        catch (e) {
+            logger.error(e);
+            exit();
+            resolve([]);
+        }
+    });
+}
+exports.getHiglights = getHiglights;
+//# sourceMappingURL=highlight.js.map
+
+/***/ }),
+/* 252 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+const cp = tslib_1.__importStar(__webpack_require__(172));
+const path_1 = __webpack_require__(56);
+const isWebpack = typeof __webpack_require__ === "function";
+const isWindows = process.platform === 'win32';
+const isMacintosh = process.platform === 'darwin';
+const isLinux = process.platform === 'linux';
+const pluginRoot = isWebpack ? path_1.dirname(__dirname) : path_1.resolve(__dirname, '../..');
+function terminate(process, cwd) {
+    if (isWindows) {
+        try {
+            // This we run in Atom execFileSync is available.
+            // Ignore stderr since this is otherwise piped to parent.stderr
+            // which might be already closed.
+            let options = {
+                stdio: ['pipe', 'pipe', 'ignore']
+            };
+            if (cwd) {
+                options.cwd = cwd;
+            }
+            cp.execFileSync('taskkill', ['/T', '/F', '/PID', process.pid.toString()], options);
+            return true;
+        }
+        catch (err) {
+            return false;
+        }
+    }
+    else if (isLinux || isMacintosh) {
+        try {
+            let cmd = path_1.join(pluginRoot, 'bin/terminateProcess.sh');
+            let result = cp.spawnSync(cmd, [process.pid.toString()]);
+            return result.error ? false : true;
+        }
+        catch (err) {
+            return false;
+        }
+    }
+    else {
+        process.kill('SIGKILL');
+        return true;
+    }
+}
+exports.terminate = terminate;
+//# sourceMappingURL=processes.js.map
+
+/***/ }),
+/* 253 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var rng = __webpack_require__(222);
+var bytesToUuid = __webpack_require__(223);
+
+function v4(options, buf, offset) {
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options === 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || rng)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ++ii) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || bytesToUuid(rnds);
+}
+
+module.exports = v4;
+
+
+/***/ }),
+/* 254 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const callSequence_1 = tslib_1.__importDefault(__webpack_require__(255));
+const object_1 = __webpack_require__(191);
+const string_1 = __webpack_require__(212);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const util_1 = __webpack_require__(256);
+const logger = __webpack_require__(182)('diagnostic-buffer');
+const severityNames = ['CocError', 'CocWarning', 'CocInfo', 'CocHint'];
+const STARTMATCHID = 1090;
+// maintains sign and highlightId
+class DiagnosticBuffer {
+    constructor(doc, config) {
+        this.config = config;
+        this.matchIds = new Set();
+        this.signIds = new Set();
+        this.sequence = null;
+        this.matchId = STARTMATCHID;
+        this._onDidRefresh = new vscode_languageserver_protocol_1.Emitter();
+        this.diagnostics = [];
+        this.onDidRefresh = this._onDidRefresh.event;
+        this.bufnr = doc.bufnr;
+        this.uri = doc.uri;
+        let timer = null;
+        let time = Date.now();
+        this.refresh = (diagnostics) => {
+            time = Date.now();
+            if (timer)
+                clearTimeout(timer);
+            timer = setTimeout(async () => {
+                let current = time;
+                if (this.sequence) {
+                    await this.sequence.cancel();
+                }
+                // staled
+                if (current != time)
+                    return;
+                this._refresh(diagnostics);
+            }, global.hasOwnProperty('__TEST__') ? 30 : 50);
+        };
+    }
+    get nvim() {
+        return workspace_1.default.nvim;
+    }
+    _refresh(diagnostics) {
+        if (object_1.equals(this.diagnostics, diagnostics))
+            return;
+        let sequence = this.sequence = new callSequence_1.default();
+        let winid;
+        sequence.addFunction(async () => {
+            let valid = await this.nvim.call('coc#util#valid_state');
+            return valid ? false : true;
+        });
+        sequence.addFunction(async () => {
+            let { nvim, bufnr } = this;
+            winid = await nvim.call('bufwinid', bufnr);
+        });
+        sequence.addFunction(async () => {
+            this.nvim.pauseNotification();
+            this.setDiagnosticInfo(diagnostics);
+            this.addDiagnosticVText(diagnostics);
+            this.setLocationlist(diagnostics, winid);
+            this.addSigns(diagnostics);
+            this.addHighlight(diagnostics, winid);
+            await this.nvim.resumeNotification();
+        });
+        sequence.start().then(async (canceled) => {
+            if (!canceled) {
+                this.diagnostics = diagnostics;
+                this._onDidRefresh.fire(void 0);
+            }
+        }, e => {
+            logger.error(e);
+        });
+    }
+    setLocationlist(diagnostics, winid) {
+        if (!this.config.locationlist)
+            return;
+        let { nvim, bufnr } = this;
+        // not shown
+        if (winid == -1)
+            return;
+        let items = [];
+        for (let diagnostic of diagnostics) {
+            let item = util_1.getLocationListItem(diagnostic.source, bufnr, diagnostic);
+            items.push(item);
+        }
+        nvim.call('setloclist', [winid, [], ' ', { title: 'Diagnostics of coc', items }], true);
+    }
+    clearSigns() {
+        let { nvim, signIds, bufnr } = this;
+        if (signIds.size > 0) {
+            nvim.call('coc#util#unplace_signs', [bufnr, Array.from(signIds)], true);
+            signIds.clear();
+        }
+    }
+    async checkSigns() {
+        let { nvim, bufnr, signIds } = this;
+        try {
+            let content = await this.nvim.call('execute', [`sign place buffer=${bufnr}`]);
+            let lines = content.split('\n');
+            let ids = [];
+            for (let line of lines) {
+                let ms = line.match(/^\s*line=\d+\s+id=(\d+)\s+name=(\w+)/);
+                if (!ms)
+                    continue;
+                let [, id, name] = ms;
+                if (!signIds.has(Number(id)) && severityNames.indexOf(name) != -1) {
+                    ids.push(id);
+                }
+            }
+            await nvim.call('coc#util#unplace_signs', [bufnr, ids]);
+        }
+        catch (e) {
+            // noop
+        }
+    }
+    addSigns(diagnostics) {
+        if (!this.config.enableSign)
+            return;
+        this.clearSigns();
+        let { nvim, bufnr, signIds } = this;
+        let signId = this.config.signOffset;
+        signIds.clear();
+        let lines = new Set();
+        for (let diagnostic of diagnostics) {
+            let { range, severity } = diagnostic;
+            let line = range.start.line;
+            if (lines.has(line))
+                continue;
+            lines.add(line);
+            let name = util_1.getNameFromSeverity(severity);
+            nvim.command(`sign place ${signId} line=${line + 1} name=${name} buffer=${bufnr}`, true);
+            signIds.add(signId);
+            signId = signId + 1;
+        }
+    }
+    setDiagnosticInfo(diagnostics) {
+        let info = { error: 0, warning: 0, information: 0, hint: 0 };
+        for (let diagnostic of diagnostics) {
+            switch (diagnostic.severity) {
+                case vscode_languageserver_protocol_1.DiagnosticSeverity.Warning:
+                    info.warning = info.warning + 1;
+                    break;
+                case vscode_languageserver_protocol_1.DiagnosticSeverity.Information:
+                    info.information = info.information + 1;
+                    break;
+                case vscode_languageserver_protocol_1.DiagnosticSeverity.Hint:
+                    info.hint = info.hint + 1;
+                    break;
+                default:
+                    info.error = info.error + 1;
+            }
+        }
+        let buffer = this.nvim.createBuffer(this.bufnr);
+        buffer.setVar('coc_diagnostic_info', info, true);
+        if (!workspace_1.default.getDocument(this.bufnr))
+            return;
+        if (workspace_1.default.bufnr == this.bufnr)
+            this.nvim.command('redraws', true);
+        this.nvim.command('silent doautocmd User CocDiagnosticChange', true);
+    }
+    addDiagnosticVText(diagnostics) {
+        let { bufnr, nvim } = this;
+        if (!this.config.virtualText)
+            return;
+        if (!nvim.hasFunction('nvim_buf_set_virtual_text'))
+            return;
+        let buffer = this.nvim.createBuffer(bufnr);
+        let lines = new Set();
+        let srcId = this.config.virtualTextSrcId;
+        let prefix = this.config.virtualTextPrefix;
+        buffer.clearNamespace(srcId);
+        for (let diagnostic of diagnostics) {
+            let { line } = diagnostic.range.start;
+            if (lines.has(line))
+                continue;
+            lines.add(line);
+            let highlight = util_1.getNameFromSeverity(diagnostic.severity) + 'Sign';
+            let msg = diagnostic.message.split(/\n/)
+                .map((l) => l.trim())
+                .filter((l) => l.length > 0)
+                .slice(0, this.config.virtualTextLines)
+                .join(this.config.virtualTextLineSeparator);
+            buffer.setVirtualText(srcId, line, [[prefix + msg, highlight]], {}).catch(_e => {
+                // noop
+            });
+        }
+    }
+    clearHighlight() {
+        let { bufnr, nvim, matchIds } = this;
+        if (workspace_1.default.isVim) {
+            nvim.call('coc#util#clearmatches', [Array.from(matchIds)], true);
+            this.matchId = STARTMATCHID;
+        }
+        else {
+            let buffer = nvim.createBuffer(bufnr);
+            if (this.nvim.hasFunction('nvim_create_namespace')) {
+                buffer.clearNamespace(this.config.srcId);
+            }
+            else {
+                buffer.clearHighlight({ srcId: this.config.srcId });
+            }
+        }
+        this.matchIds.clear();
+    }
+    addHighlight(diagnostics, winid) {
+        this.clearHighlight();
+        if (diagnostics.length == 0)
+            return;
+        if (winid == -1 && workspace_1.default.isVim)
+            return;
+        for (let diagnostic of diagnostics.slice().reverse()) {
+            let { range, severity } = diagnostic;
+            if (workspace_1.default.isVim) {
+                this.addHighlightVim(winid, range, severity);
+            }
+            else {
+                this.addHighlightNvim(range, severity);
+            }
+        }
+    }
+    addHighlightNvim(range, severity) {
+        let { srcId } = this.config;
+        let { start, end } = range;
+        let document = workspace_1.default.getDocument(this.bufnr);
+        if (!document)
+            return;
+        let { buffer } = document;
+        for (let i = start.line; i <= end.line; i++) {
+            let line = document.getline(i);
+            if (!line || !line.length)
+                continue;
+            let s = i == start.line ? start.character : 0;
+            let e = i == end.line ? end.character : -1;
+            buffer.addHighlight({
+                srcId,
+                hlGroup: util_1.getNameFromSeverity(severity) + 'Highlight',
+                line: i,
+                colStart: s == 0 ? 0 : string_1.byteIndex(line, s),
+                colEnd: e == -1 ? -1 : string_1.byteIndex(line, e),
+            }).catch(_e => {
+                // noop
+            });
+        }
+        this.matchIds.add(srcId);
+    }
+    addHighlightVim(winid, range, severity) {
+        let { start, end } = range;
+        let { matchIds } = this;
+        let document = workspace_1.default.getDocument(this.bufnr);
+        if (!document)
+            return;
+        try {
+            let list = [];
+            for (let i = start.line; i <= end.line; i++) {
+                let line = document.getline(i);
+                if (!line || !line.length)
+                    continue;
+                if (list.length == 8)
+                    break;
+                if (i == start.line && i == end.line) {
+                    let s = string_1.byteIndex(line, start.character) + 1;
+                    let e = string_1.byteIndex(line, end.character) + 1;
+                    list.push([i + 1, s, e - s]);
+                }
+                else if (i == start.line) {
+                    let s = string_1.byteIndex(line, start.character) + 1;
+                    let l = string_1.byteLength(line);
+                    list.push([i + 1, s, l - s + 1]);
+                }
+                else if (i == end.line) {
+                    let e = string_1.byteIndex(line, end.character) + 1;
+                    list.push([i + 1, 0, e]);
+                }
+                else {
+                    list.push(i + 1);
+                }
+            }
+            this.nvim.callTimer('matchaddpos', [util_1.getNameFromSeverity(severity) + 'highlight', list, 99, this.matchId, { window: winid }], true);
+            matchIds.add(this.matchId);
+            this.matchId = this.matchId + 1;
+        }
+        catch (e) {
+            logger.error(e.stack);
+        }
+    }
+    /**
+     * Used on buffer unload
+     *
+     * @public
+     * @returns {Promise<void>}
+     */
+    async clear() {
+        if (this.sequence)
+            await this.sequence.cancel();
+        this.setDiagnosticInfo([]);
+        this.clearHighlight();
+        this.clearSigns();
+        // clear locationlist
+        if (this.config.locationlist) {
+            let winid = await this.nvim.call('bufwinid', this.bufnr);
+            // not shown
+            if (winid == -1)
+                return;
+            let curr = await this.nvim.call('getloclist', [winid, { title: 1 }]);
+            if ((curr.title && curr.title.indexOf('Diagnostics of coc') != -1)) {
+                this.nvim.call('setloclist', [winid, [], 'f'], true);
+            }
+        }
+        if (this.config.virtualText) {
+            let buffer = this.nvim.createBuffer(this.bufnr);
+            buffer.clearNamespace(this.config.virtualTextSrcId);
+        }
+        this.nvim.command('silent doautocmd User CocDiagnosticChange', true);
+    }
+    hasMatch(match) {
+        return this.matchIds.has(match);
+    }
+    dispose() {
+        if (this.sequence) {
+            this.sequence.cancel().catch(_e => {
+                // noop
+            });
+        }
+        this._onDidRefresh.dispose();
+    }
+}
+exports.DiagnosticBuffer = DiagnosticBuffer;
+//# sourceMappingURL=buffer.js.map
+
+/***/ }),
+/* 255 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class CallSequence {
+    constructor() {
+        this.funcs = new Set();
+        this._canceled = false;
+        this._resolved = false;
+    }
+    addFunction(fn) {
+        this.funcs.add(fn);
+    }
+    start() {
+        this.promise = new Promise(async (resolve, reject) => {
+            for (let fn of this.funcs) {
+                if (this._canceled)
+                    return resolve(true);
+                try {
+                    let cancel = await Promise.resolve(fn());
+                    if (cancel === true) {
+                        this._canceled = true;
+                        return resolve(true);
+                    }
+                }
+                catch (e) {
+                    reject(e);
+                }
+            }
+            this._resolved = true;
+            resolve(false);
+        });
+        return this.promise;
+    }
+    ready() {
+        return this.promise;
+    }
+    cancel() {
+        if (this._resolved)
+            return Promise.resolve(void 0);
+        if (this._canceled)
+            return this.promise;
+        this._canceled = true;
+        return this.promise;
+    }
+}
+exports.default = CallSequence;
+//# sourceMappingURL=callSequence.js.map
+
+/***/ }),
+/* 256 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+function getSeverityName(severity) {
+    switch (severity) {
+        case vscode_languageserver_protocol_1.DiagnosticSeverity.Error:
+            return 'Error';
+        case vscode_languageserver_protocol_1.DiagnosticSeverity.Warning:
+            return 'Warning';
+        case vscode_languageserver_protocol_1.DiagnosticSeverity.Information:
+            return 'Information';
+        case vscode_languageserver_protocol_1.DiagnosticSeverity.Hint:
+            return 'Hint';
+        default:
+            return 'Error';
+    }
+}
+exports.getSeverityName = getSeverityName;
+function getSeverityType(severity) {
+    switch (severity) {
+        case vscode_languageserver_protocol_1.DiagnosticSeverity.Error:
+            return 'E';
+        case vscode_languageserver_protocol_1.DiagnosticSeverity.Warning:
+            return 'W';
+        case vscode_languageserver_protocol_1.DiagnosticSeverity.Information:
+            return 'I';
+        case vscode_languageserver_protocol_1.DiagnosticSeverity.Hint:
+            return 'I';
+        default:
+            return 'Error';
+    }
+}
+exports.getSeverityType = getSeverityType;
+function severityLevel(level) {
+    switch (level) {
+        case 'hint':
+            return vscode_languageserver_protocol_1.DiagnosticSeverity.Hint;
+        case 'information':
+            return vscode_languageserver_protocol_1.DiagnosticSeverity.Information;
+        case 'warning':
+            return vscode_languageserver_protocol_1.DiagnosticSeverity.Warning;
+        case 'error':
+            return vscode_languageserver_protocol_1.DiagnosticSeverity.Error;
+        default:
+            return vscode_languageserver_protocol_1.DiagnosticSeverity.Hint;
+    }
+}
+exports.severityLevel = severityLevel;
+function getNameFromSeverity(severity) {
+    switch (severity) {
+        case vscode_languageserver_protocol_1.DiagnosticSeverity.Error:
+            return 'CocError';
+        case vscode_languageserver_protocol_1.DiagnosticSeverity.Warning:
+            return 'CocWarning';
+        case vscode_languageserver_protocol_1.DiagnosticSeverity.Information:
+            return 'CocInfo';
+        case vscode_languageserver_protocol_1.DiagnosticSeverity.Hint:
+            return 'CocHint';
+        default:
+            return 'CocError';
+    }
+}
+exports.getNameFromSeverity = getNameFromSeverity;
+function getLocationListItem(owner, bufnr, diagnostic) {
+    let { start } = diagnostic.range;
+    let msg = diagnostic.message.split('\n')[0];
+    let type = getSeverityName(diagnostic.severity).slice(0, 1).toUpperCase();
+    return {
+        bufnr,
+        lnum: start.line + 1,
+        col: start.character + 1,
+        text: `[${owner}${diagnostic.code ? ' ' + diagnostic.code : ''}] ${msg} [${type}]`,
+        type
+    };
+}
+exports.getLocationListItem = getLocationListItem;
+//# sourceMappingURL=util.js.map
+
+/***/ }),
+/* 257 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const vscode_uri_1 = __webpack_require__(174);
+const position_1 = __webpack_require__(231);
+const logger = __webpack_require__(182)('diagnostic-collection');
+class Collection {
+    constructor(owner) {
+        this.diagnosticsMap = new Map();
+        this._onDispose = new vscode_languageserver_protocol_1.Emitter();
+        this._onDidDiagnosticsChange = new vscode_languageserver_protocol_1.Emitter();
+        this._onDidDiagnosticsClear = new vscode_languageserver_protocol_1.Emitter();
+        this.onDispose = this._onDispose.event;
+        this.onDidDiagnosticsChange = this._onDidDiagnosticsChange.event;
+        this.onDidDiagnosticsClear = this._onDidDiagnosticsClear.event;
+        this.name = owner;
+    }
+    set(entries, diagnostics) {
+        if (Array.isArray(entries)) {
+            let map = new Map();
+            for (let item of entries) {
+                let [file, diagnostics] = item;
+                let exists = map.get(file) || [];
+                if (diagnostics != null) {
+                    for (let diagnostic of diagnostics) {
+                        exists.push(diagnostic);
+                    }
+                }
+                else {
+                    exists = [];
+                }
+                map.set(file, exists);
+            }
+            for (let key of map.keys()) {
+                this.set(key, map.get(key));
+            }
+            return;
+        }
+        let uri = entries;
+        uri = vscode_uri_1.URI.parse(uri).toString();
+        if (diagnostics) {
+            diagnostics.forEach(o => {
+                if (position_1.emptyRange(o.range)) {
+                    o.range.end = {
+                        line: o.range.end.line,
+                        character: o.range.end.character + 1
+                    };
+                }
+                o.source = o.source || this.name;
+            });
+        }
+        this.diagnosticsMap.set(uri, diagnostics || []);
+        this._onDidDiagnosticsChange.fire(uri);
+        return;
+    }
+    delete(uri) {
+        this.diagnosticsMap.delete(uri);
+        this._onDidDiagnosticsChange.fire(uri);
+    }
+    clear() {
+        let uris = Array.from(this.diagnosticsMap.keys());
+        this.diagnosticsMap.clear();
+        this._onDidDiagnosticsClear.fire(uris);
+    }
+    forEach(callback, thisArg) {
+        for (let uri of this.diagnosticsMap.keys()) {
+            let diagnostics = this.diagnosticsMap.get(uri);
+            callback.call(thisArg, uri, diagnostics, this);
+        }
+    }
+    get(uri) {
+        let arr = this.diagnosticsMap.get(uri);
+        return arr == null ? [] : arr;
+    }
+    has(uri) {
+        return this.diagnosticsMap.has(uri);
+    }
+    dispose() {
+        this.clear();
+        this._onDispose.fire(void 0);
+        this._onDispose.dispose();
+        this._onDidDiagnosticsClear.dispose();
+        this._onDidDiagnosticsChange.dispose();
+    }
+}
+exports.default = Collection;
+//# sourceMappingURL=collection.js.map
+
+/***/ }),
+/* 258 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+const logger = __webpack_require__(182)('codeActionManager');
+class CodeActionManager extends manager_1.default {
+    register(selector, provider, clientId, codeActionKinds) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider,
+            kinds: codeActionKinds,
+            clientId
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideCodeActions(document, range, context, token) {
+        let providers = this.getProviders(document);
+        if (!providers.length)
+            return null;
+        if (context.only) {
+            let { only } = context;
+            providers = providers.filter(p => {
+                if (p.kinds && !p.kinds.some(kind => only.indexOf(kind) != -1)) {
+                    return false;
+                }
+                return true;
+            });
+        }
+        let res = new Map();
+        await Promise.all(providers.map(item => {
+            let { provider, clientId } = item;
+            clientId = clientId || uuid();
+            return Promise.resolve(provider.provideCodeActions(document, range, context, token)).then(actions => {
+                if (!actions || actions.length == 0)
+                    return;
+                let codeActions = res.get(clientId) || [];
+                for (let action of actions) {
+                    if (vscode_languageserver_protocol_1.Command.is(action)) {
+                        codeActions.push(vscode_languageserver_protocol_1.CodeAction.create(action.title, action));
+                    }
+                    else {
+                        let idx = codeActions.findIndex(o => o.title == action.title);
+                        if (idx == -1)
+                            codeActions.push(action);
+                    }
+                }
+                res.set(clientId, codeActions);
+            });
+        }));
+        return res;
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = CodeActionManager;
+//# sourceMappingURL=codeActionmanager.js.map
+
+/***/ }),
+/* 259 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('provider-manager');
+class Manager {
+    constructor() {
+        this.providers = new Set();
+    }
+    hasProvider(document) {
+        return this.getProvider(document) != null;
+    }
+    getProvider(document) {
+        let currScore = 0;
+        let providerItem;
+        for (let item of this.providers) {
+            let { selector, priority } = item;
+            let score = workspace_1.default.match(selector, document);
+            if (score == 0)
+                continue;
+            if (typeof priority == 'number') {
+                score = priority;
+            }
+            if (score < currScore)
+                continue;
+            currScore = score;
+            providerItem = item;
+        }
+        return providerItem;
+    }
+    poviderById(id) {
+        let item = Array.from(this.providers).find(o => o.id == id);
+        return item ? item.provider : null;
+    }
+    getProviders(document) {
+        let items = Array.from(this.providers);
+        items = items.filter(item => {
+            return workspace_1.default.match(item.selector, document) > 0;
+        });
+        return items.sort((a, b) => {
+            return workspace_1.default.match(b.selector, document) - workspace_1.default.match(a.selector, document);
+        });
+    }
+    mergeDefinitions(arr) {
+        let res = [];
+        for (let def of arr) {
+            if (!def)
+                continue;
+            if (vscode_languageserver_protocol_1.Location.is(def)) {
+                let { uri, range } = def;
+                let idx = res.findIndex(l => l.uri == uri && l.range.start.line == range.start.line);
+                if (idx == -1) {
+                    res.push(def);
+                }
+            }
+            else if (Array.isArray(def)) {
+                for (let d of def) {
+                    let { uri, range } = d;
+                    let idx = res.findIndex(l => l.uri == uri && l.range.start.line == range.start.line);
+                    if (idx == -1) {
+                        res.push(d);
+                    }
+                }
+            }
+            else {
+                workspace_1.default.showMessage(`Bad definition ${JSON.stringify(def)}`, 'error');
+            }
+        }
+        return res;
+    }
+}
+exports.default = Manager;
+//# sourceMappingURL=manager.js.map
+
+/***/ }),
+/* 260 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class SelectionRangeManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideSelectionRanges(document, positions, token) {
+        let item = this.getProvider(document);
+        if (!item)
+            return null;
+        let { provider } = item;
+        return await Promise.resolve(provider.provideSelectionRanges(document, positions, token));
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = SelectionRangeManager;
+//# sourceMappingURL=rangeManager.js.map
+
+/***/ }),
+/* 261 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+const lodash_1 = __webpack_require__(244);
+// const logger = require('../util/logger')('codeActionManager')
+class CodeLensManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideCodeLenses(document, token) {
+        let providers = this.getProviders(document);
+        if (!providers.length)
+            return null;
+        let arr = await Promise.all(providers.map(item => {
+            let { provider, id } = item;
+            return Promise.resolve(provider.provideCodeLenses(document, token)).then(res => {
+                if (Array.isArray(res)) {
+                    for (let item of res) {
+                        item.source = id;
+                    }
+                }
+                return res || [];
+            });
+        }));
+        return [].concat(...arr);
+    }
+    async resolveCodeLens(codeLens, token) {
+        // no need to resolve
+        if (codeLens.command)
+            return codeLens;
+        let { source } = codeLens;
+        let provider = this.poviderById(source);
+        if (!provider || typeof provider.resolveCodeLens != 'function') {
+            // tslint:disable-next-line:no-console
+            console.error(`CodeLens Resolve not supported`);
+            return codeLens;
+        }
+        let res = await Promise.resolve(provider.resolveCodeLens(lodash_1.omit(codeLens, ['source']), token));
+        Object.assign(codeLens, res);
+        return codeLens;
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = CodeLensManager;
+//# sourceMappingURL=codeLensManager.js.map
+
+/***/ }),
+/* 262 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+const logger = __webpack_require__(182)('definitionManager');
+class DeclarationManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideDeclaration(document, position, token) {
+        let item = this.getProvider(document);
+        if (!item)
+            return null;
+        let { provider } = item;
+        return await Promise.resolve(provider.provideDeclaration(document, position, token));
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = DeclarationManager;
+//# sourceMappingURL=declarationManager.js.map
+
+/***/ }),
+/* 263 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+const logger = __webpack_require__(182)('definitionManager');
+class DefinitionManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideDefinition(document, position, token) {
+        let providers = this.getProviders(document);
+        if (!providers.length)
+            return null;
+        let arr = await Promise.all(providers.map(item => {
+            let { provider } = item;
+            return Promise.resolve(provider.provideDefinition(document, position, token));
+        }));
+        return this.mergeDefinitions(arr);
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = DefinitionManager;
+//# sourceMappingURL=definitionManager.js.map
+
+/***/ }),
+/* 264 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class DocumentColorManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideDocumentColors(document, token) {
+        let item = this.getProvider(document);
+        if (!item)
+            return null;
+        let { provider } = item;
+        let res = await Promise.resolve(provider.provideDocumentColors(document, token));
+        return res;
+    }
+    async provideColorPresentations(colorInformation, document, token) {
+        let { range, color } = colorInformation;
+        let item = this.getProvider(document);
+        if (!item)
+            return null;
+        let { provider } = item;
+        let res = await Promise.resolve(provider.provideColorPresentations(color, { document, range }, token));
+        return res;
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = DocumentColorManager;
+//# sourceMappingURL=documentColorManager.js.map
+
+/***/ }),
+/* 265 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class DocumentHighlightManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideDocumentHighlights(document, position, token) {
+        let item = this.getProvider(document);
+        if (!item)
+            return null;
+        let { provider } = item;
+        return await Promise.resolve(provider.provideDocumentHighlights(document, position, token));
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = DocumentHighlightManager;
+//# sourceMappingURL=documentHighlightManager.js.map
+
+/***/ }),
+/* 266 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class DocumentLinkManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async _provideDocumentLinks(item, document, token) {
+        let { provider, id } = item;
+        let items = await Promise.resolve(provider.provideDocumentLinks(document, token));
+        if (!items || !items.length)
+            return [];
+        items.forEach(item => {
+            item.data = item.data || {};
+            item.data.source = id;
+        });
+        return items;
+    }
+    async provideDocumentLinks(document, token) {
+        let items = this.getProviders(document);
+        if (items.length == 0)
+            return [];
+        const arr = await Promise.all(items.map(item => {
+            return this._provideDocumentLinks(item, document, token);
+        }));
+        return [].concat(...arr);
+    }
+    async resolveDocumentLink(link, token) {
+        let { data } = link;
+        if (!data || !data.source)
+            return null;
+        for (let item of this.providers) {
+            if (item.id == data.source) {
+                let { provider } = item;
+                link = await Promise.resolve(provider.resolveDocumentLink(link, token));
+                return link;
+            }
+        }
+        return null;
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = DocumentLinkManager;
+//# sourceMappingURL=documentLinkManager.js.map
+
+/***/ }),
+/* 267 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class DocumentSymbolManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideDocumentSymbols(document, token) {
+        let item = this.getProvider(document);
+        if (!item)
+            return null;
+        let { provider } = item;
+        return (await Promise.resolve(provider.provideDocumentSymbols(document, token))) || [];
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = DocumentSymbolManager;
+//# sourceMappingURL=documentSymbolManager.js.map
+
+/***/ }),
+/* 268 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class FoldingRangeManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideFoldingRanges(document, context, token) {
+        let item = this.getProvider(document);
+        if (!item)
+            return null;
+        let { provider } = item;
+        return await Promise.resolve(provider.provideFoldingRanges(document, context, token));
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = FoldingRangeManager;
+//# sourceMappingURL=foldingRangeManager.js.map
+
+/***/ }),
+/* 269 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class FormatManager extends manager_1.default {
+    register(selector, provider, priority = 0) {
+        let item = {
+            id: uuid(),
+            selector,
+            priority,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideDocumentFormattingEdits(document, options, token) {
+        let item = this.getProvider(document);
+        if (!item)
+            return null;
+        let { provider } = item;
+        return await Promise.resolve(provider.provideDocumentFormattingEdits(document, options, token));
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = FormatManager;
+//# sourceMappingURL=formatManager.js.map
+
+/***/ }),
+/* 270 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class FormatRangeManager extends manager_1.default {
+    register(selector, provider, priority = 0) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider,
+            priority
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideDocumentRangeFormattingEdits(document, range, options, token) {
+        let item = this.getProvider(document);
+        if (!item)
+            return null;
+        let { provider } = item;
+        return await Promise.resolve(provider.provideDocumentRangeFormattingEdits(document, range, options, token));
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = FormatRangeManager;
+//# sourceMappingURL=formatRangeManager.js.map
+
+/***/ }),
+/* 271 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class HoverManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideHover(document, position, token) {
+        let items = this.getProviders(document);
+        if (items.length === 0)
+            return null;
+        let res = [];
+        for (let i = 0, len = items.length; i < len; i += 1) {
+            const item = items[i];
+            let hover = await Promise.resolve(item.provider.provideHover(document, position, token));
+            if (hover && hover.contents != '')
+                res.push(hover);
+        }
+        return res;
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = HoverManager;
+//# sourceMappingURL=hoverManager.js.map
+
+/***/ }),
+/* 272 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class ImplementationManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideReferences(document, position, token) {
+        let providers = this.getProviders(document);
+        if (!providers.length)
+            return null;
+        let arr = await Promise.all(providers.map(item => {
+            let { provider } = item;
+            return Promise.resolve(provider.provideImplementation(document, position, token));
+        }));
+        return this.mergeDefinitions(arr);
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = ImplementationManager;
+//# sourceMappingURL=implementatioinManager.js.map
+
+/***/ }),
+/* 273 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const string_1 = __webpack_require__(212);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('onTypeFormatManager');
+class OnTypeFormatManager {
+    constructor() {
+        this.providers = new Set();
+    }
+    register(selector, provider, triggerCharacters) {
+        let item = {
+            triggerCharacters,
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    getProvider(document, triggerCharacter) {
+        for (let o of this.providers) {
+            let { triggerCharacters, selector } = o;
+            if (workspace_1.default.match(selector, document) > 0 && triggerCharacters.indexOf(triggerCharacter) > -1) {
+                return o.provider;
+            }
+        }
+        return null;
+    }
+    async onCharacterType(character, document, position, token) {
+        if (string_1.isWord(character))
+            return;
+        let provider = this.getProvider(document, character);
+        if (!provider)
+            return;
+        let formatOpts = await workspace_1.default.getFormatOptions(document.uri);
+        return await Promise.resolve(provider.provideOnTypeFormattingEdits(document, position, character, formatOpts, token));
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = OnTypeFormatManager;
+//# sourceMappingURL=onTypeFormatManager.js.map
+
+/***/ }),
+/* 274 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class ReferenceManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideReferences(document, position, context, token) {
+        let providers = this.getProviders(document);
+        if (!providers.length)
+            return null;
+        let arr = await Promise.all(providers.map(item => {
+            let { provider } = item;
+            return Promise.resolve(provider.provideReferences(document, position, context, token));
+        }));
+        return this.mergeDefinitions(arr);
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = ReferenceManager;
+//# sourceMappingURL=referenceManager.js.map
+
+/***/ }),
+/* 275 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class RenameManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideRenameEdits(document, position, newName, token) {
+        let item = this.getProvider(document);
+        if (!item)
+            return null;
+        let { provider } = item;
+        return await Promise.resolve(provider.provideRenameEdits(document, position, newName, token));
+    }
+    async prepareRename(document, position, token) {
+        let item = this.getProvider(document);
+        if (!item)
+            return null;
+        let { provider } = item;
+        if (provider.prepareRename == null)
+            return null;
+        let res = await Promise.resolve(provider.prepareRename(document, position, token));
+        // can not rename
+        if (res == null)
+            false;
+        return res;
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = RenameManager;
+//# sourceMappingURL=renameManager.js.map
+
+/***/ }),
+/* 276 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class SignatureManager extends manager_1.default {
+    register(selector, provider, triggerCharacters) {
+        let characters = triggerCharacters.reduce((p, c) => {
+            return p.concat(c.split(/\s*/g));
+        }, []);
+        let item = {
+            id: uuid(),
+            selector,
+            provider,
+            triggerCharacters: characters
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    shouldTrigger(document, triggerCharacter) {
+        let item = this.getProvider(document);
+        if (!item)
+            return false;
+        let { triggerCharacters } = item;
+        return triggerCharacters && triggerCharacters.indexOf(triggerCharacter) != -1;
+    }
+    async provideSignatureHelp(document, position, token) {
+        let item = this.getProvider(document);
+        if (!item)
+            return null;
+        let res = await Promise.resolve(item.provider.provideSignatureHelp(document, position, token));
+        if (res && res.signatures && res.signatures.length)
+            return res;
+        return null;
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = SignatureManager;
+//# sourceMappingURL=signatureManager.js.map
+
+/***/ }),
+/* 277 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class TypeDefinitionManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideTypeDefinition(document, position, token) {
+        let providers = this.getProviders(document);
+        if (!providers.length)
+            return null;
+        let arr = await Promise.all(providers.map(item => {
+            let { provider } = item;
+            return Promise.resolve(provider.provideTypeDefinition(document, position, token));
+        }));
+        return this.mergeDefinitions(arr);
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = TypeDefinitionManager;
+//# sourceMappingURL=typeDefinitionManager.js.map
+
+/***/ }),
+/* 278 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const manager_1 = tslib_1.__importDefault(__webpack_require__(259));
+const uuid = __webpack_require__(253);
+class WorkspaceSymbolManager extends manager_1.default {
+    register(selector, provider) {
+        let item = {
+            id: uuid(),
+            selector,
+            provider
+        };
+        this.providers.add(item);
+        return vscode_languageserver_protocol_1.Disposable.create(() => {
+            this.providers.delete(item);
+        });
+    }
+    async provideWorkspaceSymbols(document, query, token) {
+        let item = this.getProvider(document);
+        if (!item)
+            return null;
+        let { provider } = item;
+        let res = await Promise.resolve(provider.provideWorkspaceSymbols(query, token));
+        res = res || [];
+        for (let sym of res) {
+            sym.source = item.id;
+        }
+        return res;
+    }
+    async resolveWorkspaceSymbol(symbolInfo, token) {
+        let item = Array.from(this.providers).find(o => o.id == symbolInfo.source);
+        if (!item)
+            return;
+        let { provider } = item;
+        if (typeof provider.resolveWorkspaceSymbol != 'function') {
+            return Promise.resolve(symbolInfo);
+        }
+        return await Promise.resolve(provider.resolveWorkspaceSymbol(symbolInfo, token));
+    }
+    dispose() {
+        this.providers = new Set();
+    }
+}
+exports.default = WorkspaceSymbolManager;
+//# sourceMappingURL=workspaceSymbolsManager.js.map
+
+/***/ }),
+/* 279 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const vscode_languageserver_types_1 = __webpack_require__(158);
+const parser_1 = __webpack_require__(236);
+const string_1 = __webpack_require__(212);
+const logger = __webpack_require__(182)('util-complete');
+const invalidInsertCharacters = ['(', '<', '{', '[', '\r', '\n'];
+function getPosition(opt) {
+    let { line, linenr, colnr } = opt;
+    let part = string_1.byteSlice(line, 0, colnr - 1);
+    return {
+        line: linenr - 1,
+        character: part.length
+    };
+}
+exports.getPosition = getPosition;
+function getWord(item, opt) {
+    // tslint:disable-next-line: deprecation
+    let { label, data, insertTextFormat, insertText, textEdit } = item;
+    let word;
+    let newText;
+    if (data && data.word)
+        return data.word;
+    if (textEdit) {
+        let { range } = textEdit;
+        newText = textEdit.newText;
+        if (range && range.start.line == range.end.line) {
+            let { line, col, colnr } = opt;
+            let character = string_1.characterIndex(line, col);
+            if (range.start.character > character) {
+                let before = line.slice(character - range.start.character);
+                newText = before + newText;
+            }
+            else {
+                let start = line.slice(range.start.character, character);
+                if (start.length && newText.startsWith(start)) {
+                    newText = newText.slice(start.length);
+                }
+            }
+            character = string_1.characterIndex(line, colnr - 1);
+            if (range.end.character > character) {
+                let end = line.slice(character, range.end.character);
+                if (newText.endsWith(end)) {
+                    newText = newText.slice(0, -end.length);
+                }
+            }
+        }
+    }
+    else {
+        newText = insertText;
+    }
+    if (insertTextFormat == vscode_languageserver_types_1.InsertTextFormat.Snippet
+        && newText
+        && newText.indexOf('$') !== -1) {
+        let parser = new parser_1.SnippetParser();
+        let snippet = parser.text(newText);
+        word = snippet ? getValidWord(snippet, invalidInsertCharacters) : label;
+    }
+    else {
+        word = getValidWord(newText, invalidInsertCharacters) || label;
+    }
+    return word;
+}
+exports.getWord = getWord;
+function getDocumentation(item) {
+    let { documentation } = item;
+    if (!documentation)
+        return '';
+    if (typeof documentation === 'string')
+        return documentation;
+    return documentation.value;
+}
+exports.getDocumentation = getDocumentation;
+function completionKindString(kind, map, defaultValue = '') {
+    return map.get(kind) || defaultValue;
+}
+exports.completionKindString = completionKindString;
+function getSnippetDocumentation(languageId, body) {
+    languageId = languageId.replace(/react$/, '');
+    let str = body.replace(/\$\d+/g, '').replace(/\$\{\d+(?::([^{]+))?\}/, '$1');
+    str = '``` ' + languageId + '\n' + str + '\n' + '```';
+    return str;
+}
+exports.getSnippetDocumentation = getSnippetDocumentation;
+function getValidWord(text, invalidChars) {
+    if (!text)
+        return '';
+    for (let i = 0; i < text.length; i++) {
+        let c = text[i];
+        if (invalidChars.indexOf(c) !== -1) {
+            return text.slice(0, i);
+        }
+    }
+    return text;
+}
+exports.getValidWord = getValidWord;
+//# sourceMappingURL=complete.js.map
+
+/***/ }),
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -63742,12 +62076,12 @@ const events_1 = __webpack_require__(49);
 const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
 const net_1 = tslib_1.__importDefault(__webpack_require__(6));
 const os_1 = tslib_1.__importDefault(__webpack_require__(55));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const language_client_1 = __webpack_require__(290);
-const types_1 = __webpack_require__(188);
-const util_1 = __webpack_require__(168);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)('services');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const language_client_1 = __webpack_require__(281);
+const types_1 = __webpack_require__(190);
+const util_1 = __webpack_require__(171);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('services');
 function getStateName(state) {
     switch (state) {
         case types_1.ServiceStat.Initial:
@@ -64114,6 +62448,8 @@ function getLanguageServerOptions(id, name, config) {
     let clientOptions = {
         ignoredRootPaths,
         disableWorkspaceFolders,
+        disableCompletion: !!config.disableCompletion,
+        disableDiagnostics: !!config.disableDiagnostics,
         documentSelector,
         revealOutputChannelOn: getRevealOutputChannelOn(config.revealOutputChannelOn),
         synchronize: {
@@ -64183,7 +62519,7 @@ exports.default = new ServiceManager();
 //# sourceMappingURL=services.js.map
 
 /***/ }),
-/* 290 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64194,28 +62530,28 @@ const tslib_1 = __webpack_require__(3);
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-const child_process_1 = tslib_1.__importDefault(__webpack_require__(169));
+const child_process_1 = tslib_1.__importDefault(__webpack_require__(172));
 const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
 const os_1 = tslib_1.__importDefault(__webpack_require__(55));
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const types_1 = __webpack_require__(188);
-const util_1 = __webpack_require__(168);
-const Is = tslib_1.__importStar(__webpack_require__(190));
-const processes_1 = __webpack_require__(260);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const which_1 = tslib_1.__importDefault(__webpack_require__(172));
-const client_1 = __webpack_require__(291);
-const colorProvider_1 = __webpack_require__(295);
-const configuration_1 = __webpack_require__(296);
-const declaration_1 = __webpack_require__(297);
-const foldingRange_1 = __webpack_require__(298);
-const implementation_1 = __webpack_require__(299);
-const typeDefinition_1 = __webpack_require__(300);
-const workspaceFolders_1 = __webpack_require__(301);
-const string_1 = __webpack_require__(210);
-const logger = __webpack_require__(179)('language-client-index');
-tslib_1.__exportStar(__webpack_require__(291), exports);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const types_1 = __webpack_require__(190);
+const util_1 = __webpack_require__(171);
+const Is = tslib_1.__importStar(__webpack_require__(192));
+const processes_1 = __webpack_require__(252);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const which_1 = tslib_1.__importDefault(__webpack_require__(175));
+const client_1 = __webpack_require__(282);
+const colorProvider_1 = __webpack_require__(286);
+const configuration_1 = __webpack_require__(287);
+const declaration_1 = __webpack_require__(288);
+const foldingRange_1 = __webpack_require__(289);
+const implementation_1 = __webpack_require__(290);
+const typeDefinition_1 = __webpack_require__(291);
+const workspaceFolders_1 = __webpack_require__(292);
+const string_1 = __webpack_require__(212);
+const logger = __webpack_require__(182)('language-client-index');
+tslib_1.__exportStar(__webpack_require__(282), exports);
 var Executable;
 (function (Executable) {
     function is(value) {
@@ -64644,7 +62980,7 @@ var ProposedFeatures;
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 291 */
+/* 282 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -64657,17 +62993,17 @@ const tslib_1 = __webpack_require__(3);
  *--------------------------------------------------------------------------------------------*/
 /*tslint:disable*/
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const commands_1 = tslib_1.__importDefault(__webpack_require__(232));
-const languages_1 = tslib_1.__importDefault(__webpack_require__(255));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const vscode_uri_1 = __webpack_require__(174);
+const commands_1 = tslib_1.__importDefault(__webpack_require__(234));
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
 const fs_1 = __webpack_require__(201);
-const Is = tslib_1.__importStar(__webpack_require__(190));
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const async_1 = __webpack_require__(292);
-const cv = tslib_1.__importStar(__webpack_require__(293));
-const UUID = tslib_1.__importStar(__webpack_require__(294));
-const logger = __webpack_require__(179)('language-client-client');
+const Is = tslib_1.__importStar(__webpack_require__(192));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const async_1 = __webpack_require__(283);
+const cv = tslib_1.__importStar(__webpack_require__(284));
+const UUID = tslib_1.__importStar(__webpack_require__(285));
+const logger = __webpack_require__(182)('language-client-client');
 class ConsoleLogger {
     error(message) {
         logger.error(message);
@@ -66294,6 +64630,8 @@ class BaseLanguageClient {
         clientOptions = clientOptions || {};
         this._clientOptions = {
             disableWorkspaceFolders: clientOptions.disableWorkspaceFolders,
+            disableDiagnostics: clientOptions.disableDiagnostics,
+            disableCompletion: clientOptions.disableCompletion,
             ignoredRootPaths: clientOptions.ignoredRootPaths,
             documentSelector: clientOptions.documentSelector || [],
             synchronize: clientOptions.synchronize || {},
@@ -66621,7 +64959,7 @@ class BaseLanguageClient {
     }
     resolveRootPath() {
         if (this._clientOptions.workspaceFolder) {
-            return vscode_uri_1.default.parse(this._clientOptions.workspaceFolder.uri).fsPath;
+            return vscode_uri_1.URI.parse(this._clientOptions.workspaceFolder.uri).fsPath;
         }
         let { ignoredRootPaths } = this._clientOptions;
         let config = workspace_1.default.getConfiguration(this.id);
@@ -66631,7 +64969,7 @@ class BaseLanguageClient {
         if (rootPatterns && rootPatterns.length) {
             let doc = workspace_1.default.getDocument(workspace_1.default.bufnr);
             if (doc && doc.schema == 'file') {
-                let dir = path_1.default.dirname(vscode_uri_1.default.parse(doc.uri).fsPath);
+                let dir = path_1.default.dirname(vscode_uri_1.URI.parse(doc.uri).fsPath);
                 resolved = fs_1.resolveRoot(dir, rootPatterns, workspace_1.default.cwd);
             }
         }
@@ -66653,7 +64991,7 @@ class BaseLanguageClient {
         let initParams = {
             processId: process.pid,
             rootPath: rootPath ? rootPath : null,
-            rootUri: rootPath ? cv.asUri(vscode_uri_1.default.file(rootPath)) : null,
+            rootUri: rootPath ? cv.asUri(vscode_uri_1.URI.file(rootPath)) : null,
             capabilities: this.computeClientCapabilities(),
             initializationOptions: Is.func(initOption) ? initOption() : initOption,
             trace: vscode_languageserver_protocol_1.Trace.toString(this._trace),
@@ -66690,7 +65028,9 @@ class BaseLanguageClient {
             this._capabilities = Object.assign({}, result.capabilities, {
                 resolvedTextDocumentSync: textDocumentSyncOptions
             });
-            connection.onDiagnostics(params => this.handleDiagnostics(params));
+            if (!this._clientOptions.disableDiagnostics) {
+                connection.onDiagnostics(params => this.handleDiagnostics(params));
+            }
             connection.onRequest(vscode_languageserver_protocol_1.RegistrationRequest.type, params => this.handleRegistrationRequest(params));
             // See https://github.com/Microsoft/vscode-languageserver-node/issues/199
             connection.onRequest('client/registerFeature', params => this.handleRegistrationRequest(params));
@@ -66953,7 +65293,9 @@ class BaseLanguageClient {
         this.registerFeature(new DidSaveTextDocumentFeature(this));
         this.registerFeature(new DidCloseTextDocumentFeature(this, this._syncedDocuments));
         this.registerFeature(new FileSystemWatcherFeature(this, event => this.notifyFileEvent(event)));
-        this.registerFeature(new CompletionItemFeature(this));
+        if (!this._clientOptions.disableCompletion) {
+            this.registerFeature(new CompletionItemFeature(this));
+        }
         this.registerFeature(new HoverFeature(this));
         this.registerFeature(new SignatureHelpFeature(this));
         this.registerFeature(new DefinitionFeature(this));
@@ -67047,7 +65389,7 @@ exports.BaseLanguageClient = BaseLanguageClient;
 //# sourceMappingURL=client.js.map
 
 /***/ }),
-/* 292 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67129,13 +65471,13 @@ exports.Delayer = Delayer;
 //# sourceMappingURL=async.js.map
 
 /***/ }),
-/* 293 */
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const lodash_1 = __webpack_require__(252);
+const lodash_1 = __webpack_require__(244);
 function asLanguageIds(documentSelector) {
     let res = documentSelector.map(filter => {
         if (typeof filter == 'string') {
@@ -67257,13 +65599,13 @@ exports.asCodeLensParams = asCodeLensParams;
 //# sourceMappingURL=converter.js.map
 
 /***/ }),
-/* 294 */
+/* 285 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const uuidv4 = __webpack_require__(261);
+const uuidv4 = __webpack_require__(253);
 function generateUuid() {
     return uuidv4();
 }
@@ -67271,7 +65613,7 @@ exports.generateUuid = generateUuid;
 //# sourceMappingURL=uuid.js.map
 
 /***/ }),
-/* 295 */
+/* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67282,11 +65624,11 @@ exports.generateUuid = generateUuid;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const languages_1 = tslib_1.__importDefault(__webpack_require__(255));
-const Is = tslib_1.__importStar(__webpack_require__(190));
-const client_1 = __webpack_require__(291);
-const UUID = tslib_1.__importStar(__webpack_require__(294));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
+const Is = tslib_1.__importStar(__webpack_require__(192));
+const client_1 = __webpack_require__(282);
+const UUID = tslib_1.__importStar(__webpack_require__(285));
 function ensure(target, key) {
     if (target[key] === void 0) {
         target[key] = {};
@@ -67365,7 +65707,7 @@ exports.ColorProviderFeature = ColorProviderFeature;
 //# sourceMappingURL=colorProvider.js.map
 
 /***/ }),
-/* 296 */
+/* 287 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67376,9 +65718,9 @@ const tslib_1 = __webpack_require__(3);
  * Copyright (c) Microsoft Corporation. All rights reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)('languageclient-configuration');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('languageclient-configuration');
 class ConfigurationFeature {
     constructor(_client) {
         this._client = _client;
@@ -67433,7 +65775,7 @@ exports.ConfigurationFeature = ConfigurationFeature;
 //# sourceMappingURL=configuration.js.map
 
 /***/ }),
-/* 297 */
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67444,12 +65786,12 @@ exports.ConfigurationFeature = ConfigurationFeature;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const Is = tslib_1.__importStar(__webpack_require__(190));
-const UUID = tslib_1.__importStar(__webpack_require__(294));
-const languages_1 = tslib_1.__importDefault(__webpack_require__(255));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const converter_1 = __webpack_require__(293);
-const client_1 = __webpack_require__(291);
+const Is = tslib_1.__importStar(__webpack_require__(192));
+const UUID = tslib_1.__importStar(__webpack_require__(285));
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const converter_1 = __webpack_require__(284);
+const client_1 = __webpack_require__(282);
 function ensure(target, key) {
     if (target[key] === void 0) {
         target[key] = {};
@@ -67512,7 +65854,7 @@ exports.DeclarationFeature = DeclarationFeature;
 //# sourceMappingURL=declaration.js.map
 
 /***/ }),
-/* 298 */
+/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67523,11 +65865,11 @@ exports.DeclarationFeature = DeclarationFeature;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const languages_1 = tslib_1.__importDefault(__webpack_require__(255));
-const Is = tslib_1.__importStar(__webpack_require__(190));
-const client_1 = __webpack_require__(291);
-const UUID = tslib_1.__importStar(__webpack_require__(294));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
+const Is = tslib_1.__importStar(__webpack_require__(192));
+const client_1 = __webpack_require__(282);
+const UUID = tslib_1.__importStar(__webpack_require__(285));
 function ensure(target, key) {
     if (target[key] === void 0) {
         target[key] = {};
@@ -67589,7 +65931,7 @@ exports.FoldingRangeFeature = FoldingRangeFeature;
 //# sourceMappingURL=foldingRange.js.map
 
 /***/ }),
-/* 299 */
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67600,12 +65942,12 @@ const tslib_1 = __webpack_require__(3);
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const languages_1 = tslib_1.__importDefault(__webpack_require__(255));
-const Is = tslib_1.__importStar(__webpack_require__(190));
-const client_1 = __webpack_require__(291);
-const UUID = tslib_1.__importStar(__webpack_require__(294));
-const cv = tslib_1.__importStar(__webpack_require__(293));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
+const Is = tslib_1.__importStar(__webpack_require__(192));
+const client_1 = __webpack_require__(282);
+const UUID = tslib_1.__importStar(__webpack_require__(285));
+const cv = tslib_1.__importStar(__webpack_require__(284));
 function ensure(target, key) {
     if (target[key] === void 0) {
         target[key] = {};
@@ -67667,7 +66009,7 @@ exports.ImplementationFeature = ImplementationFeature;
 //# sourceMappingURL=implementation.js.map
 
 /***/ }),
-/* 300 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67678,12 +66020,12 @@ const tslib_1 = __webpack_require__(3);
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const languages_1 = tslib_1.__importDefault(__webpack_require__(255));
-const Is = tslib_1.__importStar(__webpack_require__(190));
-const client_1 = __webpack_require__(291);
-const UUID = tslib_1.__importStar(__webpack_require__(294));
-const cv = tslib_1.__importStar(__webpack_require__(293));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
+const Is = tslib_1.__importStar(__webpack_require__(192));
+const client_1 = __webpack_require__(282);
+const UUID = tslib_1.__importStar(__webpack_require__(285));
+const cv = tslib_1.__importStar(__webpack_require__(284));
 function ensure(target, key) {
     if (target[key] === void 0) {
         target[key] = {};
@@ -67747,7 +66089,7 @@ exports.TypeDefinitionFeature = TypeDefinitionFeature;
 //# sourceMappingURL=typeDefinition.js.map
 
 /***/ }),
-/* 301 */
+/* 292 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -67758,10 +66100,10 @@ exports.TypeDefinitionFeature = TypeDefinitionFeature;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const UUID = tslib_1.__importStar(__webpack_require__(294));
-const logger = __webpack_require__(179)('language-client-workspaceFolder');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const UUID = tslib_1.__importStar(__webpack_require__(285));
+const logger = __webpack_require__(182)('language-client-workspaceFolder');
 function access(target, key) {
     if (target === void 0) {
         return undefined;
@@ -67844,38 +66186,39 @@ exports.WorkspaceFoldersFeature = WorkspaceFoldersFeature;
 //# sourceMappingURL=workspaceFolders.js.map
 
 /***/ }),
-/* 302 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const debounce_1 = tslib_1.__importDefault(__webpack_require__(170));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const extensions_1 = tslib_1.__importDefault(__webpack_require__(237));
-const util_1 = __webpack_require__(168);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const configuration_1 = tslib_1.__importDefault(__webpack_require__(303));
-const history_1 = tslib_1.__importDefault(__webpack_require__(304));
-const mappings_1 = tslib_1.__importDefault(__webpack_require__(306));
-const prompt_1 = tslib_1.__importDefault(__webpack_require__(308));
-const commands_1 = tslib_1.__importDefault(__webpack_require__(309));
-const diagnostics_1 = tslib_1.__importDefault(__webpack_require__(311));
-const extensions_2 = tslib_1.__importDefault(__webpack_require__(313));
-const folders_1 = tslib_1.__importDefault(__webpack_require__(314));
-const links_1 = tslib_1.__importDefault(__webpack_require__(315));
-const lists_1 = tslib_1.__importDefault(__webpack_require__(316));
-const location_1 = tslib_1.__importDefault(__webpack_require__(312));
-const outline_1 = tslib_1.__importDefault(__webpack_require__(317));
-const output_1 = tslib_1.__importDefault(__webpack_require__(319));
-const services_1 = tslib_1.__importDefault(__webpack_require__(320));
-const sources_1 = tslib_1.__importDefault(__webpack_require__(321));
-const symbols_1 = tslib_1.__importDefault(__webpack_require__(322));
-const ui_1 = tslib_1.__importDefault(__webpack_require__(323));
-const worker_1 = tslib_1.__importDefault(__webpack_require__(324));
-const logger = __webpack_require__(179)('list-manager');
+const debounce_1 = tslib_1.__importDefault(__webpack_require__(173));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const extensions_1 = tslib_1.__importDefault(__webpack_require__(240));
+const util_1 = __webpack_require__(171);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const configuration_1 = tslib_1.__importDefault(__webpack_require__(294));
+const history_1 = tslib_1.__importDefault(__webpack_require__(295));
+const mappings_1 = tslib_1.__importDefault(__webpack_require__(297));
+const prompt_1 = tslib_1.__importDefault(__webpack_require__(299));
+const commands_1 = tslib_1.__importDefault(__webpack_require__(300));
+const diagnostics_1 = tslib_1.__importDefault(__webpack_require__(302));
+const extensions_2 = tslib_1.__importDefault(__webpack_require__(304));
+const folders_1 = tslib_1.__importDefault(__webpack_require__(305));
+const links_1 = tslib_1.__importDefault(__webpack_require__(306));
+const lists_1 = tslib_1.__importDefault(__webpack_require__(307));
+const location_1 = tslib_1.__importDefault(__webpack_require__(303));
+const outline_1 = tslib_1.__importDefault(__webpack_require__(308));
+const output_1 = tslib_1.__importDefault(__webpack_require__(310));
+const services_1 = tslib_1.__importDefault(__webpack_require__(311));
+const sources_1 = tslib_1.__importDefault(__webpack_require__(312));
+const symbols_1 = tslib_1.__importDefault(__webpack_require__(313));
+const actions_1 = tslib_1.__importDefault(__webpack_require__(314));
+const ui_1 = tslib_1.__importDefault(__webpack_require__(315));
+const worker_1 = tslib_1.__importDefault(__webpack_require__(316));
+const logger = __webpack_require__(182)('list-manager');
 const mouseKeys = ['<LeftMouse>', '<LeftDrag>', '<LeftRelease>', '<2-LeftMouse>'];
 class ListManager {
     constructor() {
@@ -67922,8 +66265,6 @@ class ListManager {
             else {
                 nvim.pauseNotification();
                 this.prompt.cancel();
-                if (isVim)
-                    nvim.call('coc#list#restore', [], true);
                 await nvim.resumeNotification();
             }
         }, 100), null, this.disposables);
@@ -67947,12 +66288,6 @@ class ListManager {
                 if (typeof this.currList.doHighlight == 'function') {
                     this.currList.doHighlight();
                 }
-                this.ui.window.notify('nvim_win_set_option', ['statusline', this.buildStatusline()]);
-            }
-        }, null, this.disposables);
-        this.ui.onDidChange(() => {
-            if (this.currList) {
-                this.ui.window.notify('nvim_win_set_option', ['statusline', this.buildStatusline()]);
             }
         }, null, this.disposables);
         this.ui.onDidClose(async () => {
@@ -67962,9 +66297,7 @@ class ListManager {
             if (this.activated) {
                 this.updateStatus();
             }
-            if (workspace_1.default.isNvim) {
-                this.prompt.drawPrompt();
-            }
+            this.prompt.drawPrompt();
         }, null, this.disposables);
         this.ui.onDidDoubleClick(async () => {
             await this.doAction();
@@ -67993,6 +66326,7 @@ class ListManager {
         this.registerList(new output_1.default(nvim));
         this.registerList(new lists_1.default(nvim, this.listMap));
         this.registerList(new folders_1.default(nvim));
+        this.registerList(new actions_1.default(nvim));
     }
     async start(args) {
         if (this.activated)
@@ -68009,17 +66343,16 @@ class ListManager {
             this.currList = list;
             this.listArgs = listArgs;
             this.cwd = workspace_1.default.cwd;
-            this.window = await this.nvim.window;
-            await this.nvim.command('nohlsearch');
             await this.getCharMap();
-            this.prompt.start(options);
             await this.history.load();
+            this.window = await this.nvim.window;
+            this.prompt.start(options);
             await this.worker.loadItems();
         }
         catch (e) {
             await this.cancel();
             let msg = e instanceof Error ? e.message : e.toString();
-            workspace_1.default.showMessage(`Error on "CocList ${list.name}" ${msg}`, 'error');
+            workspace_1.default.showMessage(`Error on "CocList ${list.name}": ${msg}`, 'error');
             logger.error(e);
         }
     }
@@ -68082,7 +66415,6 @@ class ListManager {
                     nvim.call('win_gotoid', this.window.id, true);
             }
         }
-        nvim.call('coc#list#restore', [], true);
         await nvim.resumeNotification();
     }
     async switchMatcher() {
@@ -68231,13 +66563,13 @@ class ListManager {
         };
     }
     updateStatus() {
-        let { ui, currList, listArgs, activated, nvim } = this;
+        let { ui, currList, activated, nvim } = this;
         if (!activated)
             return;
         let buf = nvim.createBuffer(ui.bufnr);
         let status = {
             mode: this.prompt.mode.toUpperCase(),
-            args: listArgs.join(' '),
+            args: this.args.join(' '),
             name: currList.name,
             total: this.worker.length,
             cwd: this.cwd,
@@ -68245,18 +66577,6 @@ class ListManager {
         buf.setVar('list_status', status, true);
         if (ui.window)
             nvim.command('redraws', true);
-    }
-    buildStatusline() {
-        let { args } = this;
-        let parts = [
-            `%#CocListMode#-- %{coc#list#status('mode')} --%*`,
-            `%{get(g:, 'coc_list_loading_status', '')}`,
-            args.join(' '),
-            `(%L/%{coc#list#status('total')})`,
-            '%=',
-            `%#CocListPath# %{coc#list#status('cwd')} %l/%L%*`
-        ];
-        return parts.join(' ');
     }
     async onInputChar(ch, charmod) {
         let { mode } = this.prompt;
@@ -68533,29 +66853,26 @@ class ListManager {
     }
     async getCharMap() {
         if (this.charMap)
-            return this.charMap;
+            return;
         this.charMap = new Map();
         let chars = await this.nvim.call('coc#list#get_chars');
         Object.keys(chars).forEach(key => {
             this.charMap.set(chars[key], key);
         });
-        return this.charMap;
+        return;
     }
     async doItemAction(items, action) {
         if (this.executing)
             return;
         this.executing = true;
-        let { nvim, ui } = this;
+        let { nvim } = this;
         let shouldCancel = action.persist !== true && action.name != 'preview';
         try {
             if (shouldCancel) {
                 await this.cancel();
             }
-            else {
+            else if (action.name != 'preview') {
                 await nvim.call('coc#list#stop_prompt');
-            }
-            if (action.name == 'preview') {
-                items = items.slice(0, 1);
             }
             if (!shouldCancel && !this.isActivated)
                 return;
@@ -68577,33 +66894,20 @@ class ListManager {
                     this.nvim.command('pclose', true);
                     return;
                 }
-                this.prompt.start();
-                let { window } = ui;
-                if (!window)
-                    return;
-                let valid = await window.valid;
-                if (!valid)
-                    return;
-                let winid = await nvim.call('win_getid');
-                if (winid != window.id) {
-                    nvim.pauseNotification();
-                    nvim.call('win_gotoid', [window.id], true);
-                    await this.ui.restoreWindow();
-                    nvim.command('redraw', true);
-                    await nvim.resumeNotification();
+                if (action.name != 'preview') {
+                    this.prompt.start();
                 }
-                else {
-                    await this.ui.restoreWindow();
-                }
+                await this.ui.restoreWindow();
                 if (action.reload)
                     await this.worker.loadItems(true);
             }
         }
         catch (e) {
+            // tslint:disable-next-line: no-console
+            console.error(e);
             if (!shouldCancel && this.activated) {
                 this.prompt.start();
             }
-            logger.error(e);
         }
         this.executing = false;
     }
@@ -68633,14 +66937,14 @@ exports.default = new ListManager();
 //# sourceMappingURL=manager.js.map
 
 /***/ }),
-/* 303 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
 exports.validKeys = [
     '<esc>',
     '<tab>',
@@ -68748,16 +67052,16 @@ exports.default = ListConfiguration;
 //# sourceMappingURL=configuration.js.map
 
 /***/ }),
-/* 304 */
+/* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const fuzzy_1 = __webpack_require__(305);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)('list-history');
+const fuzzy_1 = __webpack_require__(296);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('list-history');
 class History {
     constructor(manager) {
         this.manager = manager;
@@ -68838,7 +67142,7 @@ exports.default = History;
 //# sourceMappingURL=history.js.map
 
 /***/ }),
-/* 305 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -68901,17 +67205,17 @@ exports.fuzzyMatch = fuzzyMatch;
 //# sourceMappingURL=fuzzy.js.map
 
 /***/ }),
-/* 306 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-__webpack_require__(307);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const configuration_1 = __webpack_require__(303);
-const logger = __webpack_require__(179)('list-mappings');
+__webpack_require__(298);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const configuration_1 = __webpack_require__(294);
+const logger = __webpack_require__(182)('list-mappings');
 class Mappings {
     constructor(manager, nvim, config) {
         this.manager = manager;
@@ -68974,6 +67278,15 @@ class Mappings {
         });
         this.add('insert', '<C-u>', () => {
             prompt.removeAhead();
+        });
+        this.add('insert', '<C-d>', () => {
+            return manager.feedkeys('<C-d>');
+        });
+        this.add('insert', '<PageUp>', () => {
+            return manager.feedkeys('<PageUp>');
+        });
+        this.add('insert', '<PageDown>', () => {
+            return manager.feedkeys('<PageDown>');
         });
         this.add('insert', '<down>', () => {
             return manager.normal('j');
@@ -69202,6 +67515,9 @@ class Mappings {
                     return prompt.removeTail();
                 case 'removeahead':
                     return prompt.removeAhead();
+                case 'paste':
+                    await prompt.paste();
+                    return;
                 default:
                     await this.onError(`prompt '${action}' not supported`);
             }
@@ -69241,10 +67557,10 @@ exports.default = Mappings;
 //# sourceMappingURL=mappings.js.map
 
 /***/ }),
-/* 307 */
+/* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const logger = __webpack_require__(179)('extensions');
+const logger = __webpack_require__(182)('extensions');
 /**
  * Explicitly tells that promise should be run asynchonously.
  */
@@ -69257,22 +67573,23 @@ Promise.prototype.logError = function () {
 //# sourceMappingURL=extensions.js.map
 
 /***/ }),
-/* 308 */
+/* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)('list-prompt');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('list-prompt');
 class Prompt {
     constructor(nvim, config) {
         this.nvim = nvim;
         this.config = config;
         this.cusorIndex = 0;
         this._input = '';
+        this._mode = 'insert';
         this.interactive = false;
         this._onDidChangeInput = new vscode_languageserver_protocol_1.Emitter();
         this.onDidChangeInput = this._onDidChangeInput.event;
@@ -69309,7 +67626,8 @@ class Prompt {
             this._mode = opts.mode;
             this._matcher = opts.interactive ? '' : opts.matcher;
         }
-        this.nvim.callTimer('coc#list#start_prompt', [], true);
+        let fn = workspace_1.default.isVim ? 'coc#list#prompt_start' : 'coc#list#start_prompt';
+        this.nvim.call(fn, [], true);
         this.drawPrompt();
     }
     cancel() {
@@ -69442,23 +67760,33 @@ class Prompt {
         this.drawPrompt();
         this._onDidChangeInput.fire(this._input);
     }
+    async paste() {
+        let { cusorIndex, input } = this;
+        let text = await this.nvim.eval('@*');
+        text = text.replace(/\n/g, '');
+        this.cusorIndex = cusorIndex + text.length;
+        let pre = input.slice(0, cusorIndex);
+        let post = input.slice(cusorIndex);
+        this._input = `${pre}${text}${post}`;
+        this.drawPrompt();
+        this._onDidChangeInput.fire(this._input);
+    }
 }
 exports.default = Prompt;
 //# sourceMappingURL=prompt.js.map
 
 /***/ }),
-/* 309 */
+/* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const commands_1 = tslib_1.__importDefault(__webpack_require__(232));
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const extensions_1 = tslib_1.__importDefault(__webpack_require__(237));
-const basic_1 = tslib_1.__importDefault(__webpack_require__(310));
+const commands_1 = tslib_1.__importDefault(__webpack_require__(234));
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const basic_1 = tslib_1.__importDefault(__webpack_require__(301));
 class CommandsList extends basic_1.default {
     constructor(nvim) {
         super(nvim);
@@ -69471,23 +67799,24 @@ class CommandsList extends basic_1.default {
             await events_1.default.fire('Command', [cmd]);
             await commands_1.default.executeCommand(cmd);
             await this.mru.add(cmd);
+            await nvim.command(`silent! call repeat#set("\\<Plug>(coc-command-repeat)", -1)`);
         });
     }
     async loadItems(_context) {
         let items = [];
         let list = commands_1.default.commandList;
-        let { commands } = extensions_1.default;
+        let { titles } = commands_1.default;
         let mruList = await this.mru.load();
-        for (let key of Object.keys(commands)) {
+        for (let key of titles.keys()) {
             items.push({
-                label: `${key}\t${commands[key]}`,
+                label: `${key}\t${titles.get(key)}`,
                 filterText: key,
                 data: { cmd: key, score: score(mruList, key) }
             });
         }
         for (let o of list) {
             let { id } = o;
-            if (items.findIndex(item => item.filterText == id) == -1) {
+            if (!titles.has(id)) {
                 items.push({
                     label: id,
                     filterText: id,
@@ -69518,7 +67847,7 @@ function score(list, key) {
 //# sourceMappingURL=commands.js.map
 
 /***/ }),
-/* 310 */
+/* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69527,14 +67856,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
 const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
 const readline_1 = tslib_1.__importDefault(__webpack_require__(59));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const util_1 = __webpack_require__(168);
-const position_1 = __webpack_require__(229);
-const string_1 = __webpack_require__(210);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const configuration_1 = tslib_1.__importDefault(__webpack_require__(303));
-const logger = __webpack_require__(179)('list-basic');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const vscode_uri_1 = __webpack_require__(174);
+const util_1 = __webpack_require__(171);
+const position_1 = __webpack_require__(231);
+const string_1 = __webpack_require__(212);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const configuration_1 = tslib_1.__importDefault(__webpack_require__(294));
+const logger = __webpack_require__(182)('list-basic');
 class BasicList {
     constructor(nvim) {
         this.nvim = nvim;
@@ -69633,7 +67962,7 @@ class BasicList {
             return vscode_languageserver_protocol_1.Location.create(location, vscode_languageserver_protocol_1.Range.create(0, 0, 0, 0));
         if (vscode_languageserver_protocol_1.Location.is(location))
             return location;
-        let u = vscode_uri_1.default.parse(location.uri);
+        let u = vscode_uri_1.URI.parse(location.uri);
         if (u.scheme != 'file')
             return vscode_languageserver_protocol_1.Location.create(location.uri, vscode_languageserver_protocol_1.Range.create(0, 0, 0, 0));
         const rl = readline_1.default.createInterface({
@@ -69698,7 +68027,7 @@ class BasicList {
         if (doc)
             lineCount = doc.lineCount;
         let height = Math.min(this.previewHeight, lineCount);
-        let u = vscode_uri_1.default.parse(uri);
+        let u = vscode_uri_1.URI.parse(uri);
         if (u.scheme == 'untitled' || u.scheme == 'unknown') {
             let bufnr = parseInt(u.path, 10);
             let valid = await nvim.call('bufloaded', [bufnr]);
@@ -69708,7 +68037,7 @@ class BasicList {
                 name = name || '[No Name]';
                 let filetype = await nvim.call('getbufvar', [bufnr, '&filetype']);
                 let lines = await nvim.call('getbufline', [bufnr, 1, '$']);
-                await this.preview({ bufname: name, sketch: true, filetype, lnum, lines }, context);
+                await this.preview({ bufname: name, sketch: true, filetype: filetype || 'txt', lnum, lines }, context);
             }
             else {
                 await this.preview({ bufname: '[No Name]', sketch: true, filetype: 'txt', lines: [] }, context);
@@ -69727,14 +68056,13 @@ class BasicList {
         if (this.splitRight) {
             if (valid)
                 nvim.call('win_gotoid', [context.window.id], true);
-            nvim.command(`belowright vs +setl\\ previewwindow ${escaped}`, true);
+            nvim.command(`silent belowright vs +setl\\ previewwindow ${escaped}`, true);
         }
         else {
-            nvim.command(`${mod} ${height}sp +setl\\ previewwindow ${escaped}`, true);
+            nvim.command(`silent ${mod} ${height}sp +setl\\ previewwindow ${escaped}`, true);
         }
         nvim.command(`exe ${lnum}`, true);
-        nvim.command('setl winfixheight', true);
-        nvim.command('setl nofoldenable', true);
+        nvim.command('setl winfixheight nofoldenable', true);
         if (position_1.comparePosition(range.start, range.end) !== 0) {
             let arr = [];
             for (let i = range.start.line; i <= range.end.line; i++) {
@@ -69756,7 +68084,12 @@ class BasicList {
             nvim.command('setl nobuflisted bufhidden=wipe', true);
         nvim.command('normal! zz', true);
         nvim.call('win_gotoid', [winid], true);
-        await nvim.resumeNotification();
+        if (workspace_1.default.isVim)
+            nvim.command('redraw', true);
+        let [, err] = await nvim.resumeNotification();
+        // tslint:disable-next-line: no-console
+        if (err)
+            console.error(`Error on ${err[0]}: ${err[1]} - ${err[2]}`);
     }
     async preview(options, context) {
         let { nvim } = this;
@@ -69770,10 +68103,10 @@ class BasicList {
         if (this.splitRight) {
             if (valid)
                 nvim.call('win_gotoid', [context.window.id], true);
-            nvim.command(`belowright vs +setl\\ previewwindow ${bufname}`, true);
+            nvim.command(`silent belowright vs +setl\\ previewwindow ${bufname}`, true);
         }
         else {
-            nvim.command(`${mod} ${height}sp +setl\\ previewwindow ${bufname}`, true);
+            nvim.command(`silent ${mod} ${height}sp +setl\\ previewwindow ${bufname}`, true);
         }
         if (lines) {
             nvim.call('append', [0, lines], true);
@@ -69787,12 +68120,17 @@ class BasicList {
         if (filetype == 'detect') {
             nvim.command('filetype detect', true);
         }
-        else {
+        else if (filetype) {
             nvim.command(`setf ${filetype}`, true);
         }
         nvim.command('normal! zz', true);
         nvim.call('win_gotoid', [winid], true);
-        await nvim.resumeNotification();
+        if (workspace_1.default.isVim)
+            nvim.command('redraw', true);
+        let [, err] = await nvim.resumeNotification();
+        // tslint:disable-next-line: no-console
+        if (err)
+            console.error(`Error on ${err[0]}: ${err[1]} - ${err[2]}`);
     }
     doHighlight() {
         // noop
@@ -69805,7 +68143,7 @@ exports.default = BasicList;
 //# sourceMappingURL=basic.js.map
 
 /***/ }),
-/* 311 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -69813,9 +68151,10 @@ exports.default = BasicList;
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const manager_1 = tslib_1.__importDefault(__webpack_require__(256));
-const location_1 = tslib_1.__importDefault(__webpack_require__(312));
-const logger = __webpack_require__(179)('list-symbols');
+const manager_1 = tslib_1.__importDefault(__webpack_require__(248));
+const location_1 = tslib_1.__importDefault(__webpack_require__(303));
+const fs_1 = __webpack_require__(201);
+const logger = __webpack_require__(182)('list-symbols');
 class DiagnosticsList extends location_1.default {
     constructor() {
         super(...arguments);
@@ -69827,7 +68166,7 @@ class DiagnosticsList extends location_1.default {
         let list = manager_1.default.getDiagnosticList();
         let { cwd } = context;
         return list.map(item => {
-            let file = item.file.startsWith(cwd) ? path_1.default.relative(cwd, item.file) : item.file;
+            let file = fs_1.isParentFolder(cwd, item.file) ? path_1.default.relative(cwd, item.file) : item.file;
             return {
                 label: `${file}:${item.lnum}:${item.col}\t${item.severity}\t${item.message.replace(/\n/g, '')}`,
                 location: item.location
@@ -69856,19 +68195,20 @@ exports.default = DiagnosticsList;
 //# sourceMappingURL=diagnostics.js.map
 
 /***/ }),
-/* 312 */
+/* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_types_1 = __webpack_require__(155);
+const vscode_languageserver_types_1 = __webpack_require__(158);
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const basic_1 = tslib_1.__importDefault(__webpack_require__(310));
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const logger = __webpack_require__(179)('list-location');
+const basic_1 = tslib_1.__importDefault(__webpack_require__(301));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const vscode_uri_1 = __webpack_require__(174);
+const fs_1 = __webpack_require__(201);
+const logger = __webpack_require__(182)('list-location');
 class LocationList extends basic_1.default {
     constructor(nvim) {
         super(nvim);
@@ -69879,12 +68219,12 @@ class LocationList extends basic_1.default {
     }
     async loadItems(context) {
         // filename, lnum, col, text, type
-        let locs = await this.nvim.getVar('coc_jump_locations');
+        let locs = global.locations;
         locs = locs || [];
         locs.forEach(loc => {
             if (!loc.uri) {
                 let fullpath = path_1.default.isAbsolute(loc.filename) ? loc.filename : path_1.default.join(context.cwd, loc.filename);
-                loc.uri = vscode_uri_1.default.file(fullpath).toString();
+                loc.uri = vscode_uri_1.URI.file(fullpath).toString();
             }
             if (!loc.bufnr && workspace_1.default.getDocument(loc.uri) != null) {
                 loc.bufnr = workspace_1.default.getDocument(loc.uri).bufnr;
@@ -69898,18 +68238,13 @@ class LocationList extends basic_1.default {
                 loc.col = loc.col || loc.range.start.character + 1;
             }
         });
-        let bufnr;
-        let valid = await context.window.valid;
-        if (valid) {
-            let buf = await context.window.buffer;
-            bufnr = buf.id;
-        }
+        let bufnr = await this.nvim.call('bufnr', '%');
         let ignoreFilepath = locs.every(o => o.bufnr && bufnr && o.bufnr == bufnr);
         let items = locs.map(loc => {
             let filename = ignoreFilepath ? '' : loc.filename;
             let filterText = `${filename}${loc.text.trim()}`;
             if (path_1.default.isAbsolute(filename)) {
-                filename = filename.startsWith(context.cwd) ? path_1.default.relative(context.cwd, filename) : filename;
+                filename = fs_1.isParentFolder(context.cwd, filename) ? path_1.default.relative(context.cwd, filename) : filename;
             }
             return {
                 label: `${filename} |${loc.type ? loc.type + ' ' : ''}${loc.lnum} col ${loc.col}| ${loc.text}`,
@@ -69939,18 +68274,18 @@ exports.default = LocationList;
 //# sourceMappingURL=location.js.map
 
 /***/ }),
-/* 313 */
+/* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const extensions_1 = tslib_1.__importDefault(__webpack_require__(237));
-const basic_1 = tslib_1.__importDefault(__webpack_require__(310));
+const extensions_1 = tslib_1.__importDefault(__webpack_require__(240));
+const basic_1 = tslib_1.__importDefault(__webpack_require__(301));
 const os_1 = tslib_1.__importDefault(__webpack_require__(55));
-const util_1 = __webpack_require__(168);
-const logger = __webpack_require__(179)('list-extensions');
+const util_1 = __webpack_require__(171);
+const logger = __webpack_require__(182)('list-extensions');
 class ExtensionList extends basic_1.default {
     constructor(nvim) {
         super(nvim);
@@ -70082,7 +68417,7 @@ function getPriority(stat) {
 //# sourceMappingURL=extensions.js.map
 
 /***/ }),
-/* 314 */
+/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70090,8 +68425,8 @@ function getPriority(stat) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
 const fs_1 = __webpack_require__(201);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const basic_1 = tslib_1.__importDefault(__webpack_require__(310));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const basic_1 = tslib_1.__importDefault(__webpack_require__(301));
 class FoldList extends basic_1.default {
     constructor(nvim) {
         super(nvim);
@@ -70121,19 +68456,20 @@ exports.default = FoldList;
 //# sourceMappingURL=folders.js.map
 
 /***/ }),
-/* 315 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const languages_1 = tslib_1.__importDefault(__webpack_require__(255));
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const basic_1 = tslib_1.__importDefault(__webpack_require__(310));
-const vscode_languageserver_types_1 = __webpack_require__(155);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
+const basic_1 = tslib_1.__importDefault(__webpack_require__(301));
+const vscode_languageserver_types_1 = __webpack_require__(158);
+const vscode_uri_1 = __webpack_require__(174);
+const fs_1 = __webpack_require__(201);
 class LinksList extends basic_1.default {
     constructor(nvim) {
         super(nvim);
@@ -70142,7 +68478,7 @@ class LinksList extends basic_1.default {
         this.name = 'links';
         this.addAction('open', async (item) => {
             let { target } = item.data;
-            let uri = vscode_uri_1.default.parse(target);
+            let uri = vscode_uri_1.URI.parse(target);
             if (uri.scheme.startsWith('http')) {
                 await nvim.call('coc#util#open_url', target);
             }
@@ -70197,21 +68533,21 @@ exports.default = LinksList;
 function formatUri(uri) {
     if (!uri.startsWith('file:'))
         return uri;
-    let filepath = vscode_uri_1.default.parse(uri).fsPath;
-    return filepath.startsWith(workspace_1.default.cwd) ? path_1.default.relative(workspace_1.default.cwd, filepath) : filepath;
+    let filepath = vscode_uri_1.URI.parse(uri).fsPath;
+    return fs_1.isParentFolder(workspace_1.default.cwd, filepath) ? path_1.default.relative(workspace_1.default.cwd, filepath) : filepath;
 }
 //# sourceMappingURL=links.js.map
 
 /***/ }),
-/* 316 */
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const basic_1 = tslib_1.__importDefault(__webpack_require__(310));
-const mru_1 = tslib_1.__importDefault(__webpack_require__(214));
+const basic_1 = tslib_1.__importDefault(__webpack_require__(301));
+const mru_1 = tslib_1.__importDefault(__webpack_require__(216));
 class LinksList extends basic_1.default {
     constructor(nvim, listMap) {
         super(nvim);
@@ -70264,7 +68600,7 @@ function score(list, key) {
 //# sourceMappingURL=lists.js.map
 
 /***/ }),
-/* 317 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70272,15 +68608,15 @@ function score(list, key) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const vscode_languageserver_types_1 = __webpack_require__(155);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const languages_1 = tslib_1.__importDefault(__webpack_require__(255));
-const util_1 = __webpack_require__(168);
+const vscode_languageserver_types_1 = __webpack_require__(158);
+const vscode_uri_1 = __webpack_require__(174);
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
+const util_1 = __webpack_require__(171);
 const fs_1 = __webpack_require__(201);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const location_1 = tslib_1.__importDefault(__webpack_require__(312));
-const convert_1 = __webpack_require__(318);
-const logger = __webpack_require__(179)('list-symbols');
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const location_1 = tslib_1.__importDefault(__webpack_require__(303));
+const convert_1 = __webpack_require__(309);
+const logger = __webpack_require__(182)('list-symbols');
 class Outline extends location_1.default {
     constructor() {
         super(...arguments);
@@ -70309,7 +68645,7 @@ class Outline extends location_1.default {
                 symbols.sort(sortSymbols);
                 for (let s of symbols) {
                     let kind = convert_1.getSymbolKind(s.kind);
-                    if (kind == 'Variable')
+                    if (kind == 'Variable' || s.name.endsWith(') callback'))
                         continue;
                     let location = vscode_languageserver_types_1.Location.create(document.uri, s.selectionRange);
                     items.push({
@@ -70333,6 +68669,8 @@ class Outline extends location_1.default {
             });
             for (let s of symbols) {
                 let kind = convert_1.getSymbolKind(s.kind);
+                if (s.name.endsWith(') callback'))
+                    continue;
                 items.push({
                     label: `${s.name} [${kind}] ${s.location.range.start.line + 1}`,
                     filterText: `${s.name}`,
@@ -70356,7 +68694,7 @@ class Outline extends location_1.default {
         });
     }
     async loadCtagsSymbols(document) {
-        let uri = vscode_uri_1.default.parse(document.uri);
+        let uri = vscode_uri_1.URI.parse(document.uri);
         let extname = path_1.default.extname(uri.fsPath);
         let content = '';
         let tempname = await this.nvim.call('tempname');
@@ -70413,13 +68751,13 @@ function sortSymbols(a, b) {
 //# sourceMappingURL=outline.js.map
 
 /***/ }),
-/* 318 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
 function getSymbolKind(kind) {
     switch (kind) {
         case vscode_languageserver_protocol_1.SymbolKind.File:
@@ -70482,15 +68820,15 @@ exports.getSymbolKind = getSymbolKind;
 //# sourceMappingURL=convert.js.map
 
 /***/ }),
-/* 319 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const basic_1 = tslib_1.__importDefault(__webpack_require__(310));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const basic_1 = tslib_1.__importDefault(__webpack_require__(301));
 class OutputList extends basic_1.default {
     constructor(nvim) {
         super(nvim);
@@ -70512,16 +68850,16 @@ exports.default = OutputList;
 //# sourceMappingURL=output.js.map
 
 /***/ }),
-/* 320 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const services_1 = tslib_1.__importDefault(__webpack_require__(289));
-const basic_1 = tslib_1.__importDefault(__webpack_require__(310));
-const util_1 = __webpack_require__(168);
+const services_1 = tslib_1.__importDefault(__webpack_require__(280));
+const basic_1 = tslib_1.__importDefault(__webpack_require__(301));
+const util_1 = __webpack_require__(171);
 class ServicesList extends basic_1.default {
     constructor(nvim) {
         super(nvim);
@@ -70567,17 +68905,17 @@ exports.default = ServicesList;
 //# sourceMappingURL=services.js.map
 
 /***/ }),
-/* 321 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_types_1 = __webpack_require__(155);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const sources_1 = tslib_1.__importDefault(__webpack_require__(236));
-const basic_1 = tslib_1.__importDefault(__webpack_require__(310));
+const vscode_languageserver_types_1 = __webpack_require__(158);
+const vscode_uri_1 = __webpack_require__(174);
+const sources_1 = tslib_1.__importDefault(__webpack_require__(239));
+const basic_1 = tslib_1.__importDefault(__webpack_require__(301));
 class SourcesList extends basic_1.default {
     constructor(nvim) {
         super(nvim);
@@ -70609,7 +68947,7 @@ class SourcesList extends basic_1.default {
             let prefix = stat.disabled ? ' ' : '*';
             let location;
             if (stat.filepath) {
-                location = vscode_languageserver_types_1.Location.create(vscode_uri_1.default.file(stat.filepath).toString(), vscode_languageserver_types_1.Range.create(0, 0, 0, 0));
+                location = vscode_languageserver_types_1.Location.create(vscode_uri_1.URI.file(stat.filepath).toString(), vscode_languageserver_types_1.Range.create(0, 0, 0, 0));
             }
             return {
                 label: `${prefix}\t${stat.name}\t[${stat.shortcut}]\t${stat.filetypes.join(',')}`,
@@ -70638,7 +68976,7 @@ exports.default = SourcesList;
 //# sourceMappingURL=sources.js.map
 
 /***/ }),
-/* 322 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -70646,13 +68984,14 @@ exports.default = SourcesList;
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const vscode_languageserver_types_1 = __webpack_require__(155);
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const languages_1 = tslib_1.__importDefault(__webpack_require__(255));
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const location_1 = tslib_1.__importDefault(__webpack_require__(312));
-const convert_1 = __webpack_require__(318);
-const logger = __webpack_require__(179)('list-symbols');
+const vscode_languageserver_types_1 = __webpack_require__(158);
+const vscode_uri_1 = __webpack_require__(174);
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const location_1 = tslib_1.__importDefault(__webpack_require__(303));
+const convert_1 = __webpack_require__(309);
+const fs_1 = __webpack_require__(201);
+const logger = __webpack_require__(182)('list-symbols');
 class Symbols extends location_1.default {
     constructor() {
         super(...arguments);
@@ -70679,8 +69018,8 @@ class Symbols extends location_1.default {
             if (!this.validWorkspaceSymbol(s))
                 continue;
             let kind = convert_1.getSymbolKind(s.kind);
-            let file = vscode_uri_1.default.parse(s.location.uri).fsPath;
-            if (file.startsWith(workspace_1.default.cwd)) {
+            let file = vscode_uri_1.URI.parse(s.location.uri).fsPath;
+            if (fs_1.isParentFolder(workspace_1.default.cwd, file)) {
                 file = path_1.default.relative(workspace_1.default.cwd, file);
             }
             items.push({
@@ -70700,8 +69039,8 @@ class Symbols extends location_1.default {
         if (!resolved)
             return null;
         let kind = convert_1.getSymbolKind(resolved.kind);
-        let file = vscode_uri_1.default.parse(resolved.location.uri).fsPath;
-        if (file.startsWith(workspace_1.default.cwd)) {
+        let file = vscode_uri_1.URI.parse(resolved.location.uri).fsPath;
+        if (fs_1.isParentFolder(workspace_1.default.cwd, file)) {
             file = path_1.default.relative(workspace_1.default.cwd, file);
         }
         return {
@@ -70743,19 +69082,149 @@ exports.default = Symbols;
 //# sourceMappingURL=symbols.js.map
 
 /***/ }),
-/* 323 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const util_1 = __webpack_require__(168);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const debounce = __webpack_require__(170);
-const logger = __webpack_require__(179)('list-ui');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const commands_1 = tslib_1.__importDefault(__webpack_require__(234));
+const manager_1 = tslib_1.__importDefault(__webpack_require__(248));
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
+const services_1 = tslib_1.__importDefault(__webpack_require__(280));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const basic_1 = tslib_1.__importDefault(__webpack_require__(301));
+const logger = __webpack_require__(182)('list-actions');
+class ActionsList extends basic_1.default {
+    constructor(nvim) {
+        super(nvim);
+        this.defaultAction = 'do';
+        this.description = 'code actions of selected range.';
+        this.name = 'actions';
+        this.options = [{
+                name: '-start',
+                description: 'start of line',
+                hasValue: true
+            }, {
+                name: '-end',
+                description: 'end of line',
+                hasValue: true
+            }, {
+                name: '-quickfix',
+                description: 'quickfix only',
+            }, {
+                name: '-source',
+                description: 'source action only'
+            }];
+        this.addAction('do', async (item) => {
+            let action = item.data.action;
+            let { command, edit } = action;
+            if (edit)
+                await workspace_1.default.applyEdit(edit);
+            if (command) {
+                if (commands_1.default.has(command.command)) {
+                    commands_1.default.execute(command);
+                }
+                else {
+                    let clientId = action.clientId;
+                    let service = services_1.default.getService(clientId);
+                    let params = {
+                        command: command.command,
+                        arguments: command.arguments
+                    };
+                    if (service.client) {
+                        let { client } = service;
+                        client
+                            .sendRequest(vscode_languageserver_protocol_1.ExecuteCommandRequest.type, params)
+                            .then(undefined, error => {
+                            workspace_1.default.showMessage(`Execute '${command.command} error: ${error}'`, 'error');
+                        });
+                    }
+                }
+            }
+        });
+    }
+    async loadItems(context) {
+        let buf = await context.window.buffer;
+        let doc = workspace_1.default.getDocument(buf.id);
+        if (!doc)
+            return null;
+        let args = this.parseArguments(context.args);
+        let range;
+        if (args.start && args.end) {
+            range = vscode_languageserver_protocol_1.Range.create(parseInt(args.start, 10) - 1, 0, parseInt(args.end, 10), 0);
+        }
+        else {
+            range = vscode_languageserver_protocol_1.Range.create(0, 0, doc.lineCount, 0);
+        }
+        let diagnostics = manager_1.default.getDiagnosticsInRange(doc.textDocument, range);
+        let actionContext = { diagnostics };
+        if (args.quickfix) {
+            actionContext.only = [vscode_languageserver_protocol_1.CodeActionKind.QuickFix];
+        }
+        else if (args.source) {
+            actionContext.only = [vscode_languageserver_protocol_1.CodeActionKind.Source];
+        }
+        let codeActionsMap = await languages_1.default.getCodeActions(doc.textDocument, range, actionContext);
+        if (!codeActionsMap)
+            return [];
+        let codeActions = [];
+        for (let clientId of codeActionsMap.keys()) {
+            let actions = codeActionsMap.get(clientId);
+            for (let action of actions) {
+                codeActions.push(Object.assign({ clientId }, action));
+            }
+        }
+        codeActions.sort((a, b) => {
+            if (a.isPrefered && !b.isPrefered) {
+                return -1;
+            }
+            if (b.isPrefered && !a.isPrefered) {
+                return 1;
+            }
+            return 0;
+        });
+        let items = codeActions.map(action => {
+            return {
+                label: `${action.title} ${action.clientId ? `[${action.clientId}]` : ''} ${action.kind ? `(${action.kind})` : ''}`,
+                data: { action }
+            };
+        });
+        return items;
+    }
+    doHighlight() {
+        let { nvim } = this;
+        nvim.pauseNotification();
+        nvim.command('syntax match CocActionsTitle /\\v^[^[]+/ contained containedin=CocActionsLine', true);
+        nvim.command('syntax match CocActionsClient /\\[\\w\\+\\]/ contained containedin=CocActionsLine', true);
+        nvim.command('syntax match CocActionsKind /\\v\\(.*\\)$/ contained containedin=CocActionsLine', true);
+        nvim.command('highlight default link CocActionsTitle Normal', true);
+        nvim.command('highlight default link CocActionsClient Typedef', true);
+        nvim.command('highlight default link CocActionsKind Comment', true);
+        nvim.resumeNotification().catch(_e => {
+            // noop
+        });
+    }
+}
+exports.default = ActionsList;
+//# sourceMappingURL=actions.js.map
+
+/***/ }),
+/* 315 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = __webpack_require__(3);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const util_1 = __webpack_require__(171);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const debounce = __webpack_require__(173);
+const logger = __webpack_require__(182)('list-ui');
 class ListUI {
     constructor(nvim, config) {
         this.nvim = nvim;
@@ -70768,7 +69237,6 @@ class ListUI {
         this.selected = new Set();
         this.creating = false;
         this._onDidChangeLine = new vscode_languageserver_protocol_1.Emitter();
-        this._onDidChangeHeight = new vscode_languageserver_protocol_1.Emitter();
         this._onDidOpen = new vscode_languageserver_protocol_1.Emitter();
         this._onDidClose = new vscode_languageserver_protocol_1.Emitter();
         this._onDidChange = new vscode_languageserver_protocol_1.Emitter();
@@ -70776,7 +69244,6 @@ class ListUI {
         this._onDoubleClick = new vscode_languageserver_protocol_1.Emitter();
         this.hlGroupMap = new Map();
         this.onDidChangeLine = this._onDidChangeLine.event;
-        this.onDidChangeHeight = this._onDidChangeHeight.event;
         this.onDidLineChange = this._onDidLineChange.event;
         this.onDidOpen = this._onDidOpen.event;
         this.onDidClose = this._onDidClose.event;
@@ -70815,6 +69282,22 @@ class ListUI {
             nvim.command('redraw', true);
             await nvim.resumeNotification(false, true);
         }, 50));
+        nvim.call('coc#list#get_colors').then(map => {
+            for (let key of Object.keys(map)) {
+                let foreground = key[0].toUpperCase() + key.slice(1);
+                let foregroundColor = map[key];
+                for (let key of Object.keys(map)) {
+                    let background = key[0].toUpperCase() + key.slice(1);
+                    let backgroundColor = map[key];
+                    let group = `CocList${foreground}${background}`;
+                    this.hlGroupMap.set(group, `hi default CocList${foreground}${background} guifg=${foregroundColor} guibg=${backgroundColor}`);
+                }
+                this.hlGroupMap.set(`CocListFg${foreground}`, `hi default CocListFg${foreground} guifg=${foregroundColor}`);
+                this.hlGroupMap.set(`CocListBg${foreground}`, `hi default CocListBg${foreground} guibg=${foregroundColor}`);
+            }
+        }, _e => {
+            // noop
+        });
     }
     set index(n) {
         if (n < 0 || n >= this.items.length)
@@ -71056,35 +69539,11 @@ class ListUI {
         let limitLines = config.get('limitLines', 1000);
         let curr = this.items[this.index];
         this.items = items.slice(0, limitLines);
-        if (this.hlGroupMap.size == 0) {
-            let map = await nvim.call('coc#list#get_colors');
-            for (let key of Object.keys(map)) {
-                let foreground = key[0].toUpperCase() + key.slice(1);
-                let foregroundColor = map[key];
-                for (let key of Object.keys(map)) {
-                    let background = key[0].toUpperCase() + key.slice(1);
-                    let backgroundColor = map[key];
-                    let group = `CocList${foreground}${background}`;
-                    this.hlGroupMap.set(group, `hi default CocList${foreground}${background} guifg=${foregroundColor} guibg=${backgroundColor}`);
-                }
-                this.hlGroupMap.set(`CocListFg${foreground}`, `hi default CocListFg${foreground} guifg=${foregroundColor}`);
-                this.hlGroupMap.set(`CocListBg${foreground}`, `hi default CocListBg${foreground} guibg=${foregroundColor}`);
-            }
-        }
         if (bufnr == 0 && !this.creating) {
             this.creating = true;
-            let saved = await nvim.call('winsaveview');
-            let cmd = 'keepalt ' + (position == 'top' ? '' : 'botright') + ` ${height}sp list:///${name || 'anonymous'}`;
-            nvim.pauseNotification();
-            nvim.command(cmd, true);
-            nvim.command(`resize ${height}`, true);
-            nvim.command('wincmd p', true);
-            nvim.call('winrestview', [saved], true);
-            nvim.command('wincmd p', true);
-            nvim.command(`nnoremap <silent><nowait><buffer> <esc> <C-w>c`, true);
-            await nvim.resumeNotification();
-            this._bufnr = await nvim.call('bufnr', '%');
-            this.window = await nvim.window;
+            let [bufnr, winid] = await workspace_1.default.callAsync('coc#list#create', [position, height, name]);
+            this._bufnr = bufnr;
+            this.window = nvim.createWindow(winid);
             this.height = height;
             this._onDidOpen.fire(this.bufnr);
             this.creating = false;
@@ -71123,16 +69582,15 @@ class ListUI {
         let buf = nvim.createBuffer(bufnr);
         nvim.pauseNotification();
         nvim.call('win_gotoid', window.id, true);
+        if (!append) {
+            nvim.call('clearmatches', [], true);
+        }
         if (resize) {
             let maxHeight = config.get('maxHeight', 12);
             let height = Math.max(1, Math.min(this.items.length, maxHeight));
-            if (height != this.height) {
-                this.height = height;
-                window.notify(`nvim_win_set_height`, [height]);
-                this._onDidChangeHeight.fire();
-            }
+            this.height = height;
+            window.notify(`nvim_win_set_height`, [height]);
         }
-        nvim.call('clearmatches', [], true);
         if (!append) {
             if (!lines.length) {
                 lines = ['Press ? on normal mode to get help.'];
@@ -71156,6 +69614,8 @@ class ListUI {
         if (!append)
             window.notify('nvim_win_set_cursor', [[index + 1, 0]]);
         this._onDidChange.fire();
+        if (workspace_1.default.isVim)
+            nvim.command('redraw', true);
         nvim.resumeNotification(false, true).catch(_e => {
             // noop
         });
@@ -71163,11 +69623,7 @@ class ListUI {
     async restoreWindow() {
         let { window, height } = this;
         if (window && height) {
-            let curr = await window.height;
-            if (curr != height) {
-                window.notify(`nvim_win_set_height`, [height]);
-                this._onDidChangeHeight.fire();
-            }
+            await workspace_1.default.callAsync('coc#list#restore', [window.id, height]);
         }
     }
     dispose() {
@@ -71254,30 +69710,31 @@ exports.default = ListUI;
 //# sourceMappingURL=ui.js.map
 
 /***/ }),
-/* 324 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const path_1 = tslib_1.__importDefault(__webpack_require__(56));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const ansiparse_1 = __webpack_require__(325);
-const diff_1 = __webpack_require__(208);
-const fuzzy_1 = __webpack_require__(305);
-const score_1 = __webpack_require__(326);
-const string_1 = __webpack_require__(210);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const uuidv1 = __webpack_require__(219);
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const ansiparse_1 = __webpack_require__(317);
+const diff_1 = __webpack_require__(210);
+const fzy_1 = __webpack_require__(318);
+const score_1 = __webpack_require__(319);
+const string_1 = __webpack_require__(212);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const uuidv1 = __webpack_require__(221);
+const vscode_uri_1 = __webpack_require__(174);
 const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-const logger = __webpack_require__(179)('list-worker');
+const logger = __webpack_require__(182)('list-worker');
 const controlCode = '\x1b';
 // perform loading task
 class Worker {
     constructor(nvim, manager) {
         this.nvim = nvim;
         this.manager = manager;
+        this.recentFiles = [];
         this._loading = false;
         this.task = null;
         this.totalItems = [];
@@ -71303,6 +69760,12 @@ class Worker {
                 }, wait);
             }
         });
+    }
+    loadMru() {
+        let mru = workspace_1.default.createMru('mru');
+        mru.load().then(files => {
+            this.recentFiles = files;
+        }, logError);
     }
     set loading(loading) {
         if (this._loading == loading)
@@ -71337,6 +69800,7 @@ class Worker {
         let { context, list, listOptions } = this.manager;
         if (!list)
             return;
+        this.loadMru();
         if (this.timer)
             clearTimeout(this.timer);
         let id = this.taskId = uuidv1();
@@ -71540,61 +70004,86 @@ class Worker {
                 highlights
             };
         }
+        let extended = this.manager.getConfig('extendedSearchMode', true);
         let filtered;
         if (input.length > 0) {
+            let inputs = extended ? input.split(/\s+/) : [input];
             if (matcher == 'strict') {
                 filtered = items.filter(item => {
-                    let text = item.filterText || item.label;
-                    if (!ignorecase)
-                        return text.indexOf(input) !== -1;
-                    return text.toLowerCase().indexOf(input.toLowerCase()) !== -1;
-                });
-                for (let item of filtered) {
+                    let spans = [];
                     let filterLabel = getFilterLabel(item);
-                    let idx = ignorecase ? filterLabel.toLocaleLowerCase().indexOf(input.toLowerCase()) : filterLabel.indexOf(input);
-                    if (idx != -1) {
-                        highlights.push({
-                            spans: [[string_1.byteIndex(filterLabel, idx), string_1.byteIndex(filterLabel, idx + input.length)]]
-                        });
+                    for (let input of inputs) {
+                        let idx = ignorecase ? filterLabel.toLowerCase().indexOf(input.toLowerCase()) : filterLabel.indexOf(input);
+                        if (idx == -1)
+                            return false;
+                        spans.push([string_1.byteIndex(filterLabel, idx), string_1.byteIndex(filterLabel, idx + string_1.byteLength(input))]);
                     }
-                }
+                    highlights.push({ spans });
+                    return true;
+                });
             }
             else if (matcher == 'regex') {
-                let regex = new RegExp(input, ignorecase ? 'i' : '');
-                filtered = items.filter(item => regex.test(item.filterText || item.label));
-                for (let item of filtered) {
-                    let filterLabel = getFilterLabel(item);
-                    let ms = filterLabel.match(regex);
-                    if (ms && ms.length) {
-                        highlights.push({
-                            spans: [[string_1.byteIndex(filterLabel, ms.index), string_1.byteIndex(filterLabel, ms.index + ms[0].length)]]
-                        });
+                let flags = ignorecase ? 'iu' : 'u';
+                let regexes = inputs.reduce((p, c) => {
+                    try {
+                        let regex = new RegExp(c, flags);
+                        p.push(regex);
+                        // tslint:disable-next-line: no-empty
                     }
-                }
+                    catch (e) { }
+                    return p;
+                }, []);
+                filtered = items.filter(item => {
+                    let spans = [];
+                    let filterLabel = getFilterLabel(item);
+                    for (let regex of regexes) {
+                        let ms = filterLabel.match(regex);
+                        if (ms == null)
+                            return false;
+                        spans.push([string_1.byteIndex(filterLabel, ms.index), string_1.byteIndex(filterLabel, ms.index + string_1.byteLength(ms[0]))]);
+                    }
+                    highlights.push({ spans });
+                    return true;
+                });
             }
             else {
-                let codes = fuzzy_1.getCharCodes(input);
-                filtered = items.filter(item => fuzzy_1.fuzzyMatch(codes, item.filterText || item.label));
+                filtered = items.filter(item => {
+                    let filterText = item.filterText || item.label;
+                    return inputs.every(s => fzy_1.hasMatch(s, filterText));
+                });
                 filtered = filtered.map(item => {
-                    let filename = item.location ? path_1.default.basename(getItemUri(item)) : null;
                     let filterLabel = getFilterLabel(item);
-                    let res = score_1.getMatchResult(filterLabel, input, filename);
+                    let matchScore = 0;
+                    let matches = [];
+                    for (let input of inputs) {
+                        matches.push(...fzy_1.positions(input, filterLabel));
+                        matchScore += fzy_1.score(input, filterLabel);
+                    }
+                    let { recentScore } = item;
+                    if (!recentScore && item.location) {
+                        let uri = getItemUri(item);
+                        if (uri.startsWith('file')) {
+                            let fsPath = vscode_uri_1.URI.parse(uri).fsPath;
+                            recentScore = -this.recentFiles.indexOf(fsPath);
+                        }
+                    }
                     return Object.assign({}, item, {
                         filterLabel,
-                        score: res ? res.score : 0,
-                        matches: res ? res.matches : []
+                        score: matchScore,
+                        recentScore,
+                        matches
                     });
                 });
                 if (sort && items.length) {
                     filtered.sort((a, b) => {
                         if (a.score != b.score)
                             return b.score - a.score;
+                        if (input.length && a.recentScore != b.recentScore) {
+                            return (a.recentScore || -Infinity) - (b.recentScore || -Infinity);
+                        }
                         if (a.location && b.location) {
                             let au = getItemUri(a);
                             let bu = getItemUri(b);
-                            if (au.length != bu.length) {
-                                return au.length - bu.length;
-                            }
                             return au > bu ? 1 : -1;
                         }
                         return a.label > b.label ? 1 : -1;
@@ -71682,10 +70171,13 @@ function getItemUri(item) {
         return location;
     return location.uri;
 }
+function logError(e) {
+    logger.error(e);
+}
 //# sourceMappingURL=worker.js.map
 
 /***/ }),
-/* 325 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -71875,14 +70367,185 @@ exports.ansiparse = ansiparse;
 //# sourceMappingURL=ansiparse.js.map
 
 /***/ }),
-/* 326 */
+/* 318 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+let SCORE_MIN = -Infinity;
+let SCORE_MAX = Infinity;
+let SCORE_GAP_LEADING = -0.005;
+let SCORE_GAP_TRAILING = -0.005;
+let SCORE_GAP_INNER = -0.01;
+let SCORE_MATCH_CONSECUTIVE = 1;
+let SCORE_MATCH_SLASH = 0.9;
+let SCORE_MATCH_WORD = 0.8;
+let SCORE_MATCH_CAPITAL = 0.7;
+let SCORE_MATCH_DOT = 0.6;
+function islower(s) {
+    return s.toLowerCase() === s;
+}
+function isupper(s) {
+    return s.toUpperCase() === s;
+}
+function precompute_bonus(haystack) {
+    /* Which positions are beginning of words */
+    let m = haystack.length;
+    let match_bonus = new Array(m);
+    let last_ch = '/';
+    for (let i = 0; i < m; i++) {
+        let ch = haystack[i];
+        if (last_ch === '/') {
+            match_bonus[i] = SCORE_MATCH_SLASH;
+        }
+        else if (last_ch === '-' || last_ch === '_' || last_ch === ' ') {
+            match_bonus[i] = SCORE_MATCH_WORD;
+        }
+        else if (last_ch === '.') {
+            match_bonus[i] = SCORE_MATCH_DOT;
+        }
+        else if (islower(last_ch) && isupper(ch)) {
+            match_bonus[i] = SCORE_MATCH_CAPITAL;
+        }
+        else {
+            match_bonus[i] = 0;
+        }
+        last_ch = ch;
+    }
+    return match_bonus;
+}
+function compute(needle, haystack, D, M) {
+    let n = needle.length;
+    let m = haystack.length;
+    let lower_needle = needle.toLowerCase();
+    let lower_haystack = haystack.toLowerCase();
+    let match_bonus = precompute_bonus(haystack);
+    /*
+     * D[][] Stores the best score for this position ending with a match.
+     * M[][] Stores the best possible score at this position.
+     */
+    for (let i = 0; i < n; i++) {
+        D[i] = new Array(m);
+        M[i] = new Array(m);
+        let prev_score = SCORE_MIN;
+        let gap_score = i === n - 1 ? SCORE_GAP_TRAILING : SCORE_GAP_INNER;
+        for (let j = 0; j < m; j++) {
+            if (lower_needle[i] === lower_haystack[j]) {
+                let score = SCORE_MIN;
+                if (!i) {
+                    score = (j * SCORE_GAP_LEADING) + match_bonus[j];
+                }
+                else if (j) { /* i > 0 && j > 0*/
+                    score = Math.max(M[i - 1][j - 1] + match_bonus[j], 
+                    /* consecutive match, doesn't stack with match_bonus */
+                    D[i - 1][j - 1] + SCORE_MATCH_CONSECUTIVE);
+                }
+                D[i][j] = score;
+                M[i][j] = prev_score = Math.max(score, prev_score + gap_score);
+            }
+            else {
+                D[i][j] = SCORE_MIN;
+                M[i][j] = prev_score = prev_score + gap_score;
+            }
+        }
+    }
+}
+function score(needle, haystack) {
+    let n = needle.length;
+    let m = haystack.length;
+    if (!n || !m)
+        return SCORE_MIN;
+    if (n === m) {
+        /* Since this method can only be called with a haystack which
+         * matches needle. If the lengths of the strings are equal the
+         * strings themselves must also be equal (ignoring case).
+         */
+        return SCORE_MAX;
+    }
+    if (m > 1024) {
+        /*
+         * Unreasonably large candidate: return no score
+         * If it is a valid match it will still be returned, it will
+         * just be ranked below any reasonably sized candidates
+         */
+        return SCORE_MIN;
+    }
+    let D = new Array(n);
+    let M = new Array(n);
+    compute(needle, haystack, D, M);
+    return M[n - 1][m - 1];
+}
+exports.score = score;
+function positions(needle, haystack) {
+    let n = needle.length;
+    let m = haystack.length;
+    let positions = new Array(n);
+    if (!n || !m)
+        return positions;
+    if (n === m) {
+        for (let i = 0; i < n; i++)
+            positions[i] = i;
+        return positions;
+    }
+    if (m > 1024) {
+        return positions;
+    }
+    let D = new Array(n);
+    let M = new Array(n);
+    compute(needle, haystack, D, M);
+    /* backtrack to find the positions of optimal matching */
+    let match_required = false;
+    for (let i = n - 1, j = m - 1; i >= 0; i--) {
+        for (; j >= 0; j--) {
+            /*
+             * There may be multiple paths which result in
+             * the optimal weight.
+             *
+             * For simplicity, we will pick the first one
+             * we encounter, the latest in the candidate
+             * string.
+             */
+            if (D[i][j] !== SCORE_MIN &&
+                (match_required || D[i][j] === M[i][j])) {
+                /* If this score was determined using
+                 * SCORE_MATCH_CONSECUTIVE, the
+                 * previous character MUST be a match
+                 */
+                match_required =
+                    i && j &&
+                        M[i][j] === D[i - 1][j - 1] + SCORE_MATCH_CONSECUTIVE;
+                positions[i] = j--;
+                break;
+            }
+        }
+    }
+    return positions;
+}
+exports.positions = positions;
+function hasMatch(needle, haystack) {
+    needle = needle.toLowerCase();
+    haystack = haystack.toLowerCase();
+    let l = needle.length;
+    for (let i = 0, j = 0; i < l; i += 1) {
+        j = haystack.indexOf(needle[i], j) + 1;
+        if (j === 0)
+            return false;
+    }
+    return true;
+}
+exports.hasMatch = hasMatch;
+//# sourceMappingURL=fzy.js.map
+
+/***/ }),
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __webpack_require__(56);
-const fuzzy_1 = __webpack_require__(305);
+const fuzzy_1 = __webpack_require__(296);
 // first is start or path start +1, fuzzy +0.5
 // next is followed of path start +1, fuzzy +0.5
 // filename startsWith +1, fuzzy +0.5
@@ -72026,18 +70689,17 @@ function bestResult(results) {
 //# sourceMappingURL=score.js.map
 
 /***/ }),
-/* 327 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const types_1 = __webpack_require__(188);
-const fuzzy_1 = __webpack_require__(305);
-const string_1 = __webpack_require__(210);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)('model-source');
+const types_1 = __webpack_require__(190);
+const string_1 = __webpack_require__(212);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('model-source');
 class Source {
     constructor(option) {
         this._disabled = false;
@@ -72053,12 +70715,11 @@ class Source {
         return this.getConfig('priority', 1);
     }
     get triggerOnly() {
-        let triggerOnly = this.getDefault('triggerOnly', null);
-        if (triggerOnly != null)
+        let triggerOnly = this.defaults['triggerOnly'];
+        if (typeof triggerOnly == 'boolean')
             return triggerOnly;
-        if (!this.triggerCharacters && !this.triggerPatterns) {
+        if (!this.triggerCharacters && !this.triggerPatterns)
             return false;
-        }
         return Array.isArray(this.triggerPatterns) && this.triggerPatterns.length != 0;
     }
     get triggerCharacters() {
@@ -72066,7 +70727,7 @@ class Source {
     }
     // exists opitonnal function names for remote source
     get optionalFns() {
-        return this.getDefault('optionalFns', []);
+        return this.defaults['optionalFns'] || [];
     }
     get triggerPatterns() {
         let patterns = this.getConfig('triggerPatterns', null);
@@ -72093,13 +70754,8 @@ class Source {
     }
     getConfig(key, defaultValue) {
         let config = workspace_1.default.getConfiguration(`coc.source.${this.name}`);
-        return config.get(key, this.getDefault(key, defaultValue));
-    }
-    getDefault(key, defaultValue) {
-        let { defaults } = this;
-        if (defaults.hasOwnProperty(key))
-            return defaults[key];
-        return defaultValue == undefined ? null : defaultValue;
+        defaultValue = this.defaults.hasOwnProperty(key) ? this.defaults[key] : defaultValue;
+        return config.get(key, defaultValue);
     }
     toggle() {
         this._disabled = !this._disabled;
@@ -72109,8 +70765,11 @@ class Source {
     }
     get menu() {
         let { shortcut } = this;
-        return `[${shortcut.toUpperCase()}]`;
+        return shortcut ? `[${shortcut}]` : '';
     }
+    /**
+     * Filter words that too short or doesn't match input
+     */
     filterWords(words, opt) {
         let res = [];
         let { input } = opt;
@@ -72121,7 +70780,7 @@ class Source {
         for (let word of words) {
             if (!word || word.length < 3)
                 continue;
-            if (cFirst && !fuzzy_1.fuzzyChar(cFirst, word[0]))
+            if (cFirst && cFirst != word[0])
                 continue;
             if (word == cword || word == input)
                 continue;
@@ -72162,23 +70821,23 @@ class Source {
         if (disableSyntaxes && disableSyntaxes.length && disableSyntaxes.findIndex(s => synname.indexOf(s.toLowerCase()) != -1) !== -1) {
             return false;
         }
-        let fn = this.getDefault('shouldComplete');
+        let fn = this.defaults['shouldComplete'];
         if (fn)
             return await Promise.resolve(fn.call(this, opt));
         return true;
     }
     async refresh() {
-        let fn = this.getDefault('refresh');
+        let fn = this.defaults['refresh'];
         if (fn)
             await Promise.resolve(fn.call(this));
     }
     async onCompleteDone(item, opt) {
-        let fn = this.getDefault('onCompleteDone');
+        let fn = this.defaults['onCompleteDone'];
         if (fn)
             await Promise.resolve(fn.call(this, item, opt));
     }
     async doComplete(opt, token) {
-        let fn = this.getDefault('doComplete');
+        let fn = this.defaults['doComplete'];
         if (fn)
             return await Promise.resolve(fn.call(this, opt, token));
         return null;
@@ -72188,18 +70847,18 @@ exports.default = Source;
 //# sourceMappingURL=source.js.map
 
 /***/ }),
-/* 328 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const fuzzy_1 = __webpack_require__(305);
-const string_1 = __webpack_require__(210);
-const source_1 = tslib_1.__importDefault(__webpack_require__(327));
-const logger = __webpack_require__(179)('model-source-vim');
+const fuzzy_1 = __webpack_require__(296);
+const string_1 = __webpack_require__(212);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const source_1 = tslib_1.__importDefault(__webpack_require__(320));
+const logger = __webpack_require__(182)('model-source-vim');
 class VimSource extends source_1.default {
     async callOptinalFunc(fname, args) {
         let exists = this.optionalFns.indexOf(fname) !== -1;
@@ -72295,17 +70954,17 @@ exports.default = VimSource;
 //# sourceMappingURL=source-vim.js.map
 
 /***/ }),
-/* 329 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const source_1 = tslib_1.__importDefault(__webpack_require__(327));
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)('source-around');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const source_1 = tslib_1.__importDefault(__webpack_require__(320));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('source-around');
 class Around extends source_1.default {
     constructor() {
         super({
@@ -72345,17 +71004,17 @@ exports.regist = regist;
 //# sourceMappingURL=around.js.map
 
 /***/ }),
-/* 330 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const source_1 = tslib_1.__importDefault(__webpack_require__(327));
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)('source-buffer');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const source_1 = tslib_1.__importDefault(__webpack_require__(320));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('source-buffer');
 class Buffer extends source_1.default {
     constructor() {
         super({
@@ -72370,9 +71029,9 @@ class Buffer extends source_1.default {
         let { ignoreGitignore } = this;
         let words = [];
         workspace_1.default.documents.forEach(document => {
-            if (ignoreGitignore && document.isIgnored)
-                return;
             if (document.bufnr == bufnr)
+                return;
+            if (ignoreGitignore && document.isIgnored)
                 return;
             for (let word of document.words) {
                 if (words.indexOf(word) == -1) {
@@ -72409,7 +71068,7 @@ exports.regist = regist;
 //# sourceMappingURL=buffer.js.map
 
 /***/ }),
-/* 331 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -72421,11 +71080,11 @@ const minimatch_1 = tslib_1.__importDefault(__webpack_require__(202));
 const os_1 = tslib_1.__importDefault(__webpack_require__(55));
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
 const util_1 = tslib_1.__importDefault(__webpack_require__(40));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const source_1 = tslib_1.__importDefault(__webpack_require__(327));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const source_1 = tslib_1.__importDefault(__webpack_require__(320));
 const fs_2 = __webpack_require__(201);
-const string_1 = __webpack_require__(210);
-const logger = __webpack_require__(179)('source-file');
+const string_1 = __webpack_require__(212);
+const logger = __webpack_require__(182)('source-file');
 const pathRe = /(?:\.{0,2}|~|([\w.@()-]+))\/(?:[\w.@()-]+\/)*(?:[\w.@()-])*$/;
 class File extends source_1.default {
     constructor() {
@@ -72549,17 +71208,17 @@ exports.regist = regist;
 //# sourceMappingURL=file.js.map
 
 /***/ }),
-/* 332 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const fuzzy_1 = __webpack_require__(305);
-const string_1 = __webpack_require__(210);
-const match_1 = __webpack_require__(333);
-const logger = __webpack_require__(179)('completion-complete');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const fuzzy_1 = __webpack_require__(296);
+const string_1 = __webpack_require__(212);
+const match_1 = __webpack_require__(326);
+const logger = __webpack_require__(182)('completion-complete');
 // first time completion
 const FIRST_TIMEOUT = 500;
 class Complete {
@@ -72600,7 +71259,7 @@ class Complete {
     get isIncomplete() {
         return this.results.findIndex(o => o.isIncomplete == true) !== -1;
     }
-    async completeSource(source, completeInComplete = false) {
+    async completeSource(source) {
         let { col } = this.option;
         // new option for each source
         let opt = Object.assign({}, this.option);
@@ -72659,14 +71318,10 @@ class Complete {
                     let dt = Date.now() - start;
                     logger.debug(`Source "${name}" takes ${dt}ms`);
                     if (result && result.items && result.items.length) {
-                        if (result.startcol != null && result.startcol != col) {
-                            result.engross = true;
-                        }
                         result.priority = source.priority;
                         result.source = name;
-                        result.completeInComplete = completeInComplete;
                         // lazy completed items
-                        if (result.engross && empty) {
+                        if (empty && result.startcol && result.startcol != col) {
                             this.results = [result];
                         }
                         else {
@@ -72697,7 +71352,7 @@ class Complete {
     }
     async completeInComplete(resumeInput) {
         let { results, document } = this;
-        let remains = results.filter(res => !res.isIncomplete);
+        let remains = results.filter(res => res.isIncomplete != true);
         remains.forEach(res => {
             res.items.forEach(item => delete item.user_data);
         });
@@ -72712,16 +71367,8 @@ class Complete {
             triggerForInComplete: true
         });
         let sources = this.sources.filter(s => names.indexOf(s.name) !== -1);
-        await Promise.all(sources.map(s => this.completeSource(s, true)));
+        await Promise.all(sources.map(s => this.completeSource(s)));
         return this.filterResults(resumeInput, Math.floor(Date.now() / 1000));
-    }
-    excludeResults(names) {
-        let { results } = this;
-        if (!results)
-            return [];
-        let arr = this.results.filter(o => names.indexOf(o.source) == -1);
-        arr.forEach(o => o.engross = false);
-        return arr;
     }
     filterResults(input, cid = 0) {
         let { results } = this;
@@ -72781,6 +71428,7 @@ class Complete {
                     item.source = source;
                 }
                 item.priority = priority;
+                item.abbr = item.abbr || item.word;
                 item.score = input.length ? score : 0;
                 item.localBonus = this.localBonus ? this.localBonus.get(filterText) || 0 : 0;
                 item.recentScore = item.recentScore || 0;
@@ -72813,16 +71461,19 @@ class Complete {
                 return b.score - a.score;
             if (a.priority != b.priority)
                 return b.priority - a.priority;
-            if (wa.startsWith(wb))
-                return 1;
-            if (wb.startsWith(wa))
-                return -1;
             if (sa && sb && sa != sb)
                 return sa < sb ? -1 : 1;
             if (a.recentScore != b.recentScore)
                 return b.recentScore - a.recentScore;
-            if (a.localBonus != b.localBonus)
+            if (a.localBonus != b.localBonus) {
+                if (a.localBonus && b.localBonus && wa != wb) {
+                    if (wa.startsWith(wb))
+                        return 1;
+                    if (wb.startsWith(wa))
+                        return -1;
+                }
                 return b.localBonus - a.localBonus;
+            }
             return a.filterText.length - b.filterText.length;
         });
         let items = arr.slice(0, this.config.maxItemCount);
@@ -72862,9 +71513,9 @@ class Complete {
         }
         return false;
     }
-    async doComplete(preserved) {
+    async doComplete() {
         let opts = this.option;
-        let { line, colnr, linenr } = this.option;
+        let { line, colnr, linenr, col } = this.option;
         if (this.config.localityBonus) {
             let line = linenr - 1;
             this.localBonus = this.document.getLocalifyBonus(vscode_languageserver_protocol_1.Position.create(line, opts.col - 1), vscode_languageserver_protocol_1.Position.create(line, colnr));
@@ -72874,18 +71525,13 @@ class Complete {
         }
         await Promise.all(this.sources.map(s => this.completeSource(s)));
         let { results } = this;
-        if (preserved && preserved.length) {
-            results = this.results = results.concat(preserved);
-        }
         if (results.length == 0)
             return [];
-        let engrossResult = results.find(r => r.engross === true);
+        let engrossResult = results.find(r => r.startcol != null && r.startcol != col);
         if (engrossResult) {
             let { startcol } = engrossResult;
-            if (startcol != null) {
-                opts.col = startcol;
-                opts.input = string_1.byteSlice(line, startcol, colnr - 1);
-            }
+            opts.col = startcol;
+            opts.input = string_1.byteSlice(line, startcol, colnr - 1);
             this.results = [engrossResult];
         }
         logger.info(`Results from: ${this.results.map(s => s.source).join(',')}`);
@@ -72927,13 +71573,13 @@ exports.default = Complete;
 //# sourceMappingURL=complete.js.map
 
 /***/ }),
-/* 333 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const fuzzy_1 = __webpack_require__(305);
+const fuzzy_1 = __webpack_require__(296);
 function nextWordIndex(start = 0, codes) {
     if (start == 0 && fuzzy_1.wordChar(codes[0]))
         return 0;
@@ -73073,33 +71719,38 @@ function nextScore(codes, index, inputCodes, allowFuzzy = true) {
 //# sourceMappingURL=match.js.map
 
 /***/ }),
-/* 334 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const chars_1 = __webpack_require__(211);
-const floatBuffer_1 = tslib_1.__importDefault(__webpack_require__(258));
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)('floating');
+const floatBuffer_1 = tslib_1.__importDefault(__webpack_require__(250));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('floating');
 class Floating {
     constructor(nvim) {
         this.nvim = nvim;
         let configuration = workspace_1.default.getConfiguration('suggest');
         this.config = {
             srcId: workspace_1.default.createNameSpace('coc-pum-float'),
-            chars: new chars_1.Chars(configuration.get('previewIsKeyword', '@,48-57,_192-255')),
-            maxPreviewWidth: configuration.get('maxPreviewWidth', 50)
+            maxPreviewWidth: configuration.get('maxPreviewWidth', 80),
+            enable: configuration.get('floatEnable', true)
         };
     }
-    async show(docs, bounding, token) {
+    get buffer() {
+        let { floatBuffer } = this;
+        return floatBuffer ? floatBuffer.buffer : null;
+    }
+    async showDocumentationFloating(docs, bounding, token) {
         let { nvim } = this;
-        this.bounding = bounding;
-        let curr = await nvim.call('win_getid');
+        let { enable } = this.config;
+        if (!enable)
+            return;
         await this.checkBuffer();
-        let rect = await this.calculateBounding(docs);
+        let rect = await this.calculateBounding(docs, bounding);
+        let config = Object.assign({ relative: 'editor', }, rect);
         if (this.window) {
             let valid = await this.window.valid;
             if (!valid)
@@ -73109,29 +71760,27 @@ class Floating {
             return;
         if (!this.window) {
             try {
-                let config = Object.assign({
-                    relative: 'editor',
-                    focusable: true
-                }, rect);
                 let win = this.window = await nvim.openFloatWindow(this.buffer, false, config);
                 if (token.isCancellationRequested) {
-                    this.window = null;
-                    await win.close();
+                    this.close();
                     return;
                 }
                 nvim.pauseNotification();
+                win.setVar('float', 1, true);
+                win.setVar('popup', 1, true);
                 nvim.command(`noa call win_gotoid(${win.id})`, true);
-                nvim.command(`let w:float = 1`, true);
-                nvim.command(`let w:popup = 1`, true);
+                nvim.command(`setl nospell nolist wrap linebreak foldcolumn=1`, true);
                 nvim.command(`setl nonumber norelativenumber nocursorline nocursorcolumn`, true);
-                nvim.command(`setl nospell nolist nowrap foldcolumn=0`, true);
-                nvim.command(`setl signcolumn=no conceallevel=2 listchars=eol:\\ `, true);
-                nvim.command(`setl winhl=Normal:CocFloating,NormalNC:CocFloating`, true);
+                nvim.command(`setl signcolumn=no conceallevel=2`, true);
+                nvim.command(`setl winhl=Normal:CocFloating,NormalNC:CocFloating,FoldColumn:CocFloating`, true);
                 nvim.command(`silent doautocmd User CocOpenFloat`, true);
-                nvim.call('cursor', [1, 1], true);
                 this.floatBuffer.setLines();
-                nvim.command(`noa call win_gotoid(${curr})`, true);
-                await nvim.resumeNotification();
+                nvim.call('cursor', [1, 1], true);
+                nvim.command(`noa wincmd p`, true);
+                let [, err] = await nvim.resumeNotification();
+                // tslint:disable-next-line: no-console
+                if (err)
+                    console.error(`Error on ${err[0]}: ${err[1]} - ${err[2]}`);
             }
             catch (e) {
                 logger.error(`Create preview error:`, e.stack);
@@ -73139,36 +71788,56 @@ class Floating {
         }
         else {
             nvim.pauseNotification();
-            let config = Object.assign({
-                relative: 'editor'
-            }, rect);
             this.window.setConfig(config, true);
             nvim.command(`noa call win_gotoid(${this.window.id})`, true);
             nvim.call('cursor', [1, 1], true);
             this.floatBuffer.setLines();
-            nvim.command(`noa call win_gotoid(${curr})`, true);
-            await nvim.resumeNotification();
+            nvim.command(`noa wincmd p`, true);
+            let [, err] = await nvim.resumeNotification();
+            // tslint:disable-next-line: no-console
+            if (err)
+                console.error(`Error on ${err[0]}: ${err[1]} - ${err[2]}`);
         }
     }
-    async calculateBounding(docs) {
+    async showDocumentationVim(docs) {
+        if (workspace_1.default.completeOpt.indexOf('preview') == -1)
+            return;
+        let lines = [];
+        for (let i = 0; i < docs.length; i++) {
+            let { content } = docs[i];
+            lines.push(...content.split(/\r?\n/));
+            if (i != docs.length - 1) {
+                lines.push('---');
+            }
+        }
+        await this.nvim.call('coc#util#preview_info', [lines, 'txt']);
+    }
+    async show(docs, bounding, token) {
+        if (workspace_1.default.env.floating) {
+            await this.showDocumentationFloating(docs, bounding, token);
+        }
+        else {
+            await this.showDocumentationVim(docs);
+        }
+    }
+    async calculateBounding(docs, bounding) {
         // drawn lines
-        let { bounding, config, floatBuffer } = this;
+        let { config, floatBuffer } = this;
         let { columns, lines } = workspace_1.default.env;
         let { maxPreviewWidth } = config;
         let pumWidth = bounding.width + (bounding.scrollbar ? 1 : 0);
         let showRight = true;
-        let delta = columns - bounding.col - pumWidth;
-        if (delta < maxPreviewWidth && bounding.col > maxPreviewWidth) {
-            // show left
+        let paddingRight = columns - bounding.col - pumWidth;
+        if (bounding.col > paddingRight)
             showRight = false;
-        }
-        let maxWidth = !showRight || delta > maxPreviewWidth ? maxPreviewWidth : delta;
+        let maxWidth = showRight ? paddingRight : bounding.col - 1;
+        maxWidth = Math.min(maxPreviewWidth, maxWidth);
         await floatBuffer.setDocuments(docs, maxWidth);
         let maxHeight = lines - bounding.row - workspace_1.default.env.cmdheight - 1;
         return {
             col: showRight ? bounding.col + pumWidth : bounding.col - floatBuffer.width,
             row: bounding.row,
-            height: Math.min(maxHeight, floatBuffer.height),
+            height: Math.min(maxHeight, floatBuffer.getHeight(docs, maxWidth)),
             width: floatBuffer.width
         };
     }
@@ -73179,12 +71848,16 @@ class Floating {
             if (valid)
                 return;
         }
-        buffer = this.buffer = await this.nvim.createNewBuffer(false, true);
+        buffer = await this.nvim.createNewBuffer(false, true);
         await buffer.setOption('buftype', 'nofile');
         await buffer.setOption('bufhidden', 'hide');
         this.floatBuffer = new floatBuffer_1.default(buffer, nvim);
     }
     close() {
+        if (workspace_1.default.isVim) {
+            this.nvim.call('coc#util#pclose', [], true);
+            return;
+        }
         let { window } = this;
         if (!window)
             return;
@@ -73201,6 +71874,7 @@ class Floating {
                     this.nvim.call('coc#util#close_win', window.id, true);
                 }
                 else {
+                    window = null;
                     clearInterval(interval);
                 }
             }, _e => {
@@ -73213,18 +71887,17 @@ exports.default = Floating;
 //# sourceMappingURL=floating.js.map
 
 /***/ }),
-/* 335 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const object_1 = __webpack_require__(189);
-const position_1 = __webpack_require__(229);
-const Snippets = tslib_1.__importStar(__webpack_require__(288));
-const logger = __webpack_require__(179)('snippets-snipet');
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const position_1 = __webpack_require__(231);
+const Snippets = tslib_1.__importStar(__webpack_require__(236));
+const logger = __webpack_require__(182)('snippets-snipet');
 class CocSnippet {
     constructor(_snippetString, position, _variableResolver) {
         this._snippetString = _snippetString;
@@ -73316,15 +71989,13 @@ class CocSnippet {
             return position_1.rangeInRange(range, o.range);
         });
     }
-    insertSnippet(placeholder, snippet, position) {
+    insertSnippet(placeholder, snippet, range) {
         let { start } = placeholder.range;
-        let offset = position.character - start.character;
-        let insertFinal = true;
-        let next = this._placeholders[placeholder.id + 1];
-        if (next && object_1.equals(next.range.start, position)) {
-            insertFinal = false;
-        }
-        let first = this.tmSnippet.insertSnippet(snippet, placeholder.id, offset, insertFinal);
+        // let offset = position.character - start.character
+        let editStart = vscode_languageserver_protocol_1.Position.create(range.start.line - start.line, range.start.line == start.line ? range.start.character - start.character : range.start.character);
+        let editEnd = vscode_languageserver_protocol_1.Position.create(range.end.line - start.line, range.end.line == start.line ? range.end.character - start.character : range.end.character);
+        let editRange = vscode_languageserver_protocol_1.Range.create(editStart, editEnd);
+        let first = this.tmSnippet.insertSnippet(snippet, placeholder.id, editRange);
         this.update();
         return first;
     }
@@ -73399,7 +72070,7 @@ exports.CocSnippet = CocSnippet;
 //# sourceMappingURL=snippet.js.map
 
 /***/ }),
-/* 336 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -73407,9 +72078,9 @@ exports.CocSnippet = CocSnippet;
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
 const path = tslib_1.__importStar(__webpack_require__(56));
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const vscode_uri_1 = tslib_1.__importDefault(__webpack_require__(171));
-const logger = __webpack_require__(179)('snippets-variable');
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const vscode_uri_1 = __webpack_require__(174);
+const logger = __webpack_require__(182)('snippets-variable');
 class SnippetVariableResolver {
     constructor() {
         this._variableToValue = {};
@@ -73436,7 +72107,7 @@ class SnippetVariableResolver {
     }
     async init(document) {
         let { nvim } = this;
-        let filepath = vscode_uri_1.default.parse(document.uri).fsPath;
+        let filepath = vscode_uri_1.URI.parse(document.uri).fsPath;
         let lnum = await nvim.call('line', '.');
         let line = document.getline(lnum - 1);
         let cword = await this.nvim.call('expand', '<cword>');
@@ -73466,35 +72137,34 @@ exports.SnippetVariableResolver = SnippetVariableResolver;
 //# sourceMappingURL=variableResolve.js.map
 
 /***/ }),
-/* 337 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const binary_search_1 = tslib_1.__importDefault(__webpack_require__(338));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const commands_1 = tslib_1.__importDefault(__webpack_require__(232));
-const manager_1 = tslib_1.__importDefault(__webpack_require__(256));
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const extensions_1 = tslib_1.__importDefault(__webpack_require__(237));
-const languages_1 = tslib_1.__importDefault(__webpack_require__(255));
-const manager_2 = tslib_1.__importDefault(__webpack_require__(302));
-const floatFactory_1 = tslib_1.__importDefault(__webpack_require__(257));
-const services_1 = tslib_1.__importDefault(__webpack_require__(289));
-const manager_3 = tslib_1.__importDefault(__webpack_require__(233));
-const util_1 = __webpack_require__(168);
-const convert_1 = __webpack_require__(318);
-const object_1 = __webpack_require__(189);
-const position_1 = __webpack_require__(229);
-const string_1 = __webpack_require__(210);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const codelens_1 = tslib_1.__importDefault(__webpack_require__(339));
-const colors_1 = tslib_1.__importDefault(__webpack_require__(340));
-const documentHighlight_1 = tslib_1.__importDefault(__webpack_require__(342));
-const debounce = __webpack_require__(170);
-const logger = __webpack_require__(179)('Handler');
+const binary_search_1 = tslib_1.__importDefault(__webpack_require__(331));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const commands_1 = tslib_1.__importDefault(__webpack_require__(234));
+const manager_1 = tslib_1.__importDefault(__webpack_require__(248));
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
+const manager_2 = tslib_1.__importDefault(__webpack_require__(293));
+const floatFactory_1 = tslib_1.__importDefault(__webpack_require__(249));
+const services_1 = tslib_1.__importDefault(__webpack_require__(280));
+const manager_3 = tslib_1.__importDefault(__webpack_require__(235));
+const util_1 = __webpack_require__(171);
+const convert_1 = __webpack_require__(309);
+const object_1 = __webpack_require__(191);
+const position_1 = __webpack_require__(231);
+const string_1 = __webpack_require__(212);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const codelens_1 = tslib_1.__importDefault(__webpack_require__(332));
+const colors_1 = tslib_1.__importDefault(__webpack_require__(333));
+const documentHighlight_1 = tslib_1.__importDefault(__webpack_require__(335));
+const debounce = __webpack_require__(173);
+const logger = __webpack_require__(182)('Handler');
 const pairs = new Map([
     ['<', '>'],
     ['>', '<'],
@@ -73551,7 +72221,14 @@ class Handler {
                         let pos = vscode_languageserver_protocol_1.Position.create(line - 1, pre.length);
                         // make sure indent of current line
                         if (preIndent != currIndent) {
-                            edits.push({ range: vscode_languageserver_protocol_1.Range.create(vscode_languageserver_protocol_1.Position.create(line, 0), vscode_languageserver_protocol_1.Position.create(line, currIndent.length)), newText: preIndent });
+                            let newText = doc.filetype == 'vim' ? '  \\ ' + preIndent : preIndent;
+                            edits.push({ range: vscode_languageserver_protocol_1.Range.create(vscode_languageserver_protocol_1.Position.create(line, 0), vscode_languageserver_protocol_1.Position.create(line, currIndent.length)), newText });
+                        }
+                        else if (doc.filetype == 'vim') {
+                            edits.push({ range: vscode_languageserver_protocol_1.Range.create(line, currIndent.length, line, currIndent.length), newText: '  \\ ' });
+                        }
+                        if (doc.filetype == 'vim') {
+                            newText = newText + '\\ ';
                         }
                         edits.push({ range: vscode_languageserver_protocol_1.Range.create(pos, pos), newText });
                         await doc.applyEdits(nvim, edits);
@@ -73567,23 +72244,22 @@ class Handler {
             let doc = workspace_1.default.getDocument(bufnr);
             if (!doc)
                 return;
-            let { triggerSignatureHelp, formatOnType } = this.preferences;
+            let { triggerSignatureHelp, triggerSignatureWait, formatOnType } = this.preferences;
             if (!triggerSignatureHelp && !formatOnType)
                 return;
-            let pre = await this.getPreviousCharacter();
-            if (!pre || string_1.isWord(pre) || doc.paused)
+            let [pos, line] = await nvim.eval('[coc#util#cursor(), getline(".")]');
+            let pre = pos[1] == 0 ? '' : line.slice(pos[1] - 1, pos[1]);
+            if (!pre || string_1.isWord(pre))
                 return;
-            await this.onCharacterType(pre, bufnr);
+            if (!doc.paused)
+                await this.onCharacterType(pre, bufnr);
             if (languages_1.default.shouldTriggerSignatureHelp(doc.textDocument, pre)) {
-                await util_1.wait(50);
-                if (doc.dirty) {
-                    doc.forceSync();
-                    await util_1.wait(60);
-                }
+                doc.forceSync();
+                await util_1.wait(Math.max(triggerSignatureWait, 50));
                 if (lastInsert > curr)
                     return;
                 try {
-                    await this.showSignatureHelp();
+                    await this.triggerSignatureHelp(doc, { line: pos[0], character: pos[1] });
                 }
                 catch (e) {
                     logger.error(`Error on signature help:`, e);
@@ -73630,6 +72306,22 @@ class Handler {
         this.codeLensManager = new codelens_1.default(nvim);
         this.colors = new colors_1.default(nvim);
         this.documentHighlighter = new documentHighlight_1.default(nvim, this.colors);
+        this.disposables.push(commands_1.default.registerCommand('editor.action.organizeImport', async (bufnr) => {
+            if (!bufnr)
+                bufnr = await nvim.call('bufnr', '%');
+            let doc = workspace_1.default.getDocument(bufnr);
+            if (!doc)
+                return;
+            let range = vscode_languageserver_protocol_1.Range.create(0, 0, doc.lineCount, 0);
+            let actions = await this.getCodeActions(bufnr, range, [vscode_languageserver_protocol_1.CodeActionKind.SourceOrganizeImports]);
+            if (actions && actions.length) {
+                await this.applyCodeAction(actions[0]);
+            }
+            else {
+                workspace_1.default.showMessage(`Orgnize import action not found.`, 'warning');
+            }
+        }));
+        commands_1.default.titles.set('editor.action.organizeImport', 'run organize import code action.');
     }
     async getCurrentFunctionSymbol() {
         let { position } = await workspace_1.default.getCurrentState();
@@ -73671,73 +72363,70 @@ class Handler {
         return currentFunctionName;
     }
     async onHover() {
-        if (this.hoverFactory.creating)
-            return;
         let { document, position } = await workspace_1.default.getCurrentState();
         let hovers = await languages_1.default.getHover(document, position);
         if (hovers && hovers.length) {
             await this.previewHover(hovers);
+            return true;
         }
-        else {
-            workspace_1.default.showMessage('No definition found.', 'warning');
-            let target = this.preferences.hoverTarget;
-            if (target == 'float') {
-                this.hoverFactory.close();
-            }
-            else if (target == 'preview') {
-                this.nvim.command('pclose', true);
-            }
+        let target = this.preferences.hoverTarget;
+        if (target == 'float') {
+            this.hoverFactory.close();
         }
+        else if (target == 'preview') {
+            this.nvim.command('pclose', true);
+        }
+        return false;
     }
     async gotoDefinition(openCommand) {
         let { document, position } = await workspace_1.default.getCurrentState();
         let definition = await languages_1.default.getDefinition(document, position);
         if (isEmpty(definition)) {
             this.onEmptyLocation('Definition', definition);
+            return false;
         }
-        else {
-            await this.handleLocations(definition, openCommand);
-        }
+        await this.handleLocations(definition, openCommand);
+        return true;
     }
     async gotoDeclaration(openCommand) {
         let { document, position } = await workspace_1.default.getCurrentState();
         let definition = await languages_1.default.getDeclaration(document, position);
         if (isEmpty(definition)) {
             this.onEmptyLocation('Declaration', definition);
+            return false;
         }
-        else {
-            await this.handleLocations(definition, openCommand);
-        }
+        await this.handleLocations(definition, openCommand);
+        return true;
     }
     async gotoTypeDefinition(openCommand) {
         let { document, position } = await workspace_1.default.getCurrentState();
         let definition = await languages_1.default.getTypeDefinition(document, position);
         if (isEmpty(definition)) {
             this.onEmptyLocation('Type definition', definition);
+            return false;
         }
-        else {
-            await this.handleLocations(definition, openCommand);
-        }
+        await this.handleLocations(definition, openCommand);
+        return true;
     }
     async gotoImplementation(openCommand) {
         let { document, position } = await workspace_1.default.getCurrentState();
         let definition = await languages_1.default.getImplementation(document, position);
         if (isEmpty(definition)) {
             this.onEmptyLocation('Implementation', definition);
+            return false;
         }
-        else {
-            await this.handleLocations(definition, openCommand);
-        }
+        await this.handleLocations(definition, openCommand);
+        return true;
     }
     async gotoReferences(openCommand) {
         let { document, position } = await workspace_1.default.getCurrentState();
         let locs = await languages_1.default.getReferences(document, { includeDeclaration: false }, position);
         if (isEmpty(locs)) {
             this.onEmptyLocation('References', locs);
+            return false;
         }
-        else {
-            await this.handleLocations(locs, openCommand);
-        }
+        await this.handleLocations(locs, openCommand);
+        return true;
     }
     async getDocumentSymbols() {
         let document = await workspace_1.default.document;
@@ -73789,23 +72478,22 @@ class Handler {
     }
     async rename(newName) {
         let { nvim } = this;
-        let { document, position } = await workspace_1.default.getCurrentState();
-        if (!document)
-            return;
-        let res = await languages_1.default.prepareRename(document, position);
+        let buf = await nvim.buffer;
+        let doc = workspace_1.default.getDocument(buf.id);
+        let position = await workspace_1.default.getCursorPosition();
+        if (!doc)
+            return false;
+        let res = await languages_1.default.prepareRename(doc.textDocument, position);
         if (res === false) {
             workspace_1.default.showMessage('Invalid position for rename', 'error');
-            return;
+            return false;
         }
-        let doc = workspace_1.default.getDocument(document.uri);
-        if (!doc)
-            return;
         doc.forceSync();
         let curname;
         if (res == null) {
             let range = doc.getWordRangeAtPosition(position);
             if (range)
-                curname = document.getText(range);
+                curname = doc.textDocument.getText(range);
         }
         else {
             if (vscode_languageserver_protocol_1.Range.is(res)) {
@@ -73818,32 +72506,34 @@ class Handler {
         }
         if (!curname) {
             workspace_1.default.showMessage('Invalid position', 'warning');
-            return;
+            return false;
         }
         if (!newName) {
             newName = await nvim.call('input', ['new name:', curname]);
             nvim.command('normal! :<C-u>', true);
             if (!newName) {
                 workspace_1.default.showMessage('Empty word, canceled', 'warning');
-                return;
+                return false;
             }
         }
-        let edit = await languages_1.default.provideRenameEdits(document, position, newName);
+        let edit = await languages_1.default.provideRenameEdits(doc.textDocument, position, newName);
         if (!edit) {
             workspace_1.default.showMessage('Server return empty response for rename', 'warning');
-            return;
+            return false;
         }
         await workspace_1.default.applyEdit(edit);
+        return true;
     }
     async documentFormatting() {
         let document = await workspace_1.default.document;
         if (!document)
-            return;
+            return false;
         let options = await workspace_1.default.getFormatOptions(document.uri);
         let textEdits = await languages_1.default.provideDocumentFormattingEdits(document.textDocument, options);
         if (!textEdits || textEdits.length == 0)
-            return;
+            return false;
         await document.applyEdits(this.nvim, textEdits);
+        return true;
     }
     async documentRangeFormatting(mode) {
         let document = await workspace_1.default.document;
@@ -73875,20 +72565,17 @@ class Handler {
         if (id) {
             await events_1.default.fire('Command', [id]);
             await commands_1.default.executeCommand(id, ...args);
+            await this.nvim.command(`silent! call repeat#set("\\<Plug>(coc-command-repeat)", -1)`);
         }
         else {
             await manager_2.default.start(['commands']);
         }
     }
-    async doCodeAction(mode, only) {
-        let document = await workspace_1.default.document;
+    async getCodeActions(bufnr, range, only) {
+        let document = workspace_1.default.getDocument(bufnr);
         if (!document)
-            return;
-        let range;
-        if (mode) {
-            range = await workspace_1.default.getSelectedRange(mode, document.textDocument);
-        }
-        else {
+            return [];
+        if (!range) {
             let lnum = await this.nvim.call('line', ['.']);
             range = {
                 start: { line: lnum - 1, character: 0 },
@@ -73897,65 +72584,79 @@ class Handler {
         }
         let diagnostics = manager_1.default.getDiagnosticsInRange(document.textDocument, range);
         let context = { diagnostics };
-        if (only)
+        if (only && Array.isArray(only))
             context.only = only;
         let codeActionsMap = await languages_1.default.getCodeActions(document.textDocument, range, context);
         if (!codeActionsMap)
-            return workspace_1.default.showMessage('No action available', 'warning');
+            return [];
         let codeActions = [];
         for (let clientId of codeActionsMap.keys()) {
             let actions = codeActionsMap.get(clientId);
             for (let action of actions) {
-                action.clientId = clientId;
-                codeActions.push(action);
+                codeActions.push(Object.assign({ clientId }, action));
             }
         }
-        let idx = await workspace_1.default.showQuickpick(codeActions.map(o => o.title));
-        if (idx == -1)
+        codeActions.sort((a, b) => {
+            if (a.isPrefered && !b.isPrefered) {
+                return -1;
+            }
+            if (b.isPrefered && !a.isPrefered) {
+                return 1;
+            }
+            return 0;
+        });
+        return codeActions;
+    }
+    async doCodeAction(mode, only) {
+        let bufnr = await this.nvim.call('bufnr', '%');
+        let range;
+        if (mode)
+            range = await workspace_1.default.getSelectedRange(mode, workspace_1.default.getDocument(bufnr).textDocument);
+        let codeActions = await this.getCodeActions(bufnr, range, Array.isArray(only) ? only : null);
+        if (!codeActions || codeActions.length == 0) {
+            workspace_1.default.showMessage('No action available', 'warning');
             return;
-        let action = codeActions[idx];
-        if (action)
+        }
+        if (only && typeof only == 'string') {
+            let action = codeActions.find(o => o.title == only || (o.command && o.command.title == only));
+            if (!action)
+                return workspace_1.default.showMessage(`action "${only}" not found.`, 'warning');
             await this.applyCodeAction(action);
+        }
+        else {
+            let idx = await workspace_1.default.showQuickpick(codeActions.map(o => o.title));
+            if (idx == -1)
+                return;
+            let action = codeActions[idx];
+            if (action)
+                await this.applyCodeAction(action);
+        }
     }
     /**
-     * Get all quickfix actions of current buffer
+     * Get current codeActions
      *
      * @public
      * @returns {Promise<CodeAction[]>}
      */
-    async getQuickfixActions(range) {
-        let document = await workspace_1.default.document;
+    async getCurrentCodeActions(mode, only) {
+        let bufnr = await this.nvim.call('bufnr', '%');
+        let document = workspace_1.default.getDocument(bufnr);
         if (!document)
             return [];
-        range = range || vscode_languageserver_protocol_1.Range.create(0, 0, document.lineCount, 0);
-        let diagnostics = manager_1.default.getDiagnosticsInRange(document.textDocument, range);
-        let context = { diagnostics, only: [vscode_languageserver_protocol_1.CodeActionKind.QuickFix] };
-        let codeActionsMap = await languages_1.default.getCodeActions(document.textDocument, range, context, true);
-        if (!codeActionsMap)
-            return [];
-        let codeActions = [];
-        for (let clientId of codeActionsMap.keys()) {
-            let actions = codeActionsMap.get(clientId);
-            for (let action of actions) {
-                if (action.kind !== vscode_languageserver_protocol_1.CodeActionKind.QuickFix)
-                    continue;
-                action.clientId = clientId;
-                codeActions.push(action);
-            }
-        }
-        return codeActions;
+        let range;
+        if (mode)
+            range = await workspace_1.default.getSelectedRange(mode, workspace_1.default.getDocument(bufnr).textDocument);
+        return await this.getCodeActions(bufnr, range, only);
     }
     async doQuickfix() {
-        let lnum = await this.nvim.call('line', ['.']);
-        let range = {
-            start: { line: lnum - 1, character: 0 },
-            end: { line: lnum, character: 0 }
-        };
-        let actions = await this.getQuickfixActions(range);
+        let actions = await this.getCurrentCodeActions(null, [vscode_languageserver_protocol_1.CodeActionKind.QuickFix]);
         if (!actions || actions.length == 0) {
-            return workspace_1.default.showMessage('No action available', 'warning');
+            workspace_1.default.showMessage('No quickfix action available', 'warning');
+            return false;
         }
         await this.applyCodeAction(actions[0]);
+        await this.nvim.command(`silent! call repeat#set("\\<Plug>(coc-fix-current)", -1)`);
+        return true;
     }
     async applyCodeAction(action) {
         let { command, edit } = action;
@@ -73992,12 +72693,12 @@ class Handler {
         let foldmethod = await win.getOption('foldmethod');
         if (foldmethod != 'manual') {
             workspace_1.default.showMessage('foldmethod option should be manual!', 'error');
-            return;
+            return false;
         }
         let ranges = await languages_1.default.provideFoldingRanges(document.textDocument, {});
         if (!ranges || ranges.length == 0) {
             workspace_1.default.showMessage('no range found', 'warning');
-            return;
+            return false;
         }
         if (kind) {
             ranges = ranges.filter(o => o.kind == kind);
@@ -74009,7 +72710,9 @@ class Handler {
                 let cmd = `${startLine + 1}, ${endLine + 1}fold`;
                 this.nvim.command(cmd, true);
             }
+            return true;
         }
+        return false;
     }
     async pickColor() {
         await this.colors.pickColor();
@@ -74056,6 +72759,7 @@ class Handler {
                 return false;
             }
         }
+        return false;
     }
     async getCommands() {
         let list = commands_1.default.commandList;
@@ -74063,17 +72767,12 @@ class Handler {
         let document = await workspace_1.default.document;
         if (!document)
             return [];
-        let { commands } = extensions_1.default;
-        for (let key of Object.keys(commands)) {
+        let { titles } = commands_1.default;
+        for (let key of Object.keys(list)) {
             res.push({
                 id: key,
-                title: commands[key] || ''
+                title: titles[key] || ''
             });
-        }
-        for (let o of list) {
-            if (commands[o.id] == null) {
-                res.push({ id: o.id, title: '' });
-            }
         }
         return res;
     }
@@ -74120,18 +72819,12 @@ class Handler {
             }
         }
     }
-    async showSignatureHelp() {
+    async triggerSignatureHelp(document, position) {
         if (this.signatureTokenSource) {
             this.signatureTokenSource.cancel();
             this.signatureTokenSource = null;
         }
-        let document = workspace_1.default.getDocument(workspace_1.default.bufnr);
-        if (!document)
-            return;
-        let position = await workspace_1.default.getCursorPosition();
         let part = document.getline(position.line).slice(0, position.character);
-        if (/\)\s*$/.test(part))
-            return;
         let idx = Math.max(part.lastIndexOf(','), part.lastIndexOf('('));
         if (idx != -1)
             position.character = idx + 1;
@@ -74144,9 +72837,9 @@ class Handler {
         }, 3000);
         let signatureHelp = await languages_1.default.getSignatureHelp(document.textDocument, position, token);
         clearTimeout(timer);
-        if (token.isCancellationRequested || !signatureHelp) {
+        if (token.isCancellationRequested || !signatureHelp || signatureHelp.signatures.length == 0) {
             this.signatureFactory.close();
-            return;
+            return false;
         }
         let { activeParameter, activeSignature, signatures } = signatureHelp;
         if (activeSignature) {
@@ -74159,8 +72852,8 @@ class Handler {
             let paramDoc = null;
             let docs = signatures.reduce((p, c, idx) => {
                 let activeIndexes = null;
+                let nameIndex = c.label.indexOf('(');
                 if (idx == 0 && activeParameter != null) {
-                    let nameIndex = c.label.indexOf('(');
                     let active = c.parameters[activeParameter];
                     if (active) {
                         let after = c.label.slice(nameIndex == -1 ? 0 : nameIndex);
@@ -74182,7 +72875,6 @@ class Handler {
                     }
                 }
                 if (activeIndexes == null) {
-                    let nameIndex = c.label.indexOf('(');
                     activeIndexes = [nameIndex + 1, nameIndex + 1];
                 }
                 p.push({
@@ -74211,7 +72903,18 @@ class Handler {
                 }
                 return p;
             }, []);
-            await this.signatureFactory.create(docs, true);
+            let offset = 0;
+            if (docs.length && docs[0].active) {
+                let [start, end] = docs[0].active;
+                offset = end < 80 ? start + 1 : docs[0].content.indexOf('(') + 1;
+            }
+            let session = manager_3.default.getSession(document.bufnr);
+            if (session && session.isActive) {
+                let { value } = session.placeholder;
+                if (value.indexOf('\n') == -1)
+                    offset += value.length - 1;
+            }
+            await this.signatureFactory.create(docs, true, offset);
             // show float
         }
         else {
@@ -74275,6 +72978,15 @@ class Handler {
             }
             this.nvim.callTimer('coc#util#echo_signatures', [signatureList], true);
         }
+        return true;
+    }
+    async showSignatureHelp() {
+        let buffer = await this.nvim.buffer;
+        let document = workspace_1.default.getDocument(buffer.id);
+        if (!document)
+            return false;
+        let position = await workspace_1.default.getCursorPosition();
+        return await this.triggerSignatureHelp(document, position);
     }
     async handleLocations(definition, openCommand) {
         if (!definition)
@@ -74300,8 +73012,18 @@ class Handler {
         let { document, position } = await workspace_1.default.getCurrentState();
         let selectionRanges = await languages_1.default.getSelectionRanges(document, [position]);
         if (selectionRanges && selectionRanges.length)
-            return selectionRanges[0];
+            return selectionRanges;
         return null;
+    }
+    async codeActionRange(start, end, only) {
+        let listArgs = ['--normal', '--number-select', 'actions', `-start`, start + '', `-end`, end + ''];
+        if (only == 'quickfix') {
+            listArgs.push('-quickfix');
+        }
+        else if (only == 'source') {
+            listArgs.push('-source');
+        }
+        await manager_2.default.start(listArgs);
     }
     async previewHover(hovers) {
         let lines = [];
@@ -74381,6 +73103,7 @@ class Handler {
             signatureHelpTarget,
             signatureMaxHeight: signatureConfig.get('maxWindowHeight', 8),
             triggerSignatureHelp: signatureConfig.get('enable', true),
+            triggerSignatureWait: signatureConfig.get('triggerSignatureWait', 50),
             signaturePreferAbove: signatureConfig.get('preferShownAbove', true),
             signatureHideOnChange: signatureConfig.get('hideOnTextChange', false),
             formatOnType: config.get('formatOnType', false),
@@ -74388,12 +73111,6 @@ class Handler {
             previewAutoClose: config.get('previewAutoClose', false),
             currentFunctionSymbolAutoUpdate: config.get('currentFunctionSymbolAutoUpdate', false),
         };
-    }
-    async getPreviousCharacter() {
-        let col = await this.nvim.call('col', '.');
-        let line = await this.nvim.call('getline', '.');
-        let content = string_1.byteSlice(line, 0, col - 1);
-        return col == 1 ? '' : content[content.length - 1];
     }
     onEmptyLocation(name, location) {
         if (location == null) {
@@ -74478,7 +73195,7 @@ function isDocumentSymbols(a) {
 //# sourceMappingURL=index.js.map
 
 /***/ }),
-/* 338 */
+/* 331 */
 /***/ (function(module, exports) {
 
 module.exports = function(haystack, needle, comparator, low, high) {
@@ -74527,21 +73244,21 @@ module.exports = function(haystack, needle, comparator, low, high) {
 
 
 /***/ }),
-/* 339 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const debounce_1 = tslib_1.__importDefault(__webpack_require__(170));
-const commands_1 = tslib_1.__importDefault(__webpack_require__(232));
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const languages_1 = tslib_1.__importDefault(__webpack_require__(255));
-const services_1 = tslib_1.__importDefault(__webpack_require__(289));
-const util_1 = __webpack_require__(168);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)('codelens');
+const debounce_1 = tslib_1.__importDefault(__webpack_require__(173));
+const commands_1 = tslib_1.__importDefault(__webpack_require__(234));
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
+const services_1 = tslib_1.__importDefault(__webpack_require__(280));
+const util_1 = __webpack_require__(171);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('codelens');
 class CodeLensManager {
     constructor(nvim) {
         this.nvim = nvim;
@@ -74791,22 +73508,22 @@ exports.default = CodeLensManager;
 //# sourceMappingURL=codelens.js.map
 
 /***/ }),
-/* 340 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const debounce_1 = tslib_1.__importDefault(__webpack_require__(170));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const languages_1 = tslib_1.__importDefault(__webpack_require__(255));
-const util_1 = __webpack_require__(168);
-const object_1 = __webpack_require__(189);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const highlighter_1 = tslib_1.__importStar(__webpack_require__(341));
-const logger = __webpack_require__(179)('colors');
+const debounce_1 = tslib_1.__importDefault(__webpack_require__(173));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
+const util_1 = __webpack_require__(171);
+const object_1 = __webpack_require__(191);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const highlighter_1 = tslib_1.__importStar(__webpack_require__(334));
+const logger = __webpack_require__(182)('colors');
 class Colors {
     constructor(nvim) {
         this.nvim = nvim;
@@ -75008,18 +73725,18 @@ exports.default = Colors;
 //# sourceMappingURL=colors.js.map
 
 /***/ }),
-/* 341 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const array_1 = __webpack_require__(212);
-const object_1 = __webpack_require__(189);
-const position_1 = __webpack_require__(229);
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const logger = __webpack_require__(179)('highlighter');
+const array_1 = __webpack_require__(214);
+const object_1 = __webpack_require__(191);
+const position_1 = __webpack_require__(231);
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const logger = __webpack_require__(182)('highlighter');
 const usedColors = new Set();
 class Highlighter {
     constructor(nvim, document, srcId) {
@@ -75157,19 +73874,19 @@ function isDark(color) {
 //# sourceMappingURL=highlighter.js.map
 
 /***/ }),
-/* 342 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
-const events_1 = tslib_1.__importDefault(__webpack_require__(142));
-const workspace_1 = tslib_1.__importDefault(__webpack_require__(180));
-const languages_1 = tslib_1.__importDefault(__webpack_require__(255));
-const vscode_languageserver_protocol_1 = __webpack_require__(143);
-const util_1 = __webpack_require__(168);
-const logger = __webpack_require__(179)('documentHighlight');
+const events_1 = tslib_1.__importDefault(__webpack_require__(145));
+const workspace_1 = tslib_1.__importDefault(__webpack_require__(183));
+const languages_1 = tslib_1.__importDefault(__webpack_require__(247));
+const vscode_languageserver_protocol_1 = __webpack_require__(146);
+const util_1 = __webpack_require__(171);
+const logger = __webpack_require__(182)('documentHighlight');
 class DocumentHighlighter {
     constructor(nvim, colors) {
         this.nvim = nvim;
@@ -75203,6 +73920,8 @@ class DocumentHighlighter {
             this.clearHighlight();
             return;
         }
+        if (workspace_1.default.bufnr != bufnr)
+            return;
         nvim.pauseNotification();
         this.clearHighlight();
         let groups = {};
@@ -75247,7 +73966,7 @@ exports.default = DocumentHighlighter;
 //# sourceMappingURL=documentHighlight.js.map
 
 /***/ }),
-/* 343 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -75256,7 +73975,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = __webpack_require__(3);
 const path_1 = tslib_1.__importDefault(__webpack_require__(56));
 const fs_1 = tslib_1.__importDefault(__webpack_require__(54));
-const glob_1 = tslib_1.__importDefault(__webpack_require__(238));
+const glob_1 = tslib_1.__importDefault(__webpack_require__(337));
 const os_1 = __webpack_require__(55);
 const util_1 = tslib_1.__importDefault(__webpack_require__(40));
 const fs_2 = __webpack_require__(201);
@@ -75294,10 +74013,2141 @@ exports.default = default_1;
 //# sourceMappingURL=clean.js.map
 
 /***/ }),
+/* 337 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Approach:
+//
+// 1. Get the minimatch set
+// 2. For each pattern in the set, PROCESS(pattern, false)
+// 3. Store matches per-set, then uniq them
+//
+// PROCESS(pattern, inGlobStar)
+// Get the first [n] items from pattern that are all strings
+// Join these together.  This is PREFIX.
+//   If there is no more remaining, then stat(PREFIX) and
+//   add to matches if it succeeds.  END.
+//
+// If inGlobStar and PREFIX is symlink and points to dir
+//   set ENTRIES = []
+// else readdir(PREFIX) as ENTRIES
+//   If fail, END
+//
+// with ENTRIES
+//   If pattern[n] is GLOBSTAR
+//     // handle the case where the globstar match is empty
+//     // by pruning it out, and testing the resulting pattern
+//     PROCESS(pattern[0..n] + pattern[n+1 .. $], false)
+//     // handle other cases.
+//     for ENTRY in ENTRIES (not dotfiles)
+//       // attach globstar + tail onto the entry
+//       // Mark that this entry is a globstar match
+//       PROCESS(pattern[0..n] + ENTRY + pattern[n .. $], true)
+//
+//   else // not globstar
+//     for ENTRY in ENTRIES (not dotfiles, unless pattern[n] is dot)
+//       Test ENTRY against pattern[n]
+//       If fails, continue
+//       If passes, PROCESS(pattern[0..n] + item + pattern[n+1 .. $])
+//
+// Caveat:
+//   Cache all stats and readdirs results to minimize syscall.  Since all
+//   we ever care about is existence and directory-ness, we can just keep
+//   `true` for files, and [children,...] for directories, or `false` for
+//   things that don't exist.
+
+module.exports = glob
+
+var fs = __webpack_require__(54)
+var rp = __webpack_require__(338)
+var minimatch = __webpack_require__(202)
+var Minimatch = minimatch.Minimatch
+var inherits = __webpack_require__(340)
+var EE = __webpack_require__(49).EventEmitter
+var path = __webpack_require__(56)
+var assert = __webpack_require__(107)
+var isAbsolute = __webpack_require__(342)
+var globSync = __webpack_require__(343)
+var common = __webpack_require__(344)
+var alphasort = common.alphasort
+var alphasorti = common.alphasorti
+var setopts = common.setopts
+var ownProp = common.ownProp
+var inflight = __webpack_require__(345)
+var util = __webpack_require__(40)
+var childrenIgnored = common.childrenIgnored
+var isIgnored = common.isIgnored
+
+var once = __webpack_require__(347)
+
+function glob (pattern, options, cb) {
+  if (typeof options === 'function') cb = options, options = {}
+  if (!options) options = {}
+
+  if (options.sync) {
+    if (cb)
+      throw new TypeError('callback provided to sync glob')
+    return globSync(pattern, options)
+  }
+
+  return new Glob(pattern, options, cb)
+}
+
+glob.sync = globSync
+var GlobSync = glob.GlobSync = globSync.GlobSync
+
+// old api surface
+glob.glob = glob
+
+function extend (origin, add) {
+  if (add === null || typeof add !== 'object') {
+    return origin
+  }
+
+  var keys = Object.keys(add)
+  var i = keys.length
+  while (i--) {
+    origin[keys[i]] = add[keys[i]]
+  }
+  return origin
+}
+
+glob.hasMagic = function (pattern, options_) {
+  var options = extend({}, options_)
+  options.noprocess = true
+
+  var g = new Glob(pattern, options)
+  var set = g.minimatch.set
+
+  if (!pattern)
+    return false
+
+  if (set.length > 1)
+    return true
+
+  for (var j = 0; j < set[0].length; j++) {
+    if (typeof set[0][j] !== 'string')
+      return true
+  }
+
+  return false
+}
+
+glob.Glob = Glob
+inherits(Glob, EE)
+function Glob (pattern, options, cb) {
+  if (typeof options === 'function') {
+    cb = options
+    options = null
+  }
+
+  if (options && options.sync) {
+    if (cb)
+      throw new TypeError('callback provided to sync glob')
+    return new GlobSync(pattern, options)
+  }
+
+  if (!(this instanceof Glob))
+    return new Glob(pattern, options, cb)
+
+  setopts(this, pattern, options)
+  this._didRealPath = false
+
+  // process each pattern in the minimatch set
+  var n = this.minimatch.set.length
+
+  // The matches are stored as {<filename>: true,...} so that
+  // duplicates are automagically pruned.
+  // Later, we do an Object.keys() on these.
+  // Keep them as a list so we can fill in when nonull is set.
+  this.matches = new Array(n)
+
+  if (typeof cb === 'function') {
+    cb = once(cb)
+    this.on('error', cb)
+    this.on('end', function (matches) {
+      cb(null, matches)
+    })
+  }
+
+  var self = this
+  this._processing = 0
+
+  this._emitQueue = []
+  this._processQueue = []
+  this.paused = false
+
+  if (this.noprocess)
+    return this
+
+  if (n === 0)
+    return done()
+
+  var sync = true
+  for (var i = 0; i < n; i ++) {
+    this._process(this.minimatch.set[i], i, false, done)
+  }
+  sync = false
+
+  function done () {
+    --self._processing
+    if (self._processing <= 0) {
+      if (sync) {
+        process.nextTick(function () {
+          self._finish()
+        })
+      } else {
+        self._finish()
+      }
+    }
+  }
+}
+
+Glob.prototype._finish = function () {
+  assert(this instanceof Glob)
+  if (this.aborted)
+    return
+
+  if (this.realpath && !this._didRealpath)
+    return this._realpath()
+
+  common.finish(this)
+  this.emit('end', this.found)
+}
+
+Glob.prototype._realpath = function () {
+  if (this._didRealpath)
+    return
+
+  this._didRealpath = true
+
+  var n = this.matches.length
+  if (n === 0)
+    return this._finish()
+
+  var self = this
+  for (var i = 0; i < this.matches.length; i++)
+    this._realpathSet(i, next)
+
+  function next () {
+    if (--n === 0)
+      self._finish()
+  }
+}
+
+Glob.prototype._realpathSet = function (index, cb) {
+  var matchset = this.matches[index]
+  if (!matchset)
+    return cb()
+
+  var found = Object.keys(matchset)
+  var self = this
+  var n = found.length
+
+  if (n === 0)
+    return cb()
+
+  var set = this.matches[index] = Object.create(null)
+  found.forEach(function (p, i) {
+    // If there's a problem with the stat, then it means that
+    // one or more of the links in the realpath couldn't be
+    // resolved.  just return the abs value in that case.
+    p = self._makeAbs(p)
+    rp.realpath(p, self.realpathCache, function (er, real) {
+      if (!er)
+        set[real] = true
+      else if (er.syscall === 'stat')
+        set[p] = true
+      else
+        self.emit('error', er) // srsly wtf right here
+
+      if (--n === 0) {
+        self.matches[index] = set
+        cb()
+      }
+    })
+  })
+}
+
+Glob.prototype._mark = function (p) {
+  return common.mark(this, p)
+}
+
+Glob.prototype._makeAbs = function (f) {
+  return common.makeAbs(this, f)
+}
+
+Glob.prototype.abort = function () {
+  this.aborted = true
+  this.emit('abort')
+}
+
+Glob.prototype.pause = function () {
+  if (!this.paused) {
+    this.paused = true
+    this.emit('pause')
+  }
+}
+
+Glob.prototype.resume = function () {
+  if (this.paused) {
+    this.emit('resume')
+    this.paused = false
+    if (this._emitQueue.length) {
+      var eq = this._emitQueue.slice(0)
+      this._emitQueue.length = 0
+      for (var i = 0; i < eq.length; i ++) {
+        var e = eq[i]
+        this._emitMatch(e[0], e[1])
+      }
+    }
+    if (this._processQueue.length) {
+      var pq = this._processQueue.slice(0)
+      this._processQueue.length = 0
+      for (var i = 0; i < pq.length; i ++) {
+        var p = pq[i]
+        this._processing--
+        this._process(p[0], p[1], p[2], p[3])
+      }
+    }
+  }
+}
+
+Glob.prototype._process = function (pattern, index, inGlobStar, cb) {
+  assert(this instanceof Glob)
+  assert(typeof cb === 'function')
+
+  if (this.aborted)
+    return
+
+  this._processing++
+  if (this.paused) {
+    this._processQueue.push([pattern, index, inGlobStar, cb])
+    return
+  }
+
+  //console.error('PROCESS %d', this._processing, pattern)
+
+  // Get the first [n] parts of pattern that are all strings.
+  var n = 0
+  while (typeof pattern[n] === 'string') {
+    n ++
+  }
+  // now n is the index of the first one that is *not* a string.
+
+  // see if there's anything else
+  var prefix
+  switch (n) {
+    // if not, then this is rather simple
+    case pattern.length:
+      this._processSimple(pattern.join('/'), index, cb)
+      return
+
+    case 0:
+      // pattern *starts* with some non-trivial item.
+      // going to readdir(cwd), but not include the prefix in matches.
+      prefix = null
+      break
+
+    default:
+      // pattern has some string bits in the front.
+      // whatever it starts with, whether that's 'absolute' like /foo/bar,
+      // or 'relative' like '../baz'
+      prefix = pattern.slice(0, n).join('/')
+      break
+  }
+
+  var remain = pattern.slice(n)
+
+  // get the list of entries.
+  var read
+  if (prefix === null)
+    read = '.'
+  else if (isAbsolute(prefix) || isAbsolute(pattern.join('/'))) {
+    if (!prefix || !isAbsolute(prefix))
+      prefix = '/' + prefix
+    read = prefix
+  } else
+    read = prefix
+
+  var abs = this._makeAbs(read)
+
+  //if ignored, skip _processing
+  if (childrenIgnored(this, read))
+    return cb()
+
+  var isGlobStar = remain[0] === minimatch.GLOBSTAR
+  if (isGlobStar)
+    this._processGlobStar(prefix, read, abs, remain, index, inGlobStar, cb)
+  else
+    this._processReaddir(prefix, read, abs, remain, index, inGlobStar, cb)
+}
+
+Glob.prototype._processReaddir = function (prefix, read, abs, remain, index, inGlobStar, cb) {
+  var self = this
+  this._readdir(abs, inGlobStar, function (er, entries) {
+    return self._processReaddir2(prefix, read, abs, remain, index, inGlobStar, entries, cb)
+  })
+}
+
+Glob.prototype._processReaddir2 = function (prefix, read, abs, remain, index, inGlobStar, entries, cb) {
+
+  // if the abs isn't a dir, then nothing can match!
+  if (!entries)
+    return cb()
+
+  // It will only match dot entries if it starts with a dot, or if
+  // dot is set.  Stuff like @(.foo|.bar) isn't allowed.
+  var pn = remain[0]
+  var negate = !!this.minimatch.negate
+  var rawGlob = pn._glob
+  var dotOk = this.dot || rawGlob.charAt(0) === '.'
+
+  var matchedEntries = []
+  for (var i = 0; i < entries.length; i++) {
+    var e = entries[i]
+    if (e.charAt(0) !== '.' || dotOk) {
+      var m
+      if (negate && !prefix) {
+        m = !e.match(pn)
+      } else {
+        m = e.match(pn)
+      }
+      if (m)
+        matchedEntries.push(e)
+    }
+  }
+
+  //console.error('prd2', prefix, entries, remain[0]._glob, matchedEntries)
+
+  var len = matchedEntries.length
+  // If there are no matched entries, then nothing matches.
+  if (len === 0)
+    return cb()
+
+  // if this is the last remaining pattern bit, then no need for
+  // an additional stat *unless* the user has specified mark or
+  // stat explicitly.  We know they exist, since readdir returned
+  // them.
+
+  if (remain.length === 1 && !this.mark && !this.stat) {
+    if (!this.matches[index])
+      this.matches[index] = Object.create(null)
+
+    for (var i = 0; i < len; i ++) {
+      var e = matchedEntries[i]
+      if (prefix) {
+        if (prefix !== '/')
+          e = prefix + '/' + e
+        else
+          e = prefix + e
+      }
+
+      if (e.charAt(0) === '/' && !this.nomount) {
+        e = path.join(this.root, e)
+      }
+      this._emitMatch(index, e)
+    }
+    // This was the last one, and no stats were needed
+    return cb()
+  }
+
+  // now test all matched entries as stand-ins for that part
+  // of the pattern.
+  remain.shift()
+  for (var i = 0; i < len; i ++) {
+    var e = matchedEntries[i]
+    var newPattern
+    if (prefix) {
+      if (prefix !== '/')
+        e = prefix + '/' + e
+      else
+        e = prefix + e
+    }
+    this._process([e].concat(remain), index, inGlobStar, cb)
+  }
+  cb()
+}
+
+Glob.prototype._emitMatch = function (index, e) {
+  if (this.aborted)
+    return
+
+  if (isIgnored(this, e))
+    return
+
+  if (this.paused) {
+    this._emitQueue.push([index, e])
+    return
+  }
+
+  var abs = isAbsolute(e) ? e : this._makeAbs(e)
+
+  if (this.mark)
+    e = this._mark(e)
+
+  if (this.absolute)
+    e = abs
+
+  if (this.matches[index][e])
+    return
+
+  if (this.nodir) {
+    var c = this.cache[abs]
+    if (c === 'DIR' || Array.isArray(c))
+      return
+  }
+
+  this.matches[index][e] = true
+
+  var st = this.statCache[abs]
+  if (st)
+    this.emit('stat', e, st)
+
+  this.emit('match', e)
+}
+
+Glob.prototype._readdirInGlobStar = function (abs, cb) {
+  if (this.aborted)
+    return
+
+  // follow all symlinked directories forever
+  // just proceed as if this is a non-globstar situation
+  if (this.follow)
+    return this._readdir(abs, false, cb)
+
+  var lstatkey = 'lstat\0' + abs
+  var self = this
+  var lstatcb = inflight(lstatkey, lstatcb_)
+
+  if (lstatcb)
+    fs.lstat(abs, lstatcb)
+
+  function lstatcb_ (er, lstat) {
+    if (er && er.code === 'ENOENT')
+      return cb()
+
+    var isSym = lstat && lstat.isSymbolicLink()
+    self.symlinks[abs] = isSym
+
+    // If it's not a symlink or a dir, then it's definitely a regular file.
+    // don't bother doing a readdir in that case.
+    if (!isSym && lstat && !lstat.isDirectory()) {
+      self.cache[abs] = 'FILE'
+      cb()
+    } else
+      self._readdir(abs, false, cb)
+  }
+}
+
+Glob.prototype._readdir = function (abs, inGlobStar, cb) {
+  if (this.aborted)
+    return
+
+  cb = inflight('readdir\0'+abs+'\0'+inGlobStar, cb)
+  if (!cb)
+    return
+
+  //console.error('RD %j %j', +inGlobStar, abs)
+  if (inGlobStar && !ownProp(this.symlinks, abs))
+    return this._readdirInGlobStar(abs, cb)
+
+  if (ownProp(this.cache, abs)) {
+    var c = this.cache[abs]
+    if (!c || c === 'FILE')
+      return cb()
+
+    if (Array.isArray(c))
+      return cb(null, c)
+  }
+
+  var self = this
+  fs.readdir(abs, readdirCb(this, abs, cb))
+}
+
+function readdirCb (self, abs, cb) {
+  return function (er, entries) {
+    if (er)
+      self._readdirError(abs, er, cb)
+    else
+      self._readdirEntries(abs, entries, cb)
+  }
+}
+
+Glob.prototype._readdirEntries = function (abs, entries, cb) {
+  if (this.aborted)
+    return
+
+  // if we haven't asked to stat everything, then just
+  // assume that everything in there exists, so we can avoid
+  // having to stat it a second time.
+  if (!this.mark && !this.stat) {
+    for (var i = 0; i < entries.length; i ++) {
+      var e = entries[i]
+      if (abs === '/')
+        e = abs + e
+      else
+        e = abs + '/' + e
+      this.cache[e] = true
+    }
+  }
+
+  this.cache[abs] = entries
+  return cb(null, entries)
+}
+
+Glob.prototype._readdirError = function (f, er, cb) {
+  if (this.aborted)
+    return
+
+  // handle errors, and cache the information
+  switch (er.code) {
+    case 'ENOTSUP': // https://github.com/isaacs/node-glob/issues/205
+    case 'ENOTDIR': // totally normal. means it *does* exist.
+      var abs = this._makeAbs(f)
+      this.cache[abs] = 'FILE'
+      if (abs === this.cwdAbs) {
+        var error = new Error(er.code + ' invalid cwd ' + this.cwd)
+        error.path = this.cwd
+        error.code = er.code
+        this.emit('error', error)
+        this.abort()
+      }
+      break
+
+    case 'ENOENT': // not terribly unusual
+    case 'ELOOP':
+    case 'ENAMETOOLONG':
+    case 'UNKNOWN':
+      this.cache[this._makeAbs(f)] = false
+      break
+
+    default: // some unusual error.  Treat as failure.
+      this.cache[this._makeAbs(f)] = false
+      if (this.strict) {
+        this.emit('error', er)
+        // If the error is handled, then we abort
+        // if not, we threw out of here
+        this.abort()
+      }
+      if (!this.silent)
+        console.error('glob error', er)
+      break
+  }
+
+  return cb()
+}
+
+Glob.prototype._processGlobStar = function (prefix, read, abs, remain, index, inGlobStar, cb) {
+  var self = this
+  this._readdir(abs, inGlobStar, function (er, entries) {
+    self._processGlobStar2(prefix, read, abs, remain, index, inGlobStar, entries, cb)
+  })
+}
+
+
+Glob.prototype._processGlobStar2 = function (prefix, read, abs, remain, index, inGlobStar, entries, cb) {
+  //console.error('pgs2', prefix, remain[0], entries)
+
+  // no entries means not a dir, so it can never have matches
+  // foo.txt/** doesn't match foo.txt
+  if (!entries)
+    return cb()
+
+  // test without the globstar, and with every child both below
+  // and replacing the globstar.
+  var remainWithoutGlobStar = remain.slice(1)
+  var gspref = prefix ? [ prefix ] : []
+  var noGlobStar = gspref.concat(remainWithoutGlobStar)
+
+  // the noGlobStar pattern exits the inGlobStar state
+  this._process(noGlobStar, index, false, cb)
+
+  var isSym = this.symlinks[abs]
+  var len = entries.length
+
+  // If it's a symlink, and we're in a globstar, then stop
+  if (isSym && inGlobStar)
+    return cb()
+
+  for (var i = 0; i < len; i++) {
+    var e = entries[i]
+    if (e.charAt(0) === '.' && !this.dot)
+      continue
+
+    // these two cases enter the inGlobStar state
+    var instead = gspref.concat(entries[i], remainWithoutGlobStar)
+    this._process(instead, index, true, cb)
+
+    var below = gspref.concat(entries[i], remain)
+    this._process(below, index, true, cb)
+  }
+
+  cb()
+}
+
+Glob.prototype._processSimple = function (prefix, index, cb) {
+  // XXX review this.  Shouldn't it be doing the mounting etc
+  // before doing stat?  kinda weird?
+  var self = this
+  this._stat(prefix, function (er, exists) {
+    self._processSimple2(prefix, index, er, exists, cb)
+  })
+}
+Glob.prototype._processSimple2 = function (prefix, index, er, exists, cb) {
+
+  //console.error('ps2', prefix, exists)
+
+  if (!this.matches[index])
+    this.matches[index] = Object.create(null)
+
+  // If it doesn't exist, then just mark the lack of results
+  if (!exists)
+    return cb()
+
+  if (prefix && isAbsolute(prefix) && !this.nomount) {
+    var trail = /[\/\\]$/.test(prefix)
+    if (prefix.charAt(0) === '/') {
+      prefix = path.join(this.root, prefix)
+    } else {
+      prefix = path.resolve(this.root, prefix)
+      if (trail)
+        prefix += '/'
+    }
+  }
+
+  if (process.platform === 'win32')
+    prefix = prefix.replace(/\\/g, '/')
+
+  // Mark this as a match
+  this._emitMatch(index, prefix)
+  cb()
+}
+
+// Returns either 'DIR', 'FILE', or false
+Glob.prototype._stat = function (f, cb) {
+  var abs = this._makeAbs(f)
+  var needDir = f.slice(-1) === '/'
+
+  if (f.length > this.maxLength)
+    return cb()
+
+  if (!this.stat && ownProp(this.cache, abs)) {
+    var c = this.cache[abs]
+
+    if (Array.isArray(c))
+      c = 'DIR'
+
+    // It exists, but maybe not how we need it
+    if (!needDir || c === 'DIR')
+      return cb(null, c)
+
+    if (needDir && c === 'FILE')
+      return cb()
+
+    // otherwise we have to stat, because maybe c=true
+    // if we know it exists, but not what it is.
+  }
+
+  var exists
+  var stat = this.statCache[abs]
+  if (stat !== undefined) {
+    if (stat === false)
+      return cb(null, stat)
+    else {
+      var type = stat.isDirectory() ? 'DIR' : 'FILE'
+      if (needDir && type === 'FILE')
+        return cb()
+      else
+        return cb(null, type, stat)
+    }
+  }
+
+  var self = this
+  var statcb = inflight('stat\0' + abs, lstatcb_)
+  if (statcb)
+    fs.lstat(abs, statcb)
+
+  function lstatcb_ (er, lstat) {
+    if (lstat && lstat.isSymbolicLink()) {
+      // If it's a symlink, then treat it as the target, unless
+      // the target does not exist, then treat it as a file.
+      return fs.stat(abs, function (er, stat) {
+        if (er)
+          self._stat2(f, abs, null, lstat, cb)
+        else
+          self._stat2(f, abs, er, stat, cb)
+      })
+    } else {
+      self._stat2(f, abs, er, lstat, cb)
+    }
+  }
+}
+
+Glob.prototype._stat2 = function (f, abs, er, stat, cb) {
+  if (er && (er.code === 'ENOENT' || er.code === 'ENOTDIR')) {
+    this.statCache[abs] = false
+    return cb()
+  }
+
+  var needDir = f.slice(-1) === '/'
+  this.statCache[abs] = stat
+
+  if (abs.slice(-1) === '/' && stat && !stat.isDirectory())
+    return cb(null, false, stat)
+
+  var c = true
+  if (stat)
+    c = stat.isDirectory() ? 'DIR' : 'FILE'
+  this.cache[abs] = this.cache[abs] || c
+
+  if (needDir && c === 'FILE')
+    return cb()
+
+  return cb(null, c, stat)
+}
+
+
+/***/ }),
+/* 338 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = realpath
+realpath.realpath = realpath
+realpath.sync = realpathSync
+realpath.realpathSync = realpathSync
+realpath.monkeypatch = monkeypatch
+realpath.unmonkeypatch = unmonkeypatch
+
+var fs = __webpack_require__(54)
+var origRealpath = fs.realpath
+var origRealpathSync = fs.realpathSync
+
+var version = process.version
+var ok = /^v[0-5]\./.test(version)
+var old = __webpack_require__(339)
+
+function newError (er) {
+  return er && er.syscall === 'realpath' && (
+    er.code === 'ELOOP' ||
+    er.code === 'ENOMEM' ||
+    er.code === 'ENAMETOOLONG'
+  )
+}
+
+function realpath (p, cache, cb) {
+  if (ok) {
+    return origRealpath(p, cache, cb)
+  }
+
+  if (typeof cache === 'function') {
+    cb = cache
+    cache = null
+  }
+  origRealpath(p, cache, function (er, result) {
+    if (newError(er)) {
+      old.realpath(p, cache, cb)
+    } else {
+      cb(er, result)
+    }
+  })
+}
+
+function realpathSync (p, cache) {
+  if (ok) {
+    return origRealpathSync(p, cache)
+  }
+
+  try {
+    return origRealpathSync(p, cache)
+  } catch (er) {
+    if (newError(er)) {
+      return old.realpathSync(p, cache)
+    } else {
+      throw er
+    }
+  }
+}
+
+function monkeypatch () {
+  fs.realpath = realpath
+  fs.realpathSync = realpathSync
+}
+
+function unmonkeypatch () {
+  fs.realpath = origRealpath
+  fs.realpathSync = origRealpathSync
+}
+
+
+/***/ }),
+/* 339 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+var pathModule = __webpack_require__(56);
+var isWindows = process.platform === 'win32';
+var fs = __webpack_require__(54);
+
+// JavaScript implementation of realpath, ported from node pre-v6
+
+var DEBUG = process.env.NODE_DEBUG && /fs/.test(process.env.NODE_DEBUG);
+
+function rethrow() {
+  // Only enable in debug mode. A backtrace uses ~1000 bytes of heap space and
+  // is fairly slow to generate.
+  var callback;
+  if (DEBUG) {
+    var backtrace = new Error;
+    callback = debugCallback;
+  } else
+    callback = missingCallback;
+
+  return callback;
+
+  function debugCallback(err) {
+    if (err) {
+      backtrace.message = err.message;
+      err = backtrace;
+      missingCallback(err);
+    }
+  }
+
+  function missingCallback(err) {
+    if (err) {
+      if (process.throwDeprecation)
+        throw err;  // Forgot a callback but don't know where? Use NODE_DEBUG=fs
+      else if (!process.noDeprecation) {
+        var msg = 'fs: missing callback ' + (err.stack || err.message);
+        if (process.traceDeprecation)
+          console.trace(msg);
+        else
+          console.error(msg);
+      }
+    }
+  }
+}
+
+function maybeCallback(cb) {
+  return typeof cb === 'function' ? cb : rethrow();
+}
+
+var normalize = pathModule.normalize;
+
+// Regexp that finds the next partion of a (partial) path
+// result is [base_with_slash, base], e.g. ['somedir/', 'somedir']
+if (isWindows) {
+  var nextPartRe = /(.*?)(?:[\/\\]+|$)/g;
+} else {
+  var nextPartRe = /(.*?)(?:[\/]+|$)/g;
+}
+
+// Regex to find the device root, including trailing slash. E.g. 'c:\\'.
+if (isWindows) {
+  var splitRootRe = /^(?:[a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/][^\\\/]+)?[\\\/]*/;
+} else {
+  var splitRootRe = /^[\/]*/;
+}
+
+exports.realpathSync = function realpathSync(p, cache) {
+  // make p is absolute
+  p = pathModule.resolve(p);
+
+  if (cache && Object.prototype.hasOwnProperty.call(cache, p)) {
+    return cache[p];
+  }
+
+  var original = p,
+      seenLinks = {},
+      knownHard = {};
+
+  // current character position in p
+  var pos;
+  // the partial path so far, including a trailing slash if any
+  var current;
+  // the partial path without a trailing slash (except when pointing at a root)
+  var base;
+  // the partial path scanned in the previous round, with slash
+  var previous;
+
+  start();
+
+  function start() {
+    // Skip over roots
+    var m = splitRootRe.exec(p);
+    pos = m[0].length;
+    current = m[0];
+    base = m[0];
+    previous = '';
+
+    // On windows, check that the root exists. On unix there is no need.
+    if (isWindows && !knownHard[base]) {
+      fs.lstatSync(base);
+      knownHard[base] = true;
+    }
+  }
+
+  // walk down the path, swapping out linked pathparts for their real
+  // values
+  // NB: p.length changes.
+  while (pos < p.length) {
+    // find the next part
+    nextPartRe.lastIndex = pos;
+    var result = nextPartRe.exec(p);
+    previous = current;
+    current += result[0];
+    base = previous + result[1];
+    pos = nextPartRe.lastIndex;
+
+    // continue if not a symlink
+    if (knownHard[base] || (cache && cache[base] === base)) {
+      continue;
+    }
+
+    var resolvedLink;
+    if (cache && Object.prototype.hasOwnProperty.call(cache, base)) {
+      // some known symbolic link.  no need to stat again.
+      resolvedLink = cache[base];
+    } else {
+      var stat = fs.lstatSync(base);
+      if (!stat.isSymbolicLink()) {
+        knownHard[base] = true;
+        if (cache) cache[base] = base;
+        continue;
+      }
+
+      // read the link if it wasn't read before
+      // dev/ino always return 0 on windows, so skip the check.
+      var linkTarget = null;
+      if (!isWindows) {
+        var id = stat.dev.toString(32) + ':' + stat.ino.toString(32);
+        if (seenLinks.hasOwnProperty(id)) {
+          linkTarget = seenLinks[id];
+        }
+      }
+      if (linkTarget === null) {
+        fs.statSync(base);
+        linkTarget = fs.readlinkSync(base);
+      }
+      resolvedLink = pathModule.resolve(previous, linkTarget);
+      // track this, if given a cache.
+      if (cache) cache[base] = resolvedLink;
+      if (!isWindows) seenLinks[id] = linkTarget;
+    }
+
+    // resolve the link, then start over
+    p = pathModule.resolve(resolvedLink, p.slice(pos));
+    start();
+  }
+
+  if (cache) cache[original] = p;
+
+  return p;
+};
+
+
+exports.realpath = function realpath(p, cache, cb) {
+  if (typeof cb !== 'function') {
+    cb = maybeCallback(cache);
+    cache = null;
+  }
+
+  // make p is absolute
+  p = pathModule.resolve(p);
+
+  if (cache && Object.prototype.hasOwnProperty.call(cache, p)) {
+    return process.nextTick(cb.bind(null, null, cache[p]));
+  }
+
+  var original = p,
+      seenLinks = {},
+      knownHard = {};
+
+  // current character position in p
+  var pos;
+  // the partial path so far, including a trailing slash if any
+  var current;
+  // the partial path without a trailing slash (except when pointing at a root)
+  var base;
+  // the partial path scanned in the previous round, with slash
+  var previous;
+
+  start();
+
+  function start() {
+    // Skip over roots
+    var m = splitRootRe.exec(p);
+    pos = m[0].length;
+    current = m[0];
+    base = m[0];
+    previous = '';
+
+    // On windows, check that the root exists. On unix there is no need.
+    if (isWindows && !knownHard[base]) {
+      fs.lstat(base, function(err) {
+        if (err) return cb(err);
+        knownHard[base] = true;
+        LOOP();
+      });
+    } else {
+      process.nextTick(LOOP);
+    }
+  }
+
+  // walk down the path, swapping out linked pathparts for their real
+  // values
+  function LOOP() {
+    // stop if scanned past end of path
+    if (pos >= p.length) {
+      if (cache) cache[original] = p;
+      return cb(null, p);
+    }
+
+    // find the next part
+    nextPartRe.lastIndex = pos;
+    var result = nextPartRe.exec(p);
+    previous = current;
+    current += result[0];
+    base = previous + result[1];
+    pos = nextPartRe.lastIndex;
+
+    // continue if not a symlink
+    if (knownHard[base] || (cache && cache[base] === base)) {
+      return process.nextTick(LOOP);
+    }
+
+    if (cache && Object.prototype.hasOwnProperty.call(cache, base)) {
+      // known symbolic link.  no need to stat again.
+      return gotResolvedLink(cache[base]);
+    }
+
+    return fs.lstat(base, gotStat);
+  }
+
+  function gotStat(err, stat) {
+    if (err) return cb(err);
+
+    // if not a symlink, skip to the next path part
+    if (!stat.isSymbolicLink()) {
+      knownHard[base] = true;
+      if (cache) cache[base] = base;
+      return process.nextTick(LOOP);
+    }
+
+    // stat & read the link if not read before
+    // call gotTarget as soon as the link target is known
+    // dev/ino always return 0 on windows, so skip the check.
+    if (!isWindows) {
+      var id = stat.dev.toString(32) + ':' + stat.ino.toString(32);
+      if (seenLinks.hasOwnProperty(id)) {
+        return gotTarget(null, seenLinks[id], base);
+      }
+    }
+    fs.stat(base, function(err) {
+      if (err) return cb(err);
+
+      fs.readlink(base, function(err, target) {
+        if (!isWindows) seenLinks[id] = target;
+        gotTarget(err, target);
+      });
+    });
+  }
+
+  function gotTarget(err, target, base) {
+    if (err) return cb(err);
+
+    var resolvedLink = pathModule.resolve(previous, target);
+    if (cache) cache[base] = resolvedLink;
+    gotResolvedLink(resolvedLink);
+  }
+
+  function gotResolvedLink(resolvedLink) {
+    // resolve the link, then start over
+    p = pathModule.resolve(resolvedLink, p.slice(pos));
+    start();
+  }
+};
+
+
+/***/ }),
+/* 340 */
+/***/ (function(module, exports, __webpack_require__) {
+
+try {
+  var util = __webpack_require__(40);
+  if (typeof util.inherits !== 'function') throw '';
+  module.exports = util.inherits;
+} catch (e) {
+  module.exports = __webpack_require__(341);
+}
+
+
+/***/ }),
+/* 341 */
+/***/ (function(module, exports) {
+
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  };
+} else {
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
+    ctor.prototype.constructor = ctor
+  }
+}
+
+
+/***/ }),
+/* 342 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function posix(path) {
+	return path.charAt(0) === '/';
+}
+
+function win32(path) {
+	// https://github.com/nodejs/node/blob/b3fcc245fb25539909ef1d5eaa01dbf92e168633/lib/path.js#L56
+	var splitDeviceRe = /^([a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/]+[^\\\/]+)?([\\\/])?([\s\S]*?)$/;
+	var result = splitDeviceRe.exec(path);
+	var device = result[1] || '';
+	var isUnc = Boolean(device && device.charAt(1) !== ':');
+
+	// UNC paths are always absolute
+	return Boolean(result[2] || isUnc);
+}
+
+module.exports = process.platform === 'win32' ? win32 : posix;
+module.exports.posix = posix;
+module.exports.win32 = win32;
+
+
+/***/ }),
+/* 343 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = globSync
+globSync.GlobSync = GlobSync
+
+var fs = __webpack_require__(54)
+var rp = __webpack_require__(338)
+var minimatch = __webpack_require__(202)
+var Minimatch = minimatch.Minimatch
+var Glob = __webpack_require__(337).Glob
+var util = __webpack_require__(40)
+var path = __webpack_require__(56)
+var assert = __webpack_require__(107)
+var isAbsolute = __webpack_require__(342)
+var common = __webpack_require__(344)
+var alphasort = common.alphasort
+var alphasorti = common.alphasorti
+var setopts = common.setopts
+var ownProp = common.ownProp
+var childrenIgnored = common.childrenIgnored
+var isIgnored = common.isIgnored
+
+function globSync (pattern, options) {
+  if (typeof options === 'function' || arguments.length === 3)
+    throw new TypeError('callback provided to sync glob\n'+
+                        'See: https://github.com/isaacs/node-glob/issues/167')
+
+  return new GlobSync(pattern, options).found
+}
+
+function GlobSync (pattern, options) {
+  if (!pattern)
+    throw new Error('must provide pattern')
+
+  if (typeof options === 'function' || arguments.length === 3)
+    throw new TypeError('callback provided to sync glob\n'+
+                        'See: https://github.com/isaacs/node-glob/issues/167')
+
+  if (!(this instanceof GlobSync))
+    return new GlobSync(pattern, options)
+
+  setopts(this, pattern, options)
+
+  if (this.noprocess)
+    return this
+
+  var n = this.minimatch.set.length
+  this.matches = new Array(n)
+  for (var i = 0; i < n; i ++) {
+    this._process(this.minimatch.set[i], i, false)
+  }
+  this._finish()
+}
+
+GlobSync.prototype._finish = function () {
+  assert(this instanceof GlobSync)
+  if (this.realpath) {
+    var self = this
+    this.matches.forEach(function (matchset, index) {
+      var set = self.matches[index] = Object.create(null)
+      for (var p in matchset) {
+        try {
+          p = self._makeAbs(p)
+          var real = rp.realpathSync(p, self.realpathCache)
+          set[real] = true
+        } catch (er) {
+          if (er.syscall === 'stat')
+            set[self._makeAbs(p)] = true
+          else
+            throw er
+        }
+      }
+    })
+  }
+  common.finish(this)
+}
+
+
+GlobSync.prototype._process = function (pattern, index, inGlobStar) {
+  assert(this instanceof GlobSync)
+
+  // Get the first [n] parts of pattern that are all strings.
+  var n = 0
+  while (typeof pattern[n] === 'string') {
+    n ++
+  }
+  // now n is the index of the first one that is *not* a string.
+
+  // See if there's anything else
+  var prefix
+  switch (n) {
+    // if not, then this is rather simple
+    case pattern.length:
+      this._processSimple(pattern.join('/'), index)
+      return
+
+    case 0:
+      // pattern *starts* with some non-trivial item.
+      // going to readdir(cwd), but not include the prefix in matches.
+      prefix = null
+      break
+
+    default:
+      // pattern has some string bits in the front.
+      // whatever it starts with, whether that's 'absolute' like /foo/bar,
+      // or 'relative' like '../baz'
+      prefix = pattern.slice(0, n).join('/')
+      break
+  }
+
+  var remain = pattern.slice(n)
+
+  // get the list of entries.
+  var read
+  if (prefix === null)
+    read = '.'
+  else if (isAbsolute(prefix) || isAbsolute(pattern.join('/'))) {
+    if (!prefix || !isAbsolute(prefix))
+      prefix = '/' + prefix
+    read = prefix
+  } else
+    read = prefix
+
+  var abs = this._makeAbs(read)
+
+  //if ignored, skip processing
+  if (childrenIgnored(this, read))
+    return
+
+  var isGlobStar = remain[0] === minimatch.GLOBSTAR
+  if (isGlobStar)
+    this._processGlobStar(prefix, read, abs, remain, index, inGlobStar)
+  else
+    this._processReaddir(prefix, read, abs, remain, index, inGlobStar)
+}
+
+
+GlobSync.prototype._processReaddir = function (prefix, read, abs, remain, index, inGlobStar) {
+  var entries = this._readdir(abs, inGlobStar)
+
+  // if the abs isn't a dir, then nothing can match!
+  if (!entries)
+    return
+
+  // It will only match dot entries if it starts with a dot, or if
+  // dot is set.  Stuff like @(.foo|.bar) isn't allowed.
+  var pn = remain[0]
+  var negate = !!this.minimatch.negate
+  var rawGlob = pn._glob
+  var dotOk = this.dot || rawGlob.charAt(0) === '.'
+
+  var matchedEntries = []
+  for (var i = 0; i < entries.length; i++) {
+    var e = entries[i]
+    if (e.charAt(0) !== '.' || dotOk) {
+      var m
+      if (negate && !prefix) {
+        m = !e.match(pn)
+      } else {
+        m = e.match(pn)
+      }
+      if (m)
+        matchedEntries.push(e)
+    }
+  }
+
+  var len = matchedEntries.length
+  // If there are no matched entries, then nothing matches.
+  if (len === 0)
+    return
+
+  // if this is the last remaining pattern bit, then no need for
+  // an additional stat *unless* the user has specified mark or
+  // stat explicitly.  We know they exist, since readdir returned
+  // them.
+
+  if (remain.length === 1 && !this.mark && !this.stat) {
+    if (!this.matches[index])
+      this.matches[index] = Object.create(null)
+
+    for (var i = 0; i < len; i ++) {
+      var e = matchedEntries[i]
+      if (prefix) {
+        if (prefix.slice(-1) !== '/')
+          e = prefix + '/' + e
+        else
+          e = prefix + e
+      }
+
+      if (e.charAt(0) === '/' && !this.nomount) {
+        e = path.join(this.root, e)
+      }
+      this._emitMatch(index, e)
+    }
+    // This was the last one, and no stats were needed
+    return
+  }
+
+  // now test all matched entries as stand-ins for that part
+  // of the pattern.
+  remain.shift()
+  for (var i = 0; i < len; i ++) {
+    var e = matchedEntries[i]
+    var newPattern
+    if (prefix)
+      newPattern = [prefix, e]
+    else
+      newPattern = [e]
+    this._process(newPattern.concat(remain), index, inGlobStar)
+  }
+}
+
+
+GlobSync.prototype._emitMatch = function (index, e) {
+  if (isIgnored(this, e))
+    return
+
+  var abs = this._makeAbs(e)
+
+  if (this.mark)
+    e = this._mark(e)
+
+  if (this.absolute) {
+    e = abs
+  }
+
+  if (this.matches[index][e])
+    return
+
+  if (this.nodir) {
+    var c = this.cache[abs]
+    if (c === 'DIR' || Array.isArray(c))
+      return
+  }
+
+  this.matches[index][e] = true
+
+  if (this.stat)
+    this._stat(e)
+}
+
+
+GlobSync.prototype._readdirInGlobStar = function (abs) {
+  // follow all symlinked directories forever
+  // just proceed as if this is a non-globstar situation
+  if (this.follow)
+    return this._readdir(abs, false)
+
+  var entries
+  var lstat
+  var stat
+  try {
+    lstat = fs.lstatSync(abs)
+  } catch (er) {
+    if (er.code === 'ENOENT') {
+      // lstat failed, doesn't exist
+      return null
+    }
+  }
+
+  var isSym = lstat && lstat.isSymbolicLink()
+  this.symlinks[abs] = isSym
+
+  // If it's not a symlink or a dir, then it's definitely a regular file.
+  // don't bother doing a readdir in that case.
+  if (!isSym && lstat && !lstat.isDirectory())
+    this.cache[abs] = 'FILE'
+  else
+    entries = this._readdir(abs, false)
+
+  return entries
+}
+
+GlobSync.prototype._readdir = function (abs, inGlobStar) {
+  var entries
+
+  if (inGlobStar && !ownProp(this.symlinks, abs))
+    return this._readdirInGlobStar(abs)
+
+  if (ownProp(this.cache, abs)) {
+    var c = this.cache[abs]
+    if (!c || c === 'FILE')
+      return null
+
+    if (Array.isArray(c))
+      return c
+  }
+
+  try {
+    return this._readdirEntries(abs, fs.readdirSync(abs))
+  } catch (er) {
+    this._readdirError(abs, er)
+    return null
+  }
+}
+
+GlobSync.prototype._readdirEntries = function (abs, entries) {
+  // if we haven't asked to stat everything, then just
+  // assume that everything in there exists, so we can avoid
+  // having to stat it a second time.
+  if (!this.mark && !this.stat) {
+    for (var i = 0; i < entries.length; i ++) {
+      var e = entries[i]
+      if (abs === '/')
+        e = abs + e
+      else
+        e = abs + '/' + e
+      this.cache[e] = true
+    }
+  }
+
+  this.cache[abs] = entries
+
+  // mark and cache dir-ness
+  return entries
+}
+
+GlobSync.prototype._readdirError = function (f, er) {
+  // handle errors, and cache the information
+  switch (er.code) {
+    case 'ENOTSUP': // https://github.com/isaacs/node-glob/issues/205
+    case 'ENOTDIR': // totally normal. means it *does* exist.
+      var abs = this._makeAbs(f)
+      this.cache[abs] = 'FILE'
+      if (abs === this.cwdAbs) {
+        var error = new Error(er.code + ' invalid cwd ' + this.cwd)
+        error.path = this.cwd
+        error.code = er.code
+        throw error
+      }
+      break
+
+    case 'ENOENT': // not terribly unusual
+    case 'ELOOP':
+    case 'ENAMETOOLONG':
+    case 'UNKNOWN':
+      this.cache[this._makeAbs(f)] = false
+      break
+
+    default: // some unusual error.  Treat as failure.
+      this.cache[this._makeAbs(f)] = false
+      if (this.strict)
+        throw er
+      if (!this.silent)
+        console.error('glob error', er)
+      break
+  }
+}
+
+GlobSync.prototype._processGlobStar = function (prefix, read, abs, remain, index, inGlobStar) {
+
+  var entries = this._readdir(abs, inGlobStar)
+
+  // no entries means not a dir, so it can never have matches
+  // foo.txt/** doesn't match foo.txt
+  if (!entries)
+    return
+
+  // test without the globstar, and with every child both below
+  // and replacing the globstar.
+  var remainWithoutGlobStar = remain.slice(1)
+  var gspref = prefix ? [ prefix ] : []
+  var noGlobStar = gspref.concat(remainWithoutGlobStar)
+
+  // the noGlobStar pattern exits the inGlobStar state
+  this._process(noGlobStar, index, false)
+
+  var len = entries.length
+  var isSym = this.symlinks[abs]
+
+  // If it's a symlink, and we're in a globstar, then stop
+  if (isSym && inGlobStar)
+    return
+
+  for (var i = 0; i < len; i++) {
+    var e = entries[i]
+    if (e.charAt(0) === '.' && !this.dot)
+      continue
+
+    // these two cases enter the inGlobStar state
+    var instead = gspref.concat(entries[i], remainWithoutGlobStar)
+    this._process(instead, index, true)
+
+    var below = gspref.concat(entries[i], remain)
+    this._process(below, index, true)
+  }
+}
+
+GlobSync.prototype._processSimple = function (prefix, index) {
+  // XXX review this.  Shouldn't it be doing the mounting etc
+  // before doing stat?  kinda weird?
+  var exists = this._stat(prefix)
+
+  if (!this.matches[index])
+    this.matches[index] = Object.create(null)
+
+  // If it doesn't exist, then just mark the lack of results
+  if (!exists)
+    return
+
+  if (prefix && isAbsolute(prefix) && !this.nomount) {
+    var trail = /[\/\\]$/.test(prefix)
+    if (prefix.charAt(0) === '/') {
+      prefix = path.join(this.root, prefix)
+    } else {
+      prefix = path.resolve(this.root, prefix)
+      if (trail)
+        prefix += '/'
+    }
+  }
+
+  if (process.platform === 'win32')
+    prefix = prefix.replace(/\\/g, '/')
+
+  // Mark this as a match
+  this._emitMatch(index, prefix)
+}
+
+// Returns either 'DIR', 'FILE', or false
+GlobSync.prototype._stat = function (f) {
+  var abs = this._makeAbs(f)
+  var needDir = f.slice(-1) === '/'
+
+  if (f.length > this.maxLength)
+    return false
+
+  if (!this.stat && ownProp(this.cache, abs)) {
+    var c = this.cache[abs]
+
+    if (Array.isArray(c))
+      c = 'DIR'
+
+    // It exists, but maybe not how we need it
+    if (!needDir || c === 'DIR')
+      return c
+
+    if (needDir && c === 'FILE')
+      return false
+
+    // otherwise we have to stat, because maybe c=true
+    // if we know it exists, but not what it is.
+  }
+
+  var exists
+  var stat = this.statCache[abs]
+  if (!stat) {
+    var lstat
+    try {
+      lstat = fs.lstatSync(abs)
+    } catch (er) {
+      if (er && (er.code === 'ENOENT' || er.code === 'ENOTDIR')) {
+        this.statCache[abs] = false
+        return false
+      }
+    }
+
+    if (lstat && lstat.isSymbolicLink()) {
+      try {
+        stat = fs.statSync(abs)
+      } catch (er) {
+        stat = lstat
+      }
+    } else {
+      stat = lstat
+    }
+  }
+
+  this.statCache[abs] = stat
+
+  var c = true
+  if (stat)
+    c = stat.isDirectory() ? 'DIR' : 'FILE'
+
+  this.cache[abs] = this.cache[abs] || c
+
+  if (needDir && c === 'FILE')
+    return false
+
+  return c
+}
+
+GlobSync.prototype._mark = function (p) {
+  return common.mark(this, p)
+}
+
+GlobSync.prototype._makeAbs = function (f) {
+  return common.makeAbs(this, f)
+}
+
+
+/***/ }),
 /* 344 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports.alphasort = alphasort
+exports.alphasorti = alphasorti
+exports.setopts = setopts
+exports.ownProp = ownProp
+exports.makeAbs = makeAbs
+exports.finish = finish
+exports.mark = mark
+exports.isIgnored = isIgnored
+exports.childrenIgnored = childrenIgnored
+
+function ownProp (obj, field) {
+  return Object.prototype.hasOwnProperty.call(obj, field)
+}
+
+var path = __webpack_require__(56)
+var minimatch = __webpack_require__(202)
+var isAbsolute = __webpack_require__(342)
+var Minimatch = minimatch.Minimatch
+
+function alphasorti (a, b) {
+  return a.toLowerCase().localeCompare(b.toLowerCase())
+}
+
+function alphasort (a, b) {
+  return a.localeCompare(b)
+}
+
+function setupIgnores (self, options) {
+  self.ignore = options.ignore || []
+
+  if (!Array.isArray(self.ignore))
+    self.ignore = [self.ignore]
+
+  if (self.ignore.length) {
+    self.ignore = self.ignore.map(ignoreMap)
+  }
+}
+
+// ignore patterns are always in dot:true mode.
+function ignoreMap (pattern) {
+  var gmatcher = null
+  if (pattern.slice(-3) === '/**') {
+    var gpattern = pattern.replace(/(\/\*\*)+$/, '')
+    gmatcher = new Minimatch(gpattern, { dot: true })
+  }
+
+  return {
+    matcher: new Minimatch(pattern, { dot: true }),
+    gmatcher: gmatcher
+  }
+}
+
+function setopts (self, pattern, options) {
+  if (!options)
+    options = {}
+
+  // base-matching: just use globstar for that.
+  if (options.matchBase && -1 === pattern.indexOf("/")) {
+    if (options.noglobstar) {
+      throw new Error("base matching requires globstar")
+    }
+    pattern = "**/" + pattern
+  }
+
+  self.silent = !!options.silent
+  self.pattern = pattern
+  self.strict = options.strict !== false
+  self.realpath = !!options.realpath
+  self.realpathCache = options.realpathCache || Object.create(null)
+  self.follow = !!options.follow
+  self.dot = !!options.dot
+  self.mark = !!options.mark
+  self.nodir = !!options.nodir
+  if (self.nodir)
+    self.mark = true
+  self.sync = !!options.sync
+  self.nounique = !!options.nounique
+  self.nonull = !!options.nonull
+  self.nosort = !!options.nosort
+  self.nocase = !!options.nocase
+  self.stat = !!options.stat
+  self.noprocess = !!options.noprocess
+  self.absolute = !!options.absolute
+
+  self.maxLength = options.maxLength || Infinity
+  self.cache = options.cache || Object.create(null)
+  self.statCache = options.statCache || Object.create(null)
+  self.symlinks = options.symlinks || Object.create(null)
+
+  setupIgnores(self, options)
+
+  self.changedCwd = false
+  var cwd = process.cwd()
+  if (!ownProp(options, "cwd"))
+    self.cwd = cwd
+  else {
+    self.cwd = path.resolve(options.cwd)
+    self.changedCwd = self.cwd !== cwd
+  }
+
+  self.root = options.root || path.resolve(self.cwd, "/")
+  self.root = path.resolve(self.root)
+  if (process.platform === "win32")
+    self.root = self.root.replace(/\\/g, "/")
+
+  // TODO: is an absolute `cwd` supposed to be resolved against `root`?
+  // e.g. { cwd: '/test', root: __dirname } === path.join(__dirname, '/test')
+  self.cwdAbs = isAbsolute(self.cwd) ? self.cwd : makeAbs(self, self.cwd)
+  if (process.platform === "win32")
+    self.cwdAbs = self.cwdAbs.replace(/\\/g, "/")
+  self.nomount = !!options.nomount
+
+  // disable comments and negation in Minimatch.
+  // Note that they are not supported in Glob itself anyway.
+  options.nonegate = true
+  options.nocomment = true
+
+  self.minimatch = new Minimatch(pattern, options)
+  self.options = self.minimatch.options
+}
+
+function finish (self) {
+  var nou = self.nounique
+  var all = nou ? [] : Object.create(null)
+
+  for (var i = 0, l = self.matches.length; i < l; i ++) {
+    var matches = self.matches[i]
+    if (!matches || Object.keys(matches).length === 0) {
+      if (self.nonull) {
+        // do like the shell, and spit out the literal glob
+        var literal = self.minimatch.globSet[i]
+        if (nou)
+          all.push(literal)
+        else
+          all[literal] = true
+      }
+    } else {
+      // had matches
+      var m = Object.keys(matches)
+      if (nou)
+        all.push.apply(all, m)
+      else
+        m.forEach(function (m) {
+          all[m] = true
+        })
+    }
+  }
+
+  if (!nou)
+    all = Object.keys(all)
+
+  if (!self.nosort)
+    all = all.sort(self.nocase ? alphasorti : alphasort)
+
+  // at *some* point we statted all of these
+  if (self.mark) {
+    for (var i = 0; i < all.length; i++) {
+      all[i] = self._mark(all[i])
+    }
+    if (self.nodir) {
+      all = all.filter(function (e) {
+        var notDir = !(/\/$/.test(e))
+        var c = self.cache[e] || self.cache[makeAbs(self, e)]
+        if (notDir && c)
+          notDir = c !== 'DIR' && !Array.isArray(c)
+        return notDir
+      })
+    }
+  }
+
+  if (self.ignore.length)
+    all = all.filter(function(m) {
+      return !isIgnored(self, m)
+    })
+
+  self.found = all
+}
+
+function mark (self, p) {
+  var abs = makeAbs(self, p)
+  var c = self.cache[abs]
+  var m = p
+  if (c) {
+    var isDir = c === 'DIR' || Array.isArray(c)
+    var slash = p.slice(-1) === '/'
+
+    if (isDir && !slash)
+      m += '/'
+    else if (!isDir && slash)
+      m = m.slice(0, -1)
+
+    if (m !== p) {
+      var mabs = makeAbs(self, m)
+      self.statCache[mabs] = self.statCache[abs]
+      self.cache[mabs] = self.cache[abs]
+    }
+  }
+
+  return m
+}
+
+// lotta situps...
+function makeAbs (self, f) {
+  var abs = f
+  if (f.charAt(0) === '/') {
+    abs = path.join(self.root, f)
+  } else if (isAbsolute(f) || f === '') {
+    abs = f
+  } else if (self.changedCwd) {
+    abs = path.resolve(self.cwd, f)
+  } else {
+    abs = path.resolve(f)
+  }
+
+  if (process.platform === 'win32')
+    abs = abs.replace(/\\/g, '/')
+
+  return abs
+}
+
+
+// Return true, if pattern ends with globstar '**', for the accompanying parent directory.
+// Ex:- If node_modules/** is the pattern, add 'node_modules' to ignore list along with it's contents
+function isIgnored (self, path) {
+  if (!self.ignore.length)
+    return false
+
+  return self.ignore.some(function(item) {
+    return item.matcher.match(path) || !!(item.gmatcher && item.gmatcher.match(path))
+  })
+}
+
+function childrenIgnored (self, path) {
+  if (!self.ignore.length)
+    return false
+
+  return self.ignore.some(function(item) {
+    return !!(item.gmatcher && item.gmatcher.match(path))
+  })
+}
+
+
+/***/ }),
+/* 345 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var wrappy = __webpack_require__(346)
+var reqs = Object.create(null)
+var once = __webpack_require__(347)
+
+module.exports = wrappy(inflight)
+
+function inflight (key, cb) {
+  if (reqs[key]) {
+    reqs[key].push(cb)
+    return null
+  } else {
+    reqs[key] = [cb]
+    return makeres(key)
+  }
+}
+
+function makeres (key) {
+  return once(function RES () {
+    var cbs = reqs[key]
+    var len = cbs.length
+    var args = slice(arguments)
+
+    // XXX It's somewhat ambiguous whether a new callback added in this
+    // pass should be queued for later execution if something in the
+    // list of callbacks throws, or if it should just be discarded.
+    // However, it's such an edge case that it hardly matters, and either
+    // choice is likely as surprising as the other.
+    // As it happens, we do go ahead and schedule it for later execution.
+    try {
+      for (var i = 0; i < len; i++) {
+        cbs[i].apply(null, args)
+      }
+    } finally {
+      if (cbs.length > len) {
+        // added more in the interim.
+        // de-zalgo, just in case, but don't call again.
+        cbs.splice(0, len)
+        process.nextTick(function () {
+          RES.apply(null, args)
+        })
+      } else {
+        delete reqs[key]
+      }
+    }
+  })
+}
+
+function slice (args) {
+  var length = args.length
+  var array = []
+
+  for (var i = 0; i < length; i++) array[i] = args[i]
+  return array
+}
+
+
+/***/ }),
+/* 346 */
+/***/ (function(module, exports) {
+
+// Returns a wrapper function that returns a wrapped callback
+// The wrapper function should do some stuff, and return a
+// presumably different callback function.
+// This makes sure that own properties are retained, so that
+// decorations and such are not lost along the way.
+module.exports = wrappy
+function wrappy (fn, cb) {
+  if (fn && cb) return wrappy(fn)(cb)
+
+  if (typeof fn !== 'function')
+    throw new TypeError('need wrapper function')
+
+  Object.keys(fn).forEach(function (k) {
+    wrapper[k] = fn[k]
+  })
+
+  return wrapper
+
+  function wrapper() {
+    var args = new Array(arguments.length)
+    for (var i = 0; i < args.length; i++) {
+      args[i] = arguments[i]
+    }
+    var ret = fn.apply(this, args)
+    var cb = args[args.length-1]
+    if (typeof ret === 'function' && ret !== cb) {
+      Object.keys(cb).forEach(function (k) {
+        ret[k] = cb[k]
+      })
+    }
+    return ret
+  }
+}
+
+
+/***/ }),
+/* 347 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var wrappy = __webpack_require__(346)
+module.exports = wrappy(once)
+module.exports.strict = wrappy(onceStrict)
+
+once.proto = once(function () {
+  Object.defineProperty(Function.prototype, 'once', {
+    value: function () {
+      return once(this)
+    },
+    configurable: true
+  })
+
+  Object.defineProperty(Function.prototype, 'onceStrict', {
+    value: function () {
+      return onceStrict(this)
+    },
+    configurable: true
+  })
+})
+
+function once (fn) {
+  var f = function () {
+    if (f.called) return f.value
+    f.called = true
+    return f.value = fn.apply(this, arguments)
+  }
+  f.called = false
+  return f
+}
+
+function onceStrict (fn) {
+  var f = function () {
+    if (f.called)
+      throw new Error(f.onceError)
+    f.called = true
+    return f.value = fn.apply(this, arguments)
+  }
+  var name = fn.name || 'Function wrapped with `once`'
+  f.onceError = name + " shouldn't be called more than once"
+  f.called = false
+  return f
+}
+
+
+/***/ }),
+/* 348 */
 /***/ (function(module) {
 
-module.exports = {"name":"coc.nvim","version":"0.0.67","description":"LSP based intellisense engine for neovim & vim8.","main":"./lib/index.js","bin":"./bin/server.js","scripts":{"clean":"rimraf lib build","lint":"tslint -c tslint.json -p .","build":"tsc -p tsconfig.json","watch":"tsc -p tsconfig.json --watch true --sourceMap","test":"node --trace-warnings node_modules/.bin/jest --runInBand --detectOpenHandles --forceExit","test-build":"node --trace-warnings node_modules/.bin/jest --runInBand --coverage --forceExit","prepare":"npm-run-all clean build","release":"pkg . --out-path ./build"},"repository":{"type":"git","url":"git+https://github.com/neoclide/coc.nvim.git"},"keywords":["complete","neovim"],"author":"Qiming Zhao <chemzqm@gmail.com>","license":"MIT","bugs":{"url":"https://github.com/neoclide/coc.nvim/issues"},"homepage":"https://github.com/neoclide/coc.nvim#readme","jest":{"globals":{"__TEST__":true},"watchman":false,"clearMocks":true,"globalSetup":"./jest.js","testEnvironment":"node","moduleFileExtensions":["ts","tsx","json","js"],"transform":{"^.+\\.tsx?$":"ts-jest"},"testRegex":"src/__tests__/.*\\.(test|spec)\\.ts$","coverageDirectory":"./coverage/"},"devDependencies":{"@chemzqm/tslint-config":"^1.0.18","@types/debounce":"^3.0.0","@types/fb-watchman":"^2.0.0","@types/find-up":"^2.1.1","@types/glob":"^7.1.1","@types/jest":"^24.0.11","@types/minimatch":"^3.0.3","@types/node":"^11.13.5","@types/semver":"^6.0.0","@types/uuid":"^3.4.4","@types/which":"^1.3.1","colors":"^1.3.3","jest":"24.7.1","npm-run-all":"^4.1.5","rimraf":"^2.6.3","ts-jest":"^24.0.2","tslint":"^5.16.0","typescript":"3.4.4","vscode-languageserver":"^5.3.0-next.5"},"dependencies":{"@chemzqm/neovim":"5.1.3","binary-search":"1.3.5","debounce":"^1.2.0","fast-diff":"^1.2.0","fb-watchman":"^2.0.0","find-up":"^3.0.0","glob":"^7.1.3","isuri":"^2.0.3","jsonc-parser":"^2.1.0","log4js":"^4.1.0","minimatch":"^3.0.4","semver":"^6.0.0","tslib":"^1.9.3","uuid":"^3.3.2","vscode-languageserver-protocol":"^3.15.0-next.4","vscode-languageserver-types":"^3.15.0-next.1","vscode-uri":"^1.0.6","which":"^1.3.1"}};
+module.exports = {"name":"coc.nvim","version":"0.0.70","description":"LSP based intellisense engine for neovim & vim8.","main":"./lib/index.js","bin":"./bin/server.js","scripts":{"clean":"rimraf lib build","lint":"tslint -c tslint.json -p .","build":"tsc -p tsconfig.json","watch":"tsc -p tsconfig.json --watch true --sourceMap","test":"node --trace-warnings node_modules/.bin/jest --runInBand --detectOpenHandles --forceExit","test-build":"node --trace-warnings node_modules/.bin/jest --runInBand --coverage --forceExit","prepare":"npm-run-all clean build","release":"pkg . --out-path ./build"},"repository":{"type":"git","url":"git+https://github.com/neoclide/coc.nvim.git"},"keywords":["complete","neovim"],"author":"Qiming Zhao <chemzqm@gmail.com>","license":"MIT","bugs":{"url":"https://github.com/neoclide/coc.nvim/issues"},"homepage":"https://github.com/neoclide/coc.nvim#readme","jest":{"globals":{"__TEST__":true},"watchman":false,"clearMocks":true,"globalSetup":"./jest.js","testEnvironment":"node","moduleFileExtensions":["ts","tsx","json","js"],"transform":{"^.+\\.tsx?$":"ts-jest"},"testRegex":"src/__tests__/.*\\.(test|spec)\\.ts$","coverageDirectory":"./coverage/"},"devDependencies":{"@chemzqm/tslint-config":"^1.0.18","@types/debounce":"^3.0.0","@types/fb-watchman":"^2.0.0","@types/find-up":"^2.1.1","@types/glob":"^7.1.1","@types/jest":"^24.0.13","@types/minimatch":"^3.0.3","@types/node":"^12.0.7","@types/semver":"^6.0.0","@types/uuid":"^3.4.4","@types/which":"^1.3.1","colors":"^1.3.3","jest":"24.8.0","npm-run-all":"^4.1.5","rimraf":"^2.6.3","ts-jest":"^24.0.2","tslint":"^5.17.0","typescript":"3.5.1","vscode-languageserver":"^5.3.0-next.7"},"dependencies":{"@chemzqm/neovim":"5.1.7","binary-search":"1.3.5","debounce":"^1.2.0","fast-diff":"^1.2.0","fb-watchman":"^2.0.0","find-up":"^4.0.0","glob":"^7.1.4","isuri":"^2.0.3","jsonc-parser":"^2.1.0","log4js":"^4.3.1","minimatch":"^3.0.4","semver":"^6.1.1","tslib":"^1.10.0","uuid":"^3.3.2","vscode-languageserver-protocol":"^3.15.0-next.5","vscode-languageserver-types":"^3.15.0-next.1","vscode-uri":"^2.0.1","which":"^1.3.1"}};
 
 /***/ })
 /******/ ]);

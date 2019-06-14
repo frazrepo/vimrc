@@ -9,7 +9,7 @@ export default class Prompt {
   private cusorIndex = 0
   private _input = ''
   private _matcher: Matcher | ''
-  private _mode: ListMode
+  private _mode: ListMode = 'insert'
   private interactive = false
 
   private _onDidChangeInput = new Emitter<string>()
@@ -53,7 +53,8 @@ export default class Prompt {
       this._mode = opts.mode
       this._matcher = opts.interactive ? '' : opts.matcher
     }
-    this.nvim.callTimer('coc#list#start_prompt', [], true)
+    let fn = workspace.isVim ? 'coc#list#prompt_start' : 'coc#list#start_prompt'
+    this.nvim.call(fn, [], true)
     this.drawPrompt()
   }
 
@@ -182,6 +183,18 @@ export default class Prompt {
     let pre = input.slice(0, cusorIndex)
     let post = input.slice(cusorIndex)
     this._input = `${pre}${ch}${post}`
+    this.drawPrompt()
+    this._onDidChangeInput.fire(this._input)
+  }
+
+  public async paste(): Promise<void> {
+    let { cusorIndex, input } = this
+    let text = await this.nvim.eval('@*') as string
+    text = text.replace(/\n/g, '')
+    this.cusorIndex = cusorIndex + text.length
+    let pre = input.slice(0, cusorIndex)
+    let post = input.slice(cusorIndex)
+    this._input = `${pre}${text}${post}`
     this.drawPrompt()
     this._onDidChangeInput.fire(this._input)
   }

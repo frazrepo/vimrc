@@ -4,7 +4,7 @@ import os from 'os'
 import path from 'path'
 import { Disposable, Emitter } from 'vscode-languageserver-protocol'
 import { CreateFile, DeleteFile, Location, Position, Range, RenameFile, TextDocumentEdit, TextEdit, VersionedTextDocumentIdentifier, WorkspaceEdit } from 'vscode-languageserver-types'
-import { default as URI, default as Uri } from 'vscode-uri'
+import { URI } from 'vscode-uri'
 import events from '../../events'
 import { TextDocumentContentProvider } from '../../provider'
 import { ConfigurationTarget } from '../../types'
@@ -149,6 +149,19 @@ describe('workspace applyEdits', () => {
     let documentChanges = [TextDocumentEdit.create(versioned, [edit])]
     let res = await workspace.applyEdit({ documentChanges })
     expect(res).toBe(false)
+  })
+
+  it('should adjust cursor position after applyEdits', async () => {
+    let doc = await helper.createDocument()
+    let pos = await workspace.getCursorPosition()
+    expect(pos).toEqual({ line: 0, character: 0 })
+    let edit = TextEdit.insert(Position.create(0, 0), 'foo\n')
+    let versioned = VersionedTextDocumentIdentifier.create(doc.uri, null)
+    let documentChanges = [TextDocumentEdit.create(versioned, [edit])]
+    let res = await workspace.applyEdit({ documentChanges })
+    expect(res).toBe(true)
+    pos = await workspace.getCursorPosition()
+    expect(pos).toEqual({ line: 1, character: 0 })
   })
 
   it('should support null version of documentChanges', async () => {
@@ -417,7 +430,7 @@ describe('workspace utility', () => {
 
   it('should loadFile', async () => {
     let doc = await helper.createDocument()
-    let newFile = Uri.file(path.join(__dirname, 'abc')).toString()
+    let newFile = URI.file(path.join(__dirname, 'abc')).toString()
     let document = await workspace.loadFile(newFile)
     let bufnr = await nvim.call('bufnr', '%')
     expect(document.uri.endsWith('abc')).toBe(true)
@@ -618,8 +631,8 @@ describe('workspace utility', () => {
     await buf.setLines(['foo', 'bar'], { start: 0, end: -1, strictIndexing: false })
     await workspace.jumpTo(uri, { line: 1, character: 1 })
     let pos = await nvim.call('getcurpos')
-    expect(pos[1]).toBe(2)
-    expect(pos[2]).toBe(2)
+    expect(pos.slice(1, 3)).toEqual([2, 2])
+    await nvim.command('bd!')
   })
 
   it('should jumpTo uri without normalize', async () => {
@@ -672,12 +685,12 @@ describe('workspace utility', () => {
   it('should not findUp from file in other directory', async () => {
     await nvim.command(`edit ${path.join(os.tmpdir(), 'foo')}`)
     let filepath = await workspace.findUp('tsconfig.json')
-    expect(filepath).toBeNull()
+    expect(filepath).toBeUndefined()
   })
 
   it('should resolveRootPath', async () => {
     let file = path.join(__dirname, 'foo')
-    let uri = Uri.file(file)
+    let uri = URI.file(file)
     let res = await workspace.resolveRootFolder(uri, ['.git'])
     expect(res).toMatch('coc.nvim')
   })
@@ -729,7 +742,7 @@ describe('workspace utility', () => {
   })
 
   it('should regist autocmd', async () => {
-    let event
+    let event: any
     let disposable = workspace.registerAutocmd({
       event: 'TextYankPost',
       arglist: ['v:event'],
@@ -876,7 +889,7 @@ describe('workspace events', () => {
 
   it('should fire onWillSaveUntil', async () => {
     let doc = await helper.createDocument()
-    let filepath = Uri.parse(doc.uri).fsPath
+    let filepath = URI.parse(doc.uri).fsPath
     let fn = jest.fn()
     let disposable = workspace.onWillSaveUntil(event => {
       let promise = new Promise<TextEdit[]>(resolve => {

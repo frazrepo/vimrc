@@ -49,11 +49,6 @@ describe('extensions', () => {
     expect(list.length).toBeGreaterThan(0)
   })
 
-  it('should commands from extensions', () => {
-    let { commands } = extensions
-    expect(Object.keys(commands).length).toBeGreaterThan(0)
-  })
-
   it('should get extensions stat', async () => {
     let stats = await extensions.getExtensionStates()
     expect(stats.length).toBeGreaterThan(0)
@@ -175,8 +170,8 @@ describe('extensions active events', () => {
   it('should activate on workspace contains', async () => {
     let ext = createExtension('workspaceContains:package.json')
     let root = path.resolve(__dirname, '../../..')
-    await nvim.command(`cd ${root}`)
-    await helper.wait(30)
+    await nvim.command(`edit ${path.join(root, 'file.js')}`)
+    await helper.wait(100)
     expect(ext.isActive).toBe(true)
   })
 

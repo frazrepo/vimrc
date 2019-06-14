@@ -1,10 +1,8 @@
 import { NeovimClient as Neovim } from '@chemzqm/neovim'
 import { EventEmitter } from 'events'
 import https from 'https'
-import os from 'os'
-import path from 'path'
 import semver from 'semver'
-import { Location } from 'vscode-languageserver-types'
+import { Location, CodeActionKind } from 'vscode-languageserver-types'
 import commandManager from './commands'
 import completion from './completion'
 import diagnosticManager from './diagnostic/manager'
@@ -35,6 +33,9 @@ export default class Plugin extends EventEmitter {
     })
     this.addMethod('listNames', () => {
       return listManager.names
+    })
+    this.addMethod('codeActionRange', (start, end, only) => {
+      return this.handler.codeActionRange(start, end, only)
     })
     this.addMethod('rootPatterns', bufnr => {
       let doc = workspace.getDocument(bufnr)
@@ -75,6 +76,9 @@ export default class Plugin extends EventEmitter {
     this.addMethod('sendRequest', (id: string, method: string, params?: any) => {
       return services.sendRequest(id, method, params)
     })
+    this.addMethod('registNotification', async (id: string, method: string) => {
+      await services.registNotification(id, method)
+    })
     this.addMethod('doAutocmd', async (id: number, ...args: []) => {
       let autocmd = (workspace as any).autocmds.get(id) as Autocmd
       if (autocmd) await Promise.resolve(autocmd.callback.apply(autocmd.thisArg, args))
@@ -98,18 +102,18 @@ export default class Plugin extends EventEmitter {
         await extensions.onExtensionInstall(name)
       }
     })
-    this.addMethod('openLog', async () => {
-      let file = process.env.NVIM_COC_LOG_FILE || path.join(os.tmpdir(), 'coc-nvim.log')
-      let escaped = await this.nvim.call('fnameescape', file)
-      await this.nvim.command(`edit ${escaped}`)
+    this.addMethod('openLog', () => {
+      let file = logger.getLogFile()
+      nvim.call(`coc#util#open_file`, ['edit', file], true)
     })
     this.addMethod('doKeymap', async (key: string, defaultReturn = '') => {
-      let fn = workspace.keymaps.get(key)
+      let [fn, repeat] = workspace.keymaps.get(key)
       if (!fn) {
         logger.error(`keymap for ${key} not found`)
         return defaultReturn
       }
       let res = await Promise.resolve(fn())
+      if (repeat) await nvim.command(`silent! call repeat#set("\\<Plug>(coc-${key})", -1)`)
       return res || defaultReturn
     })
     this.addMethod('registExtensions', async (...folders: string[]) => {
@@ -130,6 +134,14 @@ export default class Plugin extends EventEmitter {
     })
   }
 
+  public addCommand(cmd: { id: string, cmd: string, title?: string }): void {
+    let id = `vim.${cmd.id}`
+    commandManager.registerCommand(id, async () => {
+      await this.nvim.command(cmd.cmd)
+    })
+    if (cmd.title) commandManager.titles.set(id, cmd.title)
+  }
+
   public async init(): Promise<void> {
     let { nvim } = this
     try {
@@ -148,8 +160,18 @@ export default class Plugin extends EventEmitter {
       nvim.setVar('coc_service_initialized', 1, true)
       nvim.call('coc#_init', [], true)
       this._ready = true
+      let cmds = await nvim.getVar('coc_vim_commands') as any[]
+      if (cmds && cmds.length) {
+        for (let cmd of cmds) {
+          this.addCommand(cmd)
+        }
+      }
       logger.info(`coc ${this.version} initialized with node: ${process.version}`)
       this.emit('ready')
+      if (workspace.isVim) {
+        let updatetime = await nvim.getOption('updatetime') as number
+        if (updatetime > 1000) workspace.showMessage(`Option 'updatetime' is ${updatetime}, position jump can be quite slow, consider make it <= 300`, 'warning')
+      }
     } catch (e) {
       this._ready = false
       console.error(`Error on initialize: ${e.stack}`) // tslint:disable-line
@@ -159,8 +181,7 @@ export default class Plugin extends EventEmitter {
     workspace.onDidOpenTextDocument(async doc => {
       if (!doc.uri.endsWith('coc-settings.json')) return
       if (extensions.has('coc-json') || extensions.isDisabled('coc-json')) return
-      let res = await workspace.showPrompt('Install coc-json for json intellisense?')
-      if (res) await this.nvim.command('CocInstall coc-json')
+      workspace.showMessage(`Run :CocInstall coc-json for json intellisense`, 'more')
     })
   }
 
@@ -246,12 +267,11 @@ export default class Plugin extends EventEmitter {
     channel.appendLine('term: ' + (process.env.TERM_PROGRAM || process.env.TERM))
     channel.appendLine('platform: ' + process.platform)
     channel.appendLine('')
-    channel.appendLine('## Error messages')
+    channel.appendLine('## Messages')
     let msgs = await this.nvim.call('coc#rpc#get_errors') as string[]
     channel.append(msgs.join('\n'))
     channel.appendLine('')
     for (let ch of (workspace as any).outputChannels.values()) {
-      logger.debug('name:', ch.name)
       if (ch.name !== 'info') {
         channel.appendLine(`## Output channel: ${ch.name}\n`)
         channel.append(ch.content)
@@ -326,8 +346,7 @@ export default class Plugin extends EventEmitter {
           break
         }
         case 'fold': {
-          await handler.fold(args[1])
-          break
+          return await handler.fold(args[1])
         }
         case 'startCompletion':
           await completion.startCompletion(args[1])
@@ -352,32 +371,25 @@ export default class Plugin extends EventEmitter {
         case 'diagnosticList':
           return diagnosticManager.getDiagnosticList()
         case 'jumpDefinition':
-          await handler.gotoDefinition(args[1])
-          break
+          return await handler.gotoDefinition(args[1])
         case 'jumpDeclaration':
-          await handler.gotoDeclaration(args[1])
-          break
+          return await handler.gotoDeclaration(args[1])
         case 'jumpImplementation':
-          await handler.gotoImplementation(args[1])
-          break
+          return await handler.gotoImplementation(args[1])
         case 'jumpTypeDefinition':
-          await handler.gotoTypeDefinition(args[1])
-          break
+          return await handler.gotoTypeDefinition(args[1])
         case 'jumpReferences':
-          await handler.gotoReferences(args[1])
-          break
+          return await handler.gotoReferences(args[1])
         case 'doHover':
-          await handler.onHover()
-          break
+          return await handler.onHover()
         case 'showSignatureHelp':
-          await handler.showSignatureHelp()
-          break
+          return await handler.showSignatureHelp()
         case 'documentSymbols':
           return await handler.getDocumentSymbols()
         case 'selectionRanges':
           return await handler.getSelectionRanges()
         case 'rename':
-          await handler.rename()
+          await handler.rename(args[1])
           return
         case 'workspaceSymbols':
           this.nvim.command('CocList -I symbols', true)
@@ -393,17 +405,21 @@ export default class Plugin extends EventEmitter {
         case 'toggleService':
           return services.toggle(args[1])
         case 'codeAction':
-          return handler.doCodeAction(args[1])
+          return handler.doCodeAction(args[1], args[2])
+        case 'doCodeAction':
+          return await handler.applyCodeAction(args[1])
+        case 'codeActions':
+          return await handler.getCurrentCodeActions(args[1])
+        case 'quickfixes':
+          return await handler.getCurrentCodeActions(args[1], [CodeActionKind.QuickFix])
         case 'codeLensAction':
           return handler.doCodeLensAction()
         case 'runCommand':
           return await handler.runCommand(...args.slice(1))
-        case 'quickfixes':
-          return await handler.getQuickfixActions()
         case 'doQuickfix':
           return await handler.doQuickfix()
-        case 'doCodeAction':
-          return await handler.applyCodeAction(args[1])
+        case 'repeatCommand':
+          return await commandManager.repeatCommand()
         case 'extensionStats':
           return await extensions.getExtensionStates()
         case 'activeExtension':

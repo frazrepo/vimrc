@@ -8,12 +8,14 @@ import Source from '../model/source'
 import { CompleteOption, CompleteResult, ISource, VimCompleteItem } from '../types'
 import { statAsync } from '../util/fs'
 import { byteSlice } from '../util/string'
-// const logger = require('../util/logger')('source-file')
+const logger = require('../util/logger')('source-file')
 const pathRe = /(?:\.{0,2}|~|([\w.@()-]+))\/(?:[\w.@()-]+\/)*(?:[\w.@()-])*$/
 
 interface PathOption {
   pathstr: string
   part: string
+  startcol: number
+  input: string
 }
 
 export default class File extends Source {
@@ -34,7 +36,8 @@ export default class File extends Source {
       if (pathstr.startsWith('~')) {
         pathstr = os.homedir() + pathstr.slice(1)
       }
-      return { pathstr, part: ms[1] }
+      let input = ms[0].match(/[^/]*$/)[0]
+      return { pathstr, part: ms[1], startcol: colnr - input.length - 1, input }
     }
     return null
   }
@@ -85,10 +88,10 @@ export default class File extends Source {
   }
 
   public async doComplete(opt: CompleteOption): Promise<CompleteResult> {
-    let { input, col, filepath } = opt
+    let { col, filepath } = opt
     let option = this.getPathOption(opt)
     if (!option) return null
-    let { pathstr, part } = option
+    let { pathstr, part, startcol, input } = option
     let dirname = path.dirname(filepath)
     let ext = path.extname(path.basename(filepath))
     let cwd = await this.nvim.call('getcwd', [])
@@ -109,7 +112,6 @@ export default class File extends Source {
     if (!root) return null
     let items = await this.getItemsFromRoot(pathstr, root)
     let trimExt = this.trimSameExts.indexOf(ext) != -1
-    let startcol = this.fixStartcol(opt, ['-', '@', '.'])
     let first = input[0]
     if (first && col == startcol) items = items.filter(o => o.word[0] === first)
     return {

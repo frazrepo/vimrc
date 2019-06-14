@@ -125,12 +125,16 @@ function! coc#util#win_position()
 endfunction
 
 function! coc#util#close_popup()
-  for winnr in range(1, winnr('$'))
-    let popup = getwinvar(winnr, 'popup')
-    if !empty(popup)
-      exe winnr.'close!'
-    endif
-  endfor
+  if s:is_vim
+    pclose
+  else
+    for winnr in range(1, winnr('$'))
+      let popup = getwinvar(winnr, 'popup')
+      if !empty(popup)
+        exe winnr.'close!'
+      endif
+    endfor
+  endif
 endfunction
 
 function! coc#util#version()
@@ -140,6 +144,9 @@ endfunction
 
 function! coc#util#valid_state()
   if s:is_vim && mode() !=# 'n'
+    return 0
+  endif
+  if get(g:, 'coc_smartf_activated', 0)
     return 0
   endif
   if get(g: , 'EasyMotion_loaded', 0)
@@ -175,30 +182,19 @@ function! coc#util#remote_fns(name)
   return res
 endfunction
 
-function! coc#util#binary()
-  let platform = coc#util#platform()
-  if platform ==# 'windows'
-    return s:root.'/build/coc-win.exe'
-  elseif platform ==# 'mac'
-    return s:root.'/build/coc-macos'
-  endif
-  return s:root.'/build/coc-linux'
-endfunction
-
 function! coc#util#job_command()
   let node = get(g:, 'coc_node_path', 'node')
   if !executable(node)
-    echohl Error | echon '[coc.nvim] '.node.' is not executable' | echohl None
+    echohl Error | echom '[coc.nvim] '.node.' is not executable, checkout https://nodejs.org/en/download/' | echohl None
     return
   endif
   let file = s:root.'/build/index.js'
-  "let binary = coc#util#binary()
   if filereadable(file) && !get(g:, 'coc_force_debug', 0)
     return [node] + get(g:, 'coc_node_args', ['--no-warnings']) + [s:root.'/build/index.js']
   endif
   let file = s:root.'/lib/attach.js'
   if !filereadable(file)
-    echohl Error | echon '[coc.nvim] compiled javascript file not found!' | echohl None
+    echohl Error | echom '[coc.nvim] compiled javascript file not found!' | echohl None
     return
   endif
   return [node] + get(g:, 'coc_node_args', ['--no-warnings']) + [s:root.'/bin/server.js']
@@ -212,24 +208,48 @@ function! coc#util#echo_hover(msg)
 endfunction
 
 function! coc#util#execute(cmd)
-  exe a:cmd
+  silent exe a:cmd
   if &l:filetype ==# ''
     filetype detect
+  endif
+  if s:is_vim
+    redraw!
+  endif
+endfunction
+
+function! coc#util#jump(cmd, filepath, ...) abort
+  let file = fnamemodify(a:filepath, ":~:.")
+  if a:cmd =~# '^tab'
+    exe a:cmd.' '.fnameescape(file)
+    if !empty(get(a:, 1, []))
+      call cursor(a:1[0], a:1[1])
+    endif
+  else
+    if !empty(get(a:, 1, []))
+      exe a:cmd.' +call\ cursor('.a:1[0].','.a:1[1].')'.' '.fnameescape(file)
+    else
+      exe a:cmd.' '.fnameescape(file)
+    endif
+  endif
+  if &l:filetype ==# ''
+    filetype detect
+  endif
+  if s:is_vim
+    redraw
   endif
 endfunction
 
 function! coc#util#echo_messages(hl, msgs)
   if empty(a:msgs) | return | endif
-  if pumvisible() | return | endif
+  if a:hl !~# 'Error' && (mode() !~# '\v^(i|n)$')
+    return
+  endif
   execute 'echohl '.a:hl
-  let msgs = copy(a:msgs)
+  let msgs = filter(copy(a:msgs), '!empty(v:val)')
   for msg in msgs
-    if !empty(msg)
-      echom msg
-    endif
+    echom msg
   endfor
   echohl None
-  redraw
 endfunction
 
 function! coc#util#echo_lines(lines)
@@ -261,13 +281,26 @@ function! coc#util#get_bufoptions(bufnr) abort
   return {
         \ 'bufname': bufname,
         \ 'eol': getbufvar(a:bufnr, '&eol'),
+        \ 'variables': s:variables(a:bufnr),
         \ 'fullpath': empty(bufname) ? '' : fnamemodify(bufname, ':p'),
         \ 'buftype': getbufvar(a:bufnr, '&buftype'),
         \ 'filetype': getbufvar(a:bufnr, '&filetype'),
         \ 'iskeyword': getbufvar(a:bufnr, '&iskeyword'),
         \ 'changedtick': getbufvar(a:bufnr, 'changedtick'),
         \ 'rootPatterns': getbufvar(a:bufnr, 'coc_root_patterns', v:null),
+        \ 'additionalKeywords': getbufvar(a:bufnr, 'coc_additional_keywords', []),
         \}
+endfunction
+
+function! s:variables(bufnr) abort
+  let info = getbufinfo({'bufnr':a:bufnr, 'variables': 1})
+  let variables = copy(info[0]['variables'])
+  for key in keys(variables)
+    if key !~# '\v^coc'
+      unlet variables[key]
+    endif
+  endfor
+  return variables
 endfunction
 
 function! coc#util#root_patterns()
@@ -279,15 +312,16 @@ function! coc#util#on_error(msg) abort
 endfunction
 
 function! coc#util#preview_info(info, ...) abort
+  let filetype = get(a:, 1, 'markdown')
   pclose
   keepalt new +setlocal\ previewwindow|setlocal\ buftype=nofile|setlocal\ noswapfile|setlocal\ wrap [Document]
   setl bufhidden=wipe
   setl nobuflisted
   setl nospell
-  setl filetype=markdown
+  exe 'setl filetype='.filetype
   setl conceallevel=2
   setl nofoldenable
-  let lines = split(a:info, "\n")
+  let lines = a:info
   call append(0, lines)
   exe "normal! z" . len(lines) . "\<cr>"
   exe "normal! gg"
@@ -334,11 +368,15 @@ function! coc#util#get_complete_option()
   if disabled | return | endif
   let blacklist = get(b:, 'coc_suggest_blacklist', [])
   let pos = getcurpos()
-  let line = getline(pos[1])
   let l:start = pos[2] - 1
-  while l:start > 0 && line[l:start - 1] =~# '\k'
-    let l:start -= 1
-  endwhile
+  let line = getline(pos[1])
+  for char in reverse(split(line[0: l:start - 1], '\zs'))
+    if l:start > 0 && char =~# '\k'
+      let l:start = l:start - strlen(char)
+    else
+      break
+    endif
+  endfor
   let input = pos[2] == 1 ? '' : line[l:start : pos[2] - 2]
   if !empty(blacklist) && index(blacklist, input) >= 0
     return
@@ -367,7 +405,7 @@ function! coc#util#with_callback(method, args, cb)
       call a:cb(v:exception)
     endtry
   endfunction
-  let timeout = s:is_vim ? 500 : 0
+  let timeout = s:is_vim ? 10 : 0
   call timer_start(timeout, {-> s:Cb() })
 endfunction
 
@@ -522,6 +560,7 @@ function! coc#util#vim_info()
         \ 'workspaceFolders': get(g:, 'WorkspaceFolders', v:null),
         \ 'background': &background,
         \ 'runtimepath': &runtimepath,
+        \ 'locationlist': get(g:,'coc_enable_locationlist', 1),
         \}
 endfunction
 
@@ -604,7 +643,7 @@ function! coc#util#open_url(url)
   endif
   call system('cmd /c start "" /b '. substitute(a:url, '&', '^&', 'g'))
   if v:shell_error
-    echohl Error | echon 'Failed to open '.a:url | echohl None
+    echohl Error | echom 'Failed to open '.a:url | echohl None
     return
   endif
 endfunction
@@ -674,20 +713,20 @@ function! coc#util#update_extensions(...) abort
   let useTerminal = get(a:, 1, 0)
   let yarncmd = coc#util#yarn_cmd()
   if empty(yarncmd)
-    echohl Error | echon '[coc.nvim] yarn command not found!' | echohl None
+    echohl Error | echom '[coc.nvim] yarn command not found!' | echohl None
   endif
   let dir = coc#util#extension_root()
   if !isdirectory(dir)
-    echohl Error | echon '[coc.nvim] extension root '.dir.' not found!' | echohl None
+    echohl Error | echom '[coc.nvim] extension root '.dir.' not found!' | echohl None
   endif
   if !useTerminal
     let cwd = getcwd()
     exe 'lcd '.dir
-    exe '!'.yarncmd.' upgrade --latest --ignore-engines'
+    exe '!'.yarncmd.' upgrade --latest --ignore-engines --ignore-scripts'
     exe 'lcd '.cwd
   else
     call coc#util#open_terminal({
-          \ 'cmd': yarncmd.' upgrade --latest --ignore-engines',
+          \ 'cmd': yarncmd.' upgrade --latest --ignore-engines --ignore-scripts',
           \ 'autoclose': 1,
           \ 'cwd': dir,
           \})
@@ -700,10 +739,10 @@ function! coc#util#install_extension(args) abort
   if empty(yarncmd)
     if get(s:, 'install_yarn', 0) == 0 && !s:is_win
       let s:install_yarn = 1
-      echohl MoreMsg | echon 'Installing yarn' | echohl None
+      echohl MoreMsg | echom 'Installing yarn' | echohl None
       exe '!curl --compressed -o- -L https://yarnpkg.com/install.sh | sh +m'
     else
-      echohl Error | echon "[coc.nvim] yarn not found, visit https://yarnpkg.com/en/docs/install for installation." | echohl None
+      echohl Error | echom "[coc.nvim] yarn not found, visit https://yarnpkg.com/en/docs/install for installation." | echohl None
     endif
     return
   endif
@@ -748,7 +787,7 @@ function! coc#util#init_extension_root(root) abort
     let file = a:root.'/package.json'
     let res = writefile(['{"dependencies":{}}'], file)
     if res == -1
-      echohl Error | echon 'Create package.json failed: '.v:errmsg | echohl None
+      echohl Error | echom 'Create package.json failed: '.v:errmsg | echohl None
       return -1
     endif
   endif
@@ -768,7 +807,7 @@ endfunction
 function! coc#util#update()
   let yarncmd = coc#util#yarn_cmd()
   if empty(yarncmd)
-    echohl Error | echon "[coc.nvim] yarn not found, visit https://yarnpkg.com/en/docs/install for installation." | echohl None
+    echohl Error | echom "[coc.nvim] yarn not found, visit https://yarnpkg.com/en/docs/install for installation." | echohl None
     return
   endif
   let dir = coc#util#extension_root()
@@ -814,13 +853,13 @@ function! coc#util#pick_color(default_color)
   let default_color = printf('#%02x%02x%02x', a:default_color[0], a:default_color[1], a:default_color[2])
   let rgb = []
   if !has('python')
-    echohl Error | echon 'python support required, checkout :echo has(''python'')' | echohl None
+    echohl Error | echom 'python support required, checkout :echo has(''python'')' | echohl None
     return
   endif
   try
     execute 'py import gtk'
   catch /.*/
-    echohl Error | echon 'python gtk module not found' | echohl None
+    echohl Error | echom 'python gtk module not found' | echohl None
     return
   endtry
 python << endpython
@@ -878,8 +917,26 @@ endfunction
 function! s:system(cmd)
   let output = system(a:cmd)
   if v:shell_error && output !=# ""
-    echohl Error | echon output | echohl None
+    echohl Error | echom output | echohl None
     return
   endif
   return output
+endfunction
+
+function! coc#util#pclose()
+  for i in range(1, winnr('$'))
+    if getwinvar(i, '&previewwindow')
+      pclose
+      redraw
+    endif
+  endfor
+endfunction
+
+function! coc#util#init_virtual_hl()
+  let names = ['Error', 'Warning', 'Info', 'Hint']
+  for name in names
+    if !hlexists('Coc'.name.'VirtualText')
+      exe 'hi default link Coc'.name.'VirtualText Coc'.name.'Sign'
+    endif
+  endfor
 endfunction

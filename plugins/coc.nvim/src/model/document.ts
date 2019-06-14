@@ -1,7 +1,7 @@
 import { Buffer, Neovim } from '@chemzqm/neovim'
 import debounce from 'debounce'
 import { DidChangeTextDocumentParams, Emitter, Event, Position, Range, TextDocument, TextEdit, CancellationToken } from 'vscode-languageserver-protocol'
-import Uri from 'vscode-uri'
+import { URI } from 'vscode-uri'
 import { BufferOption, ChangeInfo, Env } from '../types'
 import { diffLines, getChange } from '../util/diff'
 import { isGitIgnored } from '../util/fs'
@@ -27,9 +27,11 @@ export default class Document {
   private nvim: Neovim
   private eol = true
   private attached = false
+  private variables: { [key: string]: any }
   // real current lines
   private lines: string[] = []
   private _filetype: string
+  private _additionalKeywords: string[] = []
   private _uri: string
   private _rootPatterns: string[]
   private _changedtick: number
@@ -51,7 +53,9 @@ export default class Document {
     }, 50)
   }
 
-  private shouldAttach(buftype: string): boolean {
+  public get shouldAttach(): boolean {
+    let { buftype } = this
+    if (this.uri.endsWith('%5BCommand%20Line%5D')) return true
     return buftype == '' || buftype == 'acwrite'
   }
 
@@ -88,7 +92,7 @@ export default class Document {
   }
 
   public get schema(): string {
-    return Uri.parse(this.uri).scheme
+    return URI.parse(this.uri).scheme
   }
 
   public get lineCount(): number {
@@ -101,6 +105,8 @@ export default class Document {
     let opts: BufferOption = await nvim.call('coc#util#get_bufoptions', buffer.id)
     if (opts == null) return false
     let buftype = this.buftype = opts.buftype
+    this.variables = opts.variables
+    this._additionalKeywords = opts.additionalKeywords
     this._changedtick = opts.changedtick
     this._rootPatterns = opts.rootPatterns
     this.eol = opts.eol == 1
@@ -130,20 +136,14 @@ export default class Document {
 
   public setIskeyword(iskeyword: string): void {
     let chars = (this.chars = new Chars(iskeyword))
-    this.buffer.getVar('coc_additional_keywords').then((keywords: string[]) => {
-      if (keywords && keywords.length) {
-        for (let ch of keywords) {
-          chars.addKeyword(ch)
-        }
-        this._words = this.chars.matchKeywords(this.lines.join('\n'))
-      }
-    }, _e => {
-      // noop
-    })
+    for (let ch of this._additionalKeywords) {
+      chars.addKeyword(ch)
+    }
+    this._words = this.chars.matchKeywords(this.lines.join('\n'))
   }
 
   public async attach(): Promise<boolean> {
-    if (this.shouldAttach(this.buftype)) {
+    if (this.shouldAttach) {
       let attached = await this.buffer.attach(false)
       if (!attached) return false
       this.lines = await this.buffer.lines
@@ -152,7 +152,7 @@ export default class Document {
       return true
     }
     if (!this.buffer.isAttached) return
-    this.buffer.listen('lines', (...args) => {
+    this.buffer.listen('lines', (...args: any[]) => {
       this.onChange.apply(this, args)
     })
     this.buffer.listen('detach', async () => {
@@ -329,12 +329,6 @@ export default class Document {
 
   /**
    * Current word for replacement
-   *
-   * @public
-   * @param {Position} position
-   * @param {string} extraChars?
-   * @param {boolean} current? - use current line
-   * @returns {Range}
    */
   public getWordRangeAtPosition(position: Position, extraChars?: string, current = true): Range | null {
     let chars = this.chars.clone()
@@ -367,7 +361,7 @@ export default class Document {
   private gitCheck(): void {
     let { uri } = this
     if (!uri.startsWith('file') || this.buftype != '') return
-    let filepath = Uri.parse(uri).fsPath
+    let filepath = URI.parse(uri).fsPath
     isGitIgnored(filepath).then(isIgnored => {
       this.isIgnored = isIgnored
     }, () => {
@@ -575,11 +569,6 @@ export default class Document {
 
   /**
    * Real current line
-   *
-   * @public
-   * @param {number} line - zero based line number
-   * @param {boolean} current - use current line
-   * @returns {string}
    */
   public getline(line: number, current = true): string {
     if (current) return this.lines[line] || ''
@@ -590,6 +579,11 @@ export default class Document {
   public getDocumentContent(): string {
     let content = this.lines.join('\n')
     return this.eol ? content + '\n' : content
+  }
+
+  public getVar<T>(key: string, defaultValue?: T): T {
+    let val = this.variables[`coc_${key}`]
+    return val === undefined ? defaultValue : val
   }
 
   public get rootPatterns(): string[] | null {

@@ -2,7 +2,8 @@ import { Neovim } from '@chemzqm/neovim'
 import { CancellationToken } from 'vscode-jsonrpc'
 import BasicList from '../../list/basic'
 import manager from '../../list/manager'
-import { ListContext, ListItem, QuickfixItem } from '../../types'
+import workspace from '../../workspace'
+import { ListContext, IList, ListItem, QuickfixItem } from '../../types'
 import helper from '../helper'
 
 class TestList extends BasicList {
@@ -43,10 +44,37 @@ const locations: ReadonlyArray<QuickfixItem> = [{
   text: 'option'
 }]
 
+const lineList: IList = {
+  name: 'lines',
+  actions: [{
+    name: 'open',
+    execute: async item => {
+      await workspace.moveTo({
+        line: (item as ListItem).data.line,
+        character: 0
+      })
+      // noop
+    }
+  }],
+  defaultAction: 'open',
+  async loadItems(_context, _token): Promise<ListItem[]> {
+    let lines = []
+    for (let i = 0; i < 100; i++) {
+      lines.push(i.toString())
+    }
+    return lines.map((line, idx) => {
+      return {
+        label: line,
+        data: { line: idx }
+      }
+    })
+  }
+}
+
 beforeAll(async () => {
   await helper.setup()
   nvim = helper.nvim
-  await nvim.setVar('coc_jump_locations', locations)
+    ; (global as any).locations = locations
 })
 
 afterAll(async () => {
@@ -133,10 +161,26 @@ describe('list insert mappings', () => {
     expect(input).toBe('a')
   })
 
+  it('should move cursor by <PageUp> and <PageDown>', async () => {
+    let disposable = manager.registerList(lineList)
+    await manager.start(['lines'])
+    await helper.wait(60)
+    await nvim.eval('feedkeys("\\<PageDown>", "in")')
+    await helper.wait(60)
+    let line = await nvim.eval('line(".")')
+    expect(line).toBeGreaterThan(1)
+    await nvim.eval('feedkeys("\\<PageUp>", "in")')
+    await helper.wait(60)
+    disposable.dispose()
+  })
+
   it('should scroll window by <C-f> and <C-b>', async () => {
     await manager.start(['location'])
+    await helper.wait(200)
     await nvim.eval('feedkeys("\\<C-f>", "in")')
+    await helper.wait(100)
     await nvim.eval('feedkeys("\\<C-b>", "in")')
+    await helper.wait(100)
   })
 
   it('should change input by <Backspace>', async () => {
@@ -389,7 +433,7 @@ describe('User mappings', () => {
       '<C-d>': 'do:exit',
     })
     await manager.start(['location'])
-    await helper.wait(30)
+    await helper.wait(200)
     await nvim.eval('feedkeys("\\<C-r>", "in")')
     await helper.wait(30)
     expect(manager.isActivated).toBe(true)
@@ -521,5 +565,18 @@ describe('User mappings', () => {
     await helper.wait(30)
     let nr = await nvim.call('tabpagenr')
     expect(nr).toBe(2)
+  })
+
+  it('should insert clipboard to prompt', async () => {
+    helper.updateConfiguration('list.insertMappings', {
+      '<C-r>': 'prompt:paste',
+    })
+    await nvim.command('let @* = "foo"')
+    await manager.start(['location'])
+    await helper.wait(100)
+    await nvim.eval(`feedkeys("\\<C-r>", "in")`)
+    await helper.wait(200)
+    let { input } = manager.prompt
+    expect(input).toMatch('foo')
   })
 })

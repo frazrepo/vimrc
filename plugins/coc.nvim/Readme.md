@@ -17,9 +17,9 @@
 
 Coc is an intellisense engine for vim8 & neovim.
 
-It works on `vim >= 8.1` and `neovim >= 0.3.1`.
+It works on `vim >= 8.0.1453` and `neovim >= 0.3.1`.
 
-It's a completion framework and language server client which supports [extension features of VSCode](https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions)
+It's a completion framework and language server client which supports [extension features of VSCode](https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions).
 
 <img alt="Gif" src="https://user-images.githubusercontent.com/251450/55285193-400a9000-53b9-11e9-8cff-ffe4983c5947.gif" width="60%" />
 
@@ -114,7 +114,7 @@ Below are the reasons that led coc.nvim to build its own engine:
 
 - [Using list](https://github.com/neoclide/coc.nvim/wiki/Using-coc-list)
 
-- [Using configuration file](https://github.com/neoclide/coc.nvim/wiki/Using-configuration-file)
+- [Using configuration file](https://github.com/neoclide/coc.nvim/wiki/Using-the-configuration-file)
 
 - [Using workspaceFolders](https://github.com/neoclide/coc.nvim/wiki/Using-workspaceFolders)
 
@@ -125,6 +125,7 @@ Below are the reasons that led coc.nvim to build its own engine:
 
     - [Dart](https://github.com/neoclide/coc.nvim/wiki/Language-servers#dart)
     - [C/C++/Objective-C](https://github.com/neoclide/coc.nvim/wiki/Language-servers#ccobjective-c)
+    - [Rust](https://github.com/neoclide/coc.nvim/wiki/Language-servers#rust)
     - [Go](https://github.com/neoclide/coc.nvim/wiki/Language-servers#go)
     - [PHP](https://github.com/neoclide/coc.nvim/wiki/Language-servers#php)
     - [Dockerfile](https://github.com/neoclide/coc.nvim/wiki/Language-servers#dockerfile)
@@ -136,8 +137,14 @@ Below are the reasons that led coc.nvim to build its own engine:
     - [Haskell](https://github.com/neoclide/coc.nvim/wiki/Language-servers#haskell)
     - [vim/erb/markdown](https://github.com/neoclide/coc.nvim/wiki/Language-servers#vimerbmarkdown)
     - [Elixir](https://github.com/neoclide/coc.nvim/wiki/Language-servers#elixir)
+    - [Python](https://github.com/neoclide/coc.nvim/wiki/Language-servers#python)
+    - [Ruby](https://github.com/neoclide/coc.nvim/wiki/Language-servers#ruby)
     - [Scala](https://github.com/neoclide/coc.nvim/wiki/Language-servers#scala)
-    - [Tex](https://github.com/neoclide/coc.nvim/wiki/Language-servers#latex)
+    - [Latex](https://github.com/neoclide/coc.nvim/wiki/Language-servers#latex)
+    - [Elm](https://github.com/neoclide/coc.nvim/wiki/Language-servers#elm)
+    - [Fortran](https://github.com/neoclide/coc.nvim/wiki/Language-servers#latex)
+    - [Clojure](https://github.com/neoclide/coc.nvim/wiki/Language-servers#clojure)
+    - [Julia](https://github.com/neoclide/coc.nvim/wiki/Language-servers#julia)
 
 * [Statusline integration](https://github.com/neoclide/coc.nvim/wiki/Statusline-integration)
 
@@ -161,6 +168,7 @@ For other completion sources, check out:
   integration.
 - [coc-powershell](https://github.com/yatli/coc-powershell): PowerShellEditorService integration.
 - [coc-lbdbq](https://github.com/zidhuss/coc-lbdbq): email address completion.
+- [coc-browser](https://github.com/voldikss/coc-browser): web browser words completion.
 
 Or you can [create a custom source](https://github.com/neoclide/coc.nvim/wiki/Create-custom-source).
 
@@ -182,6 +190,7 @@ Extensions are more powerful than a configured language server. Check out
   use [solargraph](http://solargraph.org/).
 - **[coc-rls](https://github.com/neoclide/coc-rls)** for `rust`, use
   [Rust Language Server](https://github.com/rust-lang/rls)
+- **[coc-r-lsp](https://github.com/neoclide/coc-r-lsp)** for `r`, use [R languageserver](https://github.com/REditorSupport/languageserver).
 - **[coc-yaml](https://github.com/neoclide/coc-yaml)** for `yaml`
 - **[coc-python](https://github.com/neoclide/coc-python)** for `python`, extension forked from [vscode-python](https://github.com/Microsoft/vscode-python).
 - **[coc-highlight](https://github.com/neoclide/coc-highlight)** provides default
@@ -193,10 +202,15 @@ Extensions are more powerful than a configured language server. Check out
 - **[coc-lists](https://github.com/neoclide/coc-lists)** provides some basic
   lists like fzf.vim.
 - **[coc-git](https://github.com/neoclide/coc-git)** provides git integration.
-- **[coc-yank](https://github.com/neoclide/coc-yank)** provides yank highlights
-  and yank history list.
+- **[coc-yank](https://github.com/neoclide/coc-yank)** provides yank highlights & history.
+- **[coc-fsharp](https://github.com/yatli/coc-fsharp)** for `fsharp`.
+- **[coc-svg](https://github.com/iamcco/coc-svg)** for `svg`.
+- **[coc-tailwindcss](https://github.com/iamcco/coc-tailwindcss)** for `tailwindcss`.
+- **[coc-angular](https://github.com/iamcco/coc-angular)** for `angular`.
+- **[coc-vimlsp](https://github.com/iamcco/coc-vimlsp)** for `viml`.
 
-Plus more! To get a full list of coc extensions, [search coc.nvim on npm](https://www.npmjs.com/search?q=keywords%3Acoc.nvim).
+Plus more! To get a full list of coc extensions, [search coc.nvim on npm](https://www.npmjs.com/search?q=keywords%3Acoc.nvim),
+or use [coc-marketplace](https://github.com/fannheyward/coc-marketplace), which can search and install extensions in coc.nvim directly.
 
 **Note:** use `:CocConfig` to edit the configuration file. Completion & validation are supported after `coc-json` is installed.
 
@@ -303,6 +317,8 @@ command! -nargs=0 Format :call CocAction('format')
 " Use `:Fold` to fold current buffer
 command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 
+" use `:OR` for organize import of current buffer
+command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
 
 " Add diagnostic info for https://github.com/itchyny/lightline.vim
 let g:lightline = {
@@ -336,6 +352,15 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 ```
+
+## Trouble shooting
+
+Try these steps when you have problem with coc.nvim.
+
+- Make sure your vim version >= 8.0.1453 by command `:version`.
+- If service failed to start, use command `:CocInfo` or `:checkhealth` on neovim.
+- Checkout the log of coc.nvim by command `:CocOpenLog`.
+- When you have issue with a languageserver, it's recommended to [checkout the output](https://github.com/neoclide/coc.nvim/wiki/Debug-language-server#using-output-channel)
 
 ## Backers
 
@@ -384,10 +409,6 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
   <img src="https://github.com/darthShadow.png?size=64" width="64" height="64" alt="darthShadow">
 </a>
 
-<!--
-<img src="https://user-images.githubusercontent.com/251450/54328311-5e962a80-4648-11e9-9491-0712c7821326.png" width="540" height="275">
--->
-
 ## Feedback
 
 - If you think Coc is useful, consider giving it a star.
@@ -397,3 +418,9 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 - 中文用户请到 [中文 gitter](https://gitter.im/neoclide/coc-cn) 讨论。
 
 - If something is not working, [create an issue](https://github.com/neoclide/coc.nvim/issues/new).
+
+<img src="https://user-images.githubusercontent.com/251450/57566955-fb850200-7404-11e9-960f-711673f1a461.png" width="593" height="574">
+
+## License
+
+MIT
