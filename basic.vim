@@ -312,7 +312,6 @@ xnoremap <c-k> 5k
 
 " Split line here (try gS for mapping)
 nnoremap K Do<C-r>"<ESC>_
-nnoremap gS Do<C-r>"<ESC>_
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Buffers  {{{1
@@ -382,9 +381,6 @@ nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
 
 "Insert new line in normal mode quickly and move cursor (but not in quickfix window)
-" nnoremap <silent> <expr> <cr>  &buftype ==# 'quickfix' ? "\<CR>" : ":set paste<CR>m`o<Esc>``:set nopaste<CR>"
-" nnoremap <silent> <S-cr> :set paste<CR>m`O<Esc>``:set nopaste<CR>
-
 nnoremap <silent> <expr> <cr>  &buftype ==# 'quickfix' ? "\<CR>" : ":set paste<CR>o<Esc>:set nopaste<CR>"
 nnoremap <silent> <S-cr> :set paste<CR>O<Esc>:set nopaste<CR>
 
