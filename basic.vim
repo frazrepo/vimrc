@@ -726,7 +726,19 @@ else "Terminal
     endif
 endif
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Automatic marks {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+augroup LastFileMarkSetup
+    autocmd!
+    autocmd BufLeave *.css,*.less,*.scss,*.sass normal! mC
+    autocmd BufLeave *.html, *.cshtml           normal! mH
+    autocmd BufLeave *.js                       normal! mJ
+    autocmd BufLeave vimrc,*.vim                normal! mV
+augroup END
+
 " }}} "
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline

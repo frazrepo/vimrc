@@ -834,7 +834,19 @@ endfunction
 " map '<CR>' in command-line mode to execute the function above
 cnoremap <expr> <CR> CCR()
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Automatic marks {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+augroup LastFileMarkSetup
+    autocmd!
+    autocmd BufLeave *.css,*.less,*.scss,*.sass normal! mC
+    autocmd BufLeave *.html, *.cshtml           normal! mH
+    autocmd BufLeave *.js                       normal! mJ
+    autocmd BufLeave vimrc,*.vim                normal! mV
+augroup EN
+
 " }}}
+
 
 " Host specific vim 
 if filereadable(expand($HOME . '/.vimrc.local'))
