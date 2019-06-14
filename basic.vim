@@ -245,10 +245,8 @@ set complete=.,w,b,u
 " => Insert Mode related {{{1
 """"""""""""""""""""""""""""""
 
-" Map jk to ESC in insert mode -  See peartree config on non-developer edition
-if exists("g:developer_edition") 
-  inoremap jk <Esc>
-endif
+" Map jk to ESC in insert mode
+inoremap jk <Esc>
 
 " rsi bindings
 inoremap <C-A> <C-O>^
