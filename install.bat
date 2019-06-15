@@ -18,13 +18,14 @@ if exist %userConfig% (
 if "%1" == "/m" (
     echo "Installing minimal vimrc file.."
     copy /y "%minVimrcfile%" "%userConfig%"
-)
-if "%1" == "/n" (
-    echo "Installing nano vimrc file.."
-    copy /y "%nanoVimrcfile%" "%userConfig%"
 ) else (
-    echo "Installing vimrc file.."
-    copy /y "%vimrcfile%" "%userConfig%"
+    if "%1" == "/n" (
+        echo "Installing nano vimrc file.."
+        copy /y "%nanoVimrcfile%" "%userConfig%"
+    ) else (
+        echo "Installing vimrc file.."
+        copy /y "%vimrcfile%" "%userConfig%"
+    )
 )
 
 echo "Done!"
