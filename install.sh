@@ -20,9 +20,7 @@ if [ $option == "-m" ]
 then
     echo "Installing minimal vimrc file.."
     cp  $minVimrcfile $userConfig
-fi
-
-if [ $option == "-n" ]
+elif [ $option == "-n" ]
 then
     echo "Installing nano vimrc file.."
     cp  $nanoVimrcfile $userConfig
