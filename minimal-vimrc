@@ -136,8 +136,8 @@ set linespace=4
 
 " List Chars
 set nolist
-set listchars=eol:$,tab:>-,trail:.,extends:>,precedes:<
-set showbreak=\\ "
+set listchars=eol:$,tab:»\ ,trail:.,extends:›,precedes:‹
+set showbreak=↪\ 
 
 " Split mode
 set splitbelow
