@@ -55,8 +55,16 @@ set wildmode=longest:full,full
 
 "Minimal mapppings
 
+let mapleader = "\<Space>" 
+
 inoremap jk <Esc>
 
+map <silent> <leader><leader> :noh<cr>
 map H ^
 map L $
 map ² . 
+
+" Quickly open a txt, markdown and sql buffer for scribble
+map <leader>x :e ~/buffer.txt<cr>
+map <leader>d :e ~/buffer.md<cr>
+map <leader>s :e ~/buffer.sql<cr>
