@@ -96,6 +96,9 @@ set hidden
 set backspace=eol,start,indent
 set whichwrap+=<,>,h,l
 
+"Match pairs
+set matchpairs+=<:> 
+
 " Defaut global replace
 set gdefault
 
