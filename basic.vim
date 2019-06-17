@@ -742,7 +742,8 @@ function! MyFoldText()
     let windowwidth = winwidth(0) - nucolwidth - 3
     let foldedlinecount = v:foldend - v:foldstart
 
-    let line = strpart(line, 0, windowwidth - 2 -len(foldedlinecount))
+    let prefix = " >>> "
+    let line = prefix . strpart(line, 0, windowwidth - 2 -len(foldedlinecount))
     let fillcharcount = windowwidth - strdisplaywidth(line) - len(foldedlinecount)
     return line . '…' . repeat(" ",fillcharcount) . foldedlinecount . '…' . ' '
 endfunction 
