@@ -739,7 +739,7 @@ function! MyFoldText()
     let line = substitute(getline(v:foldstart), '{{{.*', '', '')
 
     let nucolwidth = &fdc + &number * &numberwidth
-    let windowwidth = winwidth(0) - nucolwidth - 1
+    let windowwidth = winwidth(0) - nucolwidth - 3
     let foldedlinecount = v:foldend - v:foldstart
 
     let prefix = "+-- "
