@@ -197,6 +197,9 @@ if has("gui_running")
     autocmd GUIEnter * :simalt ~n
     set guifont=Consolas:h15:cANSI
   endif
+
+  "GuiOptions
+  set guioptions+=b
 endif
 
 " Make Fonts bigger or smaller - from tpope vimrc
