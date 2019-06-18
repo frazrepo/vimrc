@@ -170,10 +170,6 @@ set splitright
 let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
 
-"ColorColumn at 80 Experimental
-highlight ColorColumn ctermbg=0 guibg=lightgrey
-call matchadd('ColorColumn', '\%81v\s*\zs\S', 100)
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -183,7 +179,6 @@ syntax on
 
 " And optimize performance for longlines
 set synmaxcol=200
-
 
 " Maximized window on start and Font Size
 if has("gui_running")
