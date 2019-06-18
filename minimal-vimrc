@@ -452,6 +452,8 @@ cnoremap <expr> <Tab> getcmdtype() =~ '[\/?]' ? "<C-g>" : "<C-z>"
 cnoremap <expr> <S-Tab> getcmdtype() =~ '[\/?]' ? "<C-t>" : "<S-Tab>" 
 
 " For autocompletion
+inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
+inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
 inoremap <silent> ,f <C-x><C-f>
 inoremap <silent> ,l <C-x><C-l>
 inoremap <silent> ,n <C-x><C-n>
