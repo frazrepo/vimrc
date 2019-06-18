@@ -31,7 +31,6 @@ let g:Lf_ShortcutF = '<C-P>'
 let g:Lf_ShortcutB = '<leader>,'
 
 nnoremap <silent> <leader>;  :LeaderfLine<CR>
-nnoremap <silent> <leader>t  :LeaderfTag<CR>
 nnoremap <silent> <leader>co :LeaderfHistoryCmd<CR>
 nnoremap <silent> <leader>u  :LeaderfMru<CR>
 
