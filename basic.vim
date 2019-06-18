@@ -198,7 +198,7 @@ if has("gui_running")
     set guifont=Consolas:h15:cANSI
   endif
 
-  "GuiOptions
+  "GuiOptions - Horizontal scrollbar
   set guioptions+=b
 endif
 
@@ -754,6 +754,11 @@ endfunction
 set foldtext=MyFoldText()
 
 " }}} "
+
+" Host specific vim 
+if filereadable(expand($HOME . '/.vimrc.local'))
+    source $HOME/.vimrc.local
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
