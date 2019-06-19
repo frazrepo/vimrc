@@ -731,24 +731,6 @@ augroup LastFileMarkSetup
     autocmd BufLeave vimrc,*.vim                normal! mV
 augroup END
 
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => FoldText {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! MyFoldText()
-    let line = substitute(getline(v:foldstart), '{{{.*', '', '')
-
-    let nucolwidth = &fdc + &number * &numberwidth
-    let windowwidth = winwidth(0) - nucolwidth - 3
-    let foldedlinecount = v:foldend - v:foldstart
-
-    let prefix = "+-- "
-    let line = prefix . strpart(line, 0, windowwidth - 2 -len(foldedlinecount))
-    let fillcharcount = windowwidth - strdisplaywidth(line) - len(foldedlinecount)
-    return line . repeat("-",fillcharcount) . ' ' . foldedlinecount . ' '
-endfunction 
-set foldtext=MyFoldText()
-
 " }}} "
 
 " Host specific vim 
