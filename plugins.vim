@@ -113,7 +113,7 @@ Plug 'frazrepo/vim-scratch', { 'on' : 'Scratch'}
 " On Linux do a chmod +x ./plat/update_tags.sh
 " Install ctags for host OS 
 if executable('ctags')
-    Plug 'ludovicchabant/vim-gutentags'
+    Plug 'ludovicchabant/vim-gutentags', { 'for':  ['go', 'py']} 
     Plug 'majutsushi/tagbar' , { 'on' : 'TagbarToggle'}
 endif
 " }}}
