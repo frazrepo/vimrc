@@ -704,8 +704,7 @@ if has("gui_running")
       endif
     else
       if HasColorscheme('dracula')
-        " color dracula
-        color mustang
+        color dracula
       endif
     endif
 else "Terminal
