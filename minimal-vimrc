@@ -150,10 +150,6 @@ set splitright
 let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
 
-"ColorColumn at 80 Experimental
-highlight ColorColumn ctermbg=0 guibg=lightgrey
-call matchadd('ColorColumn', '\%81v\s*\zs\S', 100)
-
 " Hide tilde ~ sign at the end of buffer
  hi! EndOfBuffer guibg=bg guifg=bg
 
@@ -172,7 +168,7 @@ set synmaxcol=200
 if has("gui_running")
   if has("gui_gtk2") || has("gui_gtk3") 
     set lines=535 columns=1366
-    set guifont=Inconsolata\ 16
+    set guifont=Inconsolata\ 17
   elseif has("gui_macvim")
     set lines=768 columns=1366
     set guifont=Menlo\ Regular:h14
@@ -340,7 +336,6 @@ map <leader>tc :tabclose<cr>
 
 " Let 'tl' toggle between this and the last accessed tab
 let g:lasttab = 1
-nmap <Leader>tl :exe "tabn ".g:lasttab<CR>
 nmap <Leader><bs> :exe "tabn ".g:lasttab<CR>
 au TabLeave * let g:lasttab = tabpagenr()
 

@@ -19,8 +19,8 @@ let s:hl_mark_end   = ''
 
 let g:over#command_line#substitute#highlight_pattern = get(g:, "over#command_line#substitute#highlight_pattern", "Search")
 
-if hlexists("Error")
-	let g:over#command_line#substitute#highlight_string = get(g:, "over#command_line#substitute#highlight_string", "Error")
+if hlexists("DiffText")
+	let g:over#command_line#substitute#highlight_string = get(g:, "over#command_line#substitute#highlight_string", "DiffText")
 else
 	let g:over#command_line#substitute#highlight_string = get(g:, "over#command_line#substitute#highlight_string", "ErrorMsg")
 endif
