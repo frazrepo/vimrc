@@ -839,6 +839,21 @@ augroup LastFileMarkSetup
     autocmd BufLeave vimrc,*.vim                normal! mV
 augroup EN
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Toggle Checkbox Markdown {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Format : - [ ] Task item
+augroup ToggleCheckBox
+  autocmd!
+  autocmd FileType markdown nnoremap <buffer> <silent> - :call winrestview(<SID>toggle('^\s*-\s*\[\zs.\ze\]', {' ': '.', '.': 'x', 'x': ' '}))<cr>
+augroup END
+
+function s:toggle(pattern, dict, ...)
+  let view = winsaveview()
+  execute 'keeppatterns s/' . a:pattern . '/\=get(a:dict, submatch(0), a:0 ? a:1 : " ")/e'
+  return view
+endfunction
+
 " }}} "
 
 " Host specific vim 
