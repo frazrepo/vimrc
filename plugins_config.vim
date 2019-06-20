@@ -34,6 +34,10 @@ nnoremap <silent> <leader>;  :LeaderfLine<CR>
 nnoremap <silent> <leader>co :LeaderfHistoryCmd<CR>
 nnoremap <silent> <leader>u  :LeaderfMru<CR>
 
+"Simple Notes taking (experimental)
+nnoremap <leader>gn  :<C-U>e <C-R>=fnameescape(expand($HOME . '/.notes/'))<CR>
+nnoremap <silent> <leader>n  :<C-U>LeaderfFile <C-R>=fnameescape(expand($HOME . '/.notes/'))<CR><CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Dirvish {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
