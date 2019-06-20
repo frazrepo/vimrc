@@ -778,26 +778,10 @@ function! ExecuteMacroOverVisualRange()
   execute ":'<,'>normal @".nr2char(getchar())
 endfunction
 
-
 " AutoSave Scratch buffer
-function! s:SaveBuffer() abort
-  if empty(&buftype) && !empty(bufname(''))
-    let l:savemarks = {
-          \ "'[": getpos("'["),
-          \ "']": getpos("']")
-          \ }
-
-    silent! update
-
-    for [l:key, l:value] in items(l:savemarks)
-      call setpos(l:key, l:value)
-    endfor
-  endif
-endfunction
-
 augroup SaveBuffer
   autocmd!
-  autocmd InsertLeave,TextChanged buffer.* nested call s:SaveBuffer()
+  autocmd InsertLeave,TextChanged buffer.* nested silent! update
   autocmd FocusGained,BufEnter,CursorHold buffer.* silent! checktime
 augroup end
 
