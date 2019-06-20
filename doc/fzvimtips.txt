@@ -1,58 +1,58 @@
 *fzvimtips*            For Vim version 8.1           Last change: 2019 May 21
 Generation : 'helptags ~/.vim_runtime/doc/'
 
-Abbreviations & maps                                     |vimtips-abbreviations|
-CSV                                                                |vimtips-csv|
-Changing case                                              |vimtips-change-case|
-Command line tricks                                       |vimtips-command-line|
-Completion                                                  |vimtips-completion|
-Counting / numbering                                           |vimtips-numbers|
-Diff                                                              |vimtips-diff|
-Digraphs / encoding                                           |vimtips-digraphs|
-Easter eggs                                                |vimtips-easter-eggs|
-Encryption/obfuscation                                      |vimtips-encryption|
-Essential                                                    |vimtips-essential|
-Exernal programs                                        |vimtips-external-progs|
-Exploring                                                    |vimtips-exploring|
-Expression register                                |vimtips-expression-register|
-File names                                                  |vimtips-file-names|
-File permissions                                      |vimtips-file-permissions|
-Filetype / syntax                                             |vimtips-filetype|
-Folding                                                        |vimtips-folding|
-Formatting text                                        |vimtips-formatting-text|
-Functions                                                    |vimtips-functions|
-Global command                                          |vimtips-global-command|
-Grep                                                              |vimtips-grep|
-Help                                                              |vimtips-help|
-Insert Mode                                                |vimtips-insert-mode|
-Macros                                                          |vimtips-macros|
-Markers                                                        |vimtips-markers|
-Misc                                                              |vimtips-misc|
-Modeline                                                      |vimtips-modeline|
-Multiple File operations                      |vimtips-multiple-file-operations|
-Multiple Files                                          |vimtips-multiple-files|
-Pasting                                                        |vimtips-pasting|
-Registers                                                    |vimtips-registers|
-Regular expressions                                |vimtips-regular-expressions|
-Repeating                                                   |vim-tips-repeating|
-Resources                                                    |vimtips-resources|
-Searching                                                    |vimtips-searching|
-Sessions                                                      |vimtips-sessions|
-Shifting/indenting                                  |vimtips-shifting-indenting|
-Substitution                                              |vimtips-substitution|
-Tabs                                                              |vimtips-tabs|
-Tags                                                              |vimtips-tags|
-Text objects                                              |vimtips-text-objects|
-Tricks                                                          |vimtips-tricks|
-Vimrc                                                            |vimtips-vimrc|
-Visual mode                                                |vimtips-visual-mode|
+Abbreviations & maps                                     |vimtipsabbreviations|
+CSV                                                                |vimtipscsv|
+Changing case                                               |vimtipschangecase|
+Command line tricks                                        |vimtipscommandline|
+Completion                                                  |vimtipscompletion|
+Counting / numbering                                           |vimtipsnumbers|
+Diff                                                              |vimtipsdiff|
+Digraphs / encoding                                           |vimtipsdigraphs|
+Easter eggs                                                 |vimtipseastereggs|
+Encryption/obfuscation                                      |vimtipsencryption|
+Essential                                                    |vimtipsessential|
+Exernal programs                                         |vimtipsexternalprogs|
+Exploring                                                    |vimtipsexploring|
+Expression register                                 |vimtipsexpressionregister|
+File names                                                   |vimtipsfilenames|
+File permissions                                       |vimtipsfilepermissions|
+Filetype / syntax                                             |vimtipsfiletype|
+Folding                                                        |vimtipsfolding|
+Formatting text                                         |vimtipsformattingtext|
+Functions                                                    |vimtipsfunctions|
+Global command                                           |vimtipsglobalcommand|
+Grep                                                              |vimtipsgrep|
+Help                                                              |vimtipshelp|
+Insert Mode                                                 |vimtipsinsertmode|
+Macros                                                          |vimtipsmacros|
+Markers                                                        |vimtipsmarkers|
+Misc                                                              |vimtipsmisc|
+Modeline                                                      |vimtipsmodeline|
+Multiple File operations                        |vimtipsmultiplefileoperations|
+Multiple Files                                           |vimtipsmultiplefiles|
+Pasting                                                        |vimtipspasting|
+Registers                                                    |vimtipsregisters|
+Regular expressions                                |vimtipsregular-expressions|
+Repeating                                                    |vimtipsrepeating|
+Resources                                                    |vimtipsresources|
+Searching                                                    |vimtipssearching|
+Sessions                                                      |vimtipssessions|
+Shifting/indenting                                  |vimtipsshifting-indenting|
+Substitution                                              |vimtipssubstitution|
+Tabs                                                              |vimtipstabs|
+Tags                                                              |vimtipstags|
+Text objects                                               |vimtipstextobjects|
+Tricks                                                          |vimtipstricks|
+Vimrc                                                            |vimtipsvimrc|
+Visual mode                                                 |vimtipsvisualmode|
 
 This collection of tips, originally from http://rayninfo.co.uk/vimtips.html,
 is now being maintained at http://zzapper.co.uk/vimtips.html. For the latest
 version in this format please visit https://github.com/zeekay/vimtips.
 
 ==============================================================================
-SEARCHING                                                    *vimtips-searching*
+SEARCHING                                                    *vimtipssearching*
 
 Basics >
     /joe/e                      : cursor set to End of match
@@ -129,7 +129,7 @@ Specify what you are NOT searching for (vowels) >
         v/tongue/s/nose/&/gic
 
 ==============================================================================
-SUBSTITUTION                                              *vimtips-substitution*
+SUBSTITUTION                                              *vimtipssubstitution*
 
 Substitution >
     :%s/fred/joe/igc            : general substitute command
@@ -257,7 +257,7 @@ Substitute inside substitute >
     :%s/.*/\='cp '.submatch(0).' all/'.substitute(submatch(0),'/','_','g')/
 
 ==============================================================================
-GLOBAL COMMAND                                          *vimtips-global-command*
+GLOBAL COMMAND                                          *vimtipsglobalcommand*
 
 Global Command >
 
@@ -342,7 +342,7 @@ Chain an external command >
     :.g/^/ exe ".!sed 's/N/X/'" | s/I/Q/    [N]
 
 =============================================================================
-REPEATING                                                  *vim-tips-repeating*
+REPEATING                                                  *vimtipsrepeating*
 
 Summary of editing repeats [N] >
     .      last edit (magic dot)
@@ -365,7 +365,7 @@ Summary of repeated searches >
 
 
 =============================================================================
-ESSENTIAL                                                   *vimtips-essential*
+ESSENTIAL                                                   *vimtipsessential*
 
 Essential >
     * # g* g#           : find word under cursor (<cword>) (forwards/backwards)
@@ -402,7 +402,7 @@ Splitting windows >
     :vmap st "zdi<?= <C-R>z ?><ESC>  : wrap <?=   ?> around VISUALLY selected Text
 
 ==============================================================================
-TABS                                                              *vimtips-tabs*
+TABS                                                              *vimtipstabs*
 
 Tabs >
     vim -p fred.php joe.php             : open files in tabs
@@ -415,7 +415,7 @@ Forcing use of tabs from .vimrc >
     :tab sball                           : retab all files in buffer (repair) [N]
 
 ==============================================================================
-EXPLORING                                                    *vimtips-exploring*
+EXPLORING                                                    *vimtipsexploring*
 
 Exploring >
     :e .                            : file explorer
@@ -430,7 +430,7 @@ Exploring >
     :autocmd BufEnter * lcd %:p:h   : change to directory of current file automatically (put in _vimrc)
 
 ==============================================================================
-CHANGING CASE                                              *vimtips-change-case*
+CHANGING CASE                                              *vimtipschangecase*
 
 Changing Case >
     guu                             : lowercase line
@@ -455,7 +455,7 @@ Uppercase first letter of sentences >
     :%s/[.!?]\_s\+\a/\U&\E/g
 
 ==============================================================================
-ENCRYPTION/OBFUSCATION                                      *vimtips-encryption*
+ENCRYPTION/OBFUSCATION                                      *vimtipsencryption*
 
 Encryption (use with care: DON'T FORGET your KEY) >
     :X                                : you will be prompted for a key
@@ -470,7 +470,7 @@ Encryption (use with care: DON'T FORGET your KEY) >
 
 
 ==============================================================================
-EASTER EGGS                                                *vimtips-easter-eggs*
+EASTER EGGS                                                *vimtipseastereggs*
 
 Easter Eggs >
     :h 42            : also http://www.google.com/search?q=42
@@ -478,7 +478,7 @@ Easter Eggs >
     :h!
 
 ==============================================================================
-MARKERS                                                        *vimtips-markers*
+MARKERS                                                        *vimtipsmarkers*
 
 Markers & moving about >
     '.               : jump to last modification line (SUPER)
@@ -499,7 +499,7 @@ Markers & moving about >
     :<C-F>           : history Window (exit CTRL-C)
 
 ==============================================================================
-ABBREVIATIONS & MAPS                                     *vimtips-abbreviations*
+ABBREVIATIONS & MAPS                                     *vimtipsabbreviations*
 
 Following 4 maps enable text transfer between VIM sessions >
     :map   <f7>   :'a,'bw! c:/aaa/x       : save text to file x
@@ -535,7 +535,7 @@ Using a register as a map (preload registers in .vimrc) >
     :let @s=":%!sort -u"
 
 ==============================================================================
-TRICKS                                                          *vimtips-tricks*
+TRICKS                                                          *vimtipstricks*
 
 Tricks >
     "ayy@a           : execute "Vim command" in a text file
@@ -545,7 +545,7 @@ Tricks >
     "ccaw            : store what you change in register c [N]
 
 ==============================================================================
-WORKING WITH EXTERNAL PROGRAMS                          *vimtips-external-progs*
+WORKING WITH EXTERNAL PROGRAMS                          *vimtipsexternalprogs*
 
 Get output from other commands (requires external programs) >
     :r!ls -R         : reads in output of ls
@@ -567,7 +567,7 @@ Number lines  (linux or cygwin only) >
     :new | r!nl #                  [N]
 
 ==============================================================================
-MULTIPLE FILES                                          *vimtips-multiple-files*
+MULTIPLE FILES                                          *vimtipsmultiplefiles*
 
 Multiples files >
     :bn              : goto next buffer
@@ -602,7 +602,7 @@ Quick jumping between splits >
     map <C-K> <C-W>k<C-W>_
 
 =============================================================================
-MACROS                                                         *vimtips-macros*
+MACROS                                                         *vimtipsmacros*
 
 Recording (BEST TIP of ALL) >
     qq  # record to q
@@ -639,7 +639,7 @@ Operating a Recording on a Visual BLOCK (blockwise) >
     :nnoremap ] @q:update<bar>bd
 
 ==============================================================================
-VISUAL MODE                                                *vimtips-visual-mode*
+VISUAL MODE                                                *vimtipsvisualmode*
 
 Visual is the newest and usually the most intuitive editing mode
 
@@ -673,9 +673,9 @@ Move with hjkl etc >
     Pick the second block: ctrl-v move P <esc>
 
 ==============================================================================
-TEXT OBJECTS                                              *vimtips-text-objects*
+TEXT OBJECTS                                              *vimtipstextobjects*
 
-Text objects :h text-objects                                     [C] >
+Text objects :h textobjects                                     [C] >
     daW                                   : delete contiguous non whitespace
     di<   yi<  ci<                        : Delete/Yank/Change HTML tag contents
     da<   ya<  ca<                        : Delete/Yank/Change whole HTML tag
@@ -684,7 +684,7 @@ Text objects :h text-objects                                     [C] >
     das                                   : delete a sentence
 
 ==============================================================================
-VIMRC                                                            *vimtips-vimrc*
+VIMRC                                                            *vimtipsvimrc*
 
 Vimrc essentials >
     :set incsearch : jumps to search word as you type (annoying but excellent)
@@ -703,7 +703,7 @@ FTPing from VIM >
     gvim ftp://www.somedomain.com/index.html # uses netrw.vim
 
 ==============================================================================
-SHIFTING/INDENTING                                  *vimtips-shifting-indenting*
+SHIFTING/INDENTING                                  *vimtipsshifting-indenting*
 
 Conventional Shifting/Indenting >
     :'a,'b>>
@@ -721,7 +721,7 @@ Also >
     ==                            : index current line same as line above [N]
 
 ==============================================================================
-PASTING                                                        *vimtips-pasting*
+PASTING                                                        *vimtipspasting*
 
 Working with Paste buffer >
 
@@ -745,7 +745,7 @@ Filter non-printable characters from the paste buffer >
 
 
 ==============================================================================
-FORMATTING TEXT                                        *vimtips-formatting-text*
+FORMATTING TEXT                                        *vimtipsformattingtext*
 
 Re-Formatting text >
     gq}                          : Format a paragraph
@@ -757,7 +757,7 @@ Break lines at 70 chars, if possible after a ; >
     :s/.\{,69\};\s*\|.\{,69\}\s\+/&\r/g
 
 ==============================================================================
-MULTIPLE FILE OPERATIONS                      *vimtips-multiple-file-operations*
+MULTIPLE FILE OPERATIONS                      *vimtipsmultiplefileoperations*
 
 Operate command over multiple files >
     :argdo %s/foo/bar/e          : operate on all files in :args
@@ -768,7 +768,7 @@ Operate command over multiple files >
 :silent bufdo !zip proj.zip %:p   : zip all current files
 
 ==============================================================================
-COMMAND LINE TRICKS                                       *vimtips-command-line*
+COMMAND LINE TRICKS                                       *vimtipscommandline*
 
 Command line tricks >
     gvim -h                    : help
@@ -801,7 +801,7 @@ Print paste contents to default printer >
     gvim -c 's/^/\=@*/|hardcopy!|q!'
 
 ==============================================================================
-GREP                                                              *vimtips-grep*
+GREP                                                              *vimtipsgrep*
 
 Gvim's use of external grep (win32 or *nix) >
     :!grep somestring *.php     : creates a list of all matching files [C]
@@ -817,7 +817,7 @@ Using vimgrep with copen                              [N] >
     :copen
 
 ==============================================================================
-DIFF                                                              *vimtips-diff*
+DIFF                                                              *vimtipsdiff*
 
 GVIM Difference Function (Brilliant) >
     gvim -d file1 file2        : vimdiff (compare differences)
@@ -830,7 +830,7 @@ Complex diff parts of same file [N] >
     :windo diffthis
 
 ==============================================================================
-REGULAR EXPRESSIONS                                *vimtips-regular-expressions*
+REGULAR EXPRESSIONS                                *vimtipsregular-expressions*
 
 Traps >
         In regular expressions you must backslash + (match 1 or more)
@@ -846,7 +846,7 @@ Traps >
     /\vcodes(\n|\s)*where   : very magic
 
 ==============================================================================
-REGISTERS                                                    *vimtips-registers*
+REGISTERS                                                    *vimtipsregisters*
 
 List your Registers >
     :reg             : display contents of all registers
@@ -885,7 +885,7 @@ Store text that is to be changed or deleted in register a >
     "act<                                 :  Change Till < [N]
 
 ==============================================================================
-EXPRESSION REGISTER                                *vimtips-expression-register*
+EXPRESSION REGISTER                                *vimtipsexpressionregister*
 
 Pulling objects onto command/search line (SUPER) >
     <C-R><C-W> : pull word under the cursor into a command line or search
@@ -897,7 +897,7 @@ Pulling objects onto command/search line (SUPER) >
 
 
 ==============================================================================
-HELP                                                              *vimtips-help*
+HELP                                                              *vimtipshelp*
 
 Help for help (USE TAB) >
     :h quickref             : VIM Quick Reference Sheet (ultra)
@@ -930,7 +930,7 @@ Where was an option set >
     :help add-local-help
 
 ==============================================================================
-COUNTING / NUMBERING                                           *vimtips-numbers*
+COUNTING / NUMBERING                                           *vimtipsnumbers*
 
 Counting,Numbering >
     <C-A>,<C-X>                     : increment,decrement number under cursor
@@ -988,7 +988,7 @@ Count words/lines in a text file >
 
 
 ==============================================================================
-INSERT MODE                                                *vimtips-insert-mode*
+INSERT MODE                                                *vimtipsinsertmode*
 
 Editing/moving within current insert (Really useful) >
     <C-U>                             : delete all entered
@@ -999,7 +999,7 @@ Editing/moving within current insert (Really useful) >
 
 
 ==============================================================================
-MODELINE                                                      *vimtips-modeline*
+MODELINE                                                      *vimtipsmodeline*
 
 Modeline (make a file readonly etc) must be in first/last 5 lines >
     // vim:noai:ts=2:sw=4:readonly:
@@ -1011,7 +1011,7 @@ Creating your own GUI Toolbar entry >
     amenu  Modeline.Insert\ a\ VIM\ modeline <Esc><Esc>ggOvim:ff=unix ts=4 ss=4<CR>vim60:fdm=marker<esc>gg
 
 ==============================================================================
-DIGRAPHS / ENCODING                                           *vimtips-digraphs*
+DIGRAPHS / ENCODING                                           *vimtipsdigraphs*
 
 Digraphs (non alpha-numerics) >
     :digraphs                         : display table
@@ -1037,7 +1037,7 @@ Displaying "non-asciis" >
     :h listchars
 
 ==============================================================================
-FILETYPE / SYNTAX                                             *vimtips-filetype*
+FILETYPE / SYNTAX                                             *vimtipsfiletype*
 
 Force Syntax coloring for a file that has no extension .pl >
     :set syntax=perl
@@ -1064,7 +1064,7 @@ Reading Ms-Word documents, requires antiword (not docx) >
     :autocmd BufReadPost *.doc %!antiword "%"
 
 ==============================================================================
-SESSIONS                                                      *vimtips-sessions*
+SESSIONS                                                      *vimtipssessions*
 
 Sessions (Open a set of files) >
 
@@ -1077,7 +1077,7 @@ Sessions (Open a set of files) >
 
 
 ==============================================================================
-TAGS                                                              *vimtips-tags*
+TAGS                                                              *vimtipstags*
 
     tags (jumping to subroutines/functions) >
     taglist.vim                       : popular plugin
@@ -1086,7 +1086,7 @@ TAGS                                                              *vimtips-tags*
 
 
 ==============================================================================
-FUNCTIONS                                                    *vimtips-functions*
+FUNCTIONS                                                    *vimtipsfunctions*
 
 A function to save word under cursor to a file >
     function! SaveWord()
@@ -1105,7 +1105,7 @@ Function to delete duplicate lines >
     :g/^/ call Del()
 
 ==============================================================================
-CSV                                                                *vimtips-csv*
+CSV                                                                *vimtipscsv*
 
 Columnise a csv file for display only as may crop wide columns >
     :let width = 20
@@ -1124,13 +1124,13 @@ Call with >
     :Csv 5                             : highlight fifth column
 
 ==============================================================================
-FILE PERMISSIONS                                      *vimtips-file-permissions*
+FILE PERMISSIONS                                      *vimtipsfilepermissions*
 
     :set noma (non modifiable)        : Prevents modifications
     :set ro (Read Only)               : Protect a file from unintentional writes
 
 ==============================================================================
-FOLDING                                                        *vimtips-folding*
+FOLDING                                                        *vimtipsfolding*
 
     zf1G      : fold everything before this line [N]
 
@@ -1152,7 +1152,7 @@ A folding method >
     Closing tag >>>
 
 ==============================================================================
-FILE NAMES                                                  *vimtips-file-names*
+FILE NAMES                                                  *vimtipsfilenames*
 
 Manipulating file names >
     :h filename-modifiers             : help
@@ -1179,7 +1179,7 @@ Simple Shell script to rename files w/o leaving vim >
     :q!
 
 ==============================================================================
-COMPLETION                                                  *vimtips-completion*
+COMPLETION                                                  *vimtipscompletion*
 
 All file completions grouped (for example main_c.c) >
     :e file<tab>                     : tab completes
@@ -1189,7 +1189,7 @@ All file completions grouped (for example main_c.c) >
     <C-X><C-L>          : Line complete SUPER USEFUL
 
 ==============================================================================
-MISC                                                              *vimtips-misc*
+MISC                                                              *vimtipsmisc*
 
 How to paste "normal commands" w/o entering insert mode >
     :norm qqy$jq
@@ -1281,7 +1281,7 @@ Convert Text File to HTML >
     :h 2html
 
 ===============================================================================
-RESOURCES                                                     *vimtips-resources*
+RESOURCES                                                     *vimtipsresources*
 
 www.vim.org                 http://www.vim.org/
 Vim Wiki                    http://vim.wikia.com/
@@ -1290,7 +1290,7 @@ comp.editors                http://groups.google.com/groups?group=comp.editors
 groups.yahoo.com/group/vim  http://groups.yahoo.com/group/vim/
 VIM Webring                 http://u.webring.com/hub?ring=vim&id=14&hub
 VimTips PDF Version         http://gav.brokentrain.net/projects/vimtips/vimtips.pdf
-Vimtips in Belarusian       http://webhostingrating.com/libs/vimtips-rayninfo-be
+Vimtips in Belarusian       http://webhostingrating.com/libs/vimtipsrayninfo-be
 
 vim:tw=78:ts=8:ft=help:norl:
 
