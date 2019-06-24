@@ -323,15 +323,16 @@ Regexp search/replace pattern
 - [vim-abolish](https://github.com/tpope/vim-abolish) : Search words, Coercion
 - [vim-commentary](https://github.com/tpope/vim-commentary)
 - [vim-dirvish](https://github.com/justinmk/vim-dirvish)
-- [* vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
+- [vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
 - [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
 - [vim-gtfo](https://github.com/justinmk/vim-gtfo) : Go to File Manager or Terminal
 - [vim-gutentag](https://github.com/ludovicchabant/vim-gutentags) : Tag generation and nagivation
+- [vim-illuminate](https://github.com/RRethy/vim-illuminate) : Highlight all occurence of current word under cursor
 - [tagbar](https://github.com/majutsushi/tagbar) : Tagbar
 - [vim-lion](https://github.com/tommcdo/vim-lion) : Align text (like tabular)
-- [* ReplaceWithRegister](https://github.com/vim-scripts/ReplaceWithRegister) : Custom operator gr to replace with register content
+- [ReplaceWithRegister](https://github.com/vim-scripts/ReplaceWithRegister) : Custom operator gr to replace with register content
 - [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys
-- [* vim-over](https://github.com/osyo-manga/vim-over) : Highlight buffer when operating from command line (s/, /, g/)
+- [vim-over](https://github.com/osyo-manga/vim-over) : Highlight buffer when operating from command line (s/, /, g/)
 - [vim-polyglot](https://github.com/sheerun/vim-polyglot) : Languages Support
 - [vim-qlist](https://github.com/romainl/vim-qlist) : Enhances ilist and dlist
 - [vim-qf](https://github.com/romainl/vim-qf) : Quickfix management, filtering,...
@@ -344,10 +345,9 @@ Regexp search/replace pattern
 - [vim-sort-motion](https://github.com/christoomey/vim-sort-motion) : Add an operator gs to apply sort
 - [targets.vim](https://github.com/wellle/targets.vim) : Some text objects - quotes (q), columns (c), indents (i), line (l), entire buffer (e)
 - [vim-tranpose](https://github.com/salsifis/vim-transpose) : Tranpose lines, csv, words, ...
-- [* vim-unimpaired](https://github.com/tpope/vim-unimpaired) :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
+- [vim-unimpaired](https://github.com/tpope/vim-unimpaired) :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
 - [yankmatches](https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup/blob/master/plugin/yankmatches.vim) : Copy or Delete search results
 
-[*] : A grade plugins, "sharpen the saw" philosophy
   
 ## How to uninstall
 Just do following:
