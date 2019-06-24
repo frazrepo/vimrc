@@ -379,8 +379,8 @@ xnoremap Q :normal @q<cr>
 nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
 
-"Insert new line in normal mode quickly and move cursor (but not in quickfix window)
-nnoremap <silent> <expr> <cr>  &buftype ==# 'quickfix' ? "\<CR>" : ":set paste<CR>o<Esc>:set nopaste<CR>"
+"Insert new line in normal mode quickly and move cursor (but not in quickfix window or in command line history)
+nnoremap <silent> <expr> <cr>  &buftype ==# 'nofile' ? "\<CR>" : &buftype ==# 'quickfix' ? "\<CR>" : ":set paste<CR>o<Esc>:set nopaste<CR>"
 nnoremap <silent> <S-cr> :set paste<CR>O<Esc>:set nopaste<CR>
 
 " Navigating quickfix (Experimental)
