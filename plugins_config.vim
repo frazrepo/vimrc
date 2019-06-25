@@ -85,7 +85,7 @@ let g:rainbow_active = 0
 " => ultisnips and vim-snippets configuration {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 if exists("g:developer_edition") 
-  " let g:UltiSnipsExpandTrigger='<Nop>'
+  let g:UltiSnipsExpandTrigger='<Nop>'
 else
   "Fixing bug on markdown files, not working when opening the second time
   let g:UltiSnipsExpandTrigger='<C-j>'
@@ -350,18 +350,35 @@ if exists("g:developer_edition")
 
     " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
     " Expand or Validate with <Tab>
-    imap <silent><expr> <Tab> <SID>expand()
+    " inoremap <silent><expr> <TAB>
+    "       \ pumvisible() ? coc#_select_confirm() :
+    "       \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+    "       \ <SID>check_back_space() ? "\<TAB>" :
+    "       \ coc#refresh()
 
-    function! s:expand()
-      if pumvisible()
-        return "\<C-y>"
-      endif
+    inoremap <silent><expr> <TAB>
+          \ pumvisible() ? coc#_select_confirm() :
+          \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+          \ <SID>check_back_space() ? "\<TAB>" :
+          \ "\<C-x>\<C-e>"
+
+    function! s:check_back_space() abort
       let col = col('.') - 1
-      if !col || getline('.')[col - 1]  =~# '\s'
-        return "\<Tab>"
-      endif
-      return "\<C-x>\<C-e>"
+      return !col || getline('.')[col - 1]  =~# '\s'
     endfunction
+
+    " imap <silent><expr> <Tab> <SID>expand()
+
+    " function! s:expand()
+    "   if pumvisible()
+    "     return "\<C-y>"
+    "   endif
+    "   let col = col('.') - 1
+    "   if !col || getline('.')[col - 1]  =~# '\s'
+    "     return "\<Tab>"
+    "   endif
+    "   return "\<C-x>\<C-e>"
+    " endfunction
 
     " Close preview window after completion is done
     autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
