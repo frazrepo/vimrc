@@ -86,6 +86,9 @@ let g:rainbow_active = 0
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 if exists("g:developer_edition") 
   let g:UltiSnipsExpandTrigger='<Nop>'
+else
+  "Fixing bug on markdown files, not working when opening the second time
+  let g:UltiSnipsExpandTrigger='<C-j>'
 endif
 
 let g:UltiSnipsJumpForwardTrigger = "<Tab>"
