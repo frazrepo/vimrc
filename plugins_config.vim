@@ -350,35 +350,34 @@ if exists("g:developer_edition")
 
     " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
     " Expand or Validate with <Tab>
-    " inoremap <silent><expr> <TAB>
-    "       \ pumvisible() ? coc#_select_confirm() :
-    "       \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-    "       \ <SID>check_back_space() ? "\<TAB>" :
-    "       \ coc#refresh()
-
-    inoremap <silent><expr> <TAB>
-          \ pumvisible() ? coc#_select_confirm() :
-          \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-          \ <SID>check_back_space() ? "\<TAB>" :
-          \ "\<C-x>\<C-e>"
 
     function! s:check_back_space() abort
       let col = col('.') - 1
       return !col || getline('.')[col - 1]  =~# '\s'
     endfunction
 
-    " imap <silent><expr> <Tab> <SID>expand()
+    imap <silent><expr> <Tab> <SID>expand()
 
-    " function! s:expand()
-    "   if pumvisible()
-    "     return "\<C-y>"
-    "   endif
-    "   let col = col('.') - 1
-    "   if !col || getline('.')[col - 1]  =~# '\s'
-    "     return "\<Tab>"
-    "   endif
-    "   return "\<C-x>\<C-e>"
-    " endfunction
+    function! s:expand()
+      "Expand snippet
+      if pumvisible()
+        return "\<CR>"
+      endif
+
+      "Place Holder
+      if coc#expandableOrJumpable()
+        return "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>"
+      endif
+
+      "If back space, insert Tab
+      let col = col('.') - 1
+      if !col || getline('.')[col - 1]  =~# '\s'
+        return "\<Tab>"
+      endif
+
+      "Emmet
+      return "\<C-x>\<C-e>"
+    endfunction
 
     " Close preview window after completion is done
     autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
