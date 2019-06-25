@@ -351,11 +351,6 @@ if exists("g:developer_edition")
     " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
     " Expand or Validate with <Tab>
 
-    function! s:check_back_space() abort
-      let col = col('.') - 1
-      return !col || getline('.')[col - 1]  =~# '\s'
-    endfunction
-
     imap <silent><expr> <Tab> <SID>expand()
 
     function! s:expand()
