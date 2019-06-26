@@ -317,7 +317,7 @@ Regexp search/replace pattern
 - [leaderF](https://github.com/Yggdroot/LeaderF) : Fuzzy finder
 - [lightline](https://github.com/itchyny/lightline.vim) : Lightweight status line 
 - [neoformat](https://github.com/sbdchd/neoformat): Various formatters for many languages
-- [pear-tree](https://github.com/tmsvg/pear-tree) : Auto close pairs (parenthses, quotes, ...)
+- [auto-pairs](https://github.com/jiangmiao/auto-pairs) : Auto close pairs (parentheses, quotes, ...)
 - [utilsnips + vim-snippets](https://github.com/SirVer/ultisnips) : Snippets
 - [Undotree](https://github.com/mbbill/undotree): Undo tree history
 - [vim-abolish](https://github.com/tpope/vim-abolish) : Search words, Coercion

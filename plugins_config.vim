@@ -177,32 +177,14 @@ vmap  <right> <Plug>SchleppRight
 
 vmap D <Plug>SchleppDup
 
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""	
-" => pear-tree {{{1	
+" => Vim-autopairs workarounf for â, î and û {{{1	
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     	
 if !exists("g:developer_edition") 
-    "Toggle with Alt-P mapping	
-    let g:peartree_is_enable=1	
-    function! TogglePearTree()	
-      if g:peartree_is_enable	
-        PearTreeDisable	
-        let g:peartree_is_enable=0	
-      else	
-        PearTreeEnable	
-        let g:peartree_is_enable=1	
-      endif	
-    endfunction	
-    nnoremap <buffer> <silent> <M-p> :call TogglePearTree()<CR>	
-    inoremap <buffer> <silent> <M-p> <C-O>:call TogglePearTree()<CR>	
-
-    "Remap jk 
-    " imap jk <Plug>(PearTreeFinishExpansion)
-    " Activating both cause bugs in terminal where pressing arrow keys leads 
-    " to ABCD
-    " imap <ESC> <Plug>(PearTreeFinishExpansion)
-    " Just use ESC
-    
+  "Toggle with Alt-P mapping	
+  let g:AutoPairsShortcutBackInsert=''	
+  let g:AutoPairsShortcutJump=''	
+  let g:AutoPairsMoveCharacter=''	
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

@@ -93,7 +93,7 @@ if (s:developer_edition == 1)
 else
     "Use completor for basic usage
     Plug 'maralla/completor.vim'
-    Plug 'tmsvg/pear-tree'
+    Plug 'jiangmiao/auto-pairs'
 endif
 
 " Snippets
