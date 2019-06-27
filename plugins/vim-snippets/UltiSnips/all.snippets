@@ -112,11 +112,22 @@ endsnippet
 ######################
 
 snippet fzhead "File Header" w
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Maintainer: https//github.com/frazrepo
-" Date: `!v strftime("%Y-%m-%d")`
-" Description: 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+`!p
+if not snip.c:
+	width = 71
+box = make_box(len(t[1]), width)
+snip.rv = box[0]
+` 
+`!p snip.rv=get_comment_format()[0]` Maintainer: https//github.com/frazrepo
+`!p snip.rv=get_comment_format()[0]` Date: `!v strftime("%Y-%m-%d")`
+`!p snip.rv=get_comment_format()[0]` Description: 
+`!p
+if not snip.c:
+	width = 71
+box = make_box(len(t[1]), width)
+snip.rv = box[0]
+` 
+$0
 endsnippet
 
 
@@ -134,6 +145,7 @@ snippet fzlic "Apache Licence" b
 `!p snip.rv=get_comment_format()[0]` WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 `!p snip.rv=get_comment_format()[0]` See the License for the specific language governing permissions and
 `!p snip.rv=get_comment_format()[0]` limitations under the License.
+$0
 endsnippet
 
 # vim:ft=snippets:
