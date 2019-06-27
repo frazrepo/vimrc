@@ -111,6 +111,13 @@ endsnippet
 #  Custom Snippets   #
 ######################
 
+snippet pwd "Random Password" w
+`!p import random, string
+lettersAndDigits = string.ascii_letters + string.digits
+if not snip.c:
+	snip.rv=''.join(random.choice(lettersAndDigits) for i in range(8))`
+endsnippet
+
 snippet fzhead "File Header" w
 `!p
 if not snip.c:
