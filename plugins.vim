@@ -72,7 +72,6 @@ Plug 'romainl/vim-qf'
 
 " Snippet -  Code Generation - AutoCompletion {{{1
 Plug 'machakann/vim-sandwich'
-Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
 Plug 'tpope/vim-commentary'
 
 if (s:developer_edition == 1) 
@@ -84,10 +83,8 @@ if (s:developer_edition == 1)
         Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
     endif
 
-    "Powershell stuff
+    "Languages
     Plug 'yatli/coc-powershell', { 'for' : 'ps1'}
-
-    " Go
     Plug 'fatih/vim-go', { 'for' : 'go'}
 
 else
@@ -102,6 +99,7 @@ Plug 'honza/vim-snippets'
 
 " Languages - Formatters {{{1
 Plug 'sheerun/vim-polyglot'
+Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
 Plug 'sbdchd/neoformat', { 'on' : 'Neoformat'}
 
 " Undo
