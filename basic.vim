@@ -321,6 +321,9 @@ nnoremap ' `
 "Experimental
 map à @
 nnoremap àà @@
+"
+" Execute a macro over a visual range
+xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 
 " Expand %% to current path in command line mode
 cnoremap %% <C-R>=fnameescape(expand("%:p:h")) . '/'<CR>
@@ -330,6 +333,9 @@ cnoremap :: <C-R>=fnameescape(expand("%"))<CR>
 set wildcharm=<C-z>
 cnoremap <expr> <Tab> getcmdtype() =~ '[\/?]' ? "<C-g>" : "<C-z>" 
 cnoremap <expr> <S-Tab> getcmdtype() =~ '[\/?]' ? "<C-t>" : "<S-Tab>" 
+
+" Command line CR
+cnoremap <expr> <CR> CommandLineCR()
 
 " Remove the Windows ^M - when the encodings gets messed up
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
@@ -524,7 +530,6 @@ function! s:ToggleQf()
 endfunction
 
 " Execute a macro over a visual range
-xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 function! ExecuteMacroOverVisualRange()
   echo "@".getcmdline()
   execute ":'<,'>normal @".nr2char(getchar())
@@ -551,7 +556,7 @@ function! SortByWidth() range
 endfunction
 
 " https://gist.github.com/romainl/047aca21e338df7ccf771f96858edb86 
-function! CCR()
+function! CommandLineCR()
     let cmdline = getcmdline()
     if cmdline =~ '\v\C/(#|nu|num|numb|numbe|number)$'
         " like :g//# but prompts for a command
@@ -563,8 +568,6 @@ function! CCR()
         return "\<CR>"
     endif
 endfunction
-" map '<CR>' in command-line mode to execute the function above
-cnoremap <expr> <CR> CCR()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Load Plugins and Configs {{{1
