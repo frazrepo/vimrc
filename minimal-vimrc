@@ -370,6 +370,18 @@ else
   command! -bar -nargs=0 Smaller :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)-1','')
 endif
 
+" RemoveTrailingSpaces
+command! RemoveTrailingSpaces call CleanExtraSpaces()
+
+"List all leader mappings
+command! ListLeaders call ListLeaders()
+
+" Sort lines by width
+command! -range=%  SortByWidth <line1>,<line2>call SortByWidth()
+
+"  Clean all registers
+command! WipeReg for i in range(34,122) | silent! call setreg(nr2char(i), []) | endfor 
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => AutoCommands {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
@@ -648,10 +660,6 @@ fun! CleanExtraSpaces()
     call setreg('/', old_query)
 endfun
 
-
-" RemoveTrailingSpaces
-command! RemoveTrailingSpaces call CleanExtraSpaces()
-
 function! CmdLine(str)
     call feedkeys(":" . a:str)
 endfunction 
@@ -706,7 +714,6 @@ function! ListLeaders()
   silent! %sort
   silent! let lines = getline(1,"$")
 endfunction
-command! ListLeaders call ListLeaders()
 
 " Sort lines by width
 function! SortByWidth() range
@@ -714,10 +721,6 @@ function! SortByWidth() range
     silent! execute a:firstline . "," . a:lastline . 'sort n'
     silent! execute a:firstline . "," . a:lastline . 's/^\d\+\s//'
 endfunction
-command! -range=%  SortByWidth <line1>,<line2>call SortByWidth()
-
-"  Clean all register
-command! WipeReg for i in range(34,122) | silent! call setreg(nr2char(i), []) | endfor 
 
 " https://gist.github.com/romainl/047aca21e338df7ccf771f96858edb86 
 function! CCR()
