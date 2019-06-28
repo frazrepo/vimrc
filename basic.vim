@@ -67,10 +67,6 @@ nmap <leader>w :w!<cr>
 " Default to system clipboard
 set clipboard^=unnamed,unnamedplus
 
-" :W sudo saves the file 
-" (useful for handling the permission-denied error on Linux)
-command! W w !sudo tee % > /dev/null
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => VIM user interface {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -197,16 +193,6 @@ if has("gui_running")
   set guioptions+=b
 endif
 
-" Make Fonts bigger or smaller - from tpope vimrc
-if has("gui_win32")
-  command! -bar -nargs=0 Bigger  :let &guifont = substitute(&guifont,'\d\+','\=submatch(0)+1','')
-  command! -bar -nargs=0 Smaller :let &guifont = substitute(&guifont,'\d\+','\=submatch(0)-1','')
-else
-  command! -bar -nargs=0 Bigger  :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)+1','')
-  command! -bar -nargs=0 Smaller :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)-1','')
-endif
-nnoremap <M-9>        :Smaller<CR>
-nnoremap <M-0>        :Bigger<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo {{{1
@@ -482,14 +468,32 @@ map <leader>s :e ~/buffer.sql<cr>
 " Toogle quickfix windows
 map <silent> <F8> :call <SID>ToggleQf()<cr>
 
-" Workaround to start visual block mode on terminal if C-v or C-q is not working
-command! VisualBlock execute "normal! \<C-v>"
-
 " grepprg to ag
 if executable('ag')
     set grepprg=ag\ --vimgrep
     set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Commands {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+" Workaround to start visual block mode on terminal if C-v or C-q is not working
+command! VisualBlock execute "normal! \<C-v>"
+
+" :W sudo saves the file 
+" (useful for handling the permission-denied error on Linux)
+command! W w !sudo tee % > /dev/null
+
+" Make Fonts bigger or smaller - from tpope vimrc
+if has("gui_win32")
+  command! -bar -nargs=0 Bigger  :let &guifont = substitute(&guifont,'\d\+','\=submatch(0)+1','')
+  command! -bar -nargs=0 Smaller :let &guifont = substitute(&guifont,'\d\+','\=submatch(0)-1','')
+else
+  command! -bar -nargs=0 Bigger  :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)+1','')
+  command! -bar -nargs=0 Smaller :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)-1','')
+endif
+nnoremap <M-9>        :Smaller<CR>
+nnoremap <M-0>        :Bigger<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Netrw configuration {{{1
