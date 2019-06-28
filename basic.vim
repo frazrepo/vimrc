@@ -138,7 +138,6 @@ let mapleader = "\<Space>"
 nmap <leader>w :w!<cr>
 
 """"""""""""""""""""""""""""""
-set virtualedit=block " VirtualEdit block allow selection everywhere in visual block mode
 " => Insert Mode related {{{2
 """"""""""""""""""""""""""""""
 
