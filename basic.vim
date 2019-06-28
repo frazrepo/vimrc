@@ -385,7 +385,30 @@ endif
 " => AutoCommands {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 if has("autocmd")
-    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
+    augroup AutoCommandsGroup
+        autocmd!
+
+        "Clean extra spaces on txt files 
+        autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
+
+        " Help File speedups, <enter> to follow tag, delete (backspace) for back
+        autocmd filetype help nnoremap <buffer><cr> <c-]>
+        autocmd filetype help nnoremap <buffer><bs> <c-T>
+        autocmd filetype help nnoremap <buffer>q :q<CR>
+        autocmd filetype help set nonumber
+        autocmd filetype help wincmd _ " Maximize the help on open
+
+        " AutoSave Scratch buffer
+        autocmd InsertLeave,TextChanged buffer.* nested silent! update
+        autocmd FocusGained,BufEnter,CursorHold buffer.* silent! checktime
+
+        " Automatic marks
+        autocmd BufLeave *.css,*.less,*.scss,*.sass normal! mC
+        autocmd BufLeave *.html,*.cshtml            normal! mH
+        autocmd BufLeave *.js                       normal! mJ
+        autocmd BufLeave vimrc,*.vim                normal! mV
+
+    augroup END
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -396,17 +419,6 @@ let g:netrw_winsize=15
 let g:netrw_liststyle=3
 let g:netrw_browse_split = 4
 let g:netrw_altv = 1
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Help file speedups {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Help File speedups, <enter> to follow tag, delete (backspace) for back
-au filetype help nnoremap <buffer><cr> <c-]>
-au filetype help nnoremap <buffer><bs> <c-T>
-au filetype help nnoremap <buffer>q :q<CR>
-au filetype help set nonumber
-au filetype help wincmd _ " Maximize the help on open
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text-Objects {{{1
@@ -452,7 +464,6 @@ fun! CleanExtraSpaces()
     call setpos('.', save_cursor)
     call setreg('/', old_query)
 endfun
-
 
 " RemoveTrailingSpaces
 command! RemoveTrailingSpaces call CleanExtraSpaces()
@@ -520,13 +531,6 @@ function! ListLeaders()
   silent! let lines = getline(1,"$")
 endfunction
 command! ListLeaders call ListLeaders()
-
-" AutoSave Scratch buffer
-augroup SaveBuffer
-  autocmd!
-  autocmd InsertLeave,TextChanged buffer.* nested silent! update
-  autocmd FocusGained,BufEnter,CursorHold buffer.* silent! checktime
-augroup end
 
 " Sort lines by width
 function! SortByWidth() range
@@ -601,16 +605,6 @@ else "Terminal
     endif
 endif
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Automatic marks {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-augroup LastFileMarkSetup
-    autocmd!
-    autocmd BufLeave *.css,*.less,*.scss,*.sass normal! mC
-    autocmd BufLeave *.html,*.cshtml           normal! mH
-    autocmd BufLeave *.js                       normal! mJ
-    autocmd BufLeave vimrc,*.vim                normal! mV
-augroup END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Toggle Checkbox Markdown {{{1
