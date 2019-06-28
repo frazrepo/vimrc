@@ -224,7 +224,7 @@ map <leader>tc :tabclose<cr>
 " Toggle between this and the last accessed tab
 let g:lasttab = 1
 nmap <Leader><bs> :exe "tabn ".g:lasttab<CR>
-au TabLeave * let g:lasttab = tabpagenr()
+autocmd TabLeave * let g:lasttab = tabpagenr()
 
 " Opens a new tab with the current buffer's path
 map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
@@ -323,6 +323,10 @@ map <leader>x :e ~/buffer.txt<cr>
 map <leader>d :e ~/buffer.md<cr>
 map <leader>s :e ~/buffer.sql<cr>
 
+"Adjust font size
+nnoremap <M-9>        :Smaller<CR>
+nnoremap <M-0>        :Bigger<CR>
+
 " For Tags navigation - <C-$> doesn't work yet
 nmap <F12> <C-]>
 
@@ -365,8 +369,13 @@ else
   command! -bar -nargs=0 Bigger  :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)+1','')
   command! -bar -nargs=0 Smaller :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)-1','')
 endif
-nnoremap <M-9>        :Smaller<CR>
-nnoremap <M-0>        :Bigger<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => AutoCommands {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+if has("autocmd")
+    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Netrw configuration {{{1
@@ -624,9 +633,6 @@ fun! CleanExtraSpaces()
     call setreg('/', old_query)
 endfun
 
-if has("autocmd")
-    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
-endif
 
 " RemoveTrailingSpaces
 command! RemoveTrailingSpaces call CleanExtraSpaces()
