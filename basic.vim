@@ -158,6 +158,13 @@ inoremap <C-A> <C-O>^
 inoremap <expr> <C-E> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<Lt>C-E>":"\<Lt>End>"
 cnoremap <C-A> <Home>
 
+" For autocompletion
+inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
+inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
+inoremap <silent> ,f <C-x><C-f>
+inoremap <silent> ,l <C-x><C-l>
+inoremap <silent> ,n <C-x><C-n>
+
 " Search using magic regex
 nnoremap / /\v
 nnoremap ? ?\v
@@ -200,8 +207,6 @@ nnoremap <c-k> 5k
 xnoremap <c-j> 5j
 xnoremap <c-k> 5k
 
-" Split line here (try gS for mapping)
-nnoremap K Do<C-r>"<ESC>_
 
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -272,6 +277,9 @@ nnoremap <A-Up> :cprevious<Cr>
 map H ^
 map L $
 
+" K to Split line here 
+nnoremap K Do<C-r>"<ESC>_
+
 "Quick beautiful paste hack
 nnoremap "p vi""0p
 nnoremap 'p vi'"0p
@@ -314,19 +322,6 @@ nnoremap ' `
 map à @
 nnoremap àà @@
 
-" For Tags navigation - <C-$> doesn't work yet
-nmap <F12> <C-]>
-
-" Map ALT Key in terminal
-if &term =~ 'xterm' && !has("gui_running")
-  execute "set <A-k>=\ek"
-  execute "set <A-j>=\ej"
-endif
-
-" Insert mode cursor for terminal
-let &t_SI = "\e[6 q"
-let &t_EI = "\e[2 q"
-
 " Expand %% to current path in command line mode
 cnoremap %% <C-R>=fnameescape(expand("%:p:h")) . '/'<CR>
 cnoremap :: <C-R>=fnameescape(expand("%"))<CR>
@@ -336,13 +331,6 @@ set wildcharm=<C-z>
 cnoremap <expr> <Tab> getcmdtype() =~ '[\/?]' ? "<C-g>" : "<C-z>" 
 cnoremap <expr> <S-Tab> getcmdtype() =~ '[\/?]' ? "<C-t>" : "<S-Tab>" 
 
-" For autocompletion
-inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
-inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
-inoremap <silent> ,f <C-x><C-f>
-inoremap <silent> ,l <C-x><C-l>
-inoremap <silent> ,n <C-x><C-n>
-
 " Remove the Windows ^M - when the encodings gets messed up
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
@@ -351,8 +339,24 @@ map <leader>x :e ~/buffer.txt<cr>
 map <leader>d :e ~/buffer.md<cr>
 map <leader>s :e ~/buffer.sql<cr>
 
+" For Tags navigation - <C-$> doesn't work yet
+nmap <F12> <C-]>
+
 " Toogle quickfix windows
 map <silent> <F8> :call <SID>ToggleQf()<cr>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Miscellaneous {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+" Map ALT Key in terminal
+if &term =~ 'xterm' && !has("gui_running")
+  execute "set <A-k>=\ek"
+  execute "set <A-j>=\ej"
+endif
+
+" Insert mode cursor for terminal
+let &t_SI = "\e[6 q"
+let &t_EI = "\e[2 q"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Commands {{{1
