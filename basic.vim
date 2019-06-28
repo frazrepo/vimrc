@@ -137,7 +137,7 @@ let mapleader = "\<Space>"
 nmap <leader>w :w!<cr>
 
 """"""""""""""""""""""""""""""
-" => Insert Mode related {{{1
+" => Insert Mode related {{{2
 """"""""""""""""""""""""""""""
 
 " Map jk to ESC in insert mode
@@ -150,7 +150,7 @@ cnoremap <C-A> <Home>
 inoremap <expr> <C-E> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<Lt>C-E>":"\<Lt>End>"
 
 """"""""""""""""""""""""""""""
-" => Visual mode related {{{1
+" => Visual mode related {{{2
 """"""""""""""""""""""""""""""
 
 " Visual mode pressing * or # searches for the current selection
@@ -180,7 +180,7 @@ vnoremap < <gv
 nnoremap gV `[v`]
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Moving around, tabs, windows and buffers {{{1
+" => Moving around, tabs, windows and buffers {{{2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Search using magic regex
@@ -207,7 +207,7 @@ xnoremap <c-k> 5k
 nnoremap K Do<C-r>"<ESC>_
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Buffers  {{{1
+" => Buffers  {{{2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Return to last edit position when opening files (You want this!)
@@ -235,7 +235,7 @@ nnoremap <bs> <c-^>
 map <leader>e :edit <c-r>=expand("%:p:h")<cr>/
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Tabs {{{1
+" => Tabs {{{2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Useful mappings for managing tabs
@@ -253,7 +253,7 @@ au TabLeave * let g:lasttab = tabpagenr()
 map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Editing Mappings {{{1
+" => Editing Mappings {{{2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Change word under cursor and dot repeat, really useful to edit quickly
@@ -318,7 +318,7 @@ nnoremap gj j
 nnoremap gk k 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Azerty keyboard optimizations {{{1
+" => Azerty keyboard optimizations {{{2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 "Map some keys for azerty keyboard
@@ -350,7 +350,7 @@ let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Miscellaneous {{{1
+" => Miscellaneous {{{2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Expand %% to current path in command line mode
