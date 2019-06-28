@@ -192,8 +192,6 @@ xnoremap <c-j> 5j
 xnoremap <c-k> 5k
 
 
-" Return to last edit position when opening files (You want this!)
-au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
@@ -394,7 +392,10 @@ if has("autocmd")
     augroup AutoCommandsGroup
         autocmd!
 
-        "Clean extra spaces on txt files 
+        " Return to last edit position when opening files (You want this!)
+        autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+
+        " Clean extra spaces on txt files 
         autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
 
         " Help File speedups, <enter> to follow tag, delete (backspace) for back
