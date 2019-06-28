@@ -24,24 +24,71 @@ endif
 " => General {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Set default to nocompatible
-set nocompatible
+set nocompatible                   " Set default to nocompatible
+syntax on                          " Activate by default dracula theme
 
-" Sets how many lines of history VIM has to remember
-set history=1000
+set autoindent                     " Auto indent
+set autoread                       " Automatically reload file on change without asking
+set backspace=eol,start,indent     " Configure backspace so it acts as it should act
+set clipboard^=unnamed,unnamedplus " Default to system clipboard
+set complete=.,w,b,u               " Complete option
+set encoding=utf-8                 " Dealing with special chars
+set expandtab                      " Use spaces instead of tabs
 
-" Same for undolevels
-set undolevels=1000
-
-" Persistent undo : Keep undo history across sessions by storing it in a file
+set foldlevelstart=99 
+set foldmethod=manual              " Foldmethod manual
+set formatoptions+=j               " Join option :  Delete comment character when joining commented lines
+set gdefault
+set hidden                         " A buffer becomes hidden when it is abandoned
+set history=1000                   " Sets how many lines of history VIM has to remember
+set hlsearch                       " Highlight search results
+set ignorecase                     " Ignore case when searching
+set incsearch                      " Makes search act like search in modern browsers
+set lazyredraw                     " Don't redraw while executing macros (good performance config)
+set linebreak                      " Linebreak on 500 characters
+set linespace=4                    " Linespace
+set listchars=eol:$,tab:»\ ,trail:.,extends:›,precedes:‹
+set magic                          " For regular expressions turn magic on
+set mat=2                          " How many tenths of a second to blink when matching brackets
+set matchpairs+=<:>                "Match pairs
+set mouse=a                        " Activate mouse
+set nobackup                       " Turn backup off, since most stuff is in SVN, git et.c anyway...
+set noerrorbells
+set nolist                         " List Chars
+set noshowmode                     " Do not show mode (displayed by lightline already)
+set noswapfile
+set nowritebackup
+set number                         " Number - No Default relative number (cause slowness)
+set scrolloff=1                    " Set 1 lines to the cursor - when moving vertically using j/k
+set shiftwidth=4                   " 1 tab == 4 spaces
+set shortmess+=c                   " don't give |ins-completion-menu| messages.
+set shortmess=atI                  " Disable startup message
+set showbreak=↪\ 
+set showmatch                      " Show matching brackets when text indicator is over them
+set smartindent                    "Smart indent
+set smartcase                      " When searching try to be smart about cases 
+set smarttab                       " Be smart when using tabs ;)
+set splitbelow                     " Split mode
+set splitright
+set synmaxcol=200                  " And optimize performance for longlines
+set tabstop=4
+set timeout timeoutlen=1000 ttimeoutlen=50
+set tm=500
+set ttyfast                        " Make the keyboard fast
+set tw=500
 set undodir=$HOME/.vim/undodir
-set undofile
+set undofile                       " Persistent undo : Keep undo history across sessions by storing it in a file
+set undolevels=1000                " Same for undolevels
+set updatetime=300                 " Smaller updatetime for CursorHold & CursorHoldI
+set visualbell t_vb=               " No sound on errors
+set whichwrap+=<,>,h,l
+set wildignore+=*/.git/*,*/node_modules/*,*/dist/*
+set wildignore+=.git\*,node_modules\*
+set wildignore=*.o,*~,*.pyc,tags   " Ignore compiled files
+set wildmenu                       " Turn on the Wild menu
+set wildmode=longest:full,full
+set wrap                           "Wrap lines
 
-" Do not show mode (displayed by lightline already)
-set noshowmode
-
-" Disable startup message
-set shortmess=atI
 
 "Developer Edition
 if exists("g:developer_edition") 
@@ -52,132 +99,11 @@ if exists("g:developer_edition")
   set signcolumn=yes
 endif
 
-" Smaller updatetime for CursorHold & CursorHoldI
-set updatetime=300
-
-" don't give |ins-completion-menu| messages.
-set shortmess+=c
-
-" Space as a Leader key
-let mapleader = "\<Space>" 
-
-" Fast saving
-nmap <leader>w :w!<cr>
-
-" Default to system clipboard
-set clipboard^=unnamed,unnamedplus
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => VIM user interface {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Set 1 lines to the cursor - when moving vertically using j/k
-set scrolloff=1
-
-" Turn on the Wild menu
-set wildmenu
-set wildmode=longest:full,full
-
-" Ignore compiled files
-set wildignore=*.o,*~,*.pyc,tags
-if has("win32") || has("win64")
-    set wildignore+=.git\*,node_modules\*
-else
-    set wildignore+=*/.git/*,*/node_modules/*,*/dist/*
-endif
-
-" A buffer becomes hidden when it is abandoned
-set hidden
-
-" Configure backspace so it acts as it should act
-set backspace=eol,start,indent
-set whichwrap+=<,>,h,l
-
-"Match pairs
-set matchpairs+=<:> 
-
-" Defaut global replace
-set gdefault
-
-" Ignore case when searching
-set ignorecase
-
-" When searching try to be smart about cases 
-set smartcase
-
-" Highlight search results
-set hlsearch
-
-" Makes search act like search in modern browsers
-set incsearch 
-
-" Don't redraw while executing macros (good performance config)
-set lazyredraw 
-
-" For regular expressions turn magic on
-set magic
-
-" Show matching brackets when text indicator is over them
-set showmatch 
-
-" How many tenths of a second to blink when matching brackets
-set mat=2
-
-" No sound on errors
-set noerrorbells
-set visualbell t_vb=
-set tm=500
-
-" Foldmethod manual
-set foldmethod=manual 
-set foldlevelstart=99 
-
-" Dealing with special chars
-set encoding=utf-8
-
-" Activate mouse
-set mouse=a
-
-" Make the keyboard fast
-set ttyfast
-set timeout timeoutlen=1000 ttimeoutlen=50
-
-" Number - No Default relative number (cause slowness)
-set number
-
-" Automatically reload file on change without asking
-set autoread
-
-" Join option :  Delete comment character when joining commented lines
-set formatoptions+=j 
-
-" Linespace
-set linespace=4
-
-" List Chars
-set nolist
-set listchars=eol:$,tab:»\ ,trail:.,extends:›,precedes:‹
-set showbreak=↪\ 
-
-" Split mode
-set splitbelow
-set splitright
-
-" Insert mode cursor for terminal (xterm, bash, tmux,...)
-let &t_SI = "\e[6 q"
-let &t_EI = "\e[2 q"
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Colors and Fonts {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Activate by default dracula theme
-syntax on
-
-" And optimize performance for longlines
-set synmaxcol=200
-
 " Maximized window on start and Font Size
 if has("gui_running")
+  "GuiOptions - Horizontal scrollbar
+  set guioptions+=b
+
   if has("gui_gtk2") || has("gui_gtk3") 
     set lines=535 columns=1366
     set guifont=Inconsolata\ 17
@@ -189,44 +115,17 @@ if has("gui_running")
     set guifont=Consolas:h15:cANSI
   endif
 
-  "GuiOptions - Horizontal scrollbar
-  set guioptions+=b
 endif
 
+""""""""""""""""""""""""""""""
+" => Mappings {{{1
+""""""""""""""""""""""""""""""
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Files, backups and undo {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Space as a Leader key
+let mapleader = "\<Space>" 
 
-" Turn backup off, since most stuff is in SVN, git et.c anyway...
-set nobackup
-set nowritebackup
-set noswapfile
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Text, tab and indent related {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Use spaces instead of tabs
-set expandtab
-
-" Be smart when using tabs ;)
-set smarttab
-
-" 1 tab == 4 spaces
-set shiftwidth=4
-set tabstop=4
-
-" Linebreak on 500 characters
-set linebreak
-set tw=500
-
-set ai "Auto indent
-set si "Smart indent
-set wrap "Wrap lines
-
-" Complete option
-set complete=.,w,b,u
+" Fast saving
+nmap <leader>w :w!<cr>
 
 """"""""""""""""""""""""""""""
 " => Insert Mode related {{{1
@@ -437,6 +336,9 @@ if &term =~ 'xterm' && !has("gui_running")
   execute "set <A-j>=\ej"
 endif
 
+" Insert mode cursor for terminal (xterm, bash, tmux,...)
+let &t_SI = "\e[6 q"
+let &t_EI = "\e[2 q"
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Miscellaneous {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
