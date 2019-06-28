@@ -371,14 +371,13 @@ let &t_EI = "\e[2 q"
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Commands {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-" Workaround to start visual block mode on terminal if C-v or C-q is not working
+" VisualBlock :  Workaround to start visual block mode on terminal if C-v or C-q is not working
 command! VisualBlock execute "normal! \<C-v>"
 
-" :W sudo saves the file 
-" (useful for handling the permission-denied error on Linux)
+" W : sudo saves the file (useful for handling the permission-denied error on Linux)
 command! W w !sudo tee % > /dev/null
 
-" Make Fonts bigger or smaller - from tpope vimrc
+" Smaller/Bigger : Make Fonts bigger or smaller - from tpope vimrc
 if has("gui_win32")
   command! -bar -nargs=0 Bigger  :let &guifont = substitute(&guifont,'\d\+','\=submatch(0)+1','')
   command! -bar -nargs=0 Smaller :let &guifont = substitute(&guifont,'\d\+','\=submatch(0)-1','')
@@ -387,16 +386,16 @@ else
   command! -bar -nargs=0 Smaller :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)-1','')
 endif
 
-" RemoveTrailingSpaces
+" RemoveTrailingSpaces : Remove all training spaces
 command! RemoveTrailingSpaces call CleanExtraSpaces()
 
-"List all leader mappings
+" ListLeaders : List all leader mappings
 command! ListLeaders call ListLeaders()
 
-" Sort lines by width
+" SortByWidth : Sort lines by width
 command! -range=%  SortByWidth <line1>,<line2>call SortByWidth()
 
-"  Clean all registers
+" WipeReg : Clean all registers
 command! WipeReg for i in range(34,122) | silent! call setreg(nr2char(i), []) | endfor 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -502,7 +501,7 @@ function! VisualSelection(direction, extra_filter) range
         call CmdLine("Ack '" . l:pattern . "' " )
     elseif a:direction == 'replace'
         call CmdLine("%s" . '/'. l:pattern . '/')
-    endif
+    endif 
 
     let @/ = l:pattern
     let @" = l:saved_reg
