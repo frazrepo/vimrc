@@ -408,6 +408,9 @@ if has("autocmd")
         autocmd BufLeave *.js                       normal! mJ
         autocmd BufLeave vimrc,*.vim                normal! mV
 
+        " Format : - [ ] Task item
+        autocmd FileType markdown nnoremap <buffer> <silent> - :call winrestview(<SID>toggle('^\s*-\s*\[\zs.\ze\]', {' ': '.', '.': 'x', 'x': ' '}))<cr>
+
     augroup END
 endif
 
@@ -605,16 +608,7 @@ else "Terminal
     endif
 endif
 
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Toggle Checkbox Markdown {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Format : - [ ] Task item
-augroup ToggleCheckBox
-  autocmd!
-  autocmd FileType markdown nnoremap <buffer> <silent> - :call winrestview(<SID>toggle('^\s*-\s*\[\zs.\ze\]', {' ': '.', '.': 'x', 'x': ' '}))<cr>
-augroup END
-
+" Toggle Checkbox Markdown
 function s:toggle(pattern, dict, ...)
   let view = winsaveview()
   execute 'keeppatterns s/' . a:pattern . '/\=get(a:dict, submatch(0), a:0 ? a:1 : " ")/e'
