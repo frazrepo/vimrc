@@ -94,9 +94,10 @@ set virtualedit=block              " VirtualEdit block allow selection everywher
 set visualbell t_vb=               " No sound on errors
 set whichwrap+=<,>,h,l
 
+set wildignore=*.o,*~,*.pyc,tags   " Ignore compiled files
 set wildignore+=*/.git/*,*/node_modules/*,*/dist/*
 set wildignore+=.git\*,node_modules\*
-set wildignore=*.o,*~,*.pyc,tags   " Ignore compiled files
+
 set wildmenu                       " Turn on the Wild menu
 set wildmode=longest:full,full
 
@@ -149,10 +150,6 @@ let mapleader = "\<Space>"
 " Fast saving
 nmap <leader>w :w!<cr>
 
-""""""""""""""""""""""""""""""
-" => Insert Mode {{{2
-""""""""""""""""""""""""""""""
-
 " Map jk to ESC in insert mode
 inoremap jk <Esc>
 
@@ -161,9 +158,12 @@ inoremap <C-A> <C-O>^
 inoremap <expr> <C-E> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<Lt>C-E>":"\<Lt>End>"
 cnoremap <C-A> <Home>
 
-""""""""""""""""""""""""""""""
-" => Visual mode {{{2
-""""""""""""""""""""""""""""""
+" Search using magic regex
+nnoremap / /\v
+nnoremap ? ?\v
+
+" Search/Replace
+nnoremap <leader>r :OverCommandLine%s///g<Left><Left>
 
 " Visual mode pressing * or # searches for the current selection
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
@@ -187,17 +187,6 @@ vnoremap < <gv
 " Reselect last insertext
 nnoremap gV `[v`]
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Moving around {{{2
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Search using magic regex
-nnoremap / /\v
-nnoremap ? ?\v
-
-" Search/Replace
-nnoremap <leader>r :OverCommandLine%s///g<Left><Left>
-    
 " Disable highlight when <space><space> is pressed
 map <silent> <space><space> :noh<cr>
 
@@ -213,10 +202,6 @@ xnoremap <c-k> 5k
 
 " Split line here (try gS for mapping)
 nnoremap K Do<C-r>"<ESC>_
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Buffers  {{{2
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -242,27 +227,18 @@ nnoremap <bs> <c-^>
 " Edit quickly with the current buffer path
 map <leader>e :edit <c-r>=expand("%:p:h")<cr>/
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Tabs {{{2
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 " Useful mappings for managing tabs
 map <leader>tn :tabnew<cr>
 map <leader>to :tabonly<cr>
 map <leader>tc :tabclose<cr>
 
-" Let 'tl' toggle between this and the last accessed tab
+" Toggle between this and the last accessed tab
 let g:lasttab = 1
 nmap <Leader><bs> :exe "tabn ".g:lasttab<CR>
 au TabLeave * let g:lasttab = tabpagenr()
 
 " Opens a new tab with the current buffer's path
-" Super useful when editing files in the same directory
 map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Editing Mappings {{{2
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Change word under cursor and dot repeat, really useful to edit quickly
 nnoremap c* *Ncgn
@@ -325,10 +301,6 @@ nnoremap <expr> j (v:count > 1 ? "m'" . v:count : '') . 'gj'
 nnoremap gj j 
 nnoremap gk k 
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Azerty keyboard optimizations {{{2
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 "Map some keys for azerty keyboard
 map µ # 
 map ² . 
@@ -354,10 +326,6 @@ endif
 " Insert mode cursor for terminal
 let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Miscellaneous {{{2
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Expand %% to current path in command line mode
 cnoremap %% <C-R>=fnameescape(expand("%:p:h")) . '/'<CR>
