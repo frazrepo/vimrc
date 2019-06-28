@@ -72,6 +72,7 @@ set undodir=$HOME/.vim/undodir
 set undofile                       " Persistent undo : Keep undo history across sessions by storing it in a file
 set undolevels=1000                " Same for undolevels
 set updatetime=300                 " Smaller updatetime for CursorHold & CursorHoldI
+set virtualedit=block              " VirtualEdit block allow selection everywhere in visual block mode
 set visualbell t_vb=               " No sound on errors
 set whichwrap+=<,>,h,l
 set wildignore+=*/.git/*,*/node_modules/*,*/dist/*
@@ -121,6 +122,7 @@ let mapleader = "\<Space>"
 nmap <leader>w :w!<cr>
 
 """"""""""""""""""""""""""""""
+set virtualedit=block " VirtualEdit block allow selection everywhere in visual block mode
 " => Insert Mode related {{{2
 """"""""""""""""""""""""""""""
 
@@ -150,8 +152,6 @@ xnoremap <Leader>fr :<C-u>'<,'>s/
 vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
 
 
-" VirtualEdit block allow selection everywhere in visual block mode
-set virtualedit=block
 
 " Repeat . command in visual mode
 vnoremap . :normal.<CR>
