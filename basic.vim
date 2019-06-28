@@ -89,28 +89,37 @@ set wildmenu                       " Turn on the Wild menu
 set wildmode=longest:full,full
 set wrap                           "Wrap lines
 
+" grepprg to ag
+if executable('ag')
+    set grepprg=ag\ --vimgrep
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
+endif
 
 "Developer Edition
 if exists("g:developer_edition") 
-  "Fix : Press Enter or Type Command to continue error in nvim 
-  set cmdheight=2
 
-  " always show signcolumns
-  set signcolumn=yes
+  set cmdheight=2                   "Fix : Press Enter or Type Command to continue error in nvim 
+  set signcolumn=yes                " always show signcolumns
+
 endif
 
 " Maximized window on start and Font Size
 if has("gui_running")
+
   "GuiOptions - Horizontal scrollbar
   set guioptions+=b
 
   if has("gui_gtk2") || has("gui_gtk3") 
     set lines=535 columns=1366
     set guifont=Inconsolata\ 17
-  elseif has("gui_macvim")
+  endif
+
+  if has("gui_macvim")
     set lines=768 columns=1366
     set guifont=Menlo\ Regular:h14
-  elseif has("gui_win32")
+  endif
+
+  if has("gui_win32")
     autocmd GUIEnter * :simalt ~n
     set guifont=Consolas:h15:cANSI
   endif
@@ -339,6 +348,7 @@ endif
 " Insert mode cursor for terminal (xterm, bash, tmux,...)
 let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Miscellaneous {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -370,11 +380,6 @@ map <leader>s :e ~/buffer.sql<cr>
 " Toogle quickfix windows
 map <silent> <F8> :call <SID>ToggleQf()<cr>
 
-" grepprg to ag
-if executable('ag')
-    set grepprg=ag\ --vimgrep
-    set grepformat=%f:%l:%c:%m,%f:%l:%m
-endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Commands {{{1
