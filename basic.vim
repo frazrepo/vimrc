@@ -52,42 +52,54 @@ set magic                          " For regular expressions turn magic on
 set mat=2                          " How many tenths of a second to blink when matching brackets
 set matchpairs+=<:>                "Match pairs
 set mouse=a                        " Activate mouse
+
 set nobackup                       " Turn backup off, since most stuff is in SVN, git et.c anyway...
 set noerrorbells
 set nolist                         " List Chars
 set noshowmode                     " Do not show mode (displayed by lightline already)
 set noswapfile
 set nowritebackup
+
 set number                         " Number - No Default relative number (cause slowness)
 set scrolloff=1                    " Set 1 lines to the cursor - when moving vertically using j/k
 set shiftwidth=4                   " 1 tab == 4 spaces
+
 set shortmess+=c                   " don't give |ins-completion-menu| messages.
 set shortmess=atI                  " Disable startup message
+
 set showbreak=↪\ 
 set showmatch                      " Show matching brackets when text indicator is over them
+
 set smartindent                    "Smart indent
 set smartcase                      " When searching try to be smart about cases 
 set smarttab                       " Be smart when using tabs ;)
+
 set splitbelow                     " Split mode
 set splitright
+
 set synmaxcol=200                  " And optimize performance for longlines
 set tabstop=4
+
 set timeout timeoutlen=1000 ttimeoutlen=50
 set tm=500
 set ttyfast                        " Make the keyboard fast
 set tw=500
+
 set undodir=$HOME/.vim/undodir
 set undofile                       " Persistent undo : Keep undo history across sessions by storing it in a file
 set undolevels=1000                " Same for undolevels
+
 set updatetime=300                 " Smaller updatetime for CursorHold & CursorHoldI
 set virtualedit=block              " VirtualEdit block allow selection everywhere in visual block mode
 set visualbell t_vb=               " No sound on errors
 set whichwrap+=<,>,h,l
+
 set wildignore+=*/.git/*,*/node_modules/*,*/dist/*
 set wildignore+=.git\*,node_modules\*
 set wildignore=*.o,*~,*.pyc,tags   " Ignore compiled files
 set wildmenu                       " Turn on the Wild menu
 set wildmode=longest:full,full
+
 set wrap                           "Wrap lines
 
 " grepprg to ag
@@ -138,7 +150,7 @@ let mapleader = "\<Space>"
 nmap <leader>w :w!<cr>
 
 """"""""""""""""""""""""""""""
-" => Insert Mode related {{{2
+" => Insert Mode {{{2
 """"""""""""""""""""""""""""""
 
 " Map jk to ESC in insert mode
@@ -146,26 +158,23 @@ inoremap jk <Esc>
 
 " rsi bindings
 inoremap <C-A> <C-O>^
+inoremap <expr> <C-E> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<Lt>C-E>":"\<Lt>End>"
 cnoremap <C-A> <Home>
 
-inoremap <expr> <C-E> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<Lt>C-E>":"\<Lt>End>"
-
 """"""""""""""""""""""""""""""
-" => Visual mode related {{{2
+" => Visual mode {{{2
 """"""""""""""""""""""""""""""
 
 " Visual mode pressing * or # searches for the current selection
-" Super useful! From an idea by Michael Naumann
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
 "Visual find and replace
 nnoremap <Leader>fr :call VisualFindAndReplace()<CR>
 xnoremap <Leader>fr :call VisualFindAndReplaceWithSelection()<CR>
-" When you press `<leader>r` you can search and replace the selected text:
+
+"Search and replace the selected text
 vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
-
-
 
 " Repeat . command in visual mode
 vnoremap . :normal.<CR>
@@ -179,7 +188,7 @@ vnoremap < <gv
 nnoremap gV `[v`]
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Moving around, tabs, windows and buffers {{{2
+" => Moving around {{{2
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Search using magic regex
@@ -337,14 +346,12 @@ nnoremap àà @@
 nmap <F12> <C-]>
 
 " Map ALT Key in terminal
-" https://vi.stackexchange.com/questions/2350/how-to-map-alt-key
 if &term =~ 'xterm' && !has("gui_running")
-  " Tell vim what escape sequence to expect
   execute "set <A-k>=\ek"
   execute "set <A-j>=\ej"
 endif
 
-" Insert mode cursor for terminal (xterm, bash, tmux,...)
+" Insert mode cursor for terminal
 let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
 
@@ -378,7 +385,6 @@ map <leader>s :e ~/buffer.sql<cr>
 
 " Toogle quickfix windows
 map <silent> <F8> :call <SID>ToggleQf()<cr>
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Commands {{{1
