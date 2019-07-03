@@ -67,7 +67,7 @@ set shiftwidth=4                   " 1 tab == 4 spaces
 set shortmess+=c                   " don't give |ins-completion-menu| messages.
 set shortmess=atI                  " Disable startup message
 
-set showbreak=↪\ 
+set showbreak=+++
 set showmatch                      " Show matching brackets when text indicator is over them
 
 set smartindent                    "Smart indent
