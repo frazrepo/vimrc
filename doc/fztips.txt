@@ -3,7 +3,7 @@ Generation : 'helptags ~/.vim_runtime/doc/'
 
 INTRODUCTION                                    *fztips*
 
-1. Delete any empty lines                         |fztips-1|
+1. Delete any empty lines - Double space lines    |fztips-1|
 2. Reduce multiples blank lines to a single blank |fztips-2|
 3. Reverse the order of the lines from 10 to 20   |fztips-3|
 4. Delete all lines not matching a pattern        |fztips-4|
@@ -29,10 +29,14 @@ XX.Ressources                                     |fztips-XX|
 
 ==============================================================================
 
-1. Delete any empty lines                         *fztips-1*
+1. Delete any empty lines - Double space all lines *fztips-1*
 >
+    # Delete empty lines
     :g/^$/d
     :g/^\s*$/d
+
+    # Double space all lines
+    :g/^/put =\"\n\"
 <
 2. Reduce multiples blank lines to a single blank *fztips-2*
 >
