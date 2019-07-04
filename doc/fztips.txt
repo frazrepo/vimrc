@@ -1,35 +1,35 @@
 *fztips.txt*    Common tips for vim    Last Changed: 2019 Jan 21
 Generation : 'helptags ~/.vim_runtime/doc/'
 
-INTRODUCTION                                    *fztips*
+INTRODUCTION                                              *fztips*
 
-1. Delete any empty lines - Double space lines    |fztips-1|
-2. Reduce multiples blank lines to a single blank |fztips-2|
-3. Reverse the order of the lines from 10 to 20   |fztips-3|
-4. Delete all lines not matching a pattern        |fztips-4|
-5. Find this and/or that                          |fztips-5|
-6. Search replace tips                            |fztips-6|
-7. Change whole word foo to bar                   |fztips-7|
-8. Transpose a line with separator ; to columns   |fztips-8|
-9. Search and replace in files                    |fztips-9|
-10.Sort lines inside block of {} , like in css    |fztips-10|
-11. Substitute with contents of register          |fztips-11|
-12. Miscellaneous g command                       |fztips-12|
-13. Swap columns in a csv file                    |fztips-13|
-14. Yank or Delete all matches lines              |fztips-14|
-15. Generating sequence number                    |fztips-15|
-16. Apply macro to all lines                      |fztips-16|
-17. Apply macro to range of lines                 |fztips-17|
-18. Apply macro to a pattern off lines            |fztips-18|
-19. Apply macro to visual selection of lines      |fztips-19|
-20. Move block of text                            |fztips-20|
+1. Delete any empty lines - Double space lines            |fztips1|
+2. Reduce multiples blank lines to a single blank         |fztips2|
+3. Reverse the order of the lines from 10 to 20           |fztips3|
+4. Delete all lines not matching a pattern                |fztips4|
+5. Find this and/or that                                  |fztips5|
+6. Search replace tips                                    |fztips6|
+7. Change whole word foo to bar                           |fztips7|
+8. Transpose a line with separator ; to columns           |fztips8|
+9. Search and replace in files                            |fztips9|
+10.Sort lines inside block of {} , like in css            |fztips10|
+11. Substitute with contents of register                  |fztips11|
+12. Miscellaneous g command                               |fztips12|
+13. Swap columns in a csv file                            |fztips13|
+14. Yank or Delete all matches lines                      |fztips14|
+15. Generating sequence number                            |fztips15|
+16. Apply macro to all lines                              |fztips16|
+17. Apply macro to range of lines                         |fztips17|
+18. Apply macro to a pattern off lines                    |fztips18|
+19. Apply macro to visual selection of lines              |fztips19|
+20. Move block of text                                    |fztips20|
 
-XX.Ressources                                     |fztips-XX|
+XX.Ressources                                             |fztipsXX|
 
 
 ==============================================================================
 
-1. Delete any empty lines - Double space all lines *fztips-1*
+1. Delete any empty lines - Double space all lines                      *fztips1*
 >
     # Delete empty lines
     :g/^$/d
@@ -38,11 +38,11 @@ XX.Ressources                                     |fztips-XX|
     # Double space all lines
     :g/^/put =\"\n\"
 <
-2. Reduce multiples blank lines to a single blank *fztips-2*
+2. Reduce multiples blank lines to a single blank                       *fztips2*
 >
   :g/^$/,/./-j
 <
-3. Reverse the order of the lines from 10 to 20   *fztips-3*
+3. Reverse the order of the lines from 10 to 20                         *fztips3*
 >
   :10,20g/^/mo 10
 <
@@ -50,18 +50,18 @@ XX.Ressources                                     |fztips-XX|
 >
   :g/^/m0
 <
-4. Delete all lines not matching a pattern        *fztips-4*
+4. Delete all lines not matching a pattern                              *fztips4*
 >
   :g!/foo/d  or :v/foo/d
 <
-5. Find this and/or that                              *fztips-5*
+5. Find this and/or that                                                *fztips5*
 >
   " this or that
   /this\|that
   " this and that
   /.*this\&.*that
 <
-6. Search Replace tips                             *fztips-6*
+6. Search Replace tips                                                  *fztips6*
 >
   " Replace First with FirstName
   :%s/First/&Name
@@ -69,28 +69,28 @@ XX.Ressources                                     |fztips-XX|
   " \U \u Uppercase , \L \l for Lowercase
   :%s/First/\U&
 <
-7. Change whole word foo to bar                   *fztips-7*
+7. Change whole word foo to bar                                         *fztips7*
 >
   :%s/\<foo\>/bar/gc
 <
-8. Transpose a line with separator ; to columns   *fztips-8*
+8. Transpose a line with separator ; to columns                         *fztips8*
 >
   :%s/;/;\r/g
 <
-9. Search and replace in files                    *fztips-9*
+9. Search and replace in files                                          *fztips9*
 >
   :Ack pattern
   :cfdo s/foo/bar/g | update
 <
-10.Sort lines inside block of {} , like in css    *fztips-10*
+10.Sort lines inside block of {} , like in css                          *fztips10*
 >
   :g/{$/+,/^}/-sort
 <
-11. Substitute with contents of register          *fztips-11*
+11. Substitute with contents of register                                *fztips11*
 >
   :s/pattern/<c-r>a/g
 <
-12. Miscellaneous g commands                      *fztips-12*
+12. Miscellaneous g commands                                            *fztips12*
 >
   " Duplicate every line
   :g/^/t.
@@ -105,13 +105,13 @@ XX.Ressources                                     |fztips-XX|
   :g/pattern/y A
 <
 
-13. Swap columns in a csv file                    *fztips-13*
+13. Swap columns in a csv file                                          *fztips13*
 >
   " Swap column1,column2
   :%s/\(.*,\)\(.*,\)/\2\1
 <
 
-14. Yank or Delete all matches lines              *fztips-14*
+14. Yank or Delete all matches lines                                    *fztips14*
 >
   " Clear register a and then yank all matched patterns
   qaq:g/pattern/y A
@@ -123,7 +123,7 @@ XX.Ressources                                     |fztips-XX|
   :g/pattern/"_d
 <
 
-15. Generating sequence number                    *fztips-15*
+15. Generating sequence number                                          *fztips15*
 
 >
   " Increment number by 5, insert [number]- at the start"
@@ -132,28 +132,28 @@ XX.Ressources                                     |fztips-XX|
 <
 
 
-16. Apply macro to all lines                     *fztips-16*
+16. Apply macro to all lines                                            *fztips16*
 >
     :%norm! @a
 <
 
-17. Apply macro to range of lines                *fztips-17*
+17. Apply macro to range of lines                                       *fztips17*
 >
     :5,10norm! @a
     :5,$norm! @a
 <
 
-18. Apply macro to a pattern of lines            *fztips-18*
+18. Apply macro to a pattern of lines                                   *fztips18*
 >
     :g/pattern/normal! @a
 <
 
-19. Apply macro to visual selection of lines     *fztips-19*
+19. Apply macro to visual selection of lines                            *fztips19*
 >
     :'<,'>norm! @a
 <
 
-20. Move/Delete block of text                    *fztips-20*
+20. Move/Delete block of text                                           *fztips20*
 >
     " Title2
     " .....
@@ -163,7 +163,7 @@ XX.Ressources                                     |fztips-XX|
     "......
 
     " Move Title2 block below Title1
-    " Search title2 then for each line, search the next Title1 , go -1 
+    " Search title2 then for each line, search the next Title1 , go -1
     " and move the block above Title3
     :g/Title2/,/Title1/-1 move /Title3/-1
 
@@ -173,7 +173,7 @@ XX.Ressources                                     |fztips-XX|
     :g/Title1/,/Title3/-1d
 <
 
-XX.Ressources                                     *fztips-XX*
+XX.Ressources                                                           *fztipsXX*
   - See also |fzvimtips|
 
 vim:tw=78:ts=8:ft=help:norl:
