@@ -49,7 +49,7 @@ set linebreak                      " Linebreak on 500 characters
 set linespace=4                    " Linespace
 set listchars=eol:$,tab:»\ ,trail:.,extends:›,precedes:‹
 set magic                          " For regular expressions turn magic on
-set mat=2                          " How many tenths of a second to blink when matching brackets
+set matchtime=2                    " How many tenths of a second to blink when matching brackets
 set matchpairs+=<:>                "Match pairs
 set mouse=a                        " Activate mouse
 
@@ -80,10 +80,9 @@ set splitright
 set synmaxcol=200                  " And optimize performance for longlines
 set tabstop=4
 
-set timeout timeoutlen=1000 ttimeoutlen=50
-set tm=500
+set timeout timeoutlen=500 ttimeoutlen=50
 set ttyfast                        " Make the keyboard fast
-set tw=500
+set textwidth=500
 
 set undodir=$HOME/.vim/undodir
 set undofile                       " Persistent undo : Keep undo history across sessions by storing it in a file
