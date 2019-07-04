@@ -69,3 +69,109 @@ autocmd BufRead,BufNewFile *.Jenkinsfile setf Jenkinsfile
   augroup end
 endif
 
+"Terraform
+if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'terraform') == -1
+  augroup filetypedetect
+  " terraform, from terraform.vim in hashivim/vim-terraform
+" By default, Vim associates .tf files with TinyFugue - tell it not to.
+autocmd! filetypedetect BufRead,BufNewFile *.tf
+autocmd BufRead,BufNewFile *.tf set filetype=terraform
+autocmd BufRead,BufNewFile *.tfvars set filetype=terraform
+autocmd BufRead,BufNewFile *.tfstate set filetype=json
+autocmd BufRead,BufNewFile *.tfstate.backup set filetype=json
+  augroup end
+endif
+
+"Ansible
+if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ansible') == -1
+  augroup filetypedetect
+  " ansible, from ansible.vim in pearofducks/ansible-vim
+function! s:isAnsible()
+  let filepath = expand("%:p")
+  let filename = expand("%:t")
+  if filepath =~ '\v/(tasks|roles|handlers)/.*\.ya?ml$' | return 1 | en
+  if filepath =~ '\v/(group|host)_vars/' | return 1 | en
+  if filename =~ '\v(playbook|site|main|local)\.ya?ml$' | return 1 | en
+
+  let shebang = getline(1)
+  if shebang =~# '^#!.*/bin/env\s\+ansible-playbook\>' | return 1 | en
+  if shebang =~# '^#!.*/bin/ansible-playbook\>' | return 1 | en
+
+  return 0
+endfunction
+
+function! s:setupTemplate()
+  if exists("g:ansible_template_syntaxes")
+    let filepath = expand("%:p")
+    for syntax_name in items(g:ansible_template_syntaxes)
+      let s:syntax_string = '\v/'.syntax_name[0]
+      if filepath =~ s:syntax_string
+        execute 'set ft='.syntax_name[1].'.jinja2'
+        return
+      endif
+    endfor
+  endif
+  set ft=jinja2
+endfunction
+
+augroup ansible_vim_ftyaml_ansible
+    au!
+    au BufNewFile,BufRead * if s:isAnsible() | set ft=yaml.ansible | en
+augroup END
+augroup ansible_vim_ftjinja2
+    au!
+    au BufNewFile,BufRead *.j2 call s:setupTemplate()
+augroup END
+augroup ansible_vim_fthosts
+    au!
+    au BufNewFile,BufRead hosts set ft=ansible_hosts
+augroup END
+  augroup end
+endif
+if !exists('g:polyglot_disabled') || index(g:polyglot_disabled, 'ansible') == -1
+  augroup filetypedetect
+  " ansible, from ansible.vim in pearofducks/ansible-vim
+function! s:isAnsible()
+  let filepath = expand("%:p")
+  let filename = expand("%:t")
+  if filepath =~ '\v/(tasks|roles|handlers)/.*\.ya?ml$' | return 1 | en
+  if filepath =~ '\v/(group|host)_vars/' | return 1 | en
+  if filename =~ '\v(playbook|site|main|local)\.ya?ml$' | return 1 | en
+
+  let shebang = getline(1)
+  if shebang =~# '^#!.*/bin/env\s\+ansible-playbook\>' | return 1 | en
+  if shebang =~# '^#!.*/bin/ansible-playbook\>' | return 1 | en
+
+  return 0
+endfunction
+
+function! s:setupTemplate()
+  if exists("g:ansible_template_syntaxes")
+    let filepath = expand("%:p")
+    for syntax_name in items(g:ansible_template_syntaxes)
+      let s:syntax_string = '\v/'.syntax_name[0]
+      if filepath =~ s:syntax_string
+        execute 'set ft='.syntax_name[1].'.jinja2'
+        return
+      endif
+    endfor
+  endif
+  set ft=jinja2
+endfunction
+
+augroup ansible_vim_ftyaml_ansible
+    au!
+    au BufNewFile,BufRead * if s:isAnsible() | set ft=yaml.ansible | en
+augroup END
+augroup ansible_vim_ftjinja2
+    au!
+    au BufNewFile,BufRead *.j2 call s:setupTemplate()
+augroup END
+augroup ansible_vim_fthosts
+    au!
+    au BufNewFile,BufRead hosts set ft=ansible_hosts
+augroup END
+  augroup end
+endif
+
+
