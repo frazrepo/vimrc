@@ -174,4 +174,6 @@ XX.Ressources                                     |fztips-XX|
 <
 
 XX.Ressources                                     *fztips-XX*
-  - See also |fz-vimtips|
+  - See also |fzvimtips|
+
+vim:tw=78:ts=8:ft=help:norl:
