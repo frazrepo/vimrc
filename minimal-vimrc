@@ -524,7 +524,6 @@ nnoremap <leader>, :ls<CR>:b<Space>
 " Cheap ctrl+p (Warning : too slow on big project)
 set path=.,**
 nnoremap <C-p> :find *
-nnoremap ,f :find *
 nnoremap ,F :find <C-R>=expand('%:p:h').'/**/*'<CR>
 nnoremap ,s :sfind *
 nnoremap ,S :sfind <C-R>=expand('%:p:h').'/**/*'<CR>
