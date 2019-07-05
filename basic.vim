@@ -32,6 +32,7 @@ set autoread                       " Automatically reload file on change without
 set backspace=eol,start,indent     " Configure backspace so it acts as it should act
 set clipboard^=unnamed,unnamedplus " Default to system clipboard
 set complete=.,w,b,u               " Complete option
+set cpoptions+=>                   " Put a line break before appended text (appending to register)
 set encoding=utf-8                 " Dealing with special chars
 set expandtab                      " Use spaces instead of tabs
 
