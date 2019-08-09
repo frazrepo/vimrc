@@ -153,11 +153,6 @@ nmap <leader>w :w!<cr>
 " Map jk to ESC in insert mode
 inoremap jk <Esc>
 
-" rsi bindings
-inoremap <C-A> <C-O>^
-inoremap <expr> <C-E> col('.')>strlen(getline('.'))<bar><bar>pumvisible()?"\<Lt>C-E>":"\<Lt>End>"
-cnoremap <C-A> <Home>
-
 " For autocompletion
 inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
 inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
@@ -275,9 +270,6 @@ nnoremap <A-Up> :cprevious<Cr>
 map H ^
 map L $
 
-" K to Split line here 
-nnoremap K Do<C-r>"<ESC>_
-
 "Quick beautiful paste hack
 nnoremap "p vi""0p
 nnoremap 'p vi'"0p
@@ -316,10 +308,6 @@ nnoremap mù m`
 nnoremap ùù ``
 nnoremap ' `
 
-"Experimental
-map à @
-nnoremap àà @@
-"
 " Execute a macro over a visual range
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 
