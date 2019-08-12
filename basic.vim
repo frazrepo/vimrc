@@ -461,6 +461,14 @@ onoremap ie :<C-u>normal vie<CR>
 xnoremap ae GoggV
 onoremap ae :<C-u>normal vae<CR>
 
+" Inside Bracket text-object 
+" ---------------------------------------
+" ir ar
+xnoremap ir i[
+onoremap ir :<C-u>normal vi[<CR>
+xnoremap ar a[
+onoremap ar :<C-u>normal va[<CR>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions and Commands {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
