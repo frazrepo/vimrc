@@ -41,7 +41,6 @@ set linebreak                      " Linebreak on 500 characters
 set linespace=4                    " Linespace
 set listchars=eol:$,tab:»\ ,trail:.,extends:›,precedes:‹
 set magic                          " For regular expressions turn magic on
-set matchtime=2                    " How many tenths of a second to blink when matching brackets
 set matchpairs+=<:>                "Match pairs
 set mouse=a                        " Activate mouse
 
@@ -59,9 +58,6 @@ set shiftwidth=4                   " 1 tab == 4 spaces
 set shortmess+=c                   " don't give |ins-completion-menu| messages.
 set shortmess=atI                  " Disable startup message
 
-set showbreak=↪\ 
-set showmatch                      " Show matching brackets when text indicator is over them
-
 set smartindent                    "Smart indent
 set smartcase                      " When searching try to be smart about cases 
 set smarttab                       " Be smart when using tabs ;)
@@ -69,58 +65,19 @@ set smarttab                       " Be smart when using tabs ;)
 set splitbelow                     " Split mode
 set splitright
 
-set synmaxcol=200                  " And optimize performance for longlines
 set tabstop=4
 
 set timeout timeoutlen=500 ttimeoutlen=50
 set ttyfast                        " Make the keyboard fast
-set textwidth=500
 
-set undodir=$HOME/.vim/undodir
-set undofile                       " Persistent undo : Keep undo history across sessions by storing it in a file
-
-set updatetime=300                 " Smaller updatetime for CursorHold & CursorHoldI
 set virtualedit=block              " VirtualEdit block allow selection everywhere in visual block mode
 set visualbell t_vb=               " No sound on errors
 set whichwrap+=<,>,h,l
-
-set wildignore=*.o,*~,*.pyc,tags   " Ignore compiled files
-set wildignore+=*/.git/*,*/node_modules/*,*/dist/*
-set wildignore+=.git\*,node_modules\*
 
 set wildmenu                       " Turn on the Wild menu
 set wildmode=longest:full,full
 
 set wrap                           "Wrap lines
-
-" grepprg to ag
-if executable('ag')
-    set grepprg=ag\ --vimgrep
-    set grepformat=%f:%l:%c:%m,%f:%l:%m
-endif
-
-
-" Maximized window on start and Font Size
-if has("gui_running")
-  "GuiOptions - Horizontal scrollbar
-  set guioptions+=b
-
-  if has("gui_gtk2") || has("gui_gtk3") 
-    set lines=535 columns=1366
-    set guifont=Inconsolata\ 17
-  endif
-
-  if has("gui_macvim")
-    set lines=768 columns=1366
-    set guifont=Menlo\ Regular:h14
-  endif
-
-  if has("gui_win32")
-    autocmd GUIEnter * :simalt ~n
-    set guifont=Consolas:h15:cANSI
-  endif
-
-endif
 
 """"""""""""""""""""""""""""""
 " => Mappings {{{1
@@ -142,16 +99,9 @@ nnoremap ? ?\v
 " Search/Replace
 nnoremap <leader>r :%s///g<Left><Left>
 
-" Visual mode pressing * or # searches for the current selection
-vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
-vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
-
 "Visual find and replace
 nnoremap <Leader>fr :%s/
 xnoremap <Leader>fr :<C-u>'<,'>s/
-
-"Search and replace the selected text
-vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
 
 " Repeat . command in visual mode
 vnoremap . :normal.<CR>
@@ -197,19 +147,6 @@ nnoremap <bs> <c-^>
 " Edit quickly with the current buffer path
 map <leader>e :edit <c-r>=expand("%:p:h")<cr>/
 
-" Useful mappings for managing tabs
-map <leader>tn :tabnew<cr>
-map <leader>to :tabonly<cr>
-map <leader>tc :tabclose<cr>
-
-" Toggle between this and the last accessed tab
-let g:lasttab = 1
-nmap <Leader><bs> :exe "tabn ".g:lasttab<CR>
-autocmd TabLeave * let g:lasttab = tabpagenr()
-
-" Opens a new tab with the current buffer's path
-map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
-
 " Change word under cursor and dot repeat, really useful to edit quickly
 nnoremap c* *Ncgn
 nnoremap c# #NcgN
@@ -226,10 +163,6 @@ xnoremap Q :normal @q<cr>
 " Indent/Format All documents using = or gq
 nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
-
-"Insert new line in normal mode quickly and move cursor (but not in quickfix window or in command line history)
-nnoremap <silent> <expr> <cr>  &buftype ==# 'nofile' ? "\<CR>" : &buftype ==# 'quickfix' ? "\<CR>" : ":set paste<CR>o<Esc>:set nopaste<CR>"
-nnoremap <silent> <S-cr> :set paste<CR>O<Esc>:set nopaste<CR>
 
 " Navigating quickfix (Experimental)
 nnoremap <A-Down> :cnext<Cr>
@@ -256,12 +189,9 @@ nnoremap <C-S>		     :update<CR>
 vnoremap <C-S>		<C-C>:update<CR>
 inoremap <C-S>		<C-O>:update<CR>
 
-" Enhance paste in visual mode to replace many times with the yank register
-xnoremap <silent> p p:if v:register == '+'<Bar>let @+=@0<Bar>endif<CR>
-
 " Do not track every j and k motion in jumplist  
-nnoremap <expr> k (v:count > 1 ? "m'" . v:count : '') . 'gk'
-nnoremap <expr> j (v:count > 1 ? "m'" . v:count : '') . 'gj'
+nnoremap k gk
+nnoremap j gj
 
 " Toogle gj gk and j k
 nnoremap gj j 
@@ -276,20 +206,9 @@ nnoremap mù m`
 nnoremap ùù ``
 nnoremap ' `
 
-" Execute a macro over a visual range
-xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
-
 " Expand %% to current path in command line mode
 cnoremap %% <C-R>=fnameescape(expand("%:p:h")) . '/'<CR>
 cnoremap :: <C-R>=fnameescape(expand("%"))<CR>
-
-" Map for navigating search (/?) result
-set wildcharm=<C-z>
-cnoremap <expr> <Tab> getcmdtype() =~ '[\/?]' ? "<C-g>" : "<C-z>" 
-cnoremap <expr> <S-Tab> getcmdtype() =~ '[\/?]' ? "<C-t>" : "<S-Tab>" 
-
-" Command line CR
-cnoremap <expr> <CR> CommandLineCR()
 
 " Remove the Windows ^M - when the encodings gets messed up
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
@@ -298,64 +217,6 @@ noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 map <leader>x :e ~/buffer.txt<cr>
 map <leader>d :e ~/buffer.md<cr>
 map <leader>s :e ~/buffer.sql<cr>
-
-"Adjust font size
-nnoremap <M-9>        :Smaller<CR>
-nnoremap <M-0>        :Bigger<CR>
-
-" For Tags navigation - <C-$> doesn't work yet
-nmap <F12> <C-]>
-
-" Toogle quickfix windows
-map <silent> <F8> :call <SID>ToggleQf()<cr>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Miscellaneous {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-" Map ALT Key in terminal
-if &term =~ 'xterm' && !has("gui_running")
-  execute "set <A-k>=\ek"
-  execute "set <A-j>=\ej"
-endif
-
-" Insert mode cursor for terminal
-let &t_SI = "\e[6 q"
-let &t_EI = "\e[2 q"
-
-" Hide tilde ~ sign at the end of buffer
- hi! EndOfBuffer guibg=bg guifg=bg
-
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Commands {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-" VisualBlock :  Workaround to start visual block mode on terminal if C-v or C-q is not working
-command! VisualBlock execute "normal! \<C-v>"
-
-" W : sudo saves the file (useful for handling the permission-denied error on Linux)
-command! W w !sudo tee % > /dev/null
-
-" Smaller/Bigger : Make Fonts bigger or smaller - from tpope vimrc
-if has("gui_win32")
-  command! -bar -nargs=0 Bigger  :let &guifont = substitute(&guifont,'\d\+','\=submatch(0)+1','')
-  command! -bar -nargs=0 Smaller :let &guifont = substitute(&guifont,'\d\+','\=submatch(0)-1','')
-else
-  command! -bar -nargs=0 Bigger  :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)+1','')
-  command! -bar -nargs=0 Smaller :let &guifont = substitute(&guifont,'\d\+$','\=submatch(0)-1','')
-endif
-
-" RemoveTrailingSpaces : Remove all training spaces
-command! RemoveTrailingSpaces call CleanExtraSpaces()
-
-" ListLeaders : List all leader mappings
-command! ListLeaders call ListLeaders()
-
-" SortByWidth : Sort lines by width
-command! -range=%  SortByWidth <line1>,<line2>call SortByWidth()
-
-" WipeReg : Clean all registers
-command! WipeReg for i in range(34,122) | silent! call setreg(nr2char(i), []) | endfor 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => AutoCommands {{{1
@@ -367,28 +228,12 @@ if has("autocmd")
         " Return to last edit position when opening files (You want this!)
         autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
-        " Clean extra spaces on txt files 
-        autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
-
-        " Help File speedups, <enter> to follow tag, delete (backspace) for back
-        autocmd filetype help nnoremap <buffer><cr> <c-]>
-        autocmd filetype help nnoremap <buffer><bs> <c-T>
-        autocmd filetype help nnoremap <buffer>q :q<CR>
-        autocmd filetype help set nonumber
-        autocmd filetype help wincmd _ " Maximize the help on open
-
         " AutoSave Scratch buffer
         autocmd InsertLeave,TextChanged buffer.* nested silent! update
         autocmd FocusGained,BufEnter,CursorHold buffer.* silent! checktime
 
-        " Automatic marks
-        autocmd BufLeave *.css,*.less,*.scss,*.sass normal! mC
-        autocmd BufLeave *.html,*.cshtml            normal! mH
-        autocmd BufLeave *.js                       normal! mJ
-        autocmd BufLeave vimrc,*.vim                normal! mV
-
-        " Format : - [ ] Task item
-        autocmd FileType markdown nnoremap <buffer> <silent> - :call winrestview(<SID>toggle('^\s*-\s*\[\zs.\ze\]', {' ': '.', '.': 'x', 'x': ' '}))<cr>
+        "Open automatically the Quickfix Window
+        autocmd QuickFixCmdPost [^l]* cwindow
 
     augroup END
 endif
@@ -401,46 +246,6 @@ let g:netrw_winsize=15
 let g:netrw_liststyle=3
 let g:netrw_browse_split = 4
 let g:netrw_altv = 1
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Text-Objects {{{1
-" https://gist.github.com/romainl/c0a8b57a36aec71a986f1120e1931f20
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Line text-object
-" -----------------
-" il al
-xnoremap il g_o0
-onoremap il :<C-u>normal vil<CR>
-xnoremap al $o0
-onoremap al :<C-u>normal val<CR>
-
-" Number text-object (integer and float)
-" ---------------------------------------
-" in an
-function! VisualNumber()
-	call search('\d\([^0-9\.]\|$\)', 'cW')
-	normal v
-	call search('\(^\|[^0-9\.]\d\)', 'becW')
-endfunction
-xnoremap in :<C-u>call VisualNumber()<CR>
-onoremap in :<C-u>normal vin<CR>
-
-" Buffer(entire) text-object
-" -------------------
-" ie ae
-xnoremap ie GoggV
-onoremap ie :<C-u>normal vie<CR>
-xnoremap ae GoggV
-onoremap ae :<C-u>normal vae<CR>
-
-" Inside Bracket text-object 
-" ---------------------------------------
-" ir ar
-xnoremap ir i[
-onoremap ir :<C-u>normal vi[<CR>
-xnoremap ar a[
-onoremap ar :<C-u>normal va[<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugins Replacement for minimal vimrc {{{1
@@ -456,44 +261,6 @@ for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', 
 	execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
 	execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
 endfor
-
-" <TAB>: minimal tab completion.
-function! InsertTabWrapper()
-    let col = col('.') - 1
-    if !col || getline('.')[col - 1] !~ '\k'
-        return "\<tab>"
-    else
-        return "\<c-p>"
-    endif
-endfunction
-inoremap <expr> <tab> InsertTabWrapper()
-inoremap <s-tab> <c-n>
-
-" vim-move
-nnoremap <A-j> :m .+1<CR>==
-nnoremap <A-k> :m .-2<CR>==
-inoremap <A-j> <Esc>:m .+1<CR>==gi
-inoremap <A-k> <Esc>:m .-2<CR>==gi
-vnoremap <A-j> :m '>+1<CR>gv=gv
-vnoremap <A-k> :m '<-2<CR>gv=gv
-
-" Search in files (ctrlsf)
-nnoremap <leader>* :execute "grep " . expand("<cword>") . " **/*" <Bar> cw<CR>
-vnoremap <silent> <leader>* :<C-u>call VisualSelection('', '')<CR>:grep <C-R>=@/<CR> **/*<CR>:cw<cr>
-
-":grep foo /dir/*.sql 
-nnoremap <leader>/ :grep <C-R>=' **/*.'. expand('%:p:e')<CR><C-Left><Left>
-vnoremap <leader>/ :<C-u>call VisualSelection('', '')<CR>:grep <C-R>=@/<CR> **/*.<C-R>=expand('%:p:e')<CR>
-
-"Open automatically the Quickfix Window
-autocmd QuickFixCmdPost [^l]* cwindow
-
-" Filter Quickfix list
-function! s:FilterQuickfixList(bang, pattern)
-  let cmp = a:bang ? '!~#' : '=~#'
-  call setqflist(filter(getqflist(), "bufname(v:val['bufnr']) " . cmp . " a:pattern"))
-endfunction
-command! -bang -nargs=1 -complete=file QFilter call s:FilterQuickfixList(<bang>0, <q-args>)
 
 "Cheap MRU files
 nnoremap <leader>u :bro ol<CR>
@@ -513,226 +280,7 @@ nnoremap ,V :vert sfind <C-R>=expand('%:p:h').'/**/*'<CR>
 " Mapping like dirvish
 map <leader>v :Vexplore %:p:h<cr>
 
-" Scratch buffer
-command! Scratch vnew | setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile
-nnoremap <leader>bs :Scratch<cr>
-
-" Yankmatches/ DeleteMatches
-if has('win32') || has('win64')
-  nnoremap <silent> ym qxq:g/<C-R>//yank X<CR>:let @*=@x<CR>
-else
-  nnoremap <silent> ym qxq:g/<C-R>//yank X<CR>:let @+=@x<CR>
-endif
-nnoremap <silent> dm :g/<C-R>//d<CR>
-
-" gtfo
-nnoremap gof :call CopyFilePath()<CR>
-function! CopyFilePath()
-  let @+=expand('%:p:h')
-  let @*=expand('%:p:h')
-  echo "File path copied to system clipboard"
-endfunction
-
-"Auto-Pairs /Pear Tree replacement
-inoremap ( ()<Left>
-inoremap <expr> ) getline('.')[getpos('.')[2]-1] == ')' ? '<Right>' : ')'
-                   
-inoremap [ []<Left>
-inoremap <expr> ] getline('.')[getpos('.')[2]-1] == ']' ? '<Right>' : ']'
-                   
-inoremap { {}<Left>
-inoremap <expr> } getline('.')[getpos('.')[2]-1] == '}' ? '<Right>' : '}'
-                   
-inoremap < <><Left>
-inoremap <expr> > getline('.')[getpos('.')[2]-1] == '>' ? '<Right>' : '>'
-
-inoremap <expr> " getline('.')[getpos('.')[2]-1] == '"' ? '<Right>' : '""<Left>'
-inoremap <expr> ' getline('.')[getpos('.')[2]-1] == "'" ? '<Right>' : "''<Left>"
-
-" IList Search in the buffer
-" nnoremap <leader>f :ilist<space>/
-nnoremap <leader>f :execute "vimgrep /" . expand("<cword>") . "/j %" <Bar> cw<CR>
-vnoremap <silent> <leader>f :<C-u>call VisualSelection('', '')<CR>:vimgrep/<C-R>=@/<CR>/j %<CR>:cw<cr>
-
-" Minimal vim rooter
-" CWD automatically for the current buffer
-augroup CwdBufferEnter
-  autocmd!
-  autocmd Filetype,BufEnter *  call ChangeCurrentWorkingDirectory()
-augroup END
-
-" Change Current Working Directory (CWD) to buffer directory
-function! ChangeCurrentWorkingDirectory()
-  try
-    :cd %:p:h
-  catch
-  endtry
-endfunction
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Statusline {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" :h mode() to see all modes
-let g:currentmode={
-    \ 'n'      : 'NORMAL ',
-    \ 'no'     : 'N·Operator Pending ',
-    \ 'v'      : 'VISUAL ',
-    \ 'V'      : 'V·Line ',
-    \ "\<C-V>" : 'V·Block ',
-    \ 's'      : 'Select ',
-    \ 'S'      : 'S·Line ',
-    \ '\<C-S>' : 'S·Block ',
-    \ 'i'      : 'INSERT ',
-    \ 'R'      : 'REPLACE ',
-    \ 'Rv'     : 'V·Replace ',
-    \ 'c'      : 'Command ',
-    \ 'cv'     : 'Vim Ex ',
-    \ 'ce'     : 'Ex ',
-    \ 'r'      : 'Prompt ',
-    \ 'rm'     : 'More ',
-    \ 'r?'     : 'Confirm ',
-    \ '!'      : 'Shell ',
-    \ 't'      : 'Terminal '
-    \}
-
-" Automatically change the statusline color depending on mode
-function! ChangeStatuslineColor()
-  if (mode() =~# '\v(n|no)')
-    exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
-  elseif (mode() =~# '\v(v|V)' || g:currentmode[mode()] ==# 'V·Block ' || get(g:currentmode, mode(), '') ==# 't')
-    exe 'hi! StatusLine ctermfg=005 guifg=#000000 guibg=#f2c68a gui=NONE cterm=None'
-  elseif (mode() ==# 'i')
-    exe 'hi! StatusLine ctermfg=004 guifg=#000000 guibg=#95e454 gui=NONE cterm=None'
-  else
-    exe 'hi! StatusLine ctermfg=006 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
-  endif
-  return ''
-endfunction
-
-"Default
-exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
-
-set laststatus=2
-set statusline=
-set statusline+=%{ChangeStatuslineColor()}
-set statusline+=%0*\ %{toupper(g:currentmode[mode()])}
-set statusline+=%2*\ %t          "tail of the filename
-set statusline+=%2*\ %h          "help file flag
-set statusline+=%2*\ %m          "modified flag
-set statusline+=%2*\ %r          "read only flag
-set statusline+=%*
-set statusline+=%2*\ %=          "left/right separator
-set statusline+=%2*\ %y\           "filetype
-set statusline+=%3*\ %3p%%\      "percent through file
-set statusline+=%4*\ %3l:%-3c    "cursor line/cursor column
-hi User0 guifg=#000000 guibg=#8ac6f2
-hi User1 guifg=#000000 guibg=#8ac6f2
-hi User2 guifg=#000000 guibg=#808080
-hi User3 guifg=#000000 guibg=#969696
-hi User4 guifg=#000000 guibg=#a8a8a8
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Helper functions and Commands {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Delete trailing white space on save, useful for some filetypes ;)
-fun! CleanExtraSpaces()
-    let save_cursor = getpos(".")
-    let old_query = getreg('/')
-    silent! %s/\s\+$//e
-    call setpos('.', save_cursor)
-    call setreg('/', old_query)
-endfun
-
-function! CmdLine(str)
-    call feedkeys(":" . a:str)
-endfunction 
-
-" Visual selection, find/replace
-function! VisualSelection(direction, extra_filter) range
-    let l:saved_reg = @"
-    execute "normal! vgvy"
-
-    let l:pattern = escape(@", "\\/.*'$^~[]")
-    let l:pattern = substitute(l:pattern, "\n$", "", "")
-
-    if a:direction == 'gv'
-        call CmdLine("Ack '" . l:pattern . "' " )
-    elseif a:direction == 'replace'
-        call CmdLine("%s" . '/'. l:pattern . '/')
-    endif
-
-    let @/ = l:pattern
-    let @" = l:saved_reg
-endfunction
-
-" Toogle quickfix windows
-function! s:ToggleQf()
-  for buffer in tabpagebuflist()
-    if bufname(buffer) == ''
-      " then it should be the quickfix window
-      cclose
-      return
-    endif
-  endfor
-
-  copen
-endfunction
-
-" Execute a macro over a visual range
-function! ExecuteMacroOverVisualRange()
-  echo "@".getcmdline()
-  execute ":'<,'>normal @".nr2char(getchar())
-endfunction
-
-" List all leader mappings
-function! ListLeaders()
-  silent! redir @a
-  silent! nmap <LEADER>
-  silent! redir END
-  silent! new
-  silent! put! a
-  silent! g/^s*$/d
-  silent! %s/^.*,//
-  silent! %sort
-  silent! let lines = getline(1,"$")
-endfunction
-
-" Sort lines by width
-function! SortByWidth() range
-    silent! execute a:firstline . "," . a:lastline . 's/^\(.*\)$/\=strdisplaywidth( submatch(0) ) . " " . submatch(0)/'
-    silent! execute a:firstline . "," . a:lastline . 'sort n'
-    silent! execute a:firstline . "," . a:lastline . 's/^\d\+\s//'
-endfunction
-
-" https://gist.github.com/romainl/047aca21e338df7ccf771f96858edb86 
-function! CommandLineCR()
-    let cmdline = getcmdline()
-    if cmdline =~ '\v\C/(#|nu|num|numb|numbe|number)$'
-        " like :g//# but prompts for a command
-        return "\<CR>:"
-    elseif cmdline =~ '\v\C^(dli|il)'
-        " like :dlist or :ilist but prompts for a count for :djump or :ijump
-        return "\<CR>:" . cmdline[0] . "j  " . split(cmdline, " ")[1] . "\<S-Left>\<Left>"
-    else
-        return "\<CR>"
-    endif
-endfunction
-
-" Toggle Checkbox Markdown
-function s:toggle(pattern, dict, ...)
-  let view = winsaveview()
-  execute 'keeppatterns s/' . a:pattern . '/\=get(a:dict, submatch(0), a:0 ? a:1 : " ")/e'
-  return view
-endfunction
-
 " }}} "
-
-" Host specific vim 
-if filereadable(expand($HOME . '/.vimrc.local'))
-    source $HOME/.vimrc.local
-endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
