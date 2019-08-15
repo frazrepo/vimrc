@@ -5,16 +5,12 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Plugins (experimental) {{{1
+" => General {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 if !has("nvim")
     packadd! matchit
 endif
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => General {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 set nocompatible                   " Set default to nocompatible
 syntax on                          " Activate by default dracula theme
@@ -186,7 +182,6 @@ inoremap <C-r><C-r> <C-r>*
 
 " Use CTRL-S for saving, also in Insert mode
 nnoremap <C-S>		     :update<CR>
-vnoremap <C-S>		<C-C>:update<CR>
 inoremap <C-S>		<C-O>:update<CR>
 
 " Do not track every j and k motion in jumplist  
@@ -237,15 +232,6 @@ if has("autocmd")
 
     augroup END
 endif
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Netrw configuration {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:netrw_banner=0
-let g:netrw_winsize=15
-let g:netrw_liststyle=3
-let g:netrw_browse_split = 4
-let g:netrw_altv = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Plugins Replacement for minimal vimrc {{{1
