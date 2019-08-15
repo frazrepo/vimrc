@@ -41,7 +41,6 @@ set foldmethod=manual              " Foldmethod manual
 set formatoptions+=j               " Join option :  Delete comment character when joining commented lines
 set gdefault
 set hidden                         " A buffer becomes hidden when it is abandoned
-set history=1000                   " Sets how many lines of history VIM has to remember
 set hlsearch                       " Highlight search results
 set ignorecase                     " Ignore case when searching
 set incsearch                      " Makes search act like search in modern browsers
@@ -87,7 +86,6 @@ set textwidth=500
 
 set undodir=$HOME/.vim/undodir
 set undofile                       " Persistent undo : Keep undo history across sessions by storing it in a file
-set undolevels=1000                " Same for undolevels
 
 set updatetime=300                 " Smaller updatetime for CursorHold & CursorHoldI
 set virtualedit=block              " VirtualEdit block allow selection everywhere in visual block mode
@@ -267,7 +265,6 @@ map L g_
 nnoremap "p vi""0p
 nnoremap 'p vi'"0p
 nnoremap (p vi("0p
-nnoremap )p vi)"0p
 
 " Paste from yank register 
 xnoremap <leader>p "0p
@@ -277,7 +274,7 @@ nnoremap <leader>p "0p
 inoremap <C-r><C-r> <C-r>*
 
 " Use CTRL-S for saving, also in Insert mode
-noremap <C-S>		     :update<CR>
+nnoremap <C-S>		     :update<CR>
 vnoremap <C-S>		<C-C>:update<CR>
 inoremap <C-S>		<C-O>:update<CR>
 
