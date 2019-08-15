@@ -5,7 +5,7 @@ set userdir=%USERPROFILE%
 set userConfig=%USERPROFILE%/\_vimrc
 set backupConfig=%USERPROFILE%/\_vimrc.bkp
 set vimrcfile=vimrc
-set minVimrcfile=minimal-vimrc
+set minVimrcfile=lightvimrc.vim
 
 if exist %backupConfig% (
     del "%backupConfig%"
@@ -15,7 +15,7 @@ if exist %userConfig% (
 )
 
 if "%1" == "/m" (
-    echo "Installing minimal vimrc file.."
+    echo "Installing light vimrc file.."
     copy /y "%minVimrcfile%" "%userConfig%"
 ) else (
         echo "Installing vimrc file.."

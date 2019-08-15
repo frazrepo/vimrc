@@ -1,23 +1,15 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Minimal vimrc
 " Maintainer: frazrepo
 " https://github.com/frazrepo/vimrc
-"
-" Debug : vim --startuptime vim.log
-"
-" To start vim without using this .vimrc file, use:
-"     vim -u NORC
-"
-" To start vim without loading any .vimrc or plugins, use:
-"     vim -u NONE
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" => Global Mode Variables {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Plugins (experimental) {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Define this variable for developer edition
-" Currently for nvim only
-if has('nvim')
-  let g:developer_edition = 1
+if !has("nvim")
+    packadd! matchit
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -107,17 +99,9 @@ if executable('ag')
     set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
 
-"Developer Edition
-if exists("g:developer_edition") 
-
-  set cmdheight=2                   "Fix : Press Enter or Type Command to continue error in nvim 
-  set signcolumn=yes                " always show signcolumns
-
-endif
 
 " Maximized window on start and Font Size
 if has("gui_running")
-
   "GuiOptions - Horizontal scrollbar
   set guioptions+=b
 
@@ -151,27 +135,20 @@ nmap <leader>w :w!<cr>
 " Map jk to ESC in insert mode
 inoremap jk <Esc>
 
-" For autocompletion
-inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
-inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
-inoremap <silent> ,f <C-x><C-f>
-inoremap <silent> ,l <C-x><C-l>
-inoremap <silent> ,n <C-x><C-n>
-
 " Search using magic regex
 nnoremap / /\v
 nnoremap ? ?\v
 
 " Search/Replace
-nnoremap <leader>r :OverCommandLine%s///g<Left><Left>
+nnoremap <leader>r :%s///g<Left><Left>
 
 " Visual mode pressing * or # searches for the current selection
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
 "Visual find and replace
-nnoremap <Leader>fr :call VisualFindAndReplace()<CR>
-xnoremap <Leader>fr :call VisualFindAndReplaceWithSelection()<CR>
+nnoremap <Leader>fr :%s/
+xnoremap <Leader>fr :<C-u>'<,'>s/
 
 "Search and replace the selected text
 vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
@@ -197,6 +174,7 @@ map <C-l> <C-W>l
 " Move faster vertically
 nnoremap <c-j> 5j
 nnoremap <c-k> 5k
+
 
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
@@ -344,6 +322,11 @@ endif
 let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
 
+" Hide tilde ~ sign at the end of buffer
+ hi! EndOfBuffer guibg=bg guifg=bg
+
+
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Commands {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
@@ -460,6 +443,196 @@ xnoremap ar a[
 onoremap ar :<C-u>normal va[<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Plugins Replacement for minimal vimrc {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" vim targets : 24 simple text-objects
+" ----------------------
+" i_ i. i: i, i; i| i/ i\ i* i+ i- i#
+" a_ a. a: a, a; a| a/ a\ a* a+ a- a#
+for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', '#' ]
+	execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
+	execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
+	execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
+	execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
+endfor
+
+" <TAB>: minimal tab completion.
+function! InsertTabWrapper()
+    let col = col('.') - 1
+    if !col || getline('.')[col - 1] !~ '\k'
+        return "\<tab>"
+    else
+        return "\<c-p>"
+    endif
+endfunction
+inoremap <expr> <tab> InsertTabWrapper()
+inoremap <s-tab> <c-n>
+
+" vim-move
+nnoremap <A-j> :m .+1<CR>==
+nnoremap <A-k> :m .-2<CR>==
+inoremap <A-j> <Esc>:m .+1<CR>==gi
+inoremap <A-k> <Esc>:m .-2<CR>==gi
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
+
+" Search in files (ctrlsf)
+nnoremap <leader>* :execute "grep " . expand("<cword>") . " **/*" <Bar> cw<CR>
+vnoremap <silent> <leader>* :<C-u>call VisualSelection('', '')<CR>:grep <C-R>=@/<CR> **/*<CR>:cw<cr>
+
+":grep foo /dir/*.sql 
+nnoremap <leader>/ :grep <C-R>=' **/*.'. expand('%:p:e')<CR><C-Left><Left>
+vnoremap <leader>/ :<C-u>call VisualSelection('', '')<CR>:grep <C-R>=@/<CR> **/*.<C-R>=expand('%:p:e')<CR>
+
+"Open automatically the Quickfix Window
+autocmd QuickFixCmdPost [^l]* cwindow
+
+" Filter Quickfix list
+function! s:FilterQuickfixList(bang, pattern)
+  let cmp = a:bang ? '!~#' : '=~#'
+  call setqflist(filter(getqflist(), "bufname(v:val['bufnr']) " . cmp . " a:pattern"))
+endfunction
+command! -bang -nargs=1 -complete=file QFilter call s:FilterQuickfixList(<bang>0, <q-args>)
+
+"Cheap MRU files
+nnoremap <leader>u :bro ol<CR>
+
+"Cheap buffer switching
+nnoremap <leader>, :ls<CR>:b<Space>
+
+" Cheap ctrl+p (Warning : too slow on big project)
+set path=.,**
+nnoremap <C-p> :find *
+nnoremap ,F :find <C-R>=expand('%:p:h').'/**/*'<CR>
+nnoremap ,s :sfind *
+nnoremap ,S :sfind <C-R>=expand('%:p:h').'/**/*'<CR>
+nnoremap ,v :vert sfind *
+nnoremap ,V :vert sfind <C-R>=expand('%:p:h').'/**/*'<CR>
+
+" Mapping like dirvish
+map <leader>v :Vexplore %:p:h<cr>
+
+" Scratch buffer
+command! Scratch vnew | setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile
+nnoremap <leader>bs :Scratch<cr>
+
+" Yankmatches/ DeleteMatches
+if has('win32') || has('win64')
+  nnoremap <silent> ym qxq:g/<C-R>//yank X<CR>:let @*=@x<CR>
+else
+  nnoremap <silent> ym qxq:g/<C-R>//yank X<CR>:let @+=@x<CR>
+endif
+nnoremap <silent> dm :g/<C-R>//d<CR>
+
+" gtfo
+nnoremap gof :call CopyFilePath()<CR>
+function! CopyFilePath()
+  let @+=expand('%:p:h')
+  let @*=expand('%:p:h')
+  echo "File path copied to system clipboard"
+endfunction
+
+"Auto-Pairs /Pear Tree replacement
+inoremap ( ()<Left>
+inoremap <expr> ) getline('.')[getpos('.')[2]-1] == ')' ? '<Right>' : ')'
+                   
+inoremap [ []<Left>
+inoremap <expr> ] getline('.')[getpos('.')[2]-1] == ']' ? '<Right>' : ']'
+                   
+inoremap { {}<Left>
+inoremap <expr> } getline('.')[getpos('.')[2]-1] == '}' ? '<Right>' : '}'
+                   
+inoremap < <><Left>
+inoremap <expr> > getline('.')[getpos('.')[2]-1] == '>' ? '<Right>' : '>'
+
+inoremap <expr> " getline('.')[getpos('.')[2]-1] == '"' ? '<Right>' : '""<Left>'
+inoremap <expr> ' getline('.')[getpos('.')[2]-1] == "'" ? '<Right>' : "''<Left>"
+
+" IList Search in the buffer
+" nnoremap <leader>f :ilist<space>/
+nnoremap <leader>f :execute "vimgrep /" . expand("<cword>") . "/j %" <Bar> cw<CR>
+vnoremap <silent> <leader>f :<C-u>call VisualSelection('', '')<CR>:vimgrep/<C-R>=@/<CR>/j %<CR>:cw<cr>
+
+" Minimal vim rooter
+" CWD automatically for the current buffer
+augroup CwdBufferEnter
+  autocmd!
+  autocmd Filetype,BufEnter *  call ChangeCurrentWorkingDirectory()
+augroup END
+
+" Change Current Working Directory (CWD) to buffer directory
+function! ChangeCurrentWorkingDirectory()
+  try
+    :cd %:p:h
+  catch
+  endtry
+endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Statusline {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" :h mode() to see all modes
+let g:currentmode={
+    \ 'n'      : 'NORMAL ',
+    \ 'no'     : 'N·Operator Pending ',
+    \ 'v'      : 'VISUAL ',
+    \ 'V'      : 'V·Line ',
+    \ "\<C-V>" : 'V·Block ',
+    \ 's'      : 'Select ',
+    \ 'S'      : 'S·Line ',
+    \ '\<C-S>' : 'S·Block ',
+    \ 'i'      : 'INSERT ',
+    \ 'R'      : 'REPLACE ',
+    \ 'Rv'     : 'V·Replace ',
+    \ 'c'      : 'Command ',
+    \ 'cv'     : 'Vim Ex ',
+    \ 'ce'     : 'Ex ',
+    \ 'r'      : 'Prompt ',
+    \ 'rm'     : 'More ',
+    \ 'r?'     : 'Confirm ',
+    \ '!'      : 'Shell ',
+    \ 't'      : 'Terminal '
+    \}
+
+" Automatically change the statusline color depending on mode
+function! ChangeStatuslineColor()
+  if (mode() =~# '\v(n|no)')
+    exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
+  elseif (mode() =~# '\v(v|V)' || g:currentmode[mode()] ==# 'V·Block ' || get(g:currentmode, mode(), '') ==# 't')
+    exe 'hi! StatusLine ctermfg=005 guifg=#000000 guibg=#f2c68a gui=NONE cterm=None'
+  elseif (mode() ==# 'i')
+    exe 'hi! StatusLine ctermfg=004 guifg=#000000 guibg=#95e454 gui=NONE cterm=None'
+  else
+    exe 'hi! StatusLine ctermfg=006 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
+  endif
+  return ''
+endfunction
+
+"Default
+exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
+
+set laststatus=2
+set statusline=
+set statusline+=%{ChangeStatuslineColor()}
+set statusline+=%0*\ %{toupper(g:currentmode[mode()])}
+set statusline+=%2*\ %t          "tail of the filename
+set statusline+=%2*\ %h          "help file flag
+set statusline+=%2*\ %m          "modified flag
+set statusline+=%2*\ %r          "read only flag
+set statusline+=%*
+set statusline+=%2*\ %=          "left/right separator
+set statusline+=%2*\ %y\           "filetype
+set statusline+=%3*\ %3p%%\      "percent through file
+set statusline+=%4*\ %3l:%-3c    "cursor line/cursor column
+hi User0 guifg=#000000 guibg=#8ac6f2
+hi User1 guifg=#000000 guibg=#8ac6f2
+hi User2 guifg=#000000 guibg=#808080
+hi User3 guifg=#000000 guibg=#969696
+hi User4 guifg=#000000 guibg=#a8a8a8
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions and Commands {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -488,18 +661,10 @@ function! VisualSelection(direction, extra_filter) range
         call CmdLine("Ack '" . l:pattern . "' " )
     elseif a:direction == 'replace'
         call CmdLine("%s" . '/'. l:pattern . '/')
-    endif 
+    endif
 
     let @/ = l:pattern
     let @" = l:saved_reg
-endfunction
-
-function! VisualFindAndReplace()
-    :OverCommandLine%s/
-endfunction
-
-function! VisualFindAndReplaceWithSelection() range
-    :'<,'>OverCommandLine s/
 endfunction
 
 " Toogle quickfix windows
@@ -554,52 +719,6 @@ function! CommandLineCR()
         return "\<CR>"
     endif
 endfunction
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Load Plugins and Configs {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"Plugins and Configurations
-source $HOME/.vim_runtime/plugins.vim
-source $HOME/.vim_runtime/plugins_config.vim
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Color Scheme {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Check colorScheme function
-function! HasColorscheme(name)
-    let pat = 'colors/'.a:name.'.vim'
-    return !empty(globpath(&rtp, pat))
-endfunction
-
-" Get current hour
-function! GetCurrentHour()
-    let hr = str2nr(strftime('%H'))
-    return hr
-endfunction
-
-" ColorScheme ayu for GUI and apprentice for terminal
-if has("gui_running")
-    if GetCurrentHour() >=7 && GetCurrentHour() <=16
-      if HasColorscheme('ayu')
-        color ayu
-      endif
-    else
-      if HasColorscheme('dracula')
-        color dracula
-      endif
-    endif
-else "Terminal
-    if GetCurrentHour() >=7 && GetCurrentHour() <=17
-      if HasColorscheme('seoul256-light')
-        color seoul256-light
-      endif
-    else
-      if HasColorscheme('apprentice')
-        color apprentice
-      endif
-    endif
-endif
 
 " Toggle Checkbox Markdown
 function s:toggle(pattern, dict, ...)
