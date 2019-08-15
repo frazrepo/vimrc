@@ -1,5 +1,5 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Minimal vimrc
+" Light vimrc : No plugins version
 " Maintainer: frazrepo
 " https://github.com/frazrepo/vimrc
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
