@@ -32,17 +32,14 @@ set hlsearch                       " Highlight search results
 set ignorecase                     " Ignore case when searching
 set incsearch                      " Makes search act like search in modern browsers
 set lazyredraw                     " Don't redraw while executing macros (good performance config)
-set linebreak                      " Linebreak on 500 characters
-set linespace=4                    " Linespace
 set listchars=eol:$,tab:»\ ,trail:.,extends:›,precedes:‹
 set magic                          " For regular expressions turn magic on
-set matchpairs+=<:>                "Match pairs
+set matchpairs+=<:>                " Match pairs
 set mouse=a                        " Activate mouse
 
 set nobackup                       " Turn backup off, since most stuff is in SVN, git et.c anyway...
 set noerrorbells
 set nolist                         " List Chars
-set noshowmode                     " Do not show mode (displayed by lightline already)
 set noswapfile
 set nowritebackup
 
@@ -50,10 +47,9 @@ set number                         " Number - No Default relative number (cause 
 set scrolloff=1                    " Set 1 lines to the cursor - when moving vertically using j/k
 set shiftwidth=4                   " 1 tab == 4 spaces
 
-set shortmess+=c                   " don't give |ins-completion-menu| messages.
 set shortmess=atI                  " Disable startup message
 
-set smartindent                    "Smart indent
+set smartindent                    " Smart indent
 set smartcase                      " When searching try to be smart about cases 
 set smarttab                       " Be smart when using tabs ;)
 
@@ -68,8 +64,6 @@ set whichwrap+=<,>,h,l
 
 set wildmenu                       " Turn on the Wild menu
 set wildmode=longest:full,full
-
-set wrap                           "Wrap lines
 
 """"""""""""""""""""""""""""""
 " => Mappings {{{1
