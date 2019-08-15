@@ -8,11 +8,10 @@
 " => General {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-if !has("nvim")
-    packadd! matchit
-endif
+runtime macros/matchit.vim
 
 set nocompatible                   " Set default to nocompatible
+filetype plugin indent on          " Filetype support 
 syntax on                          " Activate by default dracula theme
 
 set autoindent                     " Auto indent
@@ -62,9 +61,6 @@ set splitbelow                     " Split mode
 set splitright
 
 set tabstop=4
-
-set timeout timeoutlen=500 ttimeoutlen=50
-set ttyfast                        " Make the keyboard fast
 
 set virtualedit=block              " VirtualEdit block allow selection everywhere in visual block mode
 set visualbell t_vb=               " No sound on errors
