@@ -49,7 +49,6 @@ set linebreak                      " Linebreak on 500 characters
 set linespace=4                    " Linespace
 set listchars=eol:$,tab:»\ ,trail:.,extends:›,precedes:‹
 set magic                          " For regular expressions turn magic on
-set matchtime=2                    " How many tenths of a second to blink when matching brackets
 set matchpairs+=<:>                "Match pairs
 set mouse=a                        " Activate mouse
 
@@ -98,8 +97,6 @@ set wildignore+=.git\*,node_modules\*
 
 set wildmenu                       " Turn on the Wild menu
 set wildmode=longest:full,full
-
-set wrap                           "Wrap lines
 
 " grepprg to ag
 if executable('ag')
