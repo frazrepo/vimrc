@@ -60,6 +60,24 @@ set whichwrap+=<,>,h,l
 set wildmenu                       " Turn on the Wild menu
 set wildmode=full
 
+" Maximized window on start and Font Size
+if has("gui_running")
+
+  "GuiOptions - Horizontal scrollbar
+  set guioptions+=b
+
+  if has("gui_gtk2") || has("gui_gtk3") 
+    set lines=535 columns=1366
+    set guifont=Inconsolata\ 17
+  endif
+
+  if has("gui_win32")
+    autocmd GUIEnter * :simalt ~n
+    set guifont=Consolas:h14:cANSI
+  endif
+
+endif
+
 """"""""""""""""""""""""""""""
 " => Mappings {{{1
 """"""""""""""""""""""""""""""
@@ -189,6 +207,7 @@ noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 " Quickly open a txt, markdown scratch
 map <leader>x :e ~/buffer.txt<cr>
 map <leader>d :e ~/buffer.md<cr>
+map <leader>s :e ~/buffer.sql<cr>
 
 " Tab Completion
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
