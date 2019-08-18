@@ -121,8 +121,11 @@ export default class Complete {
             } else {
               let { results } = this
               let idx = results.findIndex(o => o.source == name)
-              if (idx != -1) results.splice(idx, 1)
-              this.results.push(result)
+              if (idx != -1) {
+                results.splice(idx, 1, result)
+              } else {
+                results.push(result)
+              }
             }
             if (empty) this._onDidComplete.fire()
             resolve()
@@ -164,7 +167,11 @@ export default class Complete {
 
   public filterResults(input: string, cid = 0): VimCompleteItem[] {
     let { results } = this
-    results.sort((a, b) => b.priority - a.priority)
+    results.sort((a, b) => {
+      if (a.source == 'tabnine') return 1
+      if (b.source == 'tabnine') return -1
+      return b.priority - a.priority
+    })
     let now = Date.now()
     let { bufnr } = this.option
     let { snippetIndicator, fixInsertedWord } = this.config
@@ -175,8 +182,6 @@ export default class Complete {
     let arr: VimCompleteItem[] = []
     let codes = getCharCodes(input)
     let words: Set<string> = new Set()
-    let filtering = input.length > this.input.length
-    let preselect: VimCompleteItem = null
     for (let i = 0, l = results.length; i < l; i++) {
       let res = results[i]
       let { items, source, priority } = res
@@ -184,11 +189,11 @@ export default class Complete {
       for (let idx = 0; idx < items.length; idx++) {
         let item = items[idx]
         let { word } = item
-        if (!item.dup && words.has(word)) continue
+        if ((!item.dup || source == 'tabnine') && words.has(word)) continue
         let filterText = item.filterText || item.word
         item.filterText = filterText
         if (filterText.length < input.length) continue
-        let score = matchScore(filterText, codes)
+        let score = item.kind && filterText == input ? 64 : matchScore(filterText, codes)
         if (input.length && score == 0) continue
         if (priority > 90) maxScore = Math.max(maxScore, score)
         if (maxScore > 5 && priority <= 10 && score < maxScore) continue
@@ -211,27 +216,22 @@ export default class Complete {
           if (item.signature) user_data.signature = item.signature
           item.user_data = JSON.stringify(user_data)
           item.source = source
+          let recentScore = this.recentScores[`${bufnr}|${word}`]
+          if (recentScore && now - recentScore < 60 * 1000) {
+            item.recentScore = recentScore
+          } else {
+            item.recentScore = 0
+          }
+        } else {
+          delete item.sortText
         }
         item.priority = priority
         item.abbr = item.abbr || item.word
         item.score = input.length ? score : 0
         item.localBonus = this.localBonus ? this.localBonus.get(filterText) || 0 : 0
-        item.recentScore = item.recentScore || 0
-        if (!item.recentScore) {
-          let recentScore = this.recentScores[`${bufnr}|${word}`]
-          if (recentScore && now - recentScore < 60 * 1000) {
-            item.recentScore = recentScore
-          }
-        }
         words.add(word)
-        if (!preselect) {
-          if (item.isSnippet && item.word == input) {
-            preselect = item
-            continue
-          } else if (!filtering && item.preselect) {
-            preselect = item
-            continue
-          }
+        if (item.isSnippet && item.word == input) {
+          item.preselect = true
         }
         arr.push(item)
       }
@@ -254,9 +254,7 @@ export default class Complete {
       }
       return a.filterText.length - b.filterText.length
     })
-    let items = arr.slice(0, this.config.maxItemCount)
-    if (preselect) items.unshift(preselect)
-    return this.limitCompleteItems(items)
+    return this.limitCompleteItems(arr.slice(0, this.config.maxItemCount))
   }
 
   private limitCompleteItems(items: VimCompleteItem[]): VimCompleteItem[] {
@@ -315,11 +313,18 @@ export default class Complete {
 
   public resolveCompletionItem(item: VimCompleteItem): VimCompleteItem | null {
     let { results } = this
-    if (!results || !item.user_data) return null
+    if (!results) return null
     try {
-      let { source } = JSON.parse(item.user_data)
-      let result = results.find(res => res.source == source)
-      return result.items.find(o => o.user_data == item.user_data)
+      if (item.user_data) {
+        let { source } = JSON.parse(item.user_data)
+        let result = results.find(res => res.source == source)
+        return result.items.find(o => o.user_data == item.user_data)
+      }
+      for (let result of results) {
+        let res = result.items.find(o => o.abbr == item.abbr && o.info == item.info)
+        if (res) return res
+      }
+      return null
     } catch (e) {
       return null
     }

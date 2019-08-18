@@ -87,13 +87,13 @@ describe('SnippetSession#start', () => {
     expect(line).toBe('1')
   })
 
-  it('should not insert with unresolved variable', async () => {
+  it('should use default value of unresolved variable', async () => {
     let buf = await helper.edit()
     let session = new SnippetSession(nvim, buf.id)
-    let res = await session.start('${TM_SELECTION}')
+    let res = await session.start('${TM_SELECTION:abc}')
     expect(res).toBe(false)
     let line = await nvim.line
-    expect(line).toBe('')
+    expect(line).toBe('abc')
   })
 
   it('should start with snippet insert', async () => {
@@ -174,7 +174,7 @@ describe('SnippetSession#start', () => {
     let buf = await helper.edit()
     await nvim.command('startinsert')
     let session = new SnippetSession(nvim, buf.id)
-    let res = await session.start('${1/..*/ -> /}xy$1')
+    await session.start('${1/..*/ -> /}xy$1')
     await helper.wait(30)
     let col = await nvim.call('col', '.')
     expect(col).toBe(3)

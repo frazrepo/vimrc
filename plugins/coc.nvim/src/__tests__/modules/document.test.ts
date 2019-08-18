@@ -1,7 +1,7 @@
 import { Neovim } from '@chemzqm/neovim'
 import { Position, Range, TextEdit } from 'vscode-languageserver-protocol'
 import workspace from '../../workspace'
-import helper, { createTmpFile } from '../helper'
+import helper from '../helper'
 
 let nvim: Neovim
 jest.setTimeout(30000)
@@ -23,7 +23,7 @@ describe('document model properties', () => {
   it('should parse iskeyword', async () => {
     let doc = await helper.createDocument()
     await nvim.setLine('foo bar')
-    await helper.wait(200)
+    doc.forceSync()
     let words = doc.words
     expect(words).toEqual(['foo', 'bar'])
   })
@@ -141,7 +141,7 @@ describe('document model properties', () => {
   it('should get variable form buffer', async () => {
     await nvim.command('autocmd BufNewFile,BufRead * let b:coc_enabled = 1')
     let doc = await helper.createDocument()
-    let val = doc.getVar('enabled')
+    let val = doc.getVar<number>('enabled')
     expect(val).toBe(1)
   })
 })

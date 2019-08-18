@@ -1,7 +1,7 @@
 import { Neovim, Window } from '@chemzqm/neovim'
 import { Disposable, Emitter, Event } from 'vscode-languageserver-protocol'
 import events from '../events'
-import { ListHighlights, ListItem } from '../types'
+import { ListHighlights, ListItem, ListOptions } from '../types'
 import { disposeAll } from '../util'
 import workspace from '../workspace'
 import ListConfiguration from './configuration'
@@ -20,6 +20,7 @@ export interface MousePosition {
 export default class ListUI {
   public window: Window
   private height: number
+  private newTab = false
   private _bufnr = 0
   private currIndex = 0
   private highlights: ListHighlights[] = []
@@ -35,7 +36,6 @@ export default class ListUI {
   private _onDidChange = new Emitter<void>()
   private _onDidLineChange = new Emitter<number>()
   private _onDoubleClick = new Emitter<void>()
-  private hlGroupMap: Map<string, string> = new Map()
   public readonly onDidChangeLine: Event<number> = this._onDidChangeLine.event
   public readonly onDidLineChange: Event<number> = this._onDidLineChange.event
   public readonly onDidOpen: Event<number> = this._onDidOpen.event
@@ -69,30 +69,13 @@ export default class ListUI {
 
     events.on('CursorMoved', debounce(async bufnr => {
       if (bufnr != this.bufnr) return
-      // if (this.length < 500) return
       let [start, end] = await nvim.eval('[line("w0"),line("w$")]') as number[]
-      // if (end < 500) return
+      if (end < 500) return
       nvim.pauseNotification()
       this.doHighlight(start - 1, end)
       nvim.command('redraw', true)
       await nvim.resumeNotification(false, true)
-    }, 50))
-    nvim.call('coc#list#get_colors').then(map => {
-      for (let key of Object.keys(map)) {
-        let foreground = key[0].toUpperCase() + key.slice(1)
-        let foregroundColor = map[key]
-        for (let key of Object.keys(map)) {
-          let background = key[0].toUpperCase() + key.slice(1)
-          let backgroundColor = map[key]
-          let group = `CocList${foreground}${background}`
-          this.hlGroupMap.set(group, `hi default CocList${foreground}${background} guifg=${foregroundColor} guibg=${backgroundColor}`)
-        }
-        this.hlGroupMap.set(`CocListFg${foreground}`, `hi default CocListFg${foreground} guifg=${foregroundColor}`)
-        this.hlGroupMap.set(`CocListBg${foreground}`, `hi default CocListBg${foreground} guibg=${foregroundColor}`)
-      }
-    }, _e => {
-      // noop
-    })
+    }, 100))
   }
 
   public set index(n: number) {
@@ -103,9 +86,7 @@ export default class ListUI {
       nvim.pauseNotification()
       this.setCursor(n + 1, 0)
       nvim.command('redraw', true)
-      nvim.resumeNotification(false, true).catch(_e => {
-        // noop
-      })
+      nvim.resumeNotification(false, true).logError()
     }
   }
 
@@ -213,16 +194,18 @@ export default class ListUI {
   }
 
   public hide(): void {
-    let { bufnr, nvim } = this
+    let { bufnr, window, nvim } = this
+    if (window) {
+      nvim.call('coc#util#close', [window.id], true)
+    }
     if (bufnr) {
-      this._bufnr = 0
       nvim.command(`silent! bd! ${bufnr}`, true)
     }
   }
 
-  public async resume(name: string, position: string): Promise<void> {
+  public async resume(name: string, listOptions: ListOptions): Promise<void> {
     let { items, selected, nvim, signOffset } = this
-    await this.drawItems(items, name, position, true)
+    await this.drawItems(items, name, listOptions, true)
     if (selected.size > 0 && this.bufnr) {
       nvim.pauseNotification()
       for (let lnum of selected) {
@@ -326,16 +309,17 @@ export default class ListUI {
     }
   }
 
-  public async drawItems(items: ListItem[], name: string, position = 'bottom', reload = false): Promise<void> {
+  public async drawItems(items: ListItem[], name: string, listOptions: ListOptions, reload = false): Promise<void> {
     let { bufnr, config, nvim } = this
+    this.newTab = listOptions.position == 'tab'
     let maxHeight = config.get<number>('maxHeight', 12)
     let height = Math.max(1, Math.min(items.length, maxHeight))
-    let limitLines = config.get<number>('limitLines', 1000)
+    let limitLines = config.get<number>('limitLines', 30000)
     let curr = this.items[this.index]
     this.items = items.slice(0, limitLines)
     if (bufnr == 0 && !this.creating) {
       this.creating = true
-      let [bufnr, winid] = await workspace.callAsync('coc#list#create', [position, height, name])
+      let [bufnr, winid] = await nvim.call('coc#list#create', [listOptions.position, height, name, listOptions.numberSelect])
       this._bufnr = bufnr
       this.window = nvim.createWindow(winid)
       this.height = height
@@ -371,7 +355,7 @@ export default class ListUI {
   private async setLines(lines: string[], append = false, index: number): Promise<void> {
     let { nvim, bufnr, window, config } = this
     if (!bufnr || !window) return
-    let resize = config.get<boolean>('autoResize', true)
+    let resize = !this.newTab && config.get<boolean>('autoResize', true)
     let buf = nvim.createBuffer(bufnr)
     nvim.pauseNotification()
     nvim.call('win_gotoid', window.id, true)
@@ -382,7 +366,7 @@ export default class ListUI {
       let maxHeight = config.get<number>('maxHeight', 12)
       let height = Math.max(1, Math.min(this.items.length, maxHeight))
       this.height = height
-      window.notify(`nvim_win_set_height`, [height])
+      nvim.call('coc#list#set_height', [height], true)
     }
     if (!append) {
       if (!lines.length) {
@@ -398,22 +382,23 @@ export default class ListUI {
     }
     nvim.command('setl nomodifiable', true)
     if (!append && index == 0) {
-      this.doHighlight(0, 500)
+      this.doHighlight(0, 300)
     } else {
-      this.doHighlight(Math.max(0, index - this.height), Math.min(index + this.height + 1, this.length - 1))
+      let height = this.newTab ? workspace.env.lines : this.height
+      this.doHighlight(Math.max(0, index - height), Math.min(index + height + 1, this.length - 1))
     }
     if (!append) window.notify('nvim_win_set_cursor', [[index + 1, 0]])
     this._onDidChange.fire()
     if (workspace.isVim) nvim.command('redraw', true)
-    nvim.resumeNotification(false, true).catch(_e => {
-      // noop
-    })
+    let [, err] = await nvim.resumeNotification()
+    if (err) logger.error(err)
   }
 
-  public async restoreWindow(): Promise<void> {
+  public restoreWindow(): void {
+    if (this.newTab) return
     let { window, height } = this
     if (window && height) {
-      await workspace.callAsync('coc#list#restore', [window.id, height])
+      this.nvim.call('coc#list#restore', [window.id, height], true)
     }
   }
 
@@ -443,7 +428,6 @@ export default class ListUI {
       if (ansiHighlights) {
         for (let hi of ansiHighlights) {
           let { span, hlGroup } = hi
-          this.setHighlightGroup(hlGroup)
           nvim.call('matchaddpos', [hlGroup, [[i + 1, span[0] + 1, span[1] - span[0]]], 9], true)
         }
       }
@@ -453,15 +437,6 @@ export default class ListUI {
           nvim.call('matchaddpos', [hlGroup || 'Search', [[i + 1, span[0] + 1, span[1] - span[0]]], 11], true)
         }
       }
-    }
-  }
-
-  private setHighlightGroup(hlGroup: string): void {
-    let { nvim } = workspace
-    if (this.hlGroupMap.has(hlGroup)) {
-      let cmd = this.hlGroupMap.get(hlGroup)
-      this.hlGroupMap.delete(hlGroup)
-      nvim.command(cmd, true)
     }
   }
 

@@ -37,11 +37,11 @@ export function getHiglights(lines: string[], filetype: string): Promise<Highlig
   const hlMap: Map<number, string> = new Map()
   const content = lines.join('\n')
   if (diagnosticFiletypes.indexOf(filetype) != -1) {
-    let highlights = lines.map((_line, i) => {
+    let highlights = lines.map((line, i) => {
       return {
         line: i,
         colStart: 0,
-        colEnd: -1,
+        colEnd: byteLength(line),
         hlGroup: `Coc${filetype}Float`
       }
     })
@@ -55,6 +55,7 @@ export function getHiglights(lines: string[], filetype: string): Promise<Highlig
   }
   const id = createHash('md5').update(content).digest('hex')
   if (cache[id]) return Promise.resolve(cache[id])
+  if (workspace.env.isVim) return Promise.resolve([])
   const res: Highlight[] = []
   let nvim: NeovimClient
   return new Promise(async resolve => {
@@ -73,10 +74,15 @@ export function getHiglights(lines: string[], filetype: string): Promise<Highlig
       })
       env.runtimepath = dirs.join(',')
     }
-    let proc = cp.spawn('nvim', ['-u', 'NORC', '-i', 'NONE', '--embed', uuid()], {
+    let prog = workspace.env.progpath || 'nvim'
+    let proc = cp.spawn(prog, ['-u', 'NORC', '-i', 'NONE', '--embed', uuid()], {
       shell: false,
       cwd: os.tmpdir(),
-      env: omit(process.env, ['NVIM_LISTEN_ADDRESS'])
+      env: omit(process.env, ['NVIM_LISTEN_ADDRESS', 'VIM_NODE_RPC'])
+    })
+    proc.on('error', error => {
+      logger.info('highlight error:', error)
+      resolve([])
     })
     let timer: NodeJS.Timer
     let exited = false

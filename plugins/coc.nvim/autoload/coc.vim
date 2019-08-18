@@ -1,6 +1,7 @@
-let g:coc#_context = {'start': 0, 'candidates': []}
+let g:coc#_context = {'start': 0, 'preselect': -1,'candidates': []}
 let g:coc_user_config = get(g:, 'coc_user_config', {})
 let g:coc_global_extensions = get(g:, 'coc_global_extensions', [])
+let g:coc_cygqwin_path_prefixes = get(g:, 'coc_cygqwin_path_prefixes', {})
 let g:coc_selected_text = ''
 let g:coc_vim_commands = []
 let s:watched_keys = []
@@ -31,10 +32,6 @@ function! coc#add_command(id, cmd, ...)
 endfunction
 
 function! coc#refresh() abort
-  if pumvisible()
-    let g:coc#_context['candidates'] = []
-    call feedkeys("\<Plug>CocRefresh", 'i')
-  endif
   return "\<c-r>=coc#start()\<CR>"
 endfunction
 
@@ -42,7 +39,11 @@ function! coc#on_enter()
   if !coc#rpc#ready()
     return ''
   endif
-  call coc#rpc#request('CocAutocmd', ['Enter', bufnr('%')])
+  if s:is_vim
+    call coc#rpc#notify('CocAutocmd', ['Enter', bufnr('%')])
+  else
+    call coc#rpc#request('CocAutocmd', ['Enter', bufnr('%')])
+  endif
   return ''
 endfunction
 
@@ -55,30 +56,31 @@ endfunction
 
 function! coc#_complete() abort
   let items = get(g:coc#_context, 'candidates', [])
+  let preselect = get(g:coc#_context, 'preselect', -1)
   call complete(
         \ g:coc#_context.start + 1,
         \ items)
+  if s:select_api && len(items) && preselect != -1
+    call nvim_select_popupmenu_item(preselect, v:false, v:false, {})
+  endif
   return ''
 endfunction
 
-" hack method to avoid vim flicking
-function! coc#_reload()
-  if &paste | return | endif
-  let items = get(g:coc#_context, 'candidates', [])
-  call feedkeys("\<Plug>CocRefresh", 'i')
-endfunction
-
-function! coc#_do_complete(start, items)
+function! coc#_do_complete(start, items, preselect)
   let g:coc#_context = {
         \ 'start': a:start,
         \ 'candidates': a:items,
+        \ 'preselect': a:preselect
         \}
-  if mode() =~# 'i'
+  if mode() =~# 'i' && &paste != 1
     call feedkeys("\<Plug>CocRefresh", 'i')
   endif
 endfunction
 
 function! coc#_select_confirm()
+  if !exists('##TextChangedP')
+    return "\<C-y>"
+  endif
   let hasSelected = coc#rpc#request('hasSelected', [])
   if hasSelected | return "\<C-y>" | endif
   return "\<down>\<C-y>"
@@ -95,14 +97,10 @@ function! coc#_hide() abort
 endfunction
 
 function! coc#_cancel()
-  for winnr in range(1, winnr('$'))
-    let popup = getwinvar(winnr, 'popup')
-    if !empty(popup)
-      exe winnr.'close!'
-    endif
-  endfor
-  if pumvisible()
-    let g:coc#_context['candidates'] = []
+  call coc#util#close_popup()
+  " hack for close pum
+  if pumvisible() && &paste != 1
+    let g:coc#_context = {'start': 0, 'preselect': -1,'candidates': []}
     call feedkeys("\<Plug>CocRefresh", 'i')
   endif
 endfunction
@@ -113,9 +111,6 @@ function! coc#_select() abort
 endfunction
 
 function! coc#start(...)
-  if !get(g:, 'coc_enabled', 0)
-    return ''
-  endif
   let opt = coc#util#get_complete_option()
   call CocActionAsync('startCompletion', extend(opt, get(a:, 1, {})))
   return ''
@@ -149,9 +144,6 @@ endfunction
 function! coc#add_extension(...)
   if a:0 == 0 | return | endif
   call extend(g:coc_global_extensions, a:000)
-  if get(g:, 'coc_enabled', 0)
-    call coc#rpc#notify('installExtensions', [])
-  endif
 endfunction
 
 function! coc#_watch(key)
@@ -178,21 +170,15 @@ endfunction
 function! coc#_map()
   if !s:select_api | return | endif
   for i in range(1, 9)
-    exe 'inoremap <buffer> '.i.' <C-R>=nvim_select_popupmenu_item('.(i - 1).', v:true, v:true, {})<CR>'
+    exe 'inoremap <buffer> '.i.' <Cmd>call nvim_select_popupmenu_item('.(i - 1).', v:true, v:true, {})<cr>'
   endfor
 endfunction
 
 function! coc#_unmap()
   if !s:select_api | return | endif
   for i in range(1, 9)
-    exe 'iunmap <buffer> '.i
+    exe 'silent! iunmap <buffer> '.i
   endfor
-endfunction
-
-function! coc#_init()
-  if exists('#User#CocNvimInit')
-    doautocmd User CocNvimInit
-  endif
 endfunction
 
 function! coc#on_notify(id, method, Cb)

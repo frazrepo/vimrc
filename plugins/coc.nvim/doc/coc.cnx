@@ -65,15 +65,9 @@ coc.nvim 使用 coc-settings.json 文件进行配置，该文件格式与工作�
 
 依赖						*coc-requirement*
 
-该插件需要 neovim 0.3 版本以上或者 vim 8.0.1453 版本以上
+该插件需要 neovim 0.3 版本以上或者 vim 8.0 版本以上
 
 首先需要安装 node https://nodejs.org/en/download/ 用于执行 javascript 代码。
-
-使用 coc.nvim 插件需要安装 yarn (一个 nodejs 包管理工具):
-
-https://yarnpkg.com/en/docs/install
-
-如果你使用 vim-plug 来管理 coc.nvim 插件可以不需要安装 yarn。
 
 ==============================================================================
 
@@ -81,15 +75,13 @@ https://yarnpkg.com/en/docs/install
 
 推荐使用 https://github.com/junegunn/vim-plug 添加
 >
-  Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 到 `init.vim` 然后执行: >
 
   :PlugInstall
 
-如果使用其它插件进行配置，需要插件安装完成后手工执行 `:call coc#util#install()`
-
-或者使用 `:call coc#util#build()` 从源码安装。
+如果使用其它插件进行配置，请使用 release 分支代码。
 
 ==============================================================================
 
@@ -271,6 +263,33 @@ coc 不会向 vim 添加自己的快捷键，你需要手工配置来满足需�
 
 			跳转到第一个浮动窗口。
 
+<Plug>(coc-refactor) 				*n_coc-refactor*
+
+			打开重构窗口，用于重构当前函数或重命名。
+
+<Plug>(coc-range-select) 			*n_coc-range-select*
+<Plug>(coc-range-select) 			*v_coc-range-select*
+
+			选择下一个可选区域。
+
+			注意：仅部分语言服务支持。
+
+<Plug>(coc-range-select-backward) 		*v_coc-range-select-backward*
+
+			选择上一个可选区域。
+
+			注意：仅部分语言服务支持。
+
+<Plug>(coc-funcobj-i) 			*n_coc-funcobj-i* *v_coc-funcobj-i*
+
+			选择函数内所有行，默认映射到 `if` 。
+
+			例如：使用 `cif` 重写当前函数。
+
+<Plug>(coc-funcobj-a) 			*n_coc-funcobj-a* *v_coc-funcobj-a*
+
+			选择当前函数所在区间，默认映射到 `af`。
+
 ==============================================================================
 
 变量 						*coc-variables*
@@ -335,10 +354,20 @@ g:coc_start_at_startup 				*g:coc_start_at_startup*
 
 g:coc_user_config 				*g:coc_user_config*
 
-			配置 coc 的用户配置，推荐使用 coc-setting.json 文件
+			配置 coc 的用户配置，推荐使用 coc-settings.json 文件
 			进行配置，而不是该变量。
 
 			该设置仅在服务启动前有效。
+
+g:coc_extension_root 				*g:coc_extension_root*
+
+			自定义插件安装根目录，为空时使用默认地址。
+
+			Windows 系统:
+				`~/AppData/Local/coc/extensions`
+			其它:
+				`~/.config/coc/extensions`
+
 
 g:coc_global_extensions 			*g:coc_global_extensions*
 
@@ -578,12 +607,6 @@ coc#util#install([{config}])
 	- `terminal` 使用 terminal 来异步安装
 	- `tag` 安装最新的已发布版本
 
-						*coc#util#build()*
-
-coc#util#build()
-
-	编译 coc.nvim，需重启 vim 或者执行 |:CocRestart| 生效。
-
 						*coc#util#extension_root()*
 coc#util#extension_root()
 	
@@ -593,11 +616,6 @@ coc#util#extension_root()
 coc#util#rebuild()
 
 	对插件执行 `npm rebuild` 命令。
-
-						*coc#util#update()*
-coc#util#update()
-
-	使用终端缓冲区更新插件。
 
 						*coc#util#has_float()*
 
@@ -894,6 +912,10 @@ CocActionAsync({action}, [...{args}, [{callback}]])
 
 	执行当前行第一个 quickfix action，用于快速修复。
 
+"addRanges" {ranges}					*coc-action-addRanges*
+
+	Ranges 必须为 LSP 定义的 Range 数组： https://git.io/fjiEG
+
 ==============================================================================
 
 命令 						*coc-commands*
@@ -918,7 +940,7 @@ CocActionAsync({action}, [...{args}, [{callback}]])
 
 :CocConfig 					*:CocConfig*
 
-		打开用户的 `coc-setting.json` 文件。
+		打开用户的 `coc-settings.json` 文件。
 
 :CocInstall [{option}] {name} ... 		*:CocInstall*
 
@@ -1007,6 +1029,12 @@ CocActionAsync({action}, [...{args}, [{callback}]])
 :autocmd User CocNvimInit {command}
 
 		服务启动后触发。可用于服务启动后自动执行命令。
+
+						*CocStatusChange*
+
+:autocmd User CocStatusChange {command}
+
+		`g:coc_status` 改变时触发，可用于刷新状态栏。
 
 						*CocDiagnosticChange*
 
@@ -1162,6 +1190,12 @@ CocHintFloat 					*CocHintFloat*
 
   提醒浮窗符使用的高亮。
 
+CocCursorRange 					*CocCursorRange*
+
+  Default: `hi default link CocCursorRange Search`
+
+  鼠标选择区使用的高亮。
+
 ==============================================================================
 
 LIST SUPPORT 					*coc-list*
@@ -1223,6 +1257,9 @@ Command options 					*coc-list-options*
 
 --top
 	在上方显示列表分割窗口，默认为下方显示。
+
+--tab
+	使用新标签页打开列表。
 
 --normal
 	打开后进入正常模式，默认为输入模式。
@@ -1323,6 +1360,7 @@ LIST MAPPINGS 					*coc-list-mappings*
 <C-n>       - 切换到下一个历史匹配输入。
 <C-p>       - 切换到上一个历史匹配输入。
 <C-s>       - 切换过滤匹配模式。
+<C-r>       - 从 vim 寄存器插入内容。
 <Tab>       - 选择操作项。
 
 正常模式下默认快捷键：
@@ -1355,6 +1393,7 @@ s           - 执行 'split' 操作.
 		"<C-p>": "normal:k",
 		"<C-t>": "action:tabe",
 		"<C-x>": "call:MyFunc"
+		"<C-v>": "eval:@@"
 	}
 	"list.normalMappings": {
 		"c": "expr:MyExprFunc"
@@ -1390,7 +1429,9 @@ s           - 执行 'split' 操作.
 	'deletebackward' - 删除后一个字符
 	'removetail' - 删除后面全部字符
 	'removeahead' - 删除前面全部字符
+	'insertregister' - 从 vim 寄存器插入内容
 	'paste' - 插入系统粘贴板内容到当前位置
+'eval' - 执行 viml 表达式并将结果插入到当前位置
 'action' - 执行特定操作，使用 <tab> 查看当前列表支持操作
 'feedkeys' - 发送按键到列表窗口
 'normal' - 执行 normal 命令
@@ -1594,6 +1635,8 @@ Lightline.vim: https://github.com/itchyny/lightline.vim 支持：
 	\   'cocstatus': 'coc#status'
 	\ },
 	\ }
+
+  autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 <
 ==============================================================================
 

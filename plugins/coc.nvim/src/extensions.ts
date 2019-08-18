@@ -1,30 +1,31 @@
-import { spawn } from 'child_process'
 import { debounce } from 'debounce'
 import fastDiff from 'fast-diff'
 import fs from 'fs'
 import isuri from 'isuri'
 import path from 'path'
+import rimraf from 'rimraf'
 import semver from 'semver'
-import util from 'util'
+import util, { promisify } from 'util'
 import { Disposable, Emitter, Event } from 'vscode-languageserver-protocol'
 import { URI } from 'vscode-uri'
+import which from 'which'
+import commandManager from './commands'
 import events from './events'
 import DB from './model/db'
+import ExtensionManager from './model/extension'
 import Memos from './model/memos'
 import { Extension, ExtensionContext, ExtensionInfo, ExtensionState } from './types'
-import { disposeAll, runCommand, wait } from './util'
+import { disposeAll, wait } from './util'
+import mkdirp from 'mkdirp'
 import { distinct } from './util/array'
+import './util/extensions'
 import { createExtension, ExtensionExport } from './util/factory'
-import { readFile, inDirectory, statAsync, readdirAsync, realpathAsync } from './util/fs'
+import { inDirectory, readdirAsync, readFile, realpathAsync, statAsync } from './util/fs'
 import Watchman from './watchman'
 import workspace from './workspace'
-import { Neovim } from '@chemzqm/neovim'
-import commandManager from './commands'
-import './util/extensions'
 
 const createLogger = require('./util/logger')
 const logger = createLogger('extensions')
-const extensionFolder = global.hasOwnProperty('__TEST__') ? '' : 'node_modules'
 
 export type API = { [index: string]: any } | void | null | undefined
 
@@ -65,22 +66,22 @@ export class Extensions {
   private _onDidUnloadExtension = new Emitter<string>()
   private _additionalSchemes: { [key: string]: PropertyScheme } = {}
   private activated = false
+  private manager: ExtensionManager
   public ready = true
   public readonly onDidLoadExtension: Event<Extension<API>> = this._onDidLoadExtension.event
   public readonly onDidActiveExtension: Event<Extension<API>> = this._onDidActiveExtension.event
   public readonly onDidUnloadExtension: Event<string> = this._onDidUnloadExtension.event
 
-  public async init(nvim: Neovim): Promise<void> {
-    this.root = await nvim.call('coc#util#extension_root')
-    if (!fs.existsSync(this.root)) {
-      await nvim.call('coc#util#init_extension_root', this.root)
-    }
+  public async init(): Promise<void> {
     if (global.hasOwnProperty('__TEST__')) {
       this.root = path.join(__dirname, './__tests__/extensions')
+      this.manager = new ExtensionManager(this.root)
+      let filepath = path.join(this.root, 'db.json')
+      this.db = new DB(filepath)
+    } else {
+      await this.initializeRoot()
     }
-    let filepath = path.join(this.root, 'db.json')
-    let db = this.db = new DB(filepath)
-    let data = loadJson(db.filepath) || {}
+    let data = loadJson(this.db.filepath) || {}
     let keys = Object.keys(data.extension || {})
     for (let key of keys) {
       if (data.extension[key].disabled == true) {
@@ -105,15 +106,23 @@ export class Extensions {
         if (changeType == 1) {
           let paths = value.replace(/,$/, '').split(',')
           for (let p of paths) {
-            await this.loadExtension(p, true)
+            if (p) await this.loadExtension(p, true)
           }
         }
       }
     })
+    commandManager.register({
+      id: 'extensions.forceUpdateAll',
+      execute: async () => {
+        await this.cleanExtensions()
+        await this.installExtensions([])
+      }
+    })
   }
 
-  public activateExtensions(): void {
+  public async activateExtensions(): Promise<void> {
     this.activated = true
+    if (global.hasOwnProperty('__TEST__')) return
     for (let item of this.list) {
       let { id, packageJSON } = item.extension
       this.setupActiveEvents(id, packageJSON)
@@ -122,76 +131,53 @@ export class Extensions {
     this.checkExtensions().logError()
     let config = workspace.getConfiguration('coc.preferences')
     let interval = config.get<string>('extensionUpdateCheck', 'daily')
-    if (interval != 'never') this.updateExtensions(interval).logError()
+    if (interval != 'never') {
+      let now = new Date()
+      let day = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (interval == 'daily' ? 0 : 7))
+      let ts = this.db.fetch('lastUpdate')
+      if (ts && Number(ts) > day.getTime()) return
+      this.updateExtensions().logError()
+    }
   }
 
-  public async updateExtensions(interval: string, force = false): Promise<Disposable | null> {
-    let now = new Date()
-    let { db } = this
-    let day = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (interval == 'daily' ? 0 : 7))
-    let ts = await db.fetch('lastUpdate')
-    if (!force && ts && Number(ts) > day.getTime()) return
-    if (global.hasOwnProperty('__TEST__') && !force) return
+  public async updateExtensions(): Promise<Disposable | null> {
+    if (!this.root) await this.initializeRoot()
+    if (!this.npm) return
+    let lockedList = await this.getLockedList()
     let stats = await this.globalExtensionStats()
-    await db.push('lastUpdate', Date.now())
-    let versionInfo: { [index: string]: string } = {}
-    stats = stats.filter(o => !o.exotic)
-    let yarncmd = await workspace.nvim.call('coc#util#yarn_cmd')
-    for (let stat of stats) {
-      if (stat.exotic) continue
-      let file = path.join(stat.root, 'package.json')
-      let obj = loadJson(file)
-      if (obj && obj.version) {
-        versionInfo[stat.id] = obj.version
-      }
-    }
-    let outdated: string[] = []
-    await Promise.all(Object.keys(versionInfo).map(id => {
-      let curr = versionInfo[id]
-      return runCommand(`${yarncmd} info ${id} --json`).then(content => {
-        let lines = content.trim().split('\n')
-        let json = JSON.parse(lines[lines.length - 1])
-        let { version, engines } = json.data
-        if (version == curr || !engines) return
-        if (engines.hasOwnProperty('coc')) {
-          let required = engines.coc.replace(/^\^/, '>=')
-          if (!semver.satisfies(workspace.version, required)) return
-          if (semver.gt(version, curr)) {
-            outdated.push(id)
-          }
-        } else {
-          outdated.push(id)
-        }
+    stats = stats.filter(o => !this.disabled.has(o.id) && !lockedList.includes(o.id))
+    let names = stats.map(o => o.id)
+    let statusItem = workspace.createStatusBarItem(0, { progress: true })
+    statusItem.text = `Updating extensions.`
+    statusItem.show()
+    this.db.push('lastUpdate', Date.now())
+    await Promise.all(names.map(name => {
+      let o = stats.find(o => o.id == name)
+      return this.manager.update(this.npm, name, o.exotic ? o.uri : undefined).then(updated => {
+        if (updated) this.reloadExtension(name).logError()
+      }, err => {
+        workspace.showMessage(`Error on update ${name}: ${err}`)
       })
     }))
-    if (!outdated.length) return
-    let status = workspace.createStatusBarItem(99, { progress: true })
-    logger.info(`Upgrading ${outdated.join(' ')}`)
-    status.text = `Upgrading ${outdated.join(' ')}`
-    status.show()
-    if (!global.hasOwnProperty('__TEST__')) {
-      await runCommand(`${yarncmd} install`, { cwd: this.root })
-    }
-    const child = spawn(yarncmd, ['upgrade', ...outdated, '--latest', '--ignore-engines'], {
-      cwd: this.root,
-      detached: true,
-      stdio: 'ignore'
-    })
-    child.unref()
-    child.once('exit', () => {
-      status.dispose()
-    })
-    return Disposable.create(() => {
-      child.kill('SIGKILL')
-    })
+    workspace.showMessage('Update completed', 'more')
+    statusItem.dispose()
   }
 
   private async checkExtensions(): Promise<void> {
     let { globalExtensions, watchExtensions } = workspace.env
     if (globalExtensions && globalExtensions.length) {
-      this.installExtensions(globalExtensions).catch(_e => {
-        // noop
-      })
+      let names = globalExtensions.filter(name => !this.isDisabled(name))
+      let folder = path.join(this.root, 'node_modules')
+      if (fs.existsSync(folder)) {
+        let files = await util.promisify(fs.readdir)(folder)
+        names = names.filter(s => files.indexOf(s) == -1)
+      }
+      let json = this.loadJson()
+      if (json && json.dependencies) {
+        let vals = Object.values(json.dependencies) as string[]
+        names = names.filter(s => vals.findIndex(val => val.indexOf(s) !== -1) == -1)
+      }
+      this.installExtensions(names).logError()
     }
     // watch for changes
     if (watchExtensions && watchExtensions.length) {
@@ -214,22 +200,67 @@ export class Extensions {
     }
   }
 
-  public async installExtensions(list: string[]): Promise<void> {
-    if (list && list.length) {
-      let db = loadJson(this.db.filepath)
-      let extension = db ? db.extension : null
-      list = distinct(list)
-      list = list.filter(name => {
-        if (this.has(name)) return false
-        if (/^\w+:/.test(name) && this.packageNameFromUrl(name)) return false
-        if (extension && extension[name] && extension[name].disabled == true) return false
-        return true
+  /**
+   * Install extensions, can be called without initialize.
+   */
+  public async installExtensions(list: string[] = []): Promise<void> {
+    let { npm } = this
+    if (!npm) return
+    if (!this.root) await this.initializeRoot()
+    let missing = this.getMissingExtensions()
+    if (missing.length) list.push(...missing)
+    if (!list.length) return
+    list = distinct(list)
+    let statusItem = workspace.createStatusBarItem(0, { progress: true })
+    statusItem.show()
+    statusItem.text = `Installing ${list.join(' ')}`
+    await Promise.all(list.map(def => {
+      return this.manager.install(npm, def).then(name => {
+        if (name) this.onExtensionInstall(name).logError()
+      }, err => {
+        workspace.showMessage(`Error on install ${def}: ${err}`)
       })
-      let cmd = global.hasOwnProperty('__TEST__') ? 'CocInstall -sync' : 'CocInstall'
-      if (list.length) await workspace.nvim.command(`${cmd} ${list.join(' ')}`)
-    }
+    }))
+    statusItem.dispose()
   }
 
+  /**
+   * Get list of extensions in package.json that not installed
+   */
+  public getMissingExtensions(): string[] {
+    let json = this.loadJson() || { dependencies: {} }
+    let ids: string[] = []
+    for (let key of Object.keys(json.dependencies)) {
+      let folder = path.join(this.root, 'node_modules', key)
+      if (!fs.existsSync(folder)) {
+        let val = json.dependencies[key]
+        if (val.startsWith('http')) {
+          ids.push(val)
+        } else {
+          ids.push(key)
+        }
+      }
+    }
+    return ids
+  }
+
+  private get npm(): string {
+    let npm = workspace.getConfiguration('npm').get<string>('binPath', 'npm')
+    for (let exe of [npm, 'yarnpkg', 'yarn', 'npm']) {
+      try {
+        let res = which.sync(exe)
+        return res
+      } catch (e) {
+        continue
+      }
+    }
+    workspace.showMessage(`Can't find npm or yarn in your $PATH`, 'error')
+    return null
+  }
+
+  /**
+   * Get all loaded extensions.
+   */
   public get all(): Extension<API>[] {
     return this.list.map(o => o.extension)
   }
@@ -253,6 +284,24 @@ export class Extensions {
     return globalStats.concat(localStats)
   }
 
+  public async getLockedList(): Promise<string[]> {
+    let obj = await this.db.fetch('extension')
+    obj = obj || {}
+    return Object.keys(obj).filter(id => {
+      return obj[id].locked === true
+    })
+  }
+
+  public async toggleLock(id: string): Promise<void> {
+    let key = `extension.${id}.locked`
+    let locked = await this.db.fetch(key)
+    if (locked) {
+      this.db.delete(key)
+    } else {
+      this.db.push(key, true)
+    }
+  }
+
   public async toggleExtension(id: string): Promise<void> {
     let state = this.getExtensionState(id)
     if (state == null) return
@@ -260,7 +309,7 @@ export class Extensions {
       this.deactivate(id)
     }
     let key = `extension.${id}.disabled`
-    await this.db.push(key, state == 'disabled' ? false : true)
+    this.db.push(key, state == 'disabled' ? false : true)
     if (state != 'disabled') {
       this.disabled.add(id)
       // unload
@@ -268,7 +317,8 @@ export class Extensions {
       this.list.splice(idx, 1)
     } else {
       this.disabled.delete(id)
-      let folder = path.join(this.root, extensionFolder, id)
+      let p = global.hasOwnProperty('__TEST__') ? '' : 'node_modules'
+      let folder = path.join(this.root, p, id)
       try {
         await this.loadExtension(folder)
       } catch (e) {
@@ -291,31 +341,55 @@ export class Extensions {
     }
   }
 
-  public async uninstallExtension(ids: string[]): Promise<void> {
-    let status = workspace.createStatusBarItem(99, { progress: true })
-    status.text = `Uninstalling ${ids.join(' ')}`
-    status.show()
-    for (let id of ids) {
-      if (!this.isGlobalExtension(id)) {
-        workspace.showMessage(`Global extension '${id}' not found.`, 'error')
-        return
-      }
-      this.deactivate(id)
+  /**
+   * Remove all installed extensions
+   */
+  public async cleanExtensions(): Promise<void> {
+    let dir = path.join(this.root, 'node_modules')
+    if (!fs.existsSync(dir)) return
+    let names = fs.readdirSync(dir)
+    for (let name of names) {
+      let file = path.join(dir, name)
+      let stat = await promisify(fs.lstat)(file)
+      if (stat.isSymbolicLink()) continue
+      await promisify(rimraf)(file, { glob: false })
     }
-    await wait(30)
-    let yarncmd = await workspace.nvim.call('coc#util#yarn_cmd')
-    if (!yarncmd) return
+  }
+
+  public async uninstallExtension(ids: string[]): Promise<void> {
+    if (!ids.length) return
+    let status = workspace.createStatusBarItem(99, { progress: true })
     try {
-      if (!global.hasOwnProperty('__TEST__')) {
-        await workspace.runCommand(`${yarncmd} remove ${ids.join(' ')}`, this.root)
-      }
+      status.text = `Uninstalling ${ids.join(' ')}`
+      status.show()
+      let removed: string[] = []
       for (let id of ids) {
-        let idx = this.list.findIndex(o => o.id == id)
-        if (idx != -1) this.list.splice(idx, 1)
-        this._onDidUnloadExtension.fire(id)
+        if (!this.isGlobalExtension(id)) {
+          workspace.showMessage(`Global extension '${id}' not found.`, 'error')
+          continue
+        }
+        this.deactivate(id)
+        removed.push(id)
       }
+      for (let id of removed) {
+        let idx = this.list.findIndex(o => o.id == id)
+        if (idx != -1) {
+          this.list.splice(idx, 1)
+          this._onDidUnloadExtension.fire(id)
+        }
+      }
+      let json = this.loadJson() || { dependencies: {} }
+      for (let id of removed) {
+        delete json.dependencies[id]
+        let folder = path.join(this.root, 'node_modules', id)
+        if (fs.existsSync(folder)) {
+          await util.promisify(rimraf)(`${folder}`, { glob: false })
+        }
+      }
+      let jsonFile = path.join(this.root, 'package.json')
       status.dispose()
-      workspace.showMessage(`Extensions ${ids.join(' ')} removed`)
+      fs.writeFileSync(jsonFile, JSON.stringify(json, null, 2), { encoding: 'utf8' })
+      workspace.showMessage(`Removed: ${ids.join(' ')}`)
     } catch (e) {
       status.dispose()
       workspace.showMessage(`Uninstall failed: ${e.message}`, 'error')
@@ -326,12 +400,11 @@ export class Extensions {
     return this.disabled.has(id)
   }
 
-  public async onExtensionInstall(id: string): Promise<void> {
-    if (/^\w+:/.test(id)) id = this.packageNameFromUrl(id)
-    if (!id || /^-/.test(id)) return
+  private async onExtensionInstall(id: string): Promise<void> {
+    if (!id) return
     let item = this.list.find(o => o.id == id)
     if (item) item.deactivate()
-    let folder = path.join(this.root, extensionFolder, id)
+    let folder = path.join(this.root, 'node_modules', id)
     let stat = await statAsync(folder)
     if (stat && stat.isDirectory()) {
       let jsonFile = path.join(folder, 'package.json')
@@ -347,7 +420,7 @@ export class Extensions {
     return this.list.find(o => o.id == id) != null
   }
 
-  public isActivted(id: string): boolean {
+  public isActivated(id: string): boolean {
     let item = this.list.find(o => o.id == id)
     if (item && item.extension.isActive) {
       return true
@@ -362,7 +435,7 @@ export class Extensions {
     let content = await readFile(jsonFile, 'utf8')
     let packageJSON = JSON.parse(content)
     if (this.isDisabled(packageJSON.name)) return
-    if (this.isActivted(packageJSON.name)) {
+    if (this.isActivated(packageJSON.name)) {
       workspace.showMessage(`deactivate ${packageJSON.name}`)
       this.deactivate(packageJSON.name)
       await wait(200)
@@ -382,7 +455,7 @@ export class Extensions {
   }
 
   private async loadFileExtensions(): Promise<void> {
-    if (global.hasOwnProperty('__TEST__')) return
+    if (!process.env.VIMCONFIG) return
     let folder = path.join(process.env.VIMCONFIG, 'coc-extensions')
     if (!fs.existsSync(folder)) return
     let files = await readdirAsync(folder)
@@ -495,7 +568,7 @@ export class Extensions {
       return new Promise<ExtensionInfo>(async resolve => {
         try {
           let val = json.dependencies[key]
-          let root = path.join(this.root, extensionFolder, key)
+          let root = path.join(this.root, 'node_modules', key)
           let jsonFile = path.join(root, 'package.json')
           let stat = await statAsync(jsonFile)
           if (!stat || !stat.isFile()) return resolve(null)
@@ -508,12 +581,14 @@ export class Extensions {
           }
           let version = obj ? obj.version || '' : ''
           let description = obj ? obj.description || '' : ''
+          let uri = isuri.isValid(val) ? val : null
           resolve({
             id: key,
             isLocal: false,
             version,
             description,
-            exotic: isuri.isValid(val),
+            exotic: /^https?:/.test(val),
+            uri,
             root,
             state: this.getExtensionState(key)
           })
@@ -547,7 +622,7 @@ export class Extensions {
             return resolve(null)
           }
           if (names.indexOf(obj.name) !== -1) {
-            workspace.showMessage(`Skipped extension  "${root}", please uninstall "${obj.name}" by :CocUninstall ${obj.name}`, 'warning')
+            workspace.showMessage(`Skipped extension  "${root}", please remove "${obj.name}" from your vim's plugin manager.`, 'warning')
             return resolve(null)
           }
           let version = obj ? obj.version || '' : ''
@@ -579,16 +654,6 @@ export class Extensions {
     let jsonFile = path.join(root, 'package.json')
     if (!fs.existsSync(jsonFile)) return null
     return loadJson(jsonFile)
-  }
-
-  public packageNameFromUrl(url: string): string {
-    let json = this.loadJson()
-    if (!json || !json.dependencies) return null
-    for (let key of Object.keys(json.dependencies)) {
-      let val = json.dependencies[key]
-      if (val == url) return key
-    }
-    return null
   }
 
   public get schemes(): { [key: string]: PropertyScheme } {
@@ -771,6 +836,21 @@ export class Extensions {
     return id
   }
 
+  private async initializeRoot(): Promise<void> {
+    let root = this.root = await workspace.nvim.call('coc#util#extension_root')
+    if (!fs.existsSync(root)) {
+      mkdirp.sync(root)
+    }
+    let jsonFile = path.join(root, 'package.json')
+    if (!fs.existsSync(jsonFile)) {
+      fs.writeFileSync(jsonFile, '{"dependencies":{}}', 'utf8')
+    }
+    if (!this.db) {
+      let filepath = path.join(root, 'db.json')
+      this.db = new DB(filepath)
+    }
+    this.manager = new ExtensionManager(root)
+  }
 }
 
 export default new Extensions()

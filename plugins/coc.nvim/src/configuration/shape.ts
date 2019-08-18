@@ -1,6 +1,8 @@
 import { Neovim } from '@chemzqm/neovim'
 import fs from 'fs'
 import { applyEdits, modify } from 'jsonc-parser'
+import path from 'path'
+import { FormattingOptions } from 'vscode-languageserver-types'
 import { URI } from 'vscode-uri'
 import { ConfigurationShape, ConfigurationTarget, IWorkspace } from '../types'
 const logger = require('../util/logger')('configuration-shape')
@@ -18,8 +20,8 @@ export default class ConfigurationProxy implements ConfigurationShape {
     let { nvim, workspace } = this
     let file = workspace.getConfigFile(target)
     if (!file) return
-    let formattingOptions = await workspace.getFormatOptions()
-    let content = await workspace.readFile(URI.file(file).toString())
+    let formattingOptions: FormattingOptions = { tabSize: 2, insertSpaces: true }
+    let content = fs.readFileSync(file, 'utf8')
     value = value == null ? undefined : value
     let edits = modify(content, [key], value, { formattingOptions })
     content = applyEdits(content, edits)
@@ -27,6 +29,11 @@ export default class ConfigurationProxy implements ConfigurationShape {
     let doc = workspace.getDocument(URI.file(file).toString())
     if (doc) nvim.command('checktime', true)
     return
+  }
+
+  public get workspaceConfigFile(): string {
+    let folder = path.join(this.workspace.root, '.vim')
+    return path.join(folder, 'coc-settings.json')
   }
 
   public $updateConfigurationOption(target: ConfigurationTarget, key: string, value: any): void {

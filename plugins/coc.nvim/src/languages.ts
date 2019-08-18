@@ -1,12 +1,9 @@
 import { Neovim } from '@chemzqm/neovim'
-import { CancellationToken, CancellationTokenSource, CodeAction, CodeActionContext, CodeActionKind, CodeLens, ColorInformation, ColorPresentation, CompletionItem, CompletionItemKind, CompletionList, CompletionTriggerKind, Disposable, DocumentHighlight, DocumentLink, DocumentSelector, DocumentSymbol, FoldingRange, FormattingOptions, Hover, InsertTextFormat, Location, LocationLink, Position, Range, SignatureHelp, SymbolInformation, TextDocument, TextEdit, WorkspaceEdit } from 'vscode-languageserver-protocol'
-import { SelectionRange } from 'vscode-languageserver-protocol/lib/protocol.selectionRange.proposed'
+import { CancellationToken, CancellationTokenSource, CodeAction, CodeActionContext, CodeActionKind, CodeLens, ColorInformation, ColorPresentation, CompletionItem, CompletionItemKind, CompletionList, CompletionTriggerKind, Disposable, DocumentHighlight, DocumentLink, DocumentSelector, DocumentSymbol, FoldingRange, FormattingOptions, Hover, InsertTextFormat, Location, LocationLink, Position, Range, SelectionRange, SignatureHelp, SymbolInformation, TextDocument, TextEdit, WorkspaceEdit } from 'vscode-languageserver-protocol'
 import commands from './commands'
 import diagnosticManager from './diagnostic/manager'
-import Document from './model/document'
-import { CodeActionProvider, CodeLensProvider, CompletionItemProvider, DeclarationProvider, DefinitionProvider, DocumentColorProvider, DocumentFormattingEditProvider, DocumentLinkProvider, DocumentRangeFormattingEditProvider, DocumentSymbolProvider, FoldingContext, FoldingRangeProvider, HoverProvider, ImplementationProvider, OnTypeFormattingEditProvider, ReferenceContext, ReferenceProvider, RenameProvider, SignatureHelpProvider, TypeDefinitionProvider, WorkspaceSymbolProvider, SelectionRangeProvider } from './provider'
+import { CodeActionProvider, CodeLensProvider, CompletionItemProvider, DeclarationProvider, DefinitionProvider, DocumentColorProvider, DocumentFormattingEditProvider, DocumentLinkProvider, DocumentRangeFormattingEditProvider, DocumentSymbolProvider, FoldingContext, FoldingRangeProvider, HoverProvider, ImplementationProvider, OnTypeFormattingEditProvider, ReferenceContext, ReferenceProvider, RenameProvider, SelectionRangeProvider, SignatureHelpProvider, TypeDefinitionProvider, WorkspaceSymbolProvider } from './provider'
 import CodeActionManager from './provider/codeActionmanager'
-import SelectionRangeManager from './provider/rangeManager'
 import CodeLensManager from './provider/codeLensManager'
 import DeclarationManager from './provider/declarationManager'
 import DefinitionManager from './provider/definitionManager'
@@ -20,6 +17,7 @@ import FormatRangeManager from './provider/formatRangeManager'
 import HoverManager from './provider/hoverManager'
 import ImplementationManager from './provider/implementatioinManager'
 import OnTypeFormatManager from './provider/onTypeFormatManager'
+import SelectionRangeManager from './provider/rangeManager'
 import ReferenceManager from './provider/referenceManager'
 import RenameManager from './provider/renameManager'
 import SignatureManager from './provider/signatureManager'
@@ -108,9 +106,9 @@ class Languages {
 
   constructor() {
     workspace.onWillSaveUntil(event => {
-      let config = workspace.getConfiguration('coc.preferences')
-      let filetypes = config.get<string[]>('formatOnSaveFiletypes', [])
       let { languageId } = event.document
+      let config = workspace.getConfiguration('coc.preferences', event.document.uri)
+      let filetypes = config.get<string[]>('formatOnSaveFiletypes', [])
       if (filetypes.indexOf(languageId) !== -1) {
         let willSaveWaitUntil = async (): Promise<TextEdit[]> => {
           let options = await workspace.getFormatOptions(event.document.uri)
@@ -348,25 +346,6 @@ class Languages {
 
   @check
   public async provideRenameEdits(document: TextDocument, position: Position, newName: string): Promise<WorkspaceEdit> {
-    if (!this.renameManager.hasProvider(document)) {
-      let doc = workspace.getDocument(document.uri)
-      if (!doc) return null
-      let range = doc.getWordRangeAtPosition(position)
-      if (!range) return null
-      let word = doc.textDocument.getText(range)
-      let ranges = doc.getSymbolRanges(word)
-      if (!ranges.length) return null
-      return {
-        changes: {
-          [doc.uri]: ranges.map(r => {
-            return {
-              range: r,
-              newText: newName
-            }
-          })
-        }
-      }
-    }
     return await this.renameManager.provideRenameEdits(document, position, newName, this.token)
   }
 
@@ -460,12 +439,59 @@ class Languages {
   }
 
   @check
-  public async provideDocumentOntTypeEdits(character: string, document: TextDocument, position: Position): Promise<TextEdit[] | null> {
+  public async provideDocumentOnTypeEdits(character: string, document: TextDocument, position: Position): Promise<TextEdit[] | null> {
     return this.onTypeFormatManager.onCharacterType(character, document, position, this.token)
   }
 
   public hasOnTypeProvider(character: string, document: TextDocument): boolean {
     return this.onTypeFormatManager.getProvider(document, character) != null
+  }
+
+  public hasProvider(id: string, document: TextDocument): boolean {
+    switch (id) {
+      case 'rename':
+        return this.renameManager.hasProvider(document)
+      case 'onTypeEdit':
+        return this.onTypeFormatManager.hasProvider(document)
+      case 'documentLink':
+        return this.documentLinkManager.hasProvider(document)
+      case 'documentColor':
+        return this.documentColorManager.hasProvider(document)
+      case 'foldingRange':
+        return this.foldingRangeManager.hasProvider(document)
+      case 'format':
+        return this.formatManager.hasProvider(document)
+      case 'codeAction':
+        return this.codeActionManager.hasProvider(document)
+      case 'workspaceSymbols':
+        return this.workspaceSymbolsManager.hasProvider(document)
+      case 'formatRange':
+        return this.formatRangeManager.hasProvider(document)
+      case 'hover':
+        return this.hoverManager.hasProvider(document)
+      case 'signature':
+        return this.signatureManager.hasProvider(document)
+      case 'documentSymbol':
+        return this.documentSymbolManager.hasProvider(document)
+      case 'documentHighlight':
+        return this.documentHighlightManager.hasProvider(document)
+      case 'definition':
+        return this.definitionManager.hasProvider(document)
+      case 'declaration':
+        return this.declarationManager.hasProvider(document)
+      case 'typeDefinition':
+        return this.typeDefinitionManager.hasProvider(document)
+      case 'reference':
+        return this.referenceManager.hasProvider(document)
+      case 'implementatioin':
+        return this.implementatioinManager.hasProvider(document)
+      case 'codeLens':
+        return this.codeLensManager.hasProvider(document)
+      case 'selectionRange':
+        return this.selectionRangeManager.hasProvider(document)
+      default:
+        throw new Error(`${id} not supported.`)
+    }
   }
 
   public dispose(): void {
@@ -491,7 +517,6 @@ class Languages {
     priority = priority == null ? this.completeConfig.priority : priority
     // index set of resolved items
     let resolvedIndexes: Set<number> = new Set()
-    let doc: Document = null
     let waitTime = Math.min(Math.max(50, this.completeConfig.waitTime), 300)
     let source: ISource = {
       name,
@@ -503,8 +528,6 @@ class Languages {
       triggerCharacters: triggerCharacters || [],
       doComplete: async (opt: CompleteOption, token: CancellationToken): Promise<CompleteResult | null> => {
         let { triggerCharacter, bufnr } = opt
-        doc = workspace.getDocument(bufnr)
-        if (!doc) return null
         resolvedIndexes = new Set()
         let isTrigger = triggerCharacters && triggerCharacters.indexOf(triggerCharacter) != -1
         let triggerKind: CompletionTriggerKind = CompletionTriggerKind.Invoked
@@ -520,6 +543,7 @@ class Languages {
         if (isTrigger) context.triggerCharacter = triggerCharacter
         let result
         try {
+          let doc = workspace.getDocument(bufnr)
           result = await Promise.resolve(provider.provideCompletionItems(doc.textDocument, position, token, context))
         } catch (e) {
           // don't disturb user
@@ -562,7 +586,8 @@ class Languages {
             detail = detail.replace(/\n\s*/g, ' ')
             if (detail.length) {
               let isText = /^[\w-\s.,\t]+$/.test(detail)
-              docs.push({ filetype: isText ? 'txt' : doc.filetype, content: detail })
+              let filetype = isText ? 'txt' : await workspace.nvim.eval('&filetype') as string
+              docs.push({ filetype: isText ? 'txt' : filetype, content: detail })
             }
           }
           if (documentation) {
@@ -594,24 +619,28 @@ class Languages {
           }
         }
         if (vimItem.line) Object.assign(opt, { line: vimItem.line })
-        let snippet = await this.applyTextEdit(item, opt)
-        let { additionalTextEdits } = item
-        if (additionalTextEdits && item.textEdit) {
-          let r = item.textEdit.range
-          additionalTextEdits = additionalTextEdits.filter(edit => {
-            if (rangeOverlap(r, edit.range)) {
-              logger.info('Filtered overlap additionalTextEdit:', edit)
-              return false
-            }
-            return true
-          })
+        try {
+          let isSnippet = await this.applyTextEdit(item, opt)
+          if (isSnippet && snippetManager.isPlainText(item.textEdit.newText)) {
+            isSnippet = false
+          }
+          let { additionalTextEdits } = item
+          if (additionalTextEdits && item.textEdit) {
+            let r = item.textEdit.range
+            additionalTextEdits = additionalTextEdits.filter(edit => {
+              if (rangeOverlap(r, edit.range)) {
+                logger.error('Filtered overlap additionalTextEdit:', edit)
+                return false
+              }
+              return true
+            })
+          }
+          await this.applyAdditionalEdits(additionalTextEdits, opt.bufnr, isSnippet)
+          if (isSnippet) await snippetManager.selectCurrentPlaceholder()
+          if (item.command) commands.execute(item.command)
+        } catch (e) {
+          logger.error('Error on CompleteDone:', e)
         }
-        await this.applyAdditionalEdits(additionalTextEdits, opt.bufnr, snippet)
-        if (snippet && !snippetManager.isPlainText(item.textEdit.newText)) {
-          await snippetManager.selectCurrentPlaceholder()
-        }
-        if (item.command) commands.execute(item.command)
-        doc = null
       },
       shouldCommit: (item: VimCompleteItem, character: string): boolean => {
         let completeItem = completeItems[item.index]
@@ -636,13 +665,14 @@ class Languages {
     let { textEdit } = item
     if (!textEdit) return false
     let { line, bufnr, linenr } = option
+    let doc = workspace.getDocument(bufnr)
+    if (!doc) return false
     let { range, newText } = textEdit
     let isSnippet = item.insertTextFormat === InsertTextFormat.Snippet
     // replace inserted word
     let start = line.substr(0, range.start.character)
     let end = line.substr(range.end.character)
     if (isSnippet) {
-      let doc = workspace.getDocument(bufnr)
       await doc.applyEdits(nvim, [{
         range: Range.create(linenr - 1, 0, linenr, 0),
         newText: `${start}${end}\n`
@@ -656,14 +686,12 @@ class Languages {
       await nvim.call('coc#util#setline', [linenr, newLines[0]])
       await workspace.moveTo(Position.create(linenr - 1, (start + newText).length))
     } else {
-      let document = workspace.getDocument(bufnr)
-      if (document) {
-        await document.buffer.setLines(newLines, {
-          start: linenr - 1,
-          end: linenr,
-          strictIndexing: false
-        })
-      }
+      let buffer = nvim.createBuffer(bufnr)
+      await buffer.setLines(newLines, {
+        start: linenr - 1,
+        end: linenr,
+        strictIndexing: false
+      })
       let line = linenr - 1 + newLines.length - 1
       let character = newLines[newLines.length - 1].length - end.length
       await workspace.moveTo({ line, character })
@@ -678,15 +706,13 @@ class Languages {
     if (!textEdits || textEdits.length == 0) return
     let document = workspace.getDocument(bufnr)
     if (!document) return
-    await wait(workspace.isVim ? 100 : 10)
+    await (document as any)._fetchContent()
     // how to move cursor after edit
     let changed = null
     let pos = await workspace.getCursorPosition()
     if (!snippet) changed = getChangedFromEdits(pos, textEdits)
     await document.applyEdits(this.nvim, textEdits)
-    if (changed) {
-      await workspace.moveTo(Position.create(pos.line + changed.line, pos.character + changed.character))
-    }
+    if (changed) await workspace.moveTo(Position.create(pos.line + changed.line, pos.character + changed.character))
   }
 
   private convertVimCompleteItem(item: CompletionItem, shortcut: string, opt: CompleteOption): VimCompleteItem {
@@ -708,7 +734,7 @@ class Languages {
       sortText: item.sortText || null,
       filterText: item.filterText || label,
       isSnippet,
-      dup: 1
+      dup: item.data && item.data.dup == 0 ? 0 : 1
     }
     if (item && item.detail && detailField != 'preview') {
       let detail = item.detail.replace(/\n\s*/g, ' ')
@@ -723,6 +749,8 @@ class Languages {
     }
     if (item.documentation) {
       obj.info = typeof item.documentation == 'string' ? item.documentation : item.documentation.value
+    } else {
+      obj.info = ''
     }
     if (!obj.word) obj.empty = 1
     if (item.textEdit) obj.line = opt.line

@@ -1,6 +1,7 @@
 import { Neovim, Window } from '@chemzqm/neovim'
+import { RequestOptions } from 'http'
 import log4js from 'log4js'
-import { CancellationToken, CompletionTriggerKind, CreateFileOptions, DeleteFileOptions, Diagnostic, DidChangeTextDocumentParams, Disposable, DocumentSelector, Event, FormattingOptions, Location, Position, Range, RenameFileOptions, TextDocument, TextDocumentSaveReason, TextEdit, WorkspaceEdit, WorkspaceFolder } from 'vscode-languageserver-protocol'
+import { CancellationToken, CompletionTriggerKind, CreateFileOptions, DeleteFileOptions, Diagnostic, Disposable, DocumentSelector, Event, FormattingOptions, Location, Position, Range, RenameFileOptions, TextDocument, TextDocumentSaveReason, TextEdit, WorkspaceEdit, WorkspaceFolder } from 'vscode-languageserver-protocol'
 import { URI } from 'vscode-uri'
 import Configurations from './configuration'
 import { LanguageClient } from './language-client'
@@ -15,6 +16,12 @@ export type ExtensionState = 'disabled' | 'loaded' | 'activated' | 'unknown'
 export interface CodeAction extends protocol.CodeAction {
   isPrefered?: boolean
   clientId?: string
+}
+
+export interface DidChangeTextDocumentParams extends protocol.DidChangeTextDocumentParams {
+  bufnr: number
+  // original text
+  original: string
 }
 
 export interface TaskOptions {
@@ -52,6 +59,7 @@ export interface ExtensionInfo {
   description: string
   root: string
   exotic: boolean
+  uri?: string
   state: ExtensionState
   isLocal: boolean
 }
@@ -176,6 +184,11 @@ export interface Memento {
 export interface Terminal {
 
   /**
+   * The bufnr of terminal buffer.
+   */
+  readonly bufnr: number
+
+  /**
    * The name of the terminal.
    */
   readonly name: string
@@ -197,11 +210,11 @@ export interface Terminal {
   sendText(text: string, addNewLine?: boolean): void
 
   /**
-   * Show the terminal panel and reveal this terminal in the UI.
+   * Show the terminal panel and reveal this terminal in the UI, return false when failed.
    *
    * @param preserveFocus When `true` the terminal will not take focus.
    */
-  show(preserveFocus?: boolean): void
+  show(preserveFocus?: boolean): Promise<boolean>
 
   /**
    * Hide the terminal panel if this terminal is currently showing.
@@ -231,9 +244,12 @@ export interface Env {
   readonly cmdheight: number
   readonly filetypeMap: { [index: string]: string }
   readonly isVim: boolean
+  readonly isCygwin: boolean
   readonly isMacvim: boolean
   readonly version: string
   readonly locationlist: boolean
+  readonly progpath: string
+  readonly textprop: boolean
 }
 
 export interface Fragment {
@@ -313,6 +329,7 @@ export interface LanguageServerConfig {
   transport?: string
   transportPort?: number
   disableWorkspaceFolders?: boolean
+  disableDynamicRegister?: boolean
   disableCompletion?: boolean
   disableDiagnostics?: boolean
   filetypes: string[]
@@ -346,6 +363,7 @@ export interface LocationListItem {
 
 export interface QuickfixItem {
   uri?: string
+  module?: string
   range?: Range
   text?: string
   type?: string,
@@ -378,8 +396,6 @@ export interface BufferOption {
   filetype: string
   iskeyword: string
   changedtick: number
-  rootPatterns: string[] | null
-  additionalKeywords: string[]
 }
 
 export interface DiagnosticInfo {
@@ -478,6 +494,54 @@ export interface VimCompleteItem {
   line?: string
 }
 
+export interface PopupProps {
+  col: number
+  length: number // or 0
+  type: string
+  end_lnum?: number
+  end_col?: number
+  id?: number
+  transparent?: boolean
+}
+
+export interface TextItem {
+  text: string
+  props?: PopupProps
+}
+
+export interface PopupOptions {
+  line?: number | string
+  col?: number | string
+  pos?: 'topleft' | 'topright' | 'botleft' | 'botright' | 'center'
+  // move float window when content overlap when it's false(default)
+  fixed?: boolean
+  // no overlap of popupmenu-completion, not implemented
+  flip?: boolean
+  maxheight?: number
+  minheight?: number
+  maxwidth?: number
+  minwidth?: number
+  // When out of range the last buffer line will at the top of the window.
+  firstline?: number
+  // not implemented
+  hidden?: boolean
+  // only -1 and 0 are supported
+  tab?: number
+  title?: string
+  wrap?: boolean
+  drag?: boolean
+  highlight?: string
+  padding?: [number, number, number, number]
+  border?: [number, number, number, number]
+  borderhighlight?: [string, string, string, string]
+  borderchars?: string[]
+  zindex?: number
+  time?: number
+  moved?: string | [number, number]
+  filter?: string
+  callback?: string
+}
+
 export interface PopupChangeEvent {
   completed_item: VimCompleteItem,
   height: number
@@ -510,6 +574,7 @@ export interface CompleteConfig {
   disableMenu: boolean
   disableMenuShortcut: boolean
   enablePreview: boolean
+  enablePreselect: boolean
   labelMaxLength: number
   maxPreviewWidth: number
   autoTrigger: string
@@ -602,6 +667,7 @@ export interface TerminalResult {
 }
 
 export interface ConfigurationShape {
+  workspaceConfigFile: string
   $updateConfigurationOption(target: ConfigurationTarget, key: string, value: any): void
   $removeConfigurationOption(target: ConfigurationTarget, key: string): void
 }
@@ -785,11 +851,17 @@ export interface IList {
 }
 
 export interface PreiewOptions {
-  bufname: string
+  bufname?: string
   sketch: boolean
   filetype: string
   lines?: string[]
   lnum?: number
+}
+
+export interface DownloadOptions extends RequestOptions {
+  // absolute folder path
+  dest: string
+  onProgress?: (percent: number) => void
 }
 
 export interface AnsiItem {

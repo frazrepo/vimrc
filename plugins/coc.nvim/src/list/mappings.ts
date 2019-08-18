@@ -70,6 +70,9 @@ export default class Mappings {
     this.add('insert', '<C-u>', () => {
       prompt.removeAhead()
     })
+    this.add('insert', '<C-r>', () => {
+      return prompt.insertRegister()
+    })
     this.add('insert', '<C-d>', () => {
       return manager.feedkeys('<C-d>')
     })
@@ -307,12 +310,17 @@ export default class Mappings {
           return prompt.removeTail()
         case 'removeahead':
           return prompt.removeAhead()
+        case 'insertregister':
+          await prompt.insertRegister()
+          return
         case 'paste':
           await prompt.paste()
           return
         default:
           await this.onError(`prompt '${action}' not supported`)
       }
+    } else if (key == 'eval') {
+      await prompt.eval(action)
     } else if (key == 'command') {
       await manager.command(action)
     } else if (key == 'action') {

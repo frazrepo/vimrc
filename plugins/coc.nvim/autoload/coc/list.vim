@@ -2,7 +2,7 @@ let s:activated = 0
 let s:is_vim = !has('nvim')
 let s:saved_ve = &t_ve
 let s:saved_cursor = &guicursor
-let s:gui = has('gui_running')
+let s:gui = has('gui_running') || has('nvim')
 
 function! coc#list#get_chars()
   return {
@@ -116,13 +116,13 @@ function! coc#list#getchar() abort
 endfunction
 
 function! coc#list#prompt_start() abort
-  call timer_start(&updatetime, {-> coc#list#start_prompt()})
+  call timer_start(100, {-> coc#list#start_prompt()})
 endfunction
 
 function! coc#list#start_prompt()
   if s:activated | return | endif
-  if s:gui
-    set guicursor+=a:ver1-Cursor-blinkon0
+  if s:gui && !empty(s:saved_cursor)
+    set guicursor+=a:ver1-Cursor-blinkoff999
   elseif s:is_vim
     set t_ve=
   endif
@@ -150,15 +150,19 @@ endfunction
 function! coc#list#setlines(lines, append)
   let total = line('$')
   if a:append
-    call append(line('$'), a:lines)
+    silent call append(line('$'), a:lines)
   else
-    call append(0, a:lines)
-    call deletebufline('%', len(a:lines) + 1, '$')
+    silent call append(0, a:lines)
+    let n = len(a:lines) + 1
+    let saved_reg = @"
+    silent execute n.',$d'
+    let @" = saved_reg
   endif
 endfunction
 
 function! coc#list#options(...)
-  let list = ['--top', '--normal', '--no-sort', '--input', '--strict', '--regex', '--interactive', '--number-select', '--auto-preview']
+  let list = ['--top', '--tab', '--normal', '--no-sort', '--input', '--strict',
+        \ '--regex', '--interactive', '--number-select', '--auto-preview']
   if get(g:, 'coc_enabled', 0)
     let names = coc#rpc#request('listNames', [])
     call extend(list, names)
@@ -166,11 +170,13 @@ function! coc#list#options(...)
   return join(list, "\n")
 endfunction
 
-function! coc#list#stop_prompt()
-  if s:gui
-    let &guicursor = s:saved_cursor
-  elseif s:is_vim
-    let &t_ve = s:saved_ve
+function! coc#list#stop_prompt(...)
+  if get(a:, 1, 0) == 0
+    if s:gui
+      let &guicursor = s:saved_cursor
+    elseif s:is_vim
+      let &t_ve = s:saved_ve
+    endif
   endif
   if s:activated
     let s:activated = 0
@@ -183,10 +189,20 @@ function! coc#list#status(name)
   return get(b:list_status, a:name, '')
 endfunction
 
-function! coc#list#create(position, height, name)
+function! coc#list#create(position, height, name, numberSelect)
   nohlsearch
-  execute 'silent keepalt '.(a:position ==# 'top' ? '' : 'botright').a:height.'sp list:///'.a:name
-  execute 'resize '.a:height
+  if a:position ==# 'tab'
+    execute 'silent tabe list:///'.a:name
+  else
+    execute 'silent keepalt '.(a:position ==# 'top' ? '' : 'botright').a:height.'sp list:///'.a:name
+    execute 'resize '.a:height
+  endif
+  if a:numberSelect
+    setl number
+  else
+    setl nonumber
+    setl foldcolumn=2
+  endif
   return [bufnr('%'), win_getid()]
 endfunction
 
@@ -202,9 +218,9 @@ function! coc#list#setup(source)
     \ ]
   call setwinvar(winnr(), '&statusline', join(statusParts, ' '))
   setl buftype=nofile nobuflisted nofen nowrap
-  setl number norelativenumber bufhidden=wipe cursorline winfixheight
+  setl norelativenumber bufhidden=wipe cursorline winfixheight
   setl tabstop=1 nolist nocursorcolumn
-  setl signcolumn=yes
+  setl signcolumn=auto
   setl filetype=list
   syntax case ignore
   let source = a:source[8:]
@@ -223,19 +239,19 @@ function! coc#list#has_preview()
   return 0
 endfunction
 
-function! coc#list#get_colors()
-  let color_map = {}
-  let colors = ['#282828', '#cc241d', '#98971a', '#d79921', '#458588', '#b16286', '#689d6a', '#a89984', '#928374']
-  let names = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'grey']
-  for i in range(0, len(names) - 1)
-    let name = names[i]
-    let color_map[name] = get(g:, 'terminal_color_'.i, colors[i])
-  endfor
-  return color_map
-endfunction
-
 function! coc#list#restore(winid, height)
   let res = win_gotoid(a:winid)
   if res == 0 | return | endif
+  if winnr('$') == 1
+    return
+  endif
+  execute 'resize '.a:height
+  if s:is_vim
+    redraw
+  endif
+endfunction
+
+function! coc#list#set_height(height) abort
+  if winnr('$') == 1| return | endif
   execute 'resize '.a:height
 endfunction

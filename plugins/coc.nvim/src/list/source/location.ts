@@ -10,7 +10,7 @@ const logger = require('../../util/logger')('list-location')
 
 export default class LocationList extends BasicList {
   public defaultAction = 'open'
-  public description = 'last jump locations'
+  public description = 'show locations saved by g:coc_jump_locations variable'
   public name = 'location'
 
   constructor(nvim: Neovim) {
@@ -20,7 +20,7 @@ export default class LocationList extends BasicList {
 
   public async loadItems(context: ListContext): Promise<ListItem[]> {
     // filename, lnum, col, text, type
-    let locs = (global as any).locations as QuickfixItem[]
+    let locs = await this.nvim.getVar('coc_jump_locations') as QuickfixItem[]
     locs = locs || []
     locs.forEach(loc => {
       if (!loc.uri) {

@@ -17,7 +17,7 @@
 
 Coc is an intellisense engine for vim8 & neovim.
 
-It works on `vim >= 8.0.1453` and `neovim >= 0.3.1`.
+It works on `vim >= 8.0` and `neovim >= 0.3.1`.
 
 It's a completion framework and language server client which supports [extension features of VSCode](https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions).
 
@@ -25,7 +25,7 @@ It's a completion framework and language server client which supports [extension
 
 _True snippet and additional text editing support_
 
-Floating windows require the master build of neovim to work, [follow steps in the faq](https://github.com/neoclide/coc.nvim/wiki/F.A.Q#how-to-make-preview-window-shown-aside-with-pum).
+Floating windows require nightly build of neovim or vim >= 8.1.1522, [follow steps in the faq](https://github.com/neoclide/coc.nvim/wiki/F.A.Q#how-to-make-preview-window-shown-aside-with-pum).
 
 Check out [doc/coc.txt](doc/coc.txt) for the vim interface.
 
@@ -34,10 +34,11 @@ Check out [doc/coc.txt](doc/coc.txt) for the vim interface.
 - 🚀 **Fast**: [instant increment completion](https://github.com/neoclide/coc.nvim/wiki/Completion-with-sources#highlights-of-coc-completion), increment buffer sync using buffer update events.
 - 💎 **Reliable**: typed language, tested with CI.
 - 🌟 **Featured**: [full LSP support](https://github.com/neoclide/coc.nvim/wiki/Language-servers#supported-features)
-- ❤️ **Flexible**: [configured like VSCode](https://github.com/neoclide/coc.nvim/wiki/Using-configuration-file), [extensions work like in VSCode](https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions)
+- ❤️ **Flexible**: [configured like VSCode](https://github.com/neoclide/coc.nvim/wiki/Using-the-configuration-file), [extensions work like in VSCode](https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions)
 
 <details><summary>Completion experience</summary>
 <p>
+  
 You might be wondering why yet another completion engine since there is the already
 widely used [YouCompleteMe](https://github.com/Valloric/YouCompleteMe) and
 [deoplete.nvim](https://github.com/Shougo/deoplete.nvim).
@@ -74,28 +75,26 @@ Below are the reasons that led coc.nvim to build its own engine:
 
 - [Installation](https://github.com/neoclide/coc.nvim/wiki/Install-coc.nvim)
 
-  Install [nodejs](https://nodejs.org/en/download/):
+  Install [nodejs](https://nodejs.org/en/download/) when necessary:
 
   ```sh
-  curl -sL install-node.now.sh/lts | sh
-  # Optional install yarn if you want install extension by CocInstall command
-  curl --compressed -o- -L https://yarnpkg.com/install.sh | bash
+  curl -sL install-node.now.sh/lts | bash
   ```
 
   For [vim-plug](https://github.com/junegunn/vim-plug) users:
 
   ```vim
-  " Install nightly build, replace ./install.sh with install.cmd on windows
-  Plug 'neoclide/coc.nvim', {'do': './install.sh nightly'}
-  " Or install latest release tag
-  Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
-  " Or build from source code
+  " Use release branch
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  " Or latest tag
+  Plug 'neoclide/coc.nvim', {'tag': '*', 'branch': 'release'}
+  " Or build from source code by use yarn: https://yarnpkg.com
   Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
   ```
 
   in your `.vimrc` or `init.vim`, then restart vim and run `:PlugInstall`.
 
-  For other plugin managers, run command `:call coc#util#install()` to download the latest compiled javascript bundle.
+  For other plugin managers, make sure use release branch.
 
   **Note**: The first time building from source code may be slow.
 
@@ -117,6 +116,8 @@ Below are the reasons that led coc.nvim to build its own engine:
 - [Using configuration file](https://github.com/neoclide/coc.nvim/wiki/Using-the-configuration-file)
 
 - [Using workspaceFolders](https://github.com/neoclide/coc.nvim/wiki/Using-workspaceFolders)
+
+- [Using multiple cursors](https://github.com/neoclide/coc.nvim/wiki/Multiple-cursors-support)
 
 - [Language servers](https://github.com/neoclide/coc.nvim/wiki/Language-servers)
 
@@ -142,7 +143,7 @@ Below are the reasons that led coc.nvim to build its own engine:
     - [Scala](https://github.com/neoclide/coc.nvim/wiki/Language-servers#scala)
     - [Latex](https://github.com/neoclide/coc.nvim/wiki/Language-servers#latex)
     - [Elm](https://github.com/neoclide/coc.nvim/wiki/Language-servers#elm)
-    - [Fortran](https://github.com/neoclide/coc.nvim/wiki/Language-servers#latex)
+    - [Fortran](https://github.com/neoclide/coc.nvim/wiki/Language-servers#fortran)
     - [Clojure](https://github.com/neoclide/coc.nvim/wiki/Language-servers#clojure)
     - [Julia](https://github.com/neoclide/coc.nvim/wiki/Language-servers#julia)
 
@@ -166,7 +167,6 @@ For other completion sources, check out:
 - [coc-vimtex](https://github.com/neoclide/coc-vimtex): vimtex integration.
 - [coc-neoinclude](https://github.com/jsfaint/coc-neoinclude): neoinclude
   integration.
-- [coc-powershell](https://github.com/yatli/coc-powershell): PowerShellEditorService integration.
 - [coc-lbdbq](https://github.com/zidhuss/coc-lbdbq): email address completion.
 - [coc-browser](https://github.com/voldikss/coc-browser): web browser words completion.
 
@@ -183,6 +183,7 @@ Extensions are more powerful than a configured language server. Check out
 - **[coc-html](https://github.com/neoclide/coc-html)** for `html`, `handlebars`
   and `razor`.
 - **[coc-css](https://github.com/neoclide/coc-css)** for `css`, `scss` and `less`.
+- **[coc-ember](https://github.com/NullVoxPopuli/coc-ember)** for ember projects.
 - **[coc-vetur](https://github.com/neoclide/coc-vetur)** for `vue`, use [vetur](https://github.com/vuejs/vetur).
 - **[coc-phpls](https://github.com/marlonfan/coc-phpls)** for `php`, use [intelephense-docs](https://github.com/bmewburn/intelephense-docs).
 - **[coc-java](https://github.com/neoclide/coc-java)** for `java`, use [eclipse.jdt.ls](https://github.com/eclipse/eclipse.jdt.ls).
@@ -208,6 +209,13 @@ Extensions are more powerful than a configured language server. Check out
 - **[coc-tailwindcss](https://github.com/iamcco/coc-tailwindcss)** for `tailwindcss`.
 - **[coc-angular](https://github.com/iamcco/coc-angular)** for `angular`.
 - **[coc-vimlsp](https://github.com/iamcco/coc-vimlsp)** for `viml`.
+- **[coc-xml](https://github.com/fannheyward/coc-xml)** for `xml`, use [lsp4xml](https://github.com/angelozerr/lsp4xml).
+- **[coc-elixir](https://github.com/amiralies/coc-elixir)** for `elixir`, based on [elixir-ls](https://github.com/JakeBecker/elixir-ls/).
+- **[coc-tabnine](https://github.com/neoclide/coc-tabnine)** for [tabnine](https://tabnine.com/).
+- **[coc-powershell](https://github.com/yatli/coc-powershell)** for PowerShellEditorService integration.
+- **[coc-omnisharp](https://github.com/yatli/coc-omnisharp)** for `csharp` and `visualbasic`.
+- **[coc-texlab](https://github.com/fannheyward/coc-texlab)** for `LaTex` using [TexLab](https://texlab.netlify.com/).
+- **[coc-lsp-wl](https://github.com/voldikss/coc-lsp-wl)** for `wolfram mathematica`, fork of [vscode-lsp-wl](https://github.com/kenkangxgwe/vscode-lsp-wl).
 
 Plus more! To get a full list of coc extensions, [search coc.nvim on npm](https://www.npmjs.com/search?q=keywords%3Acoc.nvim),
 or use [coc-marketplace](https://github.com/fannheyward/coc-marketplace), which can search and install extensions in coc.nvim directly.
@@ -234,7 +242,7 @@ set nowritebackup
 " Better display for messages
 set cmdheight=2
 
-" Smaller updatetime for CursorHold & CursorHoldI
+" You will have bad experience for diagnostic messages when it's default 4000.
 set updatetime=300
 
 " don't give |ins-completion-menu| messages.
@@ -311,6 +319,11 @@ nmap <leader>ac  <Plug>(coc-codeaction)
 " Fix autofix problem of current line
 nmap <leader>qf  <Plug>(coc-fix-current)
 
+" Use <tab> for select selections ranges, needs server support, like: coc-tsserver, coc-python
+nmap <silent> <TAB> <Plug>(coc-range-select)
+xmap <silent> <TAB> <Plug>(coc-range-select)
+xmap <silent> <S-TAB> <Plug>(coc-range-select-backword)
+
 " Use `:Format` to format current buffer
 command! -nargs=0 Format :call CocAction('format')
 
@@ -320,19 +333,8 @@ command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 " use `:OR` for organize import of current buffer
 command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
 
-" Add diagnostic info for https://github.com/itchyny/lightline.vim
-let g:lightline = {
-      \ 'colorscheme': 'wombat',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'cocstatus': 'coc#status'
-      \ },
-      \ }
-
-
+" Add status line support, for integration with other plugin, checkout `:h coc-status`
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " Using CocList
 " Show all diagnostics
@@ -353,11 +355,17 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 ```
 
+## Articles
+
+- [coc.nvim 插件体系介绍](https://zhuanlan.zhihu.com/p/65524706)
+- [CocList 入坑指南](https://zhuanlan.zhihu.com/p/71846145)
+- [Create coc.nvim extension to improve vim experience](https://medium.com/@chemzqm/create-coc-nvim-extension-to-improve-vim-experience-4461df269173)
+
 ## Trouble shooting
 
 Try these steps when you have problem with coc.nvim.
 
-- Make sure your vim version >= 8.0.1453 by command `:version`.
+- Make sure your vim version >= 8.0 by command `:version`.
 - If service failed to start, use command `:CocInfo` or `:checkhealth` on neovim.
 - Checkout the log of coc.nvim by command `:CocOpenLog`.
 - When you have issue with a languageserver, it's recommended to [checkout the output](https://github.com/neoclide/coc.nvim/wiki/Debug-language-server#using-output-channel)

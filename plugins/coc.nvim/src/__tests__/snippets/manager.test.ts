@@ -147,6 +147,13 @@ describe('snippet provider', () => {
     expect(active).toBe(true)
   })
 
+  it('should resolve variables', async () => {
+    await helper.createDocument()
+    await snippetManager.insertSnippet('${foo:abcdef} ${bar}')
+    let line = await nvim.line
+    expect(line).toBe('abcdef bar')
+  })
+
   it('should work with nest snippet', async () => {
     let buf = await helper.edit()
     let snip = '<a ${1:http://www.${2:example.com}}>\n$0\n</a>'
@@ -176,7 +183,7 @@ describe('snippet provider', () => {
     expect(line).toBe('foo bar')
   })
 
-  it('should chek jumpable', async () => {
+  it('should check jumpable', async () => {
     await helper.createDocument()
     await nvim.input('i')
     await snippetManager.insertSnippet('${1:foo} ${2:bar}')
@@ -188,5 +195,10 @@ describe('snippet provider', () => {
     await helper.wait(30)
     jumpable = snippetManager.jumpable()
     expect(jumpable).toBe(false)
+  })
+
+  it('should check plain text snippet', async () => {
+    expect(snippetManager.isPlainText('import ${0}')).toBe(true)
+    expect(snippetManager.isPlainText('import ${0:Data}')).toBe(false)
   })
 })

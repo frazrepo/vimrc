@@ -91,12 +91,72 @@ export function inDirectory(dir: string, subs: string[]): boolean {
   return false
 }
 
+export function findUp(name: string | string[], cwd: string): string {
+  let root = path.parse(cwd).root
+  let subs = Array.isArray(name) ? name : [name]
+  while (cwd && cwd !== root) {
+    let find = inDirectory(cwd, subs)
+    if (find) {
+      for (let sub of subs) {
+        let filepath = path.join(cwd, sub)
+        if (fs.existsSync(filepath)) {
+          return filepath
+        }
+      }
+    }
+    cwd = path.dirname(cwd)
+  }
+  return null
+}
+
 export function readFile(fullpath: string, encoding: string): Promise<string> {
   return new Promise((resolve, reject) => {
     fs.readFile(fullpath, encoding, (err, content) => {
       if (err) reject(err)
       resolve(content)
     })
+  })
+}
+
+export function getFileLineCount(filepath: string): Promise<number> {
+  let i
+  let count = 0
+  return new Promise((resolve, reject) => {
+    fs.createReadStream(filepath)
+      .on('error', e => reject(e))
+      .on('data', chunk => {
+        for (i = 0; i < chunk.length; ++i) if (chunk[i] == 10) count++
+      })
+      .on('end', () => resolve(count))
+  })
+}
+
+export function readFileLines(fullpath: string, start: number, end: number): Promise<string[]> {
+  let res: string[] = []
+  const rl = readline.createInterface({
+    input: fs.createReadStream(fullpath, { encoding: 'utf8' }),
+    crlfDelay: Infinity,
+    terminal: false
+  } as any)
+  let n = 0
+  return new Promise((resolve, reject) => {
+    rl.on('line', line => {
+      if (n == 0 && line.startsWith('\uFEFF')) {
+        // handle BOM
+        line = line.slice(1)
+      }
+      if (n >= start && n <= end) {
+        res.push(line)
+      }
+      if (n == end) {
+        rl.close()
+      }
+      n = n + 1
+    })
+    rl.on('close', () => {
+      resolve(res)
+    })
+    rl.on('error', reject)
   })
 }
 
@@ -110,6 +170,10 @@ export function readFileLine(fullpath: string, count: number): Promise<string> {
   return new Promise((resolve, reject) => {
     rl.on('line', line => {
       if (n == count) {
+        if (n == 0 && line.startsWith('\uFEFF')) {
+          // handle BOM
+          line = line.slice(1)
+        }
         rl.close()
         resolve(line)
         return

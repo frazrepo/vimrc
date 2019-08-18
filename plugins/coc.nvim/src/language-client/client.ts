@@ -25,6 +25,7 @@ import * as cv from './utils/converter'
 import * as UUID from './utils/uuid'
 import { WorkspaceFolderWorkspaceMiddleware } from './workspaceFolders'
 import { SelectionRangeProviderMiddleware } from './selectionRange'
+import { omit } from '../util/lodash'
 
 const logger = require('../util/logger')('language-client-client')
 
@@ -643,6 +644,7 @@ export interface LanguageClientOptions {
   documentSelector?: DocumentSelector | string[]
   synchronize?: SynchronizeOptions
   diagnosticCollectionName?: string
+  disableDynamicRegister?: boolean
   disableWorkspaceFolders?: boolean
   disableDiagnostics?: boolean
   disableCompletion?: boolean
@@ -663,9 +665,10 @@ export interface LanguageClientOptions {
 
 interface ResolvedClientOptions {
   ignoredRootPaths?: string[]
-  disableWorkspaceFolders?: boolean
-  disableDiagnostics?: boolean
-  disableCompletion?: boolean
+  disableWorkspaceFolders: boolean
+  disableDynamicRegister: boolean
+  disableDiagnostics: boolean
+  disableCompletion: boolean
   documentSelector?: DocumentSelector
   synchronize: SynchronizeOptions
   diagnosticCollectionName?: string
@@ -1212,13 +1215,13 @@ class DidChangeTextDocumentFeature
             middleware.didChange(event, () =>
               this._client.sendNotification(
                 DidChangeTextDocumentNotification.type,
-                event
+                omit(event, ['bufnr', 'original'])
               )
             )
           } else {
             this._client.sendNotification(
               DidChangeTextDocumentNotification.type,
-              event
+              omit(event, ['bufnr', 'original'])
             )
           }
         } else if (changeData.syncKind === TextDocumentSyncKind.Full) {
@@ -3123,6 +3126,7 @@ export abstract class BaseLanguageClient {
     clientOptions = clientOptions || {}
     this._clientOptions = {
       disableWorkspaceFolders: clientOptions.disableWorkspaceFolders,
+      disableDynamicRegister: clientOptions.disableDynamicRegister,
       disableDiagnostics: clientOptions.disableDiagnostics,
       disableCompletion: clientOptions.disableCompletion,
       ignoredRootPaths: clientOptions.ignoredRootPaths,
@@ -3419,10 +3423,6 @@ export abstract class BaseLanguageClient {
     if (this._clientOptions.revealOutputChannelOn <= level) {
       this.outputChannel.show(true)
     }
-    if (type == 'Error' && message.indexOf('UnhandledPromiseRejectionWarning') == -1) {
-      message = dataString ? message + '\n' + dataString : message
-      workspace.showMessage(`Error output from ${this.id}: ${message}`, 'error')
-    }
   }
 
   public info(message: string, data?: any): void {
@@ -3525,7 +3525,7 @@ export abstract class BaseLanguageClient {
             workspace.showMessage(params.message, msgType as any)
             return Promise.resolve(null)
           }
-          let items = params.actions.map(o => o.title)
+          let items = params.actions.map(o => typeof o === 'string' ? o : o.title)
           return workspace.showQuickpick(items, params.message).then(idx => {
             return params.actions[idx]
           })
@@ -3783,7 +3783,7 @@ export abstract class BaseLanguageClient {
 
   protected abstract createMessageTransports(
     encoding: string
-  ): Thenable<MessageTransports>
+  ): Thenable<MessageTransports | null>
 
   private createConnection(): Thenable<IConnection> {
     let errorHandler = (error: Error, message: Message, count: number) => {
@@ -4000,6 +4000,7 @@ export abstract class BaseLanguageClient {
   private handleRegistrationRequest(
     params: RegistrationParams
   ): Thenable<void> {
+    if (this.clientOptions.disableDynamicRegister) return Promise.resolve()
     return new Promise<void>((resolve, reject) => {
       for (let registration of params.registrations) {
         const feature = this._dynamicFeatures.get(registration.method)

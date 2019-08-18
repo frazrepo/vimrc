@@ -1,4 +1,4 @@
-import { Buffer, Neovim } from '@chemzqm/neovim'
+import { Buffer, Neovim, Window } from '@chemzqm/neovim'
 import { Highlight, getHiglights } from '../util/highlight'
 import { characterIndex, byteLength } from '../util/string'
 import { group } from '../util/array'
@@ -11,19 +11,27 @@ export default class FloatBuffer {
   private highlights: Highlight[]
   private positions: [number, number, number?][] = []
   private enableHighlight = true
+  private tabstop = 2
   public width = 0
   constructor(
+    private nvim: Neovim,
     public buffer: Buffer,
-    private nvim: Neovim) {
+    private window?: Window
+  ) {
     let config = workspace.getConfiguration('coc.preferences')
     this.enableHighlight = config.get<boolean>('enableFloatHighlight', true)
+    buffer.getOption('tabstop').then(val => {
+      this.tabstop = val as number
+    }, _e => {
+      // noop
+    })
   }
 
   public getHeight(docs: Documentation[], maxWidth: number): number {
     let l = 0
     for (let doc of docs) {
       let lines = doc.content.split(/\r?\n/)
-      if (doc.filetype == 'markdown') {
+      if (doc.filetype == 'markdown' && workspace.isNvim) {
         lines = lines.filter(s => !s.startsWith('```'))
       }
       for (let line of lines) {
@@ -71,7 +79,7 @@ export default class FloatBuffer {
       }
       idx = idx + 1
     }
-    let width = this.width = Math.min(Math.max(...newLines.map(s => byteLength(s))) + 2, maxWidth)
+    let width = this.width = Math.min(Math.max(...newLines.map(s => this.getWidth(s))) + 2, maxWidth)
     this.lines = newLines.map(s => {
       if (s == '—') return '—'.repeat(width - 2)
       return s
@@ -79,13 +87,21 @@ export default class FloatBuffer {
     return fragments
   }
 
+  private getWidth(line: string): number {
+    let { tabstop } = this
+    line = line.replace(/\t/g, ' '.repeat(tabstop))
+    return byteLength(line)
+  }
+
   public async setDocuments(docs: Documentation[], maxWidth: number): Promise<void> {
     let fragments = this.calculateFragments(docs, maxWidth)
     let filetype = await this.nvim.eval('&filetype') as string
-    fragments = fragments.reduce((p, c) => {
-      p.push(...this.splitFragment(c, filetype))
-      return p
-    }, [])
+    if (workspace.isNvim) {
+      fragments = fragments.reduce((p, c) => {
+        p.push(...this.splitFragment(c, filetype))
+        return p
+      }, [])
+    }
     if (this.enableHighlight) {
       let arr = await Promise.all(fragments.map(f => {
         return getHiglights(f.lines, f.filetype).then(highlights => {
@@ -136,7 +152,11 @@ export default class FloatBuffer {
 
   public setLines(): void {
     let { buffer, lines, nvim, highlights } = this
-    nvim.call('clearmatches', [], true)
+    if (this.window) {
+      nvim.call('win_execute', [this.window.id, 'call clearmatches([])'], true)
+    } else {
+      nvim.call('clearmatches', [], true)
+    }
     buffer.clearNamespace(-1, 0, -1)
     buffer.setLines(lines, { start: 0, end: -1, strictIndexing: false }, true)
     if (highlights.length) {
@@ -150,24 +170,36 @@ export default class FloatBuffer {
         })
         if (highlight.isMarkdown) {
           let line = lines[highlight.line]
-          let before = line[characterIndex(line, highlight.colStart)]
-          let after = line[characterIndex(line, highlight.colEnd) - 1]
-          if (before == after && ['_', '`', '*'].indexOf(before) !== -1) {
-            positions.push([highlight.line + 1, highlight.colStart + 1])
-            positions.push([highlight.line + 1, highlight.colEnd])
-          }
-          if (highlight.colEnd - highlight.colStart == 2 && before == '\\') {
-            positions.push([highlight.line + 1, highlight.colStart + 1])
+          if (line) {
+            let before = line[characterIndex(line, highlight.colStart)]
+            let after = line[characterIndex(line, highlight.colEnd) - 1]
+            if (before == after && ['_', '`', '*'].indexOf(before) !== -1) {
+              positions.push([highlight.line + 1, highlight.colStart + 1])
+              positions.push([highlight.line + 1, highlight.colEnd])
+            }
+            if (highlight.colEnd - highlight.colStart == 2 && before == '\\') {
+              positions.push([highlight.line + 1, highlight.colStart + 1])
+            }
           }
         }
       }
       for (let arr of group(positions, 8)) {
-        nvim.call('matchaddpos', ['Conceal', arr, 11], true)
+        if (this.window) {
+          nvim.call('win_execute', [this.window.id, `call matchaddpos('Conceal', ${JSON.stringify(arr)},11)`], true)
+        } else {
+          nvim.call('matchaddpos', ['Conceal', arr, 11], true)
+        }
       }
     }
     for (let arr of group(this.positions || [], 8)) {
       arr = arr.filter(o => o[2] != 0)
-      if (arr.length) nvim.call('matchaddpos', ['CocUnderline', arr, 12], true)
+      if (arr.length) {
+        if (this.window) {
+          nvim.call('win_execute', [this.window.id, `call matchaddpos('CocUnderline', ${JSON.stringify(arr)},12)`], true)
+        } else {
+          nvim.call('matchaddpos', ['CocUnderline', arr, 12], true)
+        }
+      }
     }
   }
 }

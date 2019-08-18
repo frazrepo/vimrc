@@ -24,10 +24,9 @@ export class Completion implements Disposable {
   private floating: Floating
   private currItem: VimCompleteItem
   // current input string
-  private activted = false
+  private activated = false
   private input: string
   private lastInsert?: LastInsert
-  private nvim: Neovim
   private disposables: Disposable[] = []
   private complete: Complete | null = null
   private recentScores: RecentScore = {}
@@ -38,10 +37,9 @@ export class Completion implements Disposable {
   // only used when no pum change event
   private isResolving = false
 
-  public init(nvim: Neovim): void {
-    this.nvim = nvim
+  public init(): void {
     this.config = this.getCompleteConfig()
-    this.floating = new Floating(nvim)
+    this.floating = new Floating()
     events.on('InsertCharPre', this.onInsertCharPre, this, this.disposables)
     events.on('InsertLeave', this.onInsertLeave, this, this.disposables)
     events.on('InsertEnter', this.onInsertEnter, this, this.disposables)
@@ -52,21 +50,23 @@ export class Completion implements Disposable {
     events.on('CursorMovedI', debounce(async (bufnr, cursor) => {
       // try trigger completion
       let doc = workspace.getDocument(bufnr)
-      if (this.isActivted || !doc || cursor[1] == 1) return
+      if (this.isActivated || !doc || cursor[1] == 1 || !this.latestInsertChar) return
       let line = doc.getline(cursor[0] - 1)
       if (!line) return
-      let { latestInsertChar } = this
       let pre = byteSlice(line, 0, cursor[1] - 1)
-      if (!latestInsertChar || !pre.endsWith(latestInsertChar)) return
       if (sources.shouldTrigger(pre, doc.filetype)) {
         await this.triggerCompletion(doc, pre, false)
       }
-    }, 20))
+    }, 50))
     workspace.onDidChangeConfiguration(e => {
       if (e.affectsConfiguration('suggest')) {
         Object.assign(this.config, this.getCompleteConfig())
       }
     }, null, this.disposables)
+  }
+
+  private get nvim(): Neovim {
+    return workspace.nvim
   }
 
   public get option(): CompleteOption {
@@ -87,8 +87,8 @@ export class Completion implements Disposable {
   }
 
   public getResumeInput(pre: string): string {
-    let { option, activted } = this
-    if (!activted) return null
+    let { option, activated } = this
+    if (!activated) return null
     if (!pre) return ''
     let input = byteSlice(pre, option.col)
     if (option.blacklist && option.blacklist.indexOf(input) !== -1) return null
@@ -100,8 +100,8 @@ export class Completion implements Disposable {
     return option ? option.bufnr : null
   }
 
-  public get isActivted(): boolean {
-    return this.activted
+  public get isActivated(): boolean {
+    return this.activated
   }
 
   private getCompleteConfig(): CompleteConfig {
@@ -128,6 +128,7 @@ export class Completion implements Disposable {
       disableMenu: getConfig<boolean>('disableMenu', false),
       previewIsKeyword: getConfig<string>('previewIsKeyword', '@,48-57,_192-255'),
       enablePreview: getConfig<boolean>('enablePreview', false),
+      enablePreselect: getConfig<boolean>('enablePreselect', false),
       maxPreviewWidth: getConfig<number>('maxPreviewWidth', 50),
       labelMaxLength: getConfig<number>('labelMaxLength', 100),
       triggerAfterInsertEnter: getConfig<boolean>('triggerAfterInsertEnter', false),
@@ -161,8 +162,8 @@ export class Completion implements Disposable {
   }
 
   private async resumeCompletion(pre: string, search: string | null, force = false): Promise<void> {
-    let { document, complete, activted } = this
-    if (!activted || !complete.results) return
+    let { document, complete, activated } = this
+    if (!activated || !complete.results) return
     if (search == this.input && !force) return
     let last = search == null ? '' : search.slice(-1)
     if (last.length == 0 ||
@@ -172,20 +173,21 @@ export class Completion implements Disposable {
       this.stop()
       return
     }
-    let { changedtick } = document
     this.input = search
     let items: VimCompleteItem[]
     if (complete.isIncomplete && document.chars.isKeywordChar(last)) {
       await document.patchChange()
       document.forceSync()
       await wait(30)
-      if (document.changedtick != changedtick) return
       items = await complete.completeInComplete(search)
-      if (document.changedtick != changedtick) return
+      // check search change
+      let content = await this.getPreviousContent(document)
+      let curr = this.getResumeInput(content)
+      if (curr != search) return
     } else {
       items = complete.filterResults(search)
     }
-    if (!this.isActivted) return
+    if (!this.isActivated) return
     if (!complete.isCompleting && (!items || items.length === 0)) {
       this.stop()
       return
@@ -200,9 +202,10 @@ export class Completion implements Disposable {
   }
 
   private async showCompletion(col: number, items: VimCompleteItem[]): Promise<void> {
-    let { nvim, document } = this
+    let { nvim, document, option } = this
     let { numberSelect, disableKind, labelMaxLength, disableMenuShortcut, disableMenu } = this.config
-    if (numberSelect) {
+    let preselect = this.config.enablePreselect ? items.findIndex(o => o.preselect == true) : -1
+    if (numberSelect && !/^\d/.test(option.input)) {
       items = items.map((item, i) => {
         let idx = i + 1
         if (i < 9) {
@@ -212,11 +215,9 @@ export class Completion implements Disposable {
         }
         return item
       })
-    }
-    this.changedTick = document.changedtick
-    if (this.config.numberSelect) {
       nvim.call('coc#_map', [], true)
     }
+    this.changedTick = document.changedtick
     let validKeys = completeItemKeys.slice()
     if (disableKind) validKeys = validKeys.filter(s => s != 'kind')
     if (disableMenu) validKeys = validKeys.filter(s => s != 'menu')
@@ -235,7 +236,7 @@ export class Completion implements Disposable {
       }
       return obj
     })
-    nvim.call('coc#_do_complete', [col, vimItems], true)
+    nvim.call('coc#_do_complete', [col, vimItems, preselect], true)
   }
 
   private async _doComplete(option: CompleteOption): Promise<void> {
@@ -305,9 +306,9 @@ export class Completion implements Disposable {
       this.isResolving = true
       return
     }
-    let col = await this.nvim.call('col', '.')
-    let search = byteSlice(line, option.col, col - 1)
-    let pre = byteSlice(line, 0, col - 1)
+    let pre = await this.getPreviousContent(document)
+    if (!pre) return
+    let search = this.getResumeInput(pre)
     if (sources.shouldTrigger(pre, document.filetype)) {
       await this.triggerCompletion(document, pre, false)
     } else {
@@ -321,7 +322,7 @@ export class Completion implements Disposable {
     let document = workspace.getDocument(workspace.bufnr)
     if (!document) return
     await document.patchChange()
-    if (!this.isActivted) {
+    if (!this.isActivated) {
       if (!latestInsertChar) return
       let pre = await this.getPreviousContent(document)
       await this.triggerCompletion(document, pre)
@@ -356,7 +357,7 @@ export class Completion implements Disposable {
       await this.triggerCompletion(document, content, false)
       return
     }
-    if (!this.isActivted || this.complete.isEmpty) return
+    if (!this.isActivated || this.complete.isEmpty) return
     let search = content.slice(characterIndex(content, this.option.col))
     return await this.resumeCompletion(content, search)
   }
@@ -369,14 +370,27 @@ export class Completion implements Disposable {
     }
     let option: CompleteOption = await this.nvim.call('coc#util#get_complete_option')
     if (!option) return
+    this.fixCompleteOption(option)
     option.triggerCharacter = pre.slice(-1)
     logger.debug('trigger completion with', option)
     await this.startCompletion(option)
   }
 
+  private fixCompleteOption(opt: CompleteOption): void {
+    if (workspace.isVim) {
+      for (let key of ['word', 'input', 'line', 'filetype']) {
+        if (opt[key] == null) {
+          opt[key] = ''
+        }
+      }
+    }
+  }
+
   private async onCompleteDone(item: VimCompleteItem): Promise<void> {
     let { document } = this
-    if (!this.isActivted || !document || !item.hasOwnProperty('word')) return
+    if (!this.isActivated || !document || !item.hasOwnProperty('word')) return
+    let visible = await this.nvim.call('pumvisible')
+    if (visible) return
     let opt = Object.assign({}, this.option)
     let resolvedItem = this.getCompleteItem(item)
     this.stop()
@@ -403,17 +417,23 @@ export class Completion implements Disposable {
 
   private async onInsertLeave(bufnr: number): Promise<void> {
     this.insertLeaveTs = Date.now()
-    let doc = workspace.getDocument(bufnr)
-    if (doc) doc.forceSync(true)
-    this.stop()
+    if (this.isActivated) {
+      let doc = workspace.getDocument(bufnr)
+      if (doc) doc.forceSync()
+      this.stop()
+    }
   }
 
-  private async onInsertEnter(): Promise<void> {
+  private async onInsertEnter(bufnr: number): Promise<void> {
     if (!this.config.triggerAfterInsertEnter) return
-    let option = await this.nvim.call('coc#util#get_complete_option')
-    if (option && option.input.length >= this.config.minTriggerInputLength) {
-      await this.startCompletion(option)
-    }
+    let document = workspace.getDocument(bufnr)
+    await document.patchChange()
+    if (!document) return
+    let cursor = await this.nvim.call('coc#util#cursor')
+    let line = document.getline(cursor[0])
+    let pre = byteSlice(line, 0, cursor[1])
+    if (!pre) return
+    await this.triggerCompletion(document, pre, false)
   }
 
   private async onInsertCharPre(character: string): Promise<void> {
@@ -426,7 +446,7 @@ export class Completion implements Disposable {
 
   private get latestInsert(): LastInsert | null {
     let { lastInsert } = this
-    if (!lastInsert || Date.now() - lastInsert.timestamp > 200) {
+    if (!lastInsert || Date.now() - lastInsert.timestamp > 500) {
       return null
     }
     return lastInsert
@@ -455,7 +475,8 @@ export class Completion implements Disposable {
   }
 
   public async onPumChange(ev: PopupChangeEvent): Promise<void> {
-    if (!this.activted) return
+    if (!this.activated) return
+    if (this.document && this.document.uri.endsWith('%5BCommand%20Line%5D')) return
     this.cancel()
     let { completed_item, col, row, height, width, scrollbar } = ev
     let bounding: PumBounding = { col, row, height, width, scrollbar }
@@ -487,10 +508,10 @@ export class Completion implements Disposable {
   }
 
   public start(complete: Complete): void {
-    let { activted } = this
-    this.activted = true
+    let { activated } = this
+    this.activated = true
     this.isResolving = false
-    if (activted) {
+    if (activated) {
       this.complete.dispose()
     }
     this.complete = complete
@@ -510,10 +531,10 @@ export class Completion implements Disposable {
 
   public stop(): void {
     let { nvim } = this
-    if (!this.activted) return
+    if (!this.activated) return
     this.cancel()
     this.currItem = null
-    this.activted = false
+    this.activated = false
     this.document.paused = false
     this.document.fireContentChanges()
     if (this.complete) {
@@ -554,7 +575,7 @@ export class Completion implements Disposable {
   }
 
   private getCompleteItem(item: VimCompleteItem): VimCompleteItem | null {
-    if (!this.isActivted) return null
+    if (!this.isActivated) return null
     return this.complete.resolveCompletionItem(item)
   }
 

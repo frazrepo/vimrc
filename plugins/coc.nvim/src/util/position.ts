@@ -4,14 +4,23 @@ export function rangeInRange(r: Range, range: Range): boolean {
   return positionInRange(r.start, range) === 0 && positionInRange(r.end, range) === 0
 }
 
+/**
+ * Check if two ranges have overlap character.
+ */
 export function rangeOverlap(r: Range, range: Range): boolean {
   let { start, end } = r
-  if (comparePosition(start, range.start) < 0 && comparePosition(end, range.end) > 0) {
-    return true
+  if (comparePosition(end, range.start) <= 0) {
+    return false
   }
-  return positionInRange(start, range) == 0 || positionInRange(end, range) == 0
+  if (comparePosition(start, range.end) >= 0) {
+    return false
+  }
+  return true
 }
 
+/**
+ * Check if two ranges have overlap or nested
+ */
 export function rangeIntersect(r: Range, range: Range): boolean {
   if (positionInRange(r.start, range) == 0) {
     return true

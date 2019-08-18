@@ -1,8 +1,6 @@
 import { NeovimClient as Neovim } from '@chemzqm/neovim'
 import { EventEmitter } from 'events'
-import https from 'https'
-import semver from 'semver'
-import { Location, CodeActionKind } from 'vscode-languageserver-types'
+import { CodeActionKind, Location } from 'vscode-languageserver-types'
 import commandManager from './commands'
 import completion from './completion'
 import diagnosticManager from './diagnostic/manager'
@@ -13,26 +11,37 @@ import services from './services'
 import snippetManager from './snippets/manager'
 import sources from './sources'
 import { Autocmd, OutputChannel, PatternType } from './types'
+import Cursors from './cursors'
 import clean from './util/clean'
 import workspace from './workspace'
-import debounce = require('debounce')
 const logger = require('./util/logger')('plugin')
 
 export default class Plugin extends EventEmitter {
   private _ready = false
   private handler: Handler
   private infoChannel: OutputChannel
+  private cursors: Cursors
 
   constructor(public nvim: Neovim) {
     super()
     Object.defineProperty(workspace, 'nvim', {
       get: () => this.nvim
     })
+    this.cursors = new Cursors(nvim)
+    this.addMethod('hasProvider', async (id: string) => {
+      return this.handler.hasProvider(id)
+    })
     this.addMethod('hasSelected', () => {
       return completion.hasSelected()
     })
     this.addMethod('listNames', () => {
       return listManager.names
+    })
+    this.addMethod('search', (...args: string[]) => {
+      return this.handler.search(args)
+    })
+    this.addMethod('cursorsSelect', (bufnr: number, kind: string, mode: string) => {
+      return this.cursors.select(bufnr, kind, mode)
     })
     this.addMethod('codeActionRange', (start, end, only) => {
       return this.handler.codeActionRange(start, end, only)
@@ -46,10 +55,15 @@ export default class Plugin extends EventEmitter {
         global: workspace.getRootPatterns(doc, PatternType.Global)
       }
     })
-    this.addMethod('installExtensions', debounce(async () => {
-      let list = await nvim.getVar('coc_global_extensions') as string[]
+    this.addMethod('installExtensions', async (...list: string[]) => {
       await extensions.installExtensions(list)
-    }, 200))
+    })
+    this.addMethod('saveRefactor', async (bufnr: number) => {
+      await this.handler.saveRefactor(bufnr)
+    })
+    this.addMethod('updateExtensions', async () => {
+      await extensions.updateExtensions()
+    })
     this.addMethod('commandList', () => {
       return commandManager.commandList.map(o => o.id)
     })
@@ -59,7 +73,10 @@ export default class Plugin extends EventEmitter {
     })
     this.addMethod('runCommand', async (...args: string[]) => {
       await this.ready
-      await this.handler.runCommand(...args)
+      return await this.handler.runCommand(...args)
+    })
+    this.addMethod('selectFunction', async (inner: boolean, visualmode: string) => {
+      return await this.handler.selectFunction(inner, visualmode)
     })
     this.addMethod('listResume', () => {
       return listManager.resume()
@@ -81,7 +98,14 @@ export default class Plugin extends EventEmitter {
     })
     this.addMethod('doAutocmd', async (id: number, ...args: []) => {
       let autocmd = (workspace as any).autocmds.get(id) as Autocmd
-      if (autocmd) await Promise.resolve(autocmd.callback.apply(autocmd.thisArg, args))
+      if (autocmd) {
+        try {
+          await Promise.resolve(autocmd.callback.apply(autocmd.thisArg, args))
+        } catch (e) {
+          logger.error(`Error on autocmd ${autocmd.event}`, e)
+          workspace.showMessage(`Error on autocmd ${autocmd.event}: ${e.message}`)
+        }
+      }
     })
     this.addMethod('updateConfig', (section: string, val: any) => {
       workspace.configurations.updateUserConfig({ [section]: val })
@@ -96,11 +120,6 @@ export default class Plugin extends EventEmitter {
     })
     this.addMethod('snippetCancel', () => {
       snippetManager.cancel()
-    })
-    this.addMethod('cocInstalled', async (names: string) => {
-      for (let name of names.split(/\s+/)) {
-        await extensions.onExtensionInstall(name)
-      }
     })
     this.addMethod('openLog', () => {
       let file = logger.getLogFile()
@@ -129,9 +148,7 @@ export default class Plugin extends EventEmitter {
   }
 
   private addMethod(name: string, fn: Function): any {
-    Object.defineProperty(this, name, {
-      value: fn
-    })
+    Object.defineProperty(this, name, { value: fn })
   }
 
   public addCommand(cmd: { id: string, cmd: string, title?: string }): void {
@@ -145,20 +162,20 @@ export default class Plugin extends EventEmitter {
   public async init(): Promise<void> {
     let { nvim } = this
     try {
-      await extensions.init(nvim)
+      await extensions.init()
       await workspace.init()
+      completion.init()
       diagnosticManager.init()
       listManager.init(nvim)
       nvim.setVar('coc_workspace_initialized', 1, true)
       nvim.setVar('coc_process_pid', process.pid, true)
       nvim.setVar('WorkspaceFolders', workspace.folderPaths, true)
-      completion.init(nvim)
       sources.init()
       this.handler = new Handler(nvim)
       services.init()
-      extensions.activateExtensions()
+      await extensions.activateExtensions()
       nvim.setVar('coc_service_initialized', 1, true)
-      nvim.call('coc#_init', [], true)
+      nvim.call('coc#util#do_autocmd', ['CocNvimInit'], true)
       this._ready = true
       let cmds = await nvim.getVar('coc_vim_commands') as any[]
       if (cmds && cmds.length) {
@@ -168,10 +185,6 @@ export default class Plugin extends EventEmitter {
       }
       logger.info(`coc ${this.version} initialized with node: ${process.version}`)
       this.emit('ready')
-      if (workspace.isVim) {
-        let updatetime = await nvim.getOption('updatetime') as number
-        if (updatetime > 1000) workspace.showMessage(`Option 'updatetime' is ${updatetime}, position jump can be quite slow, consider make it <= 300`, 'warning')
-      }
     } catch (e) {
       this._ready = false
       console.error(`Error on initialize: ${e.stack}`) // tslint:disable-line
@@ -281,49 +294,6 @@ export default class Plugin extends EventEmitter {
     channel.show()
   }
 
-  public updateExtension(): Promise<void> {
-    let { nvim } = this
-    let statusItem = workspace.createStatusBarItem(0, { progress: true })
-    if (statusItem) {
-      statusItem.text = 'Checking latest release'
-      statusItem.show()
-    }
-    return new Promise((resolve, reject) => {
-      const req = https.request('https://api.github.com/repos/neoclide/coc.nvim/releases/latest', res => {
-        let content = ''
-        res.on('data', d => {
-          content = content + d
-        })
-        res.on('end', async () => {
-          try {
-            let obj = JSON.parse(content)
-            let latest = obj.tag_name.replace(/^v/, '')
-            if (semver.gt(latest, workspace.version)) {
-              console.error(`Please upgrade coc.nvim to latest version: ${latest}`) // tslint:disable-line
-            } else {
-              let cwd = await nvim.call('coc#util#extension_root') as string
-              let yarncmd = await nvim.call('coc#util#yarn_cmd') as string
-              if (!yarncmd) return
-              if (statusItem) statusItem.text = 'Upgrading coc extensions...'
-              await workspace.runCommand(`${yarncmd} upgrade --latest --ignore-engines`, cwd, 300000)
-              if (statusItem) statusItem.dispose()
-            }
-            resolve()
-          } catch (e) {
-            console.error(`Update error: ${e.message}`) // tslint:disable-line
-            if (statusItem) statusItem.hide()
-            resolve()
-          }
-        })
-      })
-      req.on('error', e => {
-        reject(e)
-      })
-      req.setHeader('User-Agent', 'NodeJS')
-      req.end()
-    })
-  }
-
   public async cocAction(...args: any[]): Promise<any> {
     if (!this._ready) return
     let { handler } = this
@@ -363,10 +333,10 @@ export default class Plugin extends EventEmitter {
           await diagnosticManager.echoMessage()
           break
         case 'diagnosticNext':
-          await diagnosticManager.jumpNext()
+          await diagnosticManager.jumpNext(args[1])
           break
         case 'diagnosticPrevious':
-          await diagnosticManager.jumpPrevious()
+          await diagnosticManager.jumpPrevious(args[1])
           break
         case 'diagnosticList':
           return diagnosticManager.getDiagnosticList()
@@ -388,6 +358,8 @@ export default class Plugin extends EventEmitter {
           return await handler.getDocumentSymbols()
         case 'selectionRanges':
           return await handler.getSelectionRanges()
+        case 'rangeSelect':
+          return await handler.selectRange(args[1], args[2])
         case 'rename':
           await handler.rename(args[1])
           return
@@ -409,7 +381,7 @@ export default class Plugin extends EventEmitter {
         case 'doCodeAction':
           return await handler.applyCodeAction(args[1])
         case 'codeActions':
-          return await handler.getCurrentCodeActions(args[1])
+          return await handler.getCurrentCodeActions(args[1], args[2])
         case 'quickfixes':
           return await handler.getCurrentCodeActions(args[1], [CodeActionKind.QuickFix])
         case 'codeLensAction':
@@ -418,6 +390,8 @@ export default class Plugin extends EventEmitter {
           return await handler.runCommand(...args.slice(1))
         case 'doQuickfix':
           return await handler.doQuickfix()
+        case 'refactor':
+          return await handler.doRefactor()
         case 'repeatCommand':
           return await commandManager.repeatCommand()
         case 'extensionStats':
@@ -434,6 +408,10 @@ export default class Plugin extends EventEmitter {
           return await extensions.uninstallExtension(args.slice(1))
         case 'getCurrentFunctionSymbol':
           return await handler.getCurrentFunctionSymbol()
+        case 'getWordEdit':
+          return await handler.getWordEdit()
+        case 'addRanges':
+          return await this.cursors.addRanges(args[1])
         default:
           workspace.showMessage(`unknown action ${args[0]}`, 'error')
       }

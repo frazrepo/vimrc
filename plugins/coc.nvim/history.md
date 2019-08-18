@@ -1,3 +1,83 @@
+# 2019-08-18 0.0.74
+
+- feat(cursors): support multiple cursors.
+- feat(extensions): install missing extensions by CocInstall.
+- feat(extensions): add command `extensions.forceUpdateAll`.
+- feat(completion): rework preselect feature.
+- feat(extension): use request for fetch package info.
+- feat(language-client): support disableDynamicRegister configuration.
+- feat(list): paste from vim register support on insert mode #1088.
+- feat(plugin): add CocHasProvider(), close #1087.
+- refactor(outline): not exclude variables and callback.
+- refactor(diagnostic): remove timeout on InsertLeave.
+
+# 2019-07-11 0.0.73
+
+- fix(completion): fix map of number select
+- fix(languages): fix cursor position with snippet
+- fix(completion): fix cursor position with additionalTextEdits
+- fix(position): fix rangeOverlap check #961
+- fix(list): not change guicursor when it's empty
+- fix(list): fix filter not work on loading
+- fix(list): fix custom location list command not work
+- fix(util): highlight & render on vim8
+- fix(handler): fix getCommands
+- fix(handler): not check lastInsert on trigger signatureHelp
+- fix(handler): fix check of signature help trigger
+- fix(language-client): configuration for configured server, closes #930
+- fix(diagnostic): clear diagnostics on filetype change
+- feat(plugin): add download & fetch modules
+- feat(plugin): add highligher module
+- feat(refactor): add `<Plug>(coc-refactor)` for refactor window
+- feat(extension): use mv module for folder rename
+- feat(extension): support install taged extension
+- feat(extension): support custom extension root `g:coc_extension_root`
+- feat(handler): close signature float window on ')'
+- feat(list): support `g:coc_quickfix_open_command`
+- feat(list): add eval action
+- feat(list): add --tab list option
+- feat(list): use highligher module for showHelp
+- feat(terminal): add noa on window jump
+- feat(terminal): support vim8
+- feat(diagnostic): add diagnosticRelated support
+- feat(diagnostic): use text properties on vim8
+- feat(handler): improve signature float window
+
+# 2019-07-01
+
+- feat(plugin): add CocStatusChange autocmd
+- feat(extension): support both npm and yarn.
+- feat(plugin): work on vim 8.0
+- feat(extensions): add lock & doc actions to extension source
+- feat(extension): add proxy auth support (#920)
+- feat(source): not change startcol for file source
+- feat(completion): no numberSelect for number input
+- feat(extensions): Use yarn when npm not found
+- feat(completion): no popup for command line buffer
+- feat(plugin): support only for codeActions action
+- feat(task): debounce stdout
+- feat(plugin): add keymaps for selection ranges
+- feat(plugin): add function textobj
+- feat(list): restore window height, closes #905
+- feat(handler): support signature.floatTimeout
+- feat(configuration): support change of workspace configuration
+- feat(diagnostic): add keymaps for jump error diagnostics
+- feat(plugin): delay start on gvim, fix #659
+
+# 2019-06-15
+
+- feat(plugin): add popup support of vim
+- refactor(completion): improve float support
+- refactor(floating): remove unused code
+- refactor(workspace): replace find-up
+- refactor(handler): improve message for fold method
+- fix(virtualtext): invalid highlight tag (#874)
+- fix(snippets): fix plaintext check
+- fix(highlight): catch error of child_process.spawn
+- fix(highlight): use v:progpath, fix #871
+- fix(floatFactory): escape feedkeys
+- fix(handler): fix getCurrentFunctionSymbol not work
+
 # 2019-06-12
 
 - feat(document): add getVar method

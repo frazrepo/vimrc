@@ -1,16 +1,14 @@
 import { Neovim } from '@chemzqm/neovim'
-import { Emitter, Event, CancellationTokenSource } from 'vscode-languageserver-protocol'
-import { AnsiHighlight, ListHighlights, ListItem, ListItemsEvent, ListTask } from '../types'
-import { ansiparse } from '../util/ansiparse'
+import { CancellationTokenSource, Emitter, Event } from 'vscode-languageserver-protocol'
+import { URI } from 'vscode-uri'
+import { ListHighlights, ListItem, ListItemsEvent, ListTask } from '../types'
+import { parseAnsiHighlights } from '../util/ansiparse'
 import { patchLine } from '../util/diff'
-import { fuzzyMatch, getCharCodes } from '../util/fuzzy'
 import { hasMatch, positions, score } from '../util/fzy'
 import { getMatchResult } from '../util/score'
-import { byteIndex, byteLength, upperFirst } from '../util/string'
-import { ListManager } from './manager'
+import { byteIndex, byteLength } from '../util/string'
 import workspace from '../workspace'
-import uuidv1 = require('uuid/v1')
-import { URI } from 'vscode-uri'
+import { ListManager } from './manager'
 const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
 const logger = require('../util/logger')('list-worker')
 const controlCode = '\x1b'
@@ -25,8 +23,6 @@ export interface ExtendedItem extends ListItem {
 export default class Worker {
   private recentFiles: string[] = []
   private _loading = false
-  private taskId: string
-  private task: ListTask = null
   private timer: NodeJS.Timer
   private interval: NodeJS.Timer
   private totalItems: ListItem[] = []
@@ -39,15 +35,16 @@ export default class Worker {
     prompt.onDidChangeInput(async () => {
       let { listOptions } = manager
       let { interactive } = listOptions
+      let time = manager.getConfig<number>('interactiveDebounceTime', 100)
       if (this.timer) clearTimeout(this.timer)
       // reload or filter items
       if (interactive) {
         this.stop()
         this.timer = setTimeout(async () => {
           await this.loadItems()
-        }, 100)
-      } else if (!this._loading && this.length) {
-        let wait = Math.max(Math.min(Math.floor(this.length / 200), 200), 50)
+        }, time)
+      } else if (this.length) {
+        let wait = Math.max(Math.min(Math.floor(this.length / 200), 300), 50)
         this.timer = setTimeout(async () => {
           await this.drawItems()
         }, wait)
@@ -59,7 +56,7 @@ export default class Worker {
     let mru = workspace.createMru('mru')
     mru.load().then(files => {
       this.recentFiles = files
-    }, logError)
+    }).logError()
   }
 
   private set loading(loading: boolean) {
@@ -72,7 +69,7 @@ export default class Worker {
         nvim.pauseNotification()
         nvim.setVar('coc_list_loading_status', frames[idx], true)
         nvim.command('redraws', true)
-        await nvim.resumeNotification(false, true)
+        nvim.resumeNotification(false, true).logError()
       }, 100)
     } else {
       if (this.interval) {
@@ -80,9 +77,7 @@ export default class Worker {
         nvim.pauseNotification()
         nvim.setVar('coc_list_loading_status', '', true)
         nvim.command('redraws', true)
-        nvim.resumeNotification(false, true).catch(_e => {
-          // noop
-        })
+        nvim.resumeNotification(false, true).logError()
       }
     }
   }
@@ -96,7 +91,6 @@ export default class Worker {
     if (!list) return
     this.loadMru()
     if (this.timer) clearTimeout(this.timer)
-    let id = this.taskId = uuidv1()
     this.loading = true
     let { interactive } = listOptions
     let source = this.tokenSource = new CancellationTokenSource()
@@ -125,7 +119,7 @@ export default class Worker {
         reload
       })
     } else {
-      let task = this.task = items as ListTask
+      let task = items as ListTask
       let totalItems = this.totalItems = []
       let count = 0
       let currInput = context.input
@@ -133,7 +127,7 @@ export default class Worker {
       let lastTs: number
       let _onData = () => {
         lastTs = Date.now()
-        if (this.taskId != id || !this.manager.isActivated) return
+        if (token.isCancellationRequested || !this.manager.isActivated) return
         if (count >= totalItems.length) return
         let inputChanged = this.input != currInput
         if (interactive && inputChanged) return
@@ -169,31 +163,30 @@ export default class Worker {
       }
       task.on('data', async item => {
         if (timer) clearTimeout(timer)
-        if (this.taskId != id || !this._loading) return
+        if (token.isCancellationRequested) return
         if (interactive && this.input != currInput) return
         item.label = this.fixLabel(item.label)
         this.parseListItemAnsi(item)
         totalItems.push(item)
+        if (this.input != currInput) return
         if ((!lastTs && totalItems.length == 500)
           || Date.now() - lastTs > 200) {
           _onData()
-        } else if (lastTs && this.input != currInput) {
-          _onData()
         } else {
-          timer = setTimeout(_onData, 60)
+          timer = setTimeout(_onData, 50)
         }
       })
       let disposable = token.onCancellationRequested(() => {
         this.loading = false
         disposable.dispose()
         if (timer) clearTimeout(timer)
-        if (task == this.task) {
+        if (task) {
           task.dispose()
-          this.task = null
-          this.taskId = null
+          task = null
         }
       })
       task.on('error', async (error: Error | string) => {
+        task = null
         this.loading = false
         disposable.dispose()
         if (timer) clearTimeout(timer)
@@ -202,9 +195,11 @@ export default class Worker {
         logger.error(error)
       })
       task.on('end', async () => {
+        task = null
         this.loading = false
         disposable.dispose()
         if (timer) clearTimeout(timer)
+        if (token.isCancellationRequested) return
         if (totalItems.length == 0) {
           this._onDidChangeItems.fire({ items: [], highlights: [] })
         } else {
@@ -240,11 +235,6 @@ export default class Worker {
     this.loading = false
     if (this.timer) {
       clearTimeout(this.timer)
-    }
-    if (this.task) {
-      this.task.dispose()
-      this.task = null
-      this.taskId = null
     }
   }
 
@@ -398,28 +388,8 @@ export default class Worker {
   private parseListItemAnsi(item: ListItem): void {
     let { label } = item
     if (item.ansiHighlights || label.indexOf(controlCode) == -1) return
-    let ansiItems = ansiparse(label)
-    let newLabel = ''
-    let highlights: AnsiHighlight[] = []
-    for (let item of ansiItems) {
-      if (!item.text) continue
-      let old = newLabel
-      newLabel = newLabel + item.text
-      let { foreground, background } = item
-      if (foreground || background) {
-        let span: [number, number] = [byteLength(old), byteLength(newLabel)]
-        let hlGroup = ''
-        if (foreground && background) {
-          hlGroup = `CocList${upperFirst(foreground)}${upperFirst(background)}`
-        } else if (foreground) {
-          hlGroup = `CocListFg${upperFirst(foreground)}`
-        } else if (background) {
-          hlGroup = `CocListBg${upperFirst(background)}`
-        }
-        highlights.push({ span, hlGroup })
-      }
-    }
-    item.label = newLabel
+    let { line, highlights } = parseAnsiHighlights(label)
+    item.label = line
     item.ansiHighlights = highlights
   }
 
@@ -438,8 +408,4 @@ function getItemUri(item: ListItem): string {
   let { location } = item
   if (typeof location == 'string') return location
   return location.uri
-}
-
-function logError(e): void {
-  logger.error(e)
 }

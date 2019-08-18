@@ -1,6 +1,6 @@
 import { Neovim } from '@chemzqm/neovim'
 import { Emitter, Event } from 'vscode-languageserver-protocol'
-import { ListMode, Matcher, ListOptions } from '../types'
+import { ListMode, ListOptions, Matcher } from '../types'
 import workspace from '../workspace'
 import ListConfiguration from './configuration'
 const logger = require('../util/logger')('list-prompt')
@@ -11,6 +11,7 @@ export default class Prompt {
   private _matcher: Matcher | ''
   private _mode: ListMode = 'insert'
   private interactive = false
+  private requestInput = false
 
   private _onDidChangeInput = new Emitter<string>()
   public readonly onDidChangeInput: Event<string> = this._onDidChangeInput.event
@@ -48,8 +49,8 @@ export default class Prompt {
   public start(opts?: ListOptions): void {
     if (opts) {
       this.interactive = opts.interactive
-      this._input = opts.input
       this.cusorIndex = opts.input.length
+      this._input = opts.input
       this._mode = opts.mode
       this._matcher = opts.interactive ? '' : opts.matcher
     }
@@ -73,7 +74,7 @@ export default class Prompt {
   public drawPrompt(): void {
     let indicator = this.config.get<string>('indicator', '>')
     let { cusorIndex, interactive, input, _matcher } = this
-    let cmds = workspace.isVim ? ['echo ""'] : ['redraw']
+    let cmds = ['echo ""']
     if (this.mode == 'insert') {
       if (interactive) {
         cmds.push(`echohl MoreMsg | echon 'INTERACTIVE ' | echohl None`)
@@ -83,9 +84,7 @@ export default class Prompt {
       cmds.push(`echohl Special | echon '${indicator} ' | echohl None`)
       if (cusorIndex == input.length) {
         cmds.push(`echon '${input.replace(/'/g, "''")}'`)
-        if (workspace.isVim) {
-          cmds.push(`echohl Cursor | echon ' ' | echohl None`)
-        }
+        cmds.push(`echohl Cursor | echon ' ' | echohl None`)
       } else {
         let pre = input.slice(0, cusorIndex)
         if (pre) cmds.push(`echon '${pre.replace(/'/g, "''")}'`)
@@ -96,7 +95,7 @@ export default class Prompt {
     } else {
       cmds.push(`echohl MoreMsg | echo "" | echohl None`)
     }
-    if (workspace.isVim) cmds.push('redraw')
+    cmds.push('redraw')
     let cmd = cmds.join('|')
     this.nvim.command(cmd, true)
   }
@@ -177,20 +176,36 @@ export default class Prompt {
     this._onDidChangeInput.fire(this._input)
   }
 
-  public insertCharacter(ch: string): void {
-    let { cusorIndex, input } = this
-    this.cusorIndex = cusorIndex + 1
-    let pre = input.slice(0, cusorIndex)
-    let post = input.slice(cusorIndex)
-    this._input = `${pre}${ch}${post}`
-    this.drawPrompt()
-    this._onDidChangeInput.fire(this._input)
+  public async acceptCharacter(ch: string): Promise<void> {
+    if (this.requestInput) {
+      this.requestInput = false
+      if (/^[0-9a-z"%#*+/:\-.]$/.test(ch)) {
+        let text = await this.nvim.call('getreg', ch) as string
+        text = text.replace(/\n/g, ' ')
+        this.addText(text)
+      }
+    } else {
+      this.addText(ch)
+    }
+  }
+
+  public async insertRegister(): Promise<void> {
+    this.requestInput = true
   }
 
   public async paste(): Promise<void> {
+    await this.eval('@*')
+  }
+
+  public async eval(expression: string): Promise<void> {
     let { cusorIndex, input } = this
-    let text = await this.nvim.eval('@*') as string
+    let text = await this.nvim.eval(expression) as string
     text = text.replace(/\n/g, '')
+    this.addText(text)
+  }
+
+  private addText(text: string): void {
+    let { cusorIndex, input } = this
     this.cusorIndex = cusorIndex + text.length
     let pre = input.slice(0, cusorIndex)
     let post = input.slice(cusorIndex)

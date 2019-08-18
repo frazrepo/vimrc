@@ -23,10 +23,16 @@ export default class Source implements ISource {
     this.defaults = option
   }
 
+  /**
+   * Priority of source, higher priority makes items lower index.
+   */
   public get priority(): number {
     return this.getConfig('priority', 1)
   }
 
+  /**
+   * When triggerOnly is true, not trigger completion on keyword character insert.
+   */
   public get triggerOnly(): boolean {
     let triggerOnly = this.defaults['triggerOnly']
     if (typeof triggerOnly == 'boolean') return triggerOnly
@@ -92,6 +98,7 @@ export default class Source implements ISource {
    * Filter words that too short or doesn't match input
    */
   protected filterWords(words: string[], opt: CompleteOption): string[] {
+    let { firstMatch } = this
     let res = []
     let { input } = opt
     let cword = opt.word
@@ -99,7 +106,8 @@ export default class Source implements ISource {
     let cFirst = input[0]
     for (let word of words) {
       if (!word || word.length < 3) continue
-      if (cFirst && cFirst != word[0]) continue
+      if (firstMatch && cFirst != word[0]) continue
+      if (!firstMatch && cFirst.toLowerCase() != word[0].toLowerCase()) continue
       if (word == cword || word == input) continue
       res.push(word)
     }

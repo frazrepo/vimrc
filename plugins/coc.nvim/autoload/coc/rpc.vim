@@ -23,6 +23,10 @@ function! coc#rpc#start_server()
   endif
 endfunction
 
+function! coc#rpc#started() abort
+  return !empty(s:client)
+endfunction
+
 function! coc#rpc#ready()
   if empty(s:client) || s:client['running'] == 0 | return 0 | endif
   return 1
@@ -51,7 +55,18 @@ function! coc#rpc#get_errors()
 endfunction
 
 function! coc#rpc#stop()
-  return coc#client#stop(s:name)
+  if empty(s:client)
+    return
+  endif
+  try
+    if s:is_vim
+      call job_stop(ch_getjob(s:client['channel']), 'term')
+    else
+      call jobstop(s:client['chan_id'])
+    endif
+  catch /.*/
+    " ignore
+  endtry
 endfunction
 
 function! coc#rpc#restart()

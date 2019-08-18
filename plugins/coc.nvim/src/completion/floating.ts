@@ -1,6 +1,7 @@
-import { Buffer, Neovim, Window } from '@chemzqm/neovim'
+import { Buffer, Window } from '@chemzqm/neovim'
 import { CancellationToken } from 'vscode-jsonrpc'
 import FloatBuffer from '../model/floatBuffer'
+import createPopup, { Popup } from '../model/popup'
 import { Documentation, PumBounding } from '../types'
 import workspace from '../workspace'
 const logger = require('../util/logger')('floating')
@@ -22,13 +23,19 @@ export default class Floating {
   private window: Window
   private floatBuffer: FloatBuffer
   private config: FloatingConfig
+  private popup: Popup
 
-  constructor(private nvim: Neovim) {
+  constructor() {
     let configuration = workspace.getConfiguration('suggest')
+    let enableFloat = configuration.get<boolean>('floatEnable', true)
+    let { env } = workspace
+    if (enableFloat && !env.floating && !env.textprop) {
+      enableFloat = false
+    }
     this.config = {
       srcId: workspace.createNameSpace('coc-pum-float'),
       maxPreviewWidth: configuration.get<number>('maxPreviewWidth', 80),
-      enable: configuration.get<boolean>('floatEnable', true)
+      enable: enableFloat
     }
   }
 
@@ -38,9 +45,7 @@ export default class Floating {
   }
 
   private async showDocumentationFloating(docs: Documentation[], bounding: PumBounding, token: CancellationToken): Promise<void> {
-    let { nvim } = this
-    let { enable } = this.config
-    if (!enable) return
+    let { nvim } = workspace
     await this.checkBuffer()
     let rect = await this.calculateBounding(docs, bounding)
     let config = Object.assign({ relative: 'editor', }, rect)
@@ -62,9 +67,9 @@ export default class Floating {
         nvim.command(`noa call win_gotoid(${win.id})`, true)
         nvim.command(`setl nospell nolist wrap linebreak foldcolumn=1`, true)
         nvim.command(`setl nonumber norelativenumber nocursorline nocursorcolumn`, true)
-        nvim.command(`setl signcolumn=no conceallevel=2`, true)
+        nvim.command(`setl signcolumn=no conceallevel=2 concealcursor=n`, true)
         nvim.command(`setl winhl=Normal:CocFloating,NormalNC:CocFloating,FoldColumn:CocFloating`, true)
-        nvim.command(`silent doautocmd User CocOpenFloat`, true)
+        nvim.call('coc#util#do_autocmd', ['CocOpenFloat'], true)
         this.floatBuffer.setLines()
         nvim.call('cursor', [1, 1], true)
         nvim.command(`noa wincmd p`, true)
@@ -87,24 +92,35 @@ export default class Floating {
     }
   }
 
-  private async showDocumentationVim(docs: Documentation[]): Promise<void> {
-    if (workspace.completeOpt.indexOf('preview') == -1) return
-    let lines = []
-    for (let i = 0; i < docs.length; i++) {
-      let { content } = docs[i]
-      lines.push(...content.split(/\r?\n/))
-      if (i != docs.length - 1) {
-        lines.push('---')
-      }
-    }
-    await this.nvim.call('coc#util#preview_info', [lines, 'txt'])
+  private async showDocumentationVim(docs: Documentation[], bounding: PumBounding, token: CancellationToken): Promise<void> {
+    let { nvim } = workspace
+    await this.checkBuffer()
+    let rect = await this.calculateBounding(docs, bounding)
+    if (token.isCancellationRequested) return this.close()
+    nvim.pauseNotification()
+    this.floatBuffer.setLines()
+    this.popup.move({
+      line: rect.row + 1,
+      col: rect.col + 1,
+      minwidth: rect.width,
+      minheight: rect.height,
+      maxwidth: rect.width,
+      maxheight: rect.height
+    })
+    this.popup.show()
+    nvim.setVar('coc_popup_id', this.popup.id, true)
+    nvim.command('redraw', true)
+    let [, err] = await nvim.resumeNotification()
+    // tslint:disable-next-line: no-console
+    if (err) console.error(`Error on ${err[0]}: ${err[1]} - ${err[2]}`)
   }
 
   public async show(docs: Documentation[], bounding: PumBounding, token: CancellationToken): Promise<void> {
+    if (!this.config.enable) return
     if (workspace.env.floating) {
       await this.showDocumentationFloating(docs, bounding, token)
     } else {
-      await this.showDocumentationVim(docs)
+      await this.showDocumentationVim(docs, bounding, token)
     }
   }
 
@@ -130,26 +146,56 @@ export default class Floating {
   }
 
   private async checkBuffer(): Promise<void> {
-    let { buffer, nvim } = this
-    if (buffer) {
-      let valid = await buffer.valid
-      if (valid) return
+    let { buffer, popup } = this
+    let { nvim } = workspace
+    if (workspace.env.textprop) {
+      if (popup) {
+        let visible = await popup.visible()
+        if (!visible) {
+          popup.dispose()
+          popup = null
+        }
+      }
+      if (!popup) {
+        this.popup = await createPopup(nvim, [''], {
+          padding: [0, 1, 0, 1],
+          highlight: 'CocFloating',
+          tab: -1,
+        })
+        let win = nvim.createWindow(this.popup.id)
+        nvim.pauseNotification()
+        win.setVar('float', 1, true)
+        win.setVar('popup', 1, true)
+        win.setOption('linebreak', true, true)
+        win.setOption('showbreak', '', true)
+        win.setOption('conceallevel', 2, true)
+        await nvim.resumeNotification()
+      }
+      buffer = nvim.createBuffer(this.popup.bufferId)
+      this.floatBuffer = new FloatBuffer(nvim, buffer, nvim.createWindow(this.popup.id))
+    } else {
+      if (buffer) {
+        let valid = await buffer.valid
+        if (valid) return
+      }
+      buffer = await nvim.createNewBuffer(false, true)
+      await buffer.setOption('buftype', 'nofile')
+      await buffer.setOption('bufhidden', 'hide')
+      this.floatBuffer = new FloatBuffer(nvim, buffer)
     }
-    buffer = await this.nvim.createNewBuffer(false, true)
-    await buffer.setOption('buftype', 'nofile')
-    await buffer.setOption('bufhidden', 'hide')
-    this.floatBuffer = new FloatBuffer(buffer, nvim)
   }
 
   public close(): void {
-    if (workspace.isVim) {
-      this.nvim.call('coc#util#pclose', [], true)
+    if (workspace.env.textprop) {
+      if (this.popup) {
+        this.popup.dispose()
+      }
       return
     }
     let { window } = this
     if (!window) return
     this.window = null
-    this.nvim.call('coc#util#close_win', window.id, true)
+    workspace.nvim.call('coc#util#close_win', window.id, true)
     this.window = null
     let count = 0
     let interval = setInterval(() => {
@@ -157,7 +203,7 @@ export default class Floating {
       if (count == 5) clearInterval(interval)
       window.valid.then(valid => {
         if (valid) {
-          this.nvim.call('coc#util#close_win', window.id, true)
+          workspace.nvim.call('coc#util#close_win', window.id, true)
         } else {
           window = null
           clearInterval(interval)

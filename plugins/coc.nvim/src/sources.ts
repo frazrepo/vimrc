@@ -3,7 +3,7 @@ import { Neovim } from '@chemzqm/neovim'
 import fs from 'fs'
 import path from 'path'
 import util from 'util'
-import { Disposable, CancellationToken } from 'vscode-jsonrpc'
+import { Disposable, CancellationToken } from 'vscode-languageserver-protocol'
 import events from './events'
 import extensions from './extensions'
 import Source from './model/source'
@@ -14,9 +14,6 @@ import { statAsync } from './util/fs'
 import workspace from './workspace'
 import { byteSlice } from './util/string'
 const logger = require('./util/logger')('sources')
-
-// type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
-// priority,triggerPatterns,shortcut,enable,filetypes,disableSyntaxes,firstMatch
 
 export class Sources {
   private sourceMap: Map<string, ISource> = new Map()
@@ -51,6 +48,9 @@ export class Sources {
       let props = await nvim.call(`coc#source#${name}#init`, [])
       let packageJSON = {
         name: `coc-source-${name}`,
+        engines: {
+          coc: ">= 0.0.1"
+        },
         activationEvents: props.filetypes ? props.filetypes.map(f => `onLanguage:${f}`) : ['*'],
         contributes: {
           configuration: {
@@ -58,6 +58,14 @@ export class Sources {
               [`coc.source.${name}.enable`]: {
                 type: 'boolean',
                 default: true
+              },
+              [`coc.source.${name}.firstMatch`]: {
+                type: 'boolean',
+                default: !!props.firstMatch
+              },
+              [`coc.source.${name}.triggerCharacters`]: {
+                type: 'number',
+                default: props.triggerCharacters || []
               },
               [`coc.source.${name}.priority`]: {
                 type: 'number',
@@ -152,7 +160,7 @@ export class Sources {
         if (changeType == 1) {
           let paths = value.replace(/,$/, '').split(',')
           for (let p of paths) {
-            await this.createVimSources(p)
+            if (p) await this.createVimSources(p)
           }
         }
       }
