@@ -268,7 +268,6 @@ endif
 " Languages Support : 
 " javascript : coc-tsserver  and coc-eslint (npm install -g eslint) (ok)
 " typescript : coc-tsserver and coc-tslint (npm install -g tslint typescript) (ok)
-" angular : coc-angular (ok) Snippets: BeastCode/VSCode-Angular-TypeScript-Snippets
 " html, css : coc-html and coc-css (ok)
 " vim : vim-lsp (ok)
 " ruby : coc-solargraph (not installed yet)
@@ -292,7 +291,6 @@ if exists("g:developer_edition")
           \ 'coc-tsserver',
           \ 'coc-tslint',
           \ 'coc-eslint',
-          \ 'coc-angular',
           \ 'coc-vimlsp',
           \ 'coc-snippets',
           \ 'coc-ultisnips',
