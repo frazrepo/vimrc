@@ -96,7 +96,7 @@ set wildignore+=*/.git/*,*/node_modules/*,*/dist/*
 set wildignore+=.git\*,node_modules\*
 
 set wildmenu                       " Turn on the Wild menu
-set wildmode=longest:full,full
+set wildmode=full
 
 " grepprg to ag
 if executable('ag')

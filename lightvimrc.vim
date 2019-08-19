@@ -47,7 +47,6 @@ set mouse=a                        " Activate mouse
 set nobackup                       " Turn backup off, since most stuff is in SVN, git et.c anyway...
 set noerrorbells
 set nolist                         " List Chars
-set noshowmode                     " Do not show mode (displayed by lightline already)
 set noswapfile
 set nowritebackup
 
@@ -88,7 +87,7 @@ set wildignore+=*/.git/*,*/node_modules/*,*/dist/*
 set wildignore+=.git\*,node_modules\*
 
 set wildmenu                       " Turn on the Wild menu
-set wildmode=longest:full,full
+set wildmode=full
 
 " grepprg to ag
 if executable('ag')
@@ -582,65 +581,8 @@ endfunction
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Statusline {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" :h mode() to see all modes
-let g:currentmode={
-    \ 'n'      : 'NORMAL ',
-    \ 'no'     : 'N·Operator Pending ',
-    \ 'v'      : 'VISUAL ',
-    \ 'V'      : 'V·Line ',
-    \ "\<C-V>" : 'V·Block ',
-    \ 's'      : 'Select ',
-    \ 'S'      : 'S·Line ',
-    \ '\<C-S>' : 'S·Block ',
-    \ 'i'      : 'INSERT ',
-    \ 'R'      : 'REPLACE ',
-    \ 'Rv'     : 'V·Replace ',
-    \ 'c'      : 'Command ',
-    \ 'cv'     : 'Vim Ex ',
-    \ 'ce'     : 'Ex ',
-    \ 'r'      : 'Prompt ',
-    \ 'rm'     : 'More ',
-    \ 'r?'     : 'Confirm ',
-    \ '!'      : 'Shell ',
-    \ 't'      : 'Terminal '
-    \}
-
-" Automatically change the statusline color depending on mode
-function! ChangeStatuslineColor()
-  if (mode() =~# '\v(n|no)')
-    exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
-  elseif (mode() =~# '\v(v|V)' || g:currentmode[mode()] ==# 'V·Block ' || get(g:currentmode, mode(), '') ==# 't')
-    exe 'hi! StatusLine ctermfg=005 guifg=#000000 guibg=#f2c68a gui=NONE cterm=None'
-  elseif (mode() ==# 'i')
-    exe 'hi! StatusLine ctermfg=004 guifg=#000000 guibg=#95e454 gui=NONE cterm=None'
-  else
-    exe 'hi! StatusLine ctermfg=006 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
-  endif
-  return ''
-endfunction
-
-"Default
-exe 'hi! StatusLine ctermfg=008 guifg=#000000 guibg=#8ac6f2 gui=NONE cterm=None'
-
 set laststatus=2
-set statusline=
-set statusline+=%{ChangeStatuslineColor()}
-set statusline+=%0*\ %{toupper(g:currentmode[mode()])}
-set statusline+=%2*\ %t          "tail of the filename
-set statusline+=%2*\ %h          "help file flag
-set statusline+=%2*\ %m          "modified flag
-set statusline+=%2*\ %r          "read only flag
-set statusline+=%*
-set statusline+=%2*\ %=          "left/right separator
-set statusline+=%2*\ %y\           "filetype
-set statusline+=%3*\ %3p%%\      "percent through file
-set statusline+=%4*\ %3l:%-3c    "cursor line/cursor column
-hi User0 guifg=#000000 guibg=#8ac6f2
-hi User1 guifg=#000000 guibg=#8ac6f2
-hi User2 guifg=#000000 guibg=#808080
-hi User3 guifg=#000000 guibg=#969696
-hi User4 guifg=#000000 guibg=#a8a8a8
+set statusline=%<\ %f\ %m%r%y%w%=%l\/%-6L\ %3c\ 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions and Commands {{{1
