@@ -195,7 +195,7 @@ runtime macros/sandwich/keymap/surround.vim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-qlist {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-nnoremap <leader>f :execute 'Ilist ' . expand('<cword>')<CR>
+nnoremap <silent> <leader>f :execute 'Ilist ' . expand('<cword>')<CR>
 vnoremap <silent> <leader>f :<C-u>call VisualSelection('', '')<CR>:Ilist <C-R>=@/<CR><CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
