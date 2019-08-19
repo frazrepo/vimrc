@@ -53,7 +53,7 @@ let g:lightline = {
       \ 'colorscheme': 'wombat',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'filename' ] ],
-      \   'right': [ [ 'lineinfo' ], [ 'percent' ], [ 'filetype' ] ]
+      \   'right': [ [ 'column' ], [ 'mylineinfo' ], [ 'filetype' ] ]
       \ },
       \ 'inactive': {
       \   'left': [ [ 'filename' ] ],
@@ -64,6 +64,8 @@ let g:lightline = {
       \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
       \   'fugitive': '%{exists("*fugitive#head")?fugitive#head():""}',
       \   'lineinfo': '%3l:%-2c',
+      \   'column': '%2c ',
+      \   'mylineinfo': "%{printf('%03d/%03d', line('.'),  line('$'))}",
       \ },
       \ 'component_visible_condition': {
       \   'readonly': '(&filetype!="help"&& &readonly)',
