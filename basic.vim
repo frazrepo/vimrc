@@ -403,7 +403,7 @@ if has("autocmd")
         autocmd BufLeave vimrc,*.vim                normal! mV
 
         " Format : - [ ] Task item
-        autocmd FileType markdown nnoremap <buffer> <silent> - :call winrestview(<SID>toggle('^\s*-\s*\[\zs.\ze\]', {' ': '.', '.': 'x', 'x': ' '}))<cr>
+        autocmd FileType markdown nnoremap <buffer> <silent> - :call winrestview(<SID>Toggle('^\s*-\s*\[\zs.\ze\]', {' ': '.', '.': 'x', 'x': ' '}))<cr>
 
     augroup END
 endif
@@ -608,7 +608,7 @@ else "Terminal
 endif
 
 " Toggle Checkbox Markdown
-function s:toggle(pattern, dict, ...)
+function s:Toggle(pattern, dict, ...)
   let view = winsaveview()
   execute 'keeppatterns s/' . a:pattern . '/\=get(a:dict, submatch(0), a:0 ? a:1 : " ")/e'
   return view
