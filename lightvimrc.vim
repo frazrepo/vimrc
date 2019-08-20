@@ -128,6 +128,12 @@ let mapleader = "\<Space>"
 " Fast saving
 nmap <leader>w :w!<cr>
 
+" Use CTRL-S for saving, also in Insert mode
+nnoremap <C-S>		     :update<CR>
+vnoremap <C-S>		<C-C>:update<CR>
+inoremap <C-S>		<C-O>:update<CR>
+
+
 " Map jk to ESC in insert mode
 inoremap jk <Esc>
 
@@ -253,11 +259,6 @@ nnoremap <leader>p "0p
 
 "Paste quickly in insert mode
 inoremap <C-r><C-r> <C-r>*
-
-" Use CTRL-S for saving, also in Insert mode
-nnoremap <C-S>		     :update<CR>
-vnoremap <C-S>		<C-C>:update<CR>
-inoremap <C-S>		<C-O>:update<CR>
 
 " Enhance paste in visual mode to replace many times with the yank register
 xnoremap <silent> p p:if v:register == '+'<Bar>let @+=@0<Bar>endif<CR>

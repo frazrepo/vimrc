@@ -88,6 +88,11 @@ let mapleader = "\<Space>"
 " Fast saving
 nmap <leader>w :w!<cr>
 
+" Use CTRL-S for saving, also in Insert mode
+nnoremap <C-S>		     :update<CR>
+inoremap <C-S>		<C-O>:update<CR>
+
+
 " Map jk to ESC in insert mode
 inoremap jk <Esc>
 
@@ -179,15 +184,10 @@ nnoremap <leader>p "0p
 "Paste quickly in insert mode
 inoremap <C-r><C-r> <C-r>*
 
-" Use CTRL-S for saving, also in Insert mode
-nnoremap <C-S>		     :update<CR>
-inoremap <C-S>		<C-O>:update<CR>
-
-" Do not track every j and k motion in jumplist  
+" Toogle gj gk and j k
 nnoremap k gk
 nnoremap j gj
 
-" Toogle gj gk and j k
 nnoremap gj j 
 nnoremap gk k 
 
