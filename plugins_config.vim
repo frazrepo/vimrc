@@ -177,6 +177,7 @@ vmap  <down>  <Plug>SchleppDown
 vmap  <left>  <Plug>SchleppLeft
 vmap  <right> <Plug>SchleppRight
 
+" Duplicate selection
 vmap D <Plug>SchleppDup
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""	
