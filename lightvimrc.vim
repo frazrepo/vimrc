@@ -33,6 +33,7 @@ set foldmethod=manual              " Foldmethod manual
 set formatoptions+=j               " Join option :  Delete comment character when joining commented lines
 set gdefault
 set hidden                         " A buffer becomes hidden when it is abandoned
+set history=200
 set hlsearch                       " Highlight search results
 set ignorecase                     " Ignore case when searching
 set incsearch                      " Makes search act like search in modern browsers
