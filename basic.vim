@@ -409,15 +409,6 @@ if has("autocmd")
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Netrw configuration {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:netrw_banner=0
-let g:netrw_winsize=15
-let g:netrw_liststyle=3
-let g:netrw_browse_split = 4
-let g:netrw_altv = 1
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text-Objects {{{1
 " https://gist.github.com/romainl/c0a8b57a36aec71a986f1120e1931f20
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
