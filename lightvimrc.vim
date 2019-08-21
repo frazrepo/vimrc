@@ -512,8 +512,9 @@ nnoremap ,S :sfind <C-R>=expand('%:p:h').'/**/*'<CR>
 nnoremap ,v :vert sfind *
 nnoremap ,V :vert sfind <C-R>=expand('%:p:h').'/**/*'<CR>
 
-" Mapping like dirvish
-map <leader>v :Vexplore %:p:h<cr>
+" Mapping like vinegar for netrw
+let g:netrw_banner=0
+nnoremap - :e %:h<cr>
 
 " Scratch buffer
 command! Scratch vnew | setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile

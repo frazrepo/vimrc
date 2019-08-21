@@ -39,11 +39,6 @@ nnoremap <leader>gn  :<C-U>e <C-R>=fnameescape(expand($HOME . '/.notes/'))<CR>
 nnoremap <silent> <leader>n  :<C-U>LeaderfFile <C-R>=fnameescape(expand($HOME . '/.notes/'))<CR><CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Dirvish {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-map <leader>v :Dirvish<cr>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Lightline {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Show on multiple screen not on single screen
