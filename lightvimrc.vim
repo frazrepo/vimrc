@@ -29,7 +29,7 @@ set encoding=utf-8                 " Dealing with special chars
 set expandtab                      " Use spaces instead of tabs
 
 set foldlevelstart=99 
-set foldmethod=manual              " Foldmethod manual
+set foldmethod=indent              " Default Foldmethod indent
 set formatoptions+=j               " Join option :  Delete comment character when joining commented lines
 set gdefault
 set hidden                         " A buffer becomes hidden when it is abandoned
