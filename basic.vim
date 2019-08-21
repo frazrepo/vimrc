@@ -587,16 +587,9 @@ if has("gui_running")
       endif
     endif
 else "Terminal
-    if GetCurrentHour() >=7 && GetCurrentHour() <=17
-      if HasColorscheme('seoul256-light')
-        " color seoul256-light
-        color apprentice
-      endif
-    else
       if HasColorscheme('apprentice')
         color apprentice
       endif
-    endif
 endif
 
 " Toggle Checkbox Markdown
