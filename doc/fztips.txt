@@ -12,7 +12,7 @@ INTRODUCTION                                              *fztips*
 7. Change whole word foo to bar                           |fztips7|
 8. Transpose a line with separator ; to columns           |fztips8|
 9. Search and replace in files                            |fztips9|
-10.Sort lines inside block of {} , like in css            |fztips10|
+10. Sort lines inside block of {} , like in css           |fztips10|
 11. Substitute with contents of register                  |fztips11|
 12. Miscellaneous g command                               |fztips12|
 13. Swap columns in a csv file                            |fztips13|
@@ -60,6 +60,8 @@ XX.Ressources                                             |fztipsXX|
   /this\|that
   " this and that
   /.*this\&.*that
+  " find word in quoted marks
+  /\v"\zs[^"]+\ze"
 <
 6. Search Replace tips                                                  *fztips6*
 >
