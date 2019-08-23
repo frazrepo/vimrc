@@ -386,12 +386,6 @@ if has("autocmd")
         autocmd InsertLeave,TextChanged buffer.* nested silent! update
         autocmd FocusGained,BufEnter,CursorHold buffer.* silent! checktime
 
-        " Automatic marks
-        autocmd BufLeave *.css,*.less,*.scss,*.sass normal! mC
-        autocmd BufLeave *.html,*.cshtml            normal! mH
-        autocmd BufLeave *.js                       normal! mJ
-        autocmd BufLeave vimrc,*.vim                normal! mV
-
         " Format : - [ ] Task item
         autocmd FileType markdown nnoremap <buffer> <silent> - :call winrestview(<SID>toggle('^\s*-\s*\[\zs.\ze\]', {' ': '.', '.': 'x', 'x': ' '}))<cr>
 
