@@ -22,6 +22,9 @@ endif
 let g:Lf_MruMaxFiles = 200
 let g:Lf_MaxCount    = 0
 
+" Refresh cache after restart , default = 1
+let g:Lf_UseCache=0
+
 let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>']}
 
 "Files
