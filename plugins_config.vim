@@ -450,6 +450,7 @@ nnoremap <leader>bs :Scratch<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <leader>gs :Gstatus<cr>
 nnoremap <leader>gd :Gvdiff<cr>
+nnoremap <leader>gb :Gblame<cr>
 nnoremap gdh :diffget //2<cr>
 nnoremap gdl :diffget //3<cr>
 
