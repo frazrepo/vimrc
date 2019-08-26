@@ -363,9 +363,6 @@ endif
 " RemoveTrailingSpaces : Remove all training spaces
 command! RemoveTrailingSpaces call CleanExtraSpaces()
 
-" ListLeaders : List all leader mappings
-command! ListLeaders call ListLeaders()
-
 " SortByWidth : Sort lines by width
 command! -range=%  SortByWidth <line1>,<line2>call SortByWidth()
 
@@ -510,19 +507,6 @@ endfunction
 function! ExecuteMacroOverVisualRange()
   echo "@".getcmdline()
   execute ":'<,'>normal @".nr2char(getchar())
-endfunction
-
-" List all leader mappings
-function! ListLeaders()
-  silent! redir @a
-  silent! nmap <LEADER>
-  silent! redir END
-  silent! new
-  silent! put! a
-  silent! g/^s*$/d
-  silent! %s/^.*,//
-  silent! %sort
-  silent! let lines = getline(1,"$")
 endfunction
 
 " Sort lines by width
