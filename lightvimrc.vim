@@ -141,9 +141,6 @@ inoremap jk <Esc>
 " For autocompletion
 inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
 inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
-inoremap <silent> ,f <C-x><C-f>
-inoremap <silent> ,l <C-x><C-l>
-inoremap <silent> ,n <C-x><C-n>
 
 " Search using magic regex
 nnoremap / /\v
@@ -329,8 +326,6 @@ let &t_EI = "\e[2 q"
 
 " Hide tilde ~ sign at the end of buffer
  hi! EndOfBuffer guibg=bg guifg=bg
-
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Commands {{{1

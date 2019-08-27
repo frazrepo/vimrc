@@ -157,9 +157,6 @@ inoremap jk <Esc>
 " For autocompletion
 inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
 inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
-inoremap <silent> ,f <C-x><C-f>
-inoremap <silent> ,l <C-x><C-l>
-inoremap <silent> ,n <C-x><C-n>
 
 " Search using magic regex
 nnoremap / /\v
