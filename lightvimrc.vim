@@ -178,9 +178,9 @@ map <silent> <space><space> :noh<cr>
 map <C-h> <C-W>h
 map <C-l> <C-W>l
 
-" Move faster vertically
-nnoremap <c-j> 5j
-nnoremap <c-k> 5k
+" Move faster vertically (paragraph motion)
+nnoremap <c-j> }
+nnoremap <c-k> {
 
 
 " Switch CWD to the directory of the open buffer
