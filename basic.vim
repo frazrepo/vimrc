@@ -544,27 +544,9 @@ function! HasColorscheme(name)
     return !empty(globpath(&rtp, pat))
 endfunction
 
-" Get current hour
-function! GetCurrentHour()
-    let hr = str2nr(strftime('%H'))
-    return hr
-endfunction
-
 " ColorScheme ayu for GUI and apprentice for terminal
-if has("gui_running")
-    if GetCurrentHour() >=7 && GetCurrentHour() <=16
-      if HasColorscheme('ayu')
-        color ayu
-      endif
-    else
-      if HasColorscheme('dracula')
-        color dracula
-      endif
-    endif
-else "Terminal
-      if HasColorscheme('apprentice')
-        color apprentice
-      endif
+if HasColorscheme('apprentice')
+  color apprentice
 endif
 
 " Toggle Checkbox Markdown
