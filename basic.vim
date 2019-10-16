@@ -261,11 +261,6 @@ nnoremap <A-Up> :cprevious<Cr>
 map H ^
 map L g_
 
-"Quick beautiful paste hack
-nnoremap "p vi""0p
-nnoremap 'p vi'"0p
-nnoremap (p vi("0p
-
 " Paste from yank register 
 xnoremap <leader>p "0p
 nnoremap <leader>p "0p
