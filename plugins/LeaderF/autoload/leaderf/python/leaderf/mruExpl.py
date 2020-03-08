@@ -35,8 +35,8 @@ class MruExplorer(Explorer):
 
         lines = [line.rstrip() for line in lines] # remove the '\n'
         wildignore = lfEval("g:Lf_MruWildIgnore")
-        lines = [name for name in lines if True not in (fnmatch(name, j) for j in wildignore['file'])
-                    and True not in (fnmatch(name, "*/" + j + "/*") for j in wildignore['dir'])]
+        lines = [name for name in lines if True not in (fnmatch(name, j) for j in wildignore.get('file', []))
+                    and True not in (fnmatch(name, "*/" + j + "/*") for j in wildignore.get('dir', []))]
 
         if len(lines) == 0:
             return lines
@@ -94,7 +94,6 @@ class MruExplorer(Explorer):
 class MruExplManager(Manager):
     def __init__(self):
         super(MruExplManager, self).__init__()
-        self._match_ids = []
 
     def _getExplClass(self):
         return MruExplorer
@@ -125,7 +124,10 @@ class MruExplManager(Manager):
             if kwargs.get("mode", '') == 't':
                 lfCmd("tab drop %s" % escSpecial(file))
             else:
-                lfCmd("hide edit %s" % escSpecial(file))
+                if lfEval("get(g:, 'Lf_JumpToExistingWindow', 0)") == '1':
+                    lfCmd("hide drop %s" % escSpecial(file))
+                else:
+                    lfCmd("hide edit %s" % escSpecial(file))
         except vim.error as e: # E37
             lfPrintError(e)
 
@@ -203,29 +205,59 @@ class MruExplManager(Manager):
     def _afterEnter(self):
         super(MruExplManager, self)._afterEnter()
         if "--no-split-path" not in self._arguments:
-            id = int(lfEval('''matchadd('Lf_hl_bufDirname', ' \zs".*"$')'''))
-            self._match_ids.append(id)
+            if self._getInstance().getWinPos() == 'popup':
+                lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_bufDirname'', '' \zs".*"$'')')"""
+                        % self._getInstance().getPopupWinId())
+                id = int(lfEval("matchid"))
+                self._match_ids.append(id)
+            else:
+                id = int(lfEval('''matchadd('Lf_hl_bufDirname', ' \zs".*"$')'''))
+                self._match_ids.append(id)
 
     def _beforeExit(self):
         super(MruExplManager, self)._beforeExit()
-        for i in self._match_ids:
-            lfCmd("silent! call matchdelete(%d)" % i)
-        self._match_ids = []
 
     def deleteMru(self):
-        if vim.current.window.cursor[0] <= self._help_length:
+        instance = self._getInstance()
+        if instance.window.cursor[0] <= self._help_length:
             return
-        lfCmd("setlocal modifiable")
-        line = vim.current.line
+        if instance.getWinPos() == 'popup':
+            lfCmd("call win_execute(%d, 'setlocal modifiable')" % instance.getPopupWinId())
+        else:
+            lfCmd("setlocal modifiable")
+        line = instance._buffer_object[instance.window.cursor[0] - 1]
+
         dirname = self._getDigest(line, 2)
         basename = self._getDigest(line, 1)
         self._explorer.delFromCache(dirname + basename)
         if len(self._content) > 0:
             self._content.remove(line)
+            self._getInstance().setStlTotal(len(self._content)//self._getUnit())
+            self._getInstance().setStlResultsCount(len(self._content)//self._getUnit())
         # `del vim.current.line` does not work in neovim
         # https://github.com/neovim/neovim/issues/9361
-        del vim.current.buffer[vim.current.window.cursor[0] - 1]
-        lfCmd("setlocal nomodifiable")
+        del instance._buffer_object[instance.window.cursor[0] - 1]
+        if instance.getWinPos() == 'popup':
+            instance.refreshPopupStatusline()
+            lfCmd("call win_execute(%d, 'setlocal nomodifiable')" % instance.getPopupWinId())
+        else:
+            lfCmd("setlocal nomodifiable")
+
+    def _previewInPopup(self, *args, **kwargs):
+        if len(args) == 0:
+            return
+
+        line = args[0]
+        dirname = self._getDigest(line, 2)
+        basename = self._getDigest(line, 1)
+
+        file = dirname + basename
+        if not os.path.isabs(file):
+            file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
+            file = os.path.normpath(lfEncode(file))
+
+        buf_number = lfEval("bufadd('{}')".format(escQuote(file)))
+        self._createPopupPreview(file, buf_number, 0)
 
 
 #*****************************************************

@@ -41,6 +41,8 @@ nnoremap <silent> <leader>u  :LeaderfMru<CR>
 nnoremap <leader>gn  :<C-U>e <C-R>=fnameescape(expand($HOME . '/.notes/'))<CR>
 nnoremap <silent> <leader>n  :<C-U>LeaderfFile <C-R>=fnameescape(expand($HOME . '/.notes/'))<CR><CR>
 
+" popup mode
+let g:Lf_WindowPosition = 'popup'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Lightline {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

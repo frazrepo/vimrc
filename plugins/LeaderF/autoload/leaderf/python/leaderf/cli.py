@@ -3,12 +3,13 @@
 
 import vim
 import re
+import sys
 import time
 from datetime import datetime
+from datetime import timedelta
 from functools import wraps
 from collections import OrderedDict
 from .utils import *
-
 
 def cursorController(func):
     @wraps(func)
@@ -40,21 +41,26 @@ def cursorController(func):
 #*****************************************************
 class LfCli(object):
     def __init__(self):
+        self._instance = None
         self._cmdline = []
         self._pattern = ''
         self._cursor_pos = 0
-        self._orig_cursor_pos = -1
         self._start_time = datetime.now()
         self._idle = False
         self._blinkon = True
-        self._cmd_map = lfEval("g:Lf_CommandMap")
+        self._key_dict = lfEval("g:Lf_KeyDict")
         self._refine = False
         self._delimiter = lfEval("g:Lf_DelimiterChar")
         self._and_delimiter = lfEval("get(g:, 'Lf_AndDelimiter', ' ')")
         self._supports_nameonly = False
         self._supports_refine = False
         self._is_and_mode = False
+        self._running_status = 0
+        self._input_buf_namespace = None
         self._setDefaultMode()
+
+    def setInstance(self, instance):
+        self._instance = instance
 
     def _setDefaultMode(self):
         mode = lfEval("g:Lf_DefaultMode")
@@ -107,10 +113,26 @@ class LfCli(object):
         self._cmdline[0:self._cursor_pos] = []
         self._cursor_pos = 0
 
+    def _delLeftWord(self):
+        orig_cursor_pos = self._cursor_pos
+        # clear trailing spaces
+        while self._cursor_pos > 0 and self._cmdline[self._cursor_pos-1] == ' ':
+            self._cursor_pos -= 1
+        while self._cursor_pos > 0 and self._cmdline[self._cursor_pos-1] != ' ':
+            self._cursor_pos -= 1
+
+        self._cmdline[self._cursor_pos:orig_cursor_pos] = []
+
     def clear(self):
         self._cmdline[:] = []
         self._cursor_pos = 0
         self._pattern = ''
+        if self._instance and self._instance.getWinPos() == 'popup':
+            lfCmd("""call win_execute(%d, 'silent! syn clear Lf_hl_match')""" % self._instance.getPopupWinId())
+            lfCmd("""call win_execute(%d, 'silent! syn clear Lf_hl_match_refine')""" % self._instance.getPopupWinId())
+        else:
+            lfCmd("silent! syn clear Lf_hl_match")
+            lfCmd("silent! syn clear Lf_hl_match_refine")
 
     def _toLeft(self):
         if self._cursor_pos > 0:
@@ -155,30 +177,168 @@ class LfCli(object):
         else:
             lfCmd("hi! default link Lf_hl_cursor NONE")
 
+    def _buildPopupPrompt(self):
+        self._instance.mimicCursor()
+
+        if self._is_fuzzy:
+            if self._is_full_path:
+                prompt = ' >F> '
+            else:
+                prompt = ' >>> '
+        else:
+            prompt = ' R>> '
+
+        pattern = ''.join(self._cmdline)
+        input_window = self._instance.getPopupInstance().input_win
+        content_winid = self._instance.getPopupInstance().content_win.id
+        input_win_width = input_window.width
+        if self._instance.getWinPos() == 'popup':
+            lfCmd("""call win_execute(%d, 'let line_num = line(".")')""" % content_winid)
+            line_num = lfEval("line_num")
+        else:
+            line_num = lfEval("line('.')")
+        result_count = lfEval("g:Lf_{}_StlResultsCount".format(self._instance._category))
+        total = lfEval("g:Lf_{}_StlTotal".format(self._instance._category))
+
+        part1 = prompt + pattern
+        part2 = "{}/{}".format(line_num, result_count)
+        part3 = total
+        sep = lfEval("g:Lf_StlSeparator.right")
+        flag = ('+', '×')
+        if lfEval("g:Lf_{}_IsRunning".format(self._instance._category)) == '1':
+            spin = "{}".format(flag[self._running_status])
+            self._running_status = (self._running_status + 1) & 1
+        else:
+            spin = ""
+            self._running_status = 0
+
+        if sys.version_info < (3, 0):
+            input_win_width += 2 * (len(sep) - int(lfEval("strdisplaywidth('%s')" % escQuote(sep))))
+            input_win_width += len(pattern) - int(lfEval("strdisplaywidth('%s')" % escQuote(pattern)))
+            if spin == '×':
+                input_win_width += len(spin) - int(lfEval("strdisplaywidth('%s')" % spin))
+        part3_start = input_win_width - len(part3) - 2
+        sep2_start = part3_start - len(sep)
+        part2_start = sep2_start - 2 - len(part2)
+        sep1_start = part2_start - len(sep)
+        spin_start = sep1_start - 1 - len(spin)
+        part1_width = spin_start - 1
+        text = "{:<{part1_width}} {} {:>{sep_width}} {:>{part2_width}} {:>{sep_width}} {:>{part3_width}} ".format(part1,
+                                                                               spin,
+                                                                               sep,
+                                                                               part2,
+                                                                               sep,
+                                                                               part3,
+                                                                               sep_width=len(sep),
+                                                                               part1_width=part1_width,
+                                                                               part2_width=len(part2),
+                                                                               part3_width=len(part3))
+        if self._instance.getWinPos() == 'popup':
+            lfCmd("""call popup_settext(%d, '%s')""" % (input_window.id, escQuote(text)))
+
+            lfCmd("""call win_execute(%d, "call prop_remove({'type': 'Lf_hl_popup_prompt'})")""" % input_window.id)
+            lfCmd("""call win_execute(%d, "call prop_add(1, 1, {'length': %d, 'type': 'Lf_hl_popup_prompt'})")"""
+                    % (input_window.id, lfBytesLen(prompt)))
+
+            lfCmd("""call win_execute(%d, "call prop_remove({'type': 'Lf_hl_popup_cursor'})")""" % input_window.id)
+            lfCmd("""call win_execute(%d, "call prop_add(1, %d, {'length': 1, 'type': 'Lf_hl_popup_cursor'})")"""
+                    % (input_window.id, lfBytesLen(prompt) + lfBytesLen(''.join(self._cmdline[:self._cursor_pos])) + 1))
+
+            lfCmd("""call win_execute(%d, "call prop_remove({'type': 'Lf_hl_popup_total'})")""" % (input_window.id))
+            lfCmd("""call win_execute(%d, "call prop_add(1, %d, {'length': %d, 'type': 'Lf_hl_popup_total'})")"""
+                    % (input_window.id, lfBytesLen(text[:part3_start]) + 1, len(part3) + 2))
+
+            if sep != "":
+                lfCmd("""call win_execute(%d, "call prop_remove({'type': 'Lf_hl_popup_%s_sep5'})")"""
+                        % (input_window.id, self._instance._category))
+                lfCmd("""call win_execute(%d, "call prop_add(1, %d, {'length': %d, 'type': 'Lf_hl_popup_%s_sep5'})")"""
+                        % (input_window.id, lfBytesLen(text[:sep2_start]) + 1, lfBytesLen(sep), self._instance._category))
+
+            lfCmd("""call win_execute(%d, "call prop_remove({'type': 'Lf_hl_popup_lineInfo'})")""" % (input_window.id))
+            lfCmd("""call win_execute(%d, "call prop_add(1, %d, {'length': %d, 'type': 'Lf_hl_popup_lineInfo'})")"""
+                    % (input_window.id, lfBytesLen(text[:part2_start]) + 1, len(part2) + 2))
+
+            if sep != "":
+                lfCmd("""call win_execute(%d, "call prop_remove({'type': 'Lf_hl_popup_%s_sep4'})")"""
+                        % (input_window.id, self._instance._category))
+                lfCmd("""call win_execute(%d, "call prop_add(1, %d, {'length': %d, 'type': 'Lf_hl_popup_%s_sep4'})")"""
+                        % (input_window.id, lfBytesLen(text[:sep1_start]) + 1, lfBytesLen(sep), self._instance._category))
+
+            lfCmd("""call win_execute(%d, "call prop_remove({'type': 'Lf_hl_popup_spin'})")""" % (input_window.id))
+            if spin != "":
+                lfCmd("""call win_execute(%d, "call prop_add(1, %d, {'length': %d, 'type': 'Lf_hl_popup_spin'})")"""
+                        % (input_window.id, lfBytesLen(text[:spin_start]) + 1, lfBytesLen(spin)))
+        else:
+            input_window.buffer[0] = text
+
+            if self._input_buf_namespace is None:
+                self._input_buf_namespace = int(lfEval("nvim_create_namespace('')"))
+            else:
+                lfCmd("call nvim_buf_clear_namespace(%d, %d, 0, -1)"
+                        % (input_window.buffer.number, self._input_buf_namespace))
+
+            lfCmd("call nvim_buf_add_highlight(%d, %d, 'Lf_hl_popup_prompt', 0, 0, %d)"
+                    % (input_window.buffer.number, self._input_buf_namespace, lfBytesLen(prompt)))
+            cursor_pos = lfBytesLen(prompt) + lfBytesLen(''.join(self._cmdline[:self._cursor_pos]))
+            if self._cursor_pos == len(self._cmdline):
+                cursor_pos_end = cursor_pos + 1
+            else:
+                cursor_pos_end = cursor_pos + lfBytesLen(self._cmdline[self._cursor_pos])
+            lfCmd("call nvim_buf_add_highlight(%d, %d, 'Lf_hl_cursor', 0, %d, %d)"
+                    % (input_window.buffer.number, self._input_buf_namespace, cursor_pos, cursor_pos_end))
+
+            lfCmd("call nvim_buf_add_highlight(%d, %d, 'Lf_hl_popup_total', 0, %d, %d)"
+                    % (input_window.buffer.number, self._input_buf_namespace,
+                        lfBytesLen(text[:part3_start]), lfBytesLen(text[:part3_start]) + len(part3) + 2))
+
+            if sep != "":
+                lfCmd("call nvim_buf_add_highlight(%d, %d, 'Lf_hl_popup_%s_sep5', 0, %d, %d)"
+                        % (input_window.buffer.number, self._input_buf_namespace, self._instance._category,
+                            lfBytesLen(text[:sep2_start]), lfBytesLen(text[:sep2_start]) + lfBytesLen(sep)))
+
+            lfCmd("call nvim_buf_add_highlight(%d, %d, 'Lf_hl_popup_lineInfo', 0, %d, %d)"
+                    % (input_window.buffer.number, self._input_buf_namespace,
+                        lfBytesLen(text[:part2_start]), lfBytesLen(text[:part2_start]) + len(part2) + 2))
+
+            if sep != "":
+                lfCmd("call nvim_buf_add_highlight(%d, %d, 'Lf_hl_popup_%s_sep4', 0, %d, %d)"
+                        % (input_window.buffer.number, self._input_buf_namespace, self._instance._category,
+                            lfBytesLen(text[:sep1_start]), lfBytesLen(text[:sep1_start]) + lfBytesLen(sep)))
+
+            if spin != "":
+                lfCmd("call nvim_buf_add_highlight(%d, %d, 'Lf_hl_popup_spin', 0, %d, %d)"
+                        % (input_window.buffer.number, self._input_buf_namespace,
+                            lfBytesLen(text[:spin_start]), lfBytesLen(text[:spin_start]) + lfBytesLen(spin)))
+
+    def buildPopupPrompt(self):
+        self._buildPopupPrompt()
+        lfCmd("redraw")
+
     def _buildPrompt(self):
-        if lfEval("has('nvim')") == '1':
+        if lfEval("has('nvim')") == '1' and self._instance.getWinPos() != 'floatwin':
             self._buildNvimPrompt()
             return
 
-        delta_time = datetime.now() - self._start_time
-        delta_ms = delta_time.microseconds + (delta_time.seconds +
-                   delta_time.days * 24 * 3600) * 10**6
-        if self._idle and delta_ms < 500000: # 500ms
+        if self._idle and datetime.now() - self._start_time < timedelta(milliseconds=500): # 500ms
             return
         else:
             if self._blinkon:
-                lfCmd("hi! default link Lf_hl_cursor Cursor")
+                if self._instance.getWinPos() in ('popup', 'floatwin'):
+                    lfCmd("hi! default link Lf_hl_cursor Lf_hl_popup_cursor")
+                else:
+                    lfCmd("hi! default link Lf_hl_cursor Cursor")
             else:
                 lfCmd("hi! default link Lf_hl_cursor NONE")
 
             if lfEval("g:Lf_CursorBlink") == '1':
                 self._start_time = datetime.now()
                 self._blinkon = not self._blinkon
-            else:
-                if self._cursor_pos == self._orig_cursor_pos:
-                    return
-                else:
-                    self._orig_cursor_pos = self._cursor_pos
+            elif self._idle:
+                return
+
+        if self._instance.getWinPos() in ('popup', 'floatwin'):
+            self.buildPopupPrompt()
+            return
 
         if self._is_fuzzy:
             if self._is_full_path:
@@ -201,9 +361,10 @@ class LfCli(object):
 
     def _buildPattern(self):
         if self._is_fuzzy:
-            if self._and_delimiter in self._cmdline and self._delimiter not in self._cmdline:
+            if self._and_delimiter in ''.join(self._cmdline).lstrip(self._and_delimiter) \
+                    and self._delimiter not in self._cmdline:
                 self._is_and_mode = True
-                patterns = re.split(r'['+self._and_delimiter+']+', ''.join(self._cmdline).strip())
+                patterns = re.split(r'['+self._and_delimiter+']+', ''.join(self._cmdline).strip(self._and_delimiter))
                 pattern_dict = OrderedDict([])
                 for p in patterns:
                     if p in pattern_dict:
@@ -229,6 +390,7 @@ class LfCli(object):
                     self._refine = False
                     self._pattern = ''.join(self._cmdline)
         else:
+            self._is_and_mode = False
             self._pattern = ''.join(self._cmdline)
 
     def _join(self, cmdline):
@@ -240,8 +402,12 @@ class LfCli(object):
         return regex
 
     def highlightMatches(self):
-        lfCmd("silent! syn clear Lf_hl_match")
-        lfCmd("silent! syn clear Lf_hl_match_refine")
+        if self._instance.getWinPos() == 'popup':
+            lfCmd("""call win_execute(%d, 'silent! syn clear Lf_hl_match')""" % self._instance.getPopupWinId())
+            lfCmd("""call win_execute(%d, 'silent! syn clear Lf_hl_match_refine')""" % self._instance.getPopupWinId())
+        else:
+            lfCmd("silent! syn clear Lf_hl_match")
+            lfCmd("silent! syn clear Lf_hl_match_refine")
         if not self._cmdline:
             return
         if self._is_fuzzy:
@@ -318,8 +484,12 @@ class LfCli(object):
                     regex = r'\c' + regex
 
                 try:
-                    lfCmd("syn match Lf_hl_match '%s' containedin="
-                          "Lf_hl_dirname, Lf_hl_filename contained" % regex)
+                    if self._instance.getWinPos() == 'popup':
+                        lfCmd("""call win_execute(%d, 'syn match Lf_hl_match /%s/ containedin=Lf_hl_dirname, Lf_hl_filename contained')"""
+                                % (self._instance.getPopupWinId(), regex))
+                    else:
+                        lfCmd("syn match Lf_hl_match '%s' containedin="
+                                "Lf_hl_dirname, Lf_hl_filename contained" % regex)
                 except vim.error:
                     pass
 
@@ -465,18 +635,24 @@ class LfCli(object):
                 self._buildPrompt()
                 self._idle = False
 
-                if lfEval("get(g:, 'Lf_NoAsync', 0)") == '0':
-                    try:
-                        callback()
-                        time.sleep(0.001) # cpu usage 100% without sleep
-                    except Exception as e:
-                        lfPrintError(e)
-                        break
+                if lfEval("has('nvim') && exists('g:GuiLoaded')") == '1':
+                    time.sleep(0.005) # this is to solve issue 375 leaderF hangs in nvim-qt
+                else:
+                    time.sleep(0.001)
 
                 if lfEval("get(g:, 'Lf_NoAsync', 0)") == '0':
                     lfCmd("let nr = getchar(1)")
                     if lfEval("!type(nr) && nr == 0") == '1':
                         self._idle = True
+                        if lfEval("has('nvim') && exists('g:GuiLoaded')") == '1':
+                            time.sleep(0.009) # this is to solve issue 375 leaderF hangs in nvim-qt
+
+                        try:
+                            callback()
+                        except Exception as e:
+                            lfPrintError(e)
+                            break
+
                         continue
                     # https://groups.google.com/forum/#!topic/vim_dev/gg-l-kaCz_M
                     # '<80><fc>^B' is <Shift>, '<80><fc>^D' is <Ctrl>,
@@ -485,6 +661,15 @@ class LfCli(object):
                         lfCmd("call getchar(0)")
                         lfCmd("call feedkeys('a') | call getchar()")
                         self._idle = True
+                        if lfEval("has('nvim') && exists('g:GuiLoaded')") == '1':
+                            time.sleep(0.009) # this is to solve issue 375 leaderF hangs in nvim-qt
+
+                        try:
+                            callback()
+                        except Exception as e:
+                            lfPrintError(e)
+                            break
+
                         continue
                     else:
                         lfCmd("let nr = getchar()")
@@ -503,12 +688,9 @@ class LfCli(object):
                     yield '<Update>'
                 else:
                     cmd = ''
-                    for (key, value) in self._cmd_map.items():
-                        for i in value:
-                            if lfEval('ch ==# "\%s"' % i) == '1':
-                                cmd = key
-                                break
-                        if cmd != '':
+                    for (key, value) in self._key_dict.items():
+                        if lfEval('ch ==# "\%s"' % key) == '1':
+                            cmd = value
                             break
                     if equal(cmd, '<CR>'):
                         yield '<CR>'
@@ -527,14 +709,26 @@ class LfCli(object):
                         self._buildPattern()
                         yield '<Mode>'
                     elif equal(cmd, '<BS>') or equal(cmd, '<C-H>'):
+                        if not self._pattern and self._refine == False:
+                            continue
                         self._backspace()
                         self._buildPattern()
                         yield '<Shorten>'
                     elif equal(cmd, '<C-U>'):
+                        if not self._pattern and self._refine == False:
+                            continue
                         self._clearLeft()
                         self._buildPattern()
                         yield '<Shorten>'
+                    elif equal(cmd, '<C-W>'):
+                        if not self._pattern and self._refine == False:
+                            continue
+                        self._delLeftWord()
+                        self._buildPattern()
+                        yield '<Shorten>'
                     elif equal(cmd, '<Del>'):
+                        if not self._pattern and self._refine == False:
+                            continue
                         self._delete()
                         self._buildPattern()
                         yield '<Shorten>'
