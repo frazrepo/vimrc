@@ -214,7 +214,15 @@ endfunction
 
 " buffer methods {{
 function! s:funcs.buf_set_option(bufnr, name, val)
-  return setbufvar(a:bufnr, '&'.a:name, a:val)
+  let val = a:val
+  if type(val) == type(v:true)
+    if val == v:true
+      let val = 1
+    else
+      let val = 0
+    endif
+  endif
+  return setbufvar(a:bufnr, '&'.a:name, val)
 endfunction
 
 function! s:funcs.buf_get_changedtick(bufnr)
@@ -282,6 +290,7 @@ function! s:funcs.buf_clear_namespace(bufnr, srcId, startLine, endLine) abort
     if empty(cached)
       return
     endif
+    call setbufvar(a:bufnr, 'prop_namespace_'.a:srcId, [])
     for id in cached
       if a:endLine == -1
         if a:startLine == 0 && a:endLine == -1
@@ -327,6 +336,9 @@ function! s:funcs.buf_set_lines(bufnr, start, end, strict, ...) abort
   let lineCount = s:buf_line_count(a:bufnr)
   let startLnum = a:start >= 0 ? a:start + 1 : lineCount + a:start + 1
   let end = a:end >= 0 ? a:end : lineCount + a:end + 1
+  if end == lineCount + 1
+    let end = lineCount
+  endif
   let delCount = end - (startLnum - 1)
   let changeBuffer = 0
   let curr = bufnr('%')
@@ -427,7 +439,7 @@ endfunction
 function! s:funcs.win_get_cursor(win_id) abort
   let winid = win_getid()
   call win_gotoid(a:win_id)
-  let pos = [line('.'), col('.')]
+  let pos = [line('.'), col('.')-1]
   call win_gotoid(winid)
   return pos
 endfunction
@@ -462,7 +474,15 @@ function! s:funcs.win_set_height(win_id, height) abort
 endfunction
 
 function! s:funcs.win_set_option(win_id, name, value) abort
-  call setwinvar(a:win_id, '&'.a:name, a:value)
+  let val = a:value
+  if type(val) == type(v:true)
+    if val == v:true
+      let val = 1
+    else
+      let val = 0
+    endif
+  endif
+  call setwinvar(a:win_id, '&'.a:name, val)
 endfunction
 
 function! s:funcs.win_set_var(win_id, name, value) abort

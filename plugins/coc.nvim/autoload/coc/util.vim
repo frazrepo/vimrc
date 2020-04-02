@@ -144,8 +144,12 @@ function! coc#util#close_popup()
 endfunction
 
 function! coc#util#version()
+  if s:is_vim
+    return string(v:versionlong)
+  endif
   let c = execute('silent version')
-  return matchstr(c, 'NVIM v\zs[^\n-]*')
+  let lines = split(matchstr(c,  'NVIM v\zs[^\n-]*'))
+  return lines[0]
 endfunction
 
 function! coc#util#valid_state()
@@ -329,16 +333,18 @@ function! coc#util#on_error(msg) abort
   echohl Error | echom '[coc.nvim] '.a:msg | echohl None
 endfunction
 
-function! coc#util#preview_info(info, ...) abort
-  let filetype = get(a:, 1, 'markdown')
+function! coc#util#preview_info(info, filetype, ...) abort
   pclose
   keepalt new +setlocal\ previewwindow|setlocal\ buftype=nofile|setlocal\ noswapfile|setlocal\ wrap [Document]
   setl bufhidden=wipe
   setl nobuflisted
   setl nospell
-  exe 'setl filetype='.filetype
+  exe 'setl filetype='.a:filetype
   setl conceallevel=2
   setl nofoldenable
+  for command in a:000
+    execute command
+  endfor
   let lines = a:info
   call append(0, lines)
   exe "normal! z" . len(lines) . "\<cr>"
@@ -347,6 +353,9 @@ function! coc#util#preview_info(info, ...) abort
 endfunction
 
 function! coc#util#get_config_home()
+  if !empty(get(g:, 'coc_config_home', ''))
+      return g:coc_config_home
+  endif
   if exists('$VIMCONFIG')
     return resolve($VIMCONFIG)
   endif
@@ -364,6 +373,19 @@ function! coc#util#get_config_home()
     endif
     return resolve($HOME.'/.vim')
   endif
+endfunction
+
+function! coc#util#get_data_home()
+  if !empty(get(g:, 'coc_data_home', ''))
+    return g:coc_data_home
+  endif
+  if exists('$XDG_CONFIG_HOME')
+    return resolve($XDG_CONFIG_HOME."/coc")
+  endif
+  if s:is_win
+    return resolve($HOME.'/AppData/Local/coc')
+  endif
+  return resolve($HOME.'/.config/coc')
 endfunction
 
 function! coc#util#get_input()
@@ -400,9 +422,6 @@ function! coc#util#get_complete_option()
     return
   endif
   let synname = synIDattr(synID(pos[1], l:start, 1),"name")
-  if !synname
-    let synname = ''
-  endif
   return {
         \ 'word': matchstr(line[l:start : ], '^\k\+'),
         \ 'input': input,
@@ -598,6 +617,7 @@ function! coc#util#vim_info()
         \ 'runtimepath': &runtimepath,
         \ 'locationlist': get(g:,'coc_enable_locationlist', 1),
         \ 'progpath': v:progpath,
+        \ 'guicursor': &guicursor,
         \ 'textprop': has('textprop') && has('patch-8.1.1522') && !has('nvim') ? v:true : v:false,
         \}
 endfunction
@@ -715,13 +735,16 @@ function! coc#util#extension_root() abort
   if !empty($COC_TEST)
     return s:root.'/src/__tests__/extensions'
   endif
+  let dir = get(g:, 'coc_data_home', '')
+  if !empty(dir)
+    return dir.'/extensions'
+  endif
+
   let dir = get(g:, 'coc_extension_root', '')
   if empty(dir)
-    if s:is_win
-      let dir = $HOME.'/AppData/Local/coc/extensions'
-    else
-      let dir = $HOME.'/.config/coc/extensions'
-    endif
+    let dir = coc#util#get_data_home().'/extensions'
+  else
+    echohl WarningMsg | echon "g:coc_extension_root has been deprecated, use g:coc_data_home instead" | echohl None
   endif
   return dir
 endfunction
@@ -773,21 +796,41 @@ function! coc#util#echo_line()
 endfunction
 
 " [r, g, b] ['255', '255', '255']
+" return ['65535', '65535', '65535'] or return v:false to cancel
 function! coc#util#pick_color(default_color)
   if has('mac')
+    let default_color = map(a:default_color, {idx, val -> str2nr(val) * 65535 / 255 })
     " This is the AppleScript magic:
     let s:ascrpt = ['-e "tell application \"' . s:app . '\""',
           \ '-e "' . s:activate . '"',
           \ "-e \"set AppleScript's text item delimiters to {\\\",\\\"}\"",
-          \ '-e "set theColor to (choose color default color {' . str2nr(a:default_color[0])*256 . ", " . str2nr(a:default_color[1])*256 . ", " . str2nr(a:default_color[2])*256 . '}) as text"',
+          \ '-e "set theColor to (choose color default color {' . default_color[0] . ", " . default_color[1] . ", " . default_color[2] . '}) as text"',
           \ '-e "' . s:quit . '"',
           \ '-e "end tell"',
           \ '-e "return theColor"']
-    let res = system("osascript " . join(s:ascrpt, ' ') . " 2>/dev/null")
-    return split(trim(res), ',')
+    let res = trim(system("osascript " . join(s:ascrpt, ' ') . " 2>/dev/null"))
+    if empty(res)
+      return v:false
+    else
+      return split(trim(res), ',')
+    endif
   endif
-  let default_color = printf('#%02x%02x%02x', a:default_color[0], a:default_color[1], a:default_color[2])
-  let rgb = []
+
+  let hex_color = printf('#%02x%02x%02x', a:default_color[0], a:default_color[1], a:default_color[2])
+
+  if has('unix')
+    if executable('zenity')
+      let res = trim(system('zenity --title="Select a color" --color-selection --color="' . hex_color . '" 2> /dev/null'))
+      if empty(res)
+        return v:false
+      else
+        " res format is rgb(255,255,255)
+        return map(split(res[4:-2], ','), {idx, val -> string(str2nr(trim(val)) * 65535 / 255)})
+      endif
+    endif
+  endif
+
+  let rgb = v:false
   if !has('python')
     echohl Error | echom 'python support required, checkout :echo has(''python'')' | echohl None
     return
@@ -809,11 +852,11 @@ wnd_title_insert = "Insert a color"
 csd = gtk.ColorSelectionDialog(wnd_title_insert)
 cs = csd.colorsel
 
-cs.set_current_color(gtk.gdk.color_parse(vim.eval("default_color")))
+cs.set_current_color(gtk.gdk.color_parse(vim.eval("hex_color")))
 
-cs.set_current_alpha(65536)
+cs.set_current_alpha(65535)
 cs.set_has_opacity_control(False)
-cs.set_has_palette(int(vim.eval("s:display_palette")))
+# cs.set_has_palette(int(vim.eval("s:display_palette")))
 
 if csd.run()==gtk.RESPONSE_OK:
     c = cs.get_current_color()

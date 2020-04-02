@@ -48,7 +48,7 @@
         "rootPatterns": {
           "type": "array",
           "default": [],
-          "description": "Root patterns used for reoslve rootPath from current file, default to workspace root",
+          "description": "Root patterns used to resolve rootPath from current file, default to workspace root",
           "items": {
             "type": "string"
           }
@@ -88,6 +88,11 @@
           "description": "Configure message level to show the output channel buffer",
           "enum": ["info", "warn", "error", "never"]
         },
+        "progressOnInitialization": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable progress request to languageserver"
+        },
         "initializationOptions": {
           "type": "object",
           "default": {},
@@ -108,7 +113,7 @@
     },
     "languageServerSocket": {
       "type": "object",
-      "allOf": [{"$ref": "#/definitions/languageServerBase"}],
+      "allOf": [{ "$ref": "#/definitions/languageServerBase" }],
       "required": ["port", "filetypes"],
       "additionalProperties": false,
       "properties": {
@@ -132,6 +137,7 @@
         "filetypes": {},
         "additionalSchemes": {},
         "revealOutputChannelOn": {},
+        "progressOnInitialization": {},
         "initializationOptions": {},
         "settings": {},
         "stdioEncoding": {},
@@ -140,7 +146,7 @@
     },
     "languageServerModule": {
       "type": "object",
-      "allOf": [{"$ref": "#/definitions/languageServerBase"}],
+      "allOf": [{ "$ref": "#/definitions/languageServerBase" }],
       "required": ["module", "filetypes"],
       "additionalProperties": false,
       "properties": {
@@ -193,6 +199,7 @@
         "filetypes": {},
         "additionalSchemes": {},
         "revealOutputChannelOn": {},
+        "progressOnInitialization": {},
         "initializationOptions": {},
         "stdioEncoding": {},
         "settings": {},
@@ -202,7 +209,7 @@
     "languageServerCommand": {
       "type": "object",
       "required": ["command", "filetypes"],
-      "allOf": [{"$ref": "#/definitions/languageServerBase"}],
+      "allOf": [{ "$ref": "#/definitions/languageServerBase" }],
       "additionalProperties": false,
       "properties": {
         "command": {
@@ -241,6 +248,7 @@
         "filetypes": {},
         "additionalSchemes": {},
         "revealOutputChannelOn": {},
+        "progressOnInitialization": {},
         "initializationOptions": {},
         "stdioEncoding": {},
         "settings": {},
@@ -258,6 +266,10 @@
       "type": "boolean",
       "default": true
     },
+    "https.rejectUnauthorized": {
+      "type": "boolean",
+      "default": true
+    },
     "npm.binPath": {
       "type": "string",
       "default": "npm",
@@ -266,7 +278,7 @@
     "suggest.enablePreselect": {
       "type": "boolean",
       "description": "Enable preselect feature, only works on neovim",
-      "default": true
+      "default": false
     },
     "suggest.maxPreviewWidth": {
       "type": "number",
@@ -362,9 +374,9 @@
     },
     "suggest.timeout": {
       "type": "integer",
-      "default": 2000,
+      "default": 5000,
       "minimum": 500,
-      "maximum": 5000,
+      "maximum": 15000,
       "description": "Timeout for completion, in miliseconds."
     },
     "suggest.minTriggerInputLength": {
@@ -411,39 +423,63 @@
       "maximum": 100,
       "description": "Max items count for source priority bigger than or equal to 90."
     },
+    "suggest.removeDuplicateItems": {
+      "type": "boolean",
+      "description": "Remove completion items with duplicated word for all sources, snippet items are excluded.",
+      "default": false
+    },
+    "suggest.defaultSortMethod": {
+      "type": "string",
+      "description": "Default sorting behavior for suggested completion items.",
+      "default": "length",
+      "enum": ["length", "alphabetical"]
+    },
     "suggest.completionItemKindLabels": {
       "type": "object",
       "default": {},
       "description": "Set custom labels to completion items' kinds.",
       "properties": {
-        "text": {"type": "string"},
-        "method": {"type": "string"},
-        "function": {"type": "string"},
-        "constructor": {"type": "string"},
-        "field": {"type": "string"},
-        "variable": {"type": "string"},
-        "class": {"type": "string"},
-        "interface": {"type": "string"},
-        "module": {"type": "string"},
-        "property": {"type": "string"},
-        "unit": {"type": "string"},
-        "value": {"type": "string"},
-        "enum": {"type": "string"},
-        "keyword": {"type": "string"},
-        "snippet": {"type": "string"},
-        "color": {"type": "string"},
-        "file": {"type": "string"},
-        "reference": {"type": "string"},
-        "folder": {"type": "string"},
-        "enumMember": {"type": "string"},
-        "constant": {"type": "string"},
-        "struct": {"type": "string"},
-        "event": {"type": "string"},
-        "operator": {"type": "string"},
-        "typeParameter": {"type": "string"},
-        "default": {"type": "string"}
+        "text": { "type": "string" },
+        "method": { "type": "string" },
+        "function": { "type": "string" },
+        "constructor": { "type": "string" },
+        "field": { "type": "string" },
+        "variable": { "type": "string" },
+        "class": { "type": "string" },
+        "interface": { "type": "string" },
+        "module": { "type": "string" },
+        "property": { "type": "string" },
+        "unit": { "type": "string" },
+        "value": { "type": "string" },
+        "enum": { "type": "string" },
+        "keyword": { "type": "string" },
+        "snippet": { "type": "string" },
+        "color": { "type": "string" },
+        "file": { "type": "string" },
+        "reference": { "type": "string" },
+        "folder": { "type": "string" },
+        "enumMember": { "type": "string" },
+        "constant": { "type": "string" },
+        "struct": { "type": "string" },
+        "event": { "type": "string" },
+        "operator": { "type": "string" },
+        "typeParameter": { "type": "string" },
+        "default": { "type": "string" }
       },
       "additionalProperties": false
+    },
+    "suggest.invalidInsertCharacters": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Invalid character for strip valid word when inserting text of complete item.",
+      "default": [" ", "(", "<", "{", "[", "\r", "\n"]
+    },
+    "suggest.asciiCharactersOnly": {
+      "type": "boolean",
+      "description": "Suggest ASCII characters only",
+      "default": false
     },
     "diagnostic.enable": {
       "type": "boolean",
@@ -458,7 +494,7 @@
     },
     "diagnostic.checkCurrentLine": {
       "type": "boolean",
-      "description": "When enabled, show all diagnostics of current line instead of current position.",
+      "description": "When enabled, show all diagnostics of current line if there are none at the current position.",
       "default": false
     },
     "diagnostic.messageTarget": {
@@ -466,6 +502,11 @@
       "description": "Diagnostic message target.",
       "default": "float",
       "enum": ["echo", "float"]
+    },
+    "diagnostic.messageDelay": {
+      "type": "number",
+      "description": "How long to wait (in milliseconds) before displaying the diagnostic message with echo or float",
+      "default": 250
     },
     "diagnostic.joinMessageLines": {
       "type": "boolean",
@@ -511,6 +552,11 @@
       "type": "boolean",
       "default": true,
       "description": "Enable signs for diagnostics."
+    },
+    "diagnostic.enableHighlightLineNumber": {
+      "type": "boolean",
+      "default": true,
+      "description": "Enable highlighting line numbers for diagnostics."
     },
     "diagnostic.enableMessage": {
       "type": "string",
@@ -558,10 +604,20 @@
       "description": "Maximum height of diagnostics floating window.",
       "default": 8
     },
+    "diagnostic.maxWindowWidth": {
+      "type": "number",
+      "description": "Maximum width of diagnostics floating window.",
+      "default": 80
+    },
     "diagnostic.filetypeMap": {
       "type": "object",
       "description": "A map between buffer filetype and the filetype assigned to diagnostics. To syntax highlight diagnostics withs their parent buffer type use '\"default\": \"bufferType\"'",
       "default": {}
+    },
+    "diagnostic.format": {
+      "type": "string",
+      "description": "Define the diagnostic format. Available parts: source, code, severity, message",
+      "default": "[%source%code] [%severity] %message"
     },
     "signature.enable": {
       "type": "boolean",
@@ -775,6 +831,11 @@
         "type": "string"
       }
     },
+    "coc.preferences.formatOnInsertLeave": {
+      "type": "boolean",
+      "description": "Trigger format on type when insert leave by send \n to the server.",
+      "default": false
+    },
     "coc.preferences.enableFloatHighlight": {
       "type": "boolean",
       "description": "Enable highlight for floating window.",
@@ -782,7 +843,7 @@
     },
     "coc.preferences.rootPatterns": {
       "type": "array",
-      "default": [".vim", ".git", ".hg", ".projections.json"],
+      "default": [".git", ".hg", ".projections.json"],
       "description": "Root patterns to resolve workspaceFolder from parent folders of opened files, resolved from up to down.",
       "items": {
         "type": "string"
@@ -796,8 +857,7 @@
     "coc.preferences.jumpCommand": {
       "type": "string",
       "description": "Command used for location jump, like goto definition, goto references etc.",
-      "default": "edit",
-      "enum": ["edit", "split", "vsplit", "tabe", "drop", "tab drop"]
+      "default": "edit"
     },
     "coc.preferences.messageLevel": {
       "type": "string",
@@ -814,6 +874,21 @@
       "type": "boolean",
       "description": "Set to true to enable format on type",
       "default": false
+    },
+    "coc.preferences.formatOnTypeFiletypes": {
+      "type": "array",
+      "default": [],
+      "description": "Filetypes that should run format on typing. Only take effect when `coc.preferences.formatOnType` set `true`",
+      "items": {
+        "type": "string"
+      }
+    },
+    "coc.preferences.highlightTimeout": {
+      "type": "integer",
+      "default": 500,
+      "minimum": 200,
+      "maximum": 5000,
+      "description": "Highlight timeout for buffer in floating window."
     },
     "coc.preferences.snippets.enable": {
       "type": "boolean",

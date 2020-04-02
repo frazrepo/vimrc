@@ -86,12 +86,16 @@ function! s:on_exit(name, code) abort
   let client['chan_id'] = 0
   let client['channel'] = v:null
   let client['async_req_id'] = 1
-  if a:code != 0
+  if a:code != 0 && a:code != 143
     echohl Error | echom 'client '.a:name. ' abnormal exit with: '.a:code | echohl None
   endif
 endfunction
 
-function! s:get_channel(client)
+function! coc#client#get_client(name) abort
+  return get(s:clients, a:name, v:null)
+endfunction
+
+function! coc#client#get_channel(client)
   if s:is_vim
     return a:client['channel']
   endif
@@ -99,7 +103,7 @@ function! s:get_channel(client)
 endfunction
 
 function! s:request(method, args) dict
-  let channel = s:get_channel(self)
+  let channel = coc#client#get_channel(self)
   if empty(channel) | return '' | endif
   try
     if s:is_vim
@@ -131,8 +135,10 @@ function! s:request(method, args) dict
 endfunction
 
 function! s:notify(method, args) dict
-  let channel = s:get_channel(self)
-  if empty(channel) | return '' | endif
+  let channel = coc#client#get_channel(self)
+  if empty(channel)
+    return ''
+  endif
   try
     if s:is_vim
       call ch_sendraw(channel, json_encode([0, [a:method, a:args]])."\n")
@@ -141,7 +147,9 @@ function! s:notify(method, args) dict
     endif
   catch /.*/
     if v:exception =~# 'E475'
-      if get(g:, 'coc_vim_leaving', 0) | return | endif
+      if get(g:, 'coc_vim_leaving', 0)
+        return
+      endif
       echohl Error | echom '['.self.name.'] server connection lost' | echohl None
       let name = self.name
       call s:on_exit(name, 0)
@@ -155,7 +163,7 @@ function! s:notify(method, args) dict
 endfunction
 
 function! s:request_async(method, args, cb) dict
-  let channel = s:get_channel(self)
+  let channel = coc#client#get_channel(self)
   if empty(channel) | return '' | endif
   if type(a:cb) != 2
     echohl Error | echom '['.self['name'].'] Callback should be function' | echohl None

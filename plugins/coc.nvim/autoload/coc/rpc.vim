@@ -15,7 +15,8 @@ function! coc#rpc#start_server()
   if empty(s:client)
     let cmd = coc#util#job_command()
     if empty(cmd) | return | endif
-    let $VIMCONFIG = coc#util#get_config_home()
+    let $COC_VIMCONFIG = coc#util#get_config_home()
+    let $COC_DATA_HOME = coc#util#get_data_home()
     let s:client = coc#client#create(s:name, cmd)
   endif
   if !coc#client#is_running('coc')
@@ -28,7 +29,9 @@ function! coc#rpc#started() abort
 endfunction
 
 function! coc#rpc#ready()
-  if empty(s:client) || s:client['running'] == 0 | return 0 | endif
+  if empty(s:client) || s:client['running'] == 0
+    return 0
+  endif
   return 1
 endfunction
 
@@ -87,24 +90,32 @@ function! coc#rpc#restart()
 endfunction
 
 function! coc#rpc#request(method, args) abort
-  if !coc#rpc#ready() | return '' | endif
+  if !coc#rpc#ready()
+    return ''
+  endif
   return s:client['request'](a:method, a:args)
 endfunction
 
 function! coc#rpc#notify(method, args) abort
-  if !coc#rpc#ready() | return '' | endif
+  if !coc#rpc#ready()
+    return ''
+  endif
   call s:client['notify'](a:method, a:args)
   return ''
 endfunction
 
 function! coc#rpc#request_async(method, args, cb) abort
-  if !coc#rpc#ready() | return cb('coc.nvim service not started.') | endif
+  if !coc#rpc#ready()
+    return cb('coc.nvim service not started.')
+  endif
   call s:client['request_async'](a:method, a:args, a:cb)
 endfunction
 
 " receive async response
 function! coc#rpc#async_response(id, resp, isErr) abort
-  if empty(s:client) | return | endif
+  if empty(s:client)
+    return
+  endif
   call coc#client#on_response(s:name, a:id, a:resp, a:isErr)
 endfunction
 
