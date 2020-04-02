@@ -595,7 +595,7 @@ g:Lf_NoChdir                                    *g:Lf_NoChdir*
     Don't change the current working directory when using `LeaderfFile dir` if
     the value is 1, otherwise the current working directory will be changed
     to `dir`.
-    Default value is 0.
+    Default value is 1.
 
 g:Lf_GtagsAutoGenerate                          *g:Lf_GtagsAutoGenerate*
     If the value is 1 and there is a rootmark defined by |g:Lf_RootMarkers|
@@ -829,6 +829,82 @@ g:Lf_JumpToExistingWindow                       *g:Lf_JumpToExistingWindow*
     window.
 
     Default value is 0.
+
+g:Lf_ShowDevIcons                               *g:Lf_ShowDevIcons*
+    Support commands: buffer,file,mru,window
+
+    Default value is 1.
+
+g:Lf_DevIconsFont                                 *g:Lf_DevIconsFont*
+    Specifies the font used to display the icon.
+    If it is empty, use the default font.
+
+    Also, the value of |g:Lf_DevIconsPalette| takes precedence.
+
+    Default value is `''`.
+
+g:Lf_DevIconsPalette                            *g:Lf_DevIconsPalette*
+    This is a dictionary with customizable icons highlights.
+
+    Its structure is like below: >
+    let g:Lf_DevIconsPalette = {
+        \  'light': {
+        \      '_': {
+        \                'gui': 'NONE',
+        \                'font': 'NONE',
+        \                'guifg': '#505050',
+        \                'guibg': 'NONE',
+        \                'cterm': 'NONE',
+        \                'ctermfg': '238',
+        \                'ctermbg': 'NONE'
+        \              },
+        \      'default': {
+        \                'guifg': '#505050',
+        \                'ctermfg': '238',
+        \              },
+        \      },
+        \      'vim': {
+        \                'guifg': '#007F00',
+        \                'ctermfg': '28',
+        \              },
+        \      },
+        \      '.gitignore': {
+        \                'guifg': '#dd4c35',
+        \                'ctermfg': '166',
+        \              },
+        \      },
+        \  'dark': {
+        \         ...
+        \         ...
+        \      }
+        \  }
+<
+    Key Description:
+        `'_'` :       All icons with no customized highlights.
+        `'default'` : General Icons.
+        Other Keys: Icons of the file type and the specified file name.
+
+    The default values are written in the following:
+    `LeaderF/autoload/leaderf.vim`
+
+    The default value is set by referring to
+    https://github.com/vscode-icons/vscode-icons
+
+g:Lf_DevIconsExactSymbols                       *g:Lf_DevIconsExactSymbols*
+    Dictionary mappings for exact file node matches
+
+    e.g.: >
+    let g:Lf_DevIconsExactSymbols = { 'tags': '󿧸' }
+<
+    Default value is `{}`
+
+g:Lf_DevIconsExtensionSymbols                   *g:Lf_DevIconsExtensionSymbols*
+    Dictionary mappings for file extension matches
+
+    e.g.: >
+    let g:Lf_DevIconsExtensionSymbols = { 'tmp': '󿦨' }
+<
+    Default value is `{}`
 
 ==============================================================================
 USAGE                                           *leaderf-usage*

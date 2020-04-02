@@ -32,6 +32,7 @@ class GtagsExplorer(Explorer):
         self._db_location = os.path.join(lfEval("g:Lf_CacheDirectory"),
                                      '.LfCache',
                                      'gtags')
+        self._store_in_project = lfEval("get(g:, 'Lf_GtagsStoreInProject', 0)") == '1'
         self._project_root = ""
         self._gtagslibpath = []
         self._result_format = None
@@ -80,7 +81,7 @@ class GtagsExplorer(Explorer):
             self._gtagslabel = arguments_dict["--gtagslabel"][0]
 
         if self._gtagsconf == '' and os.name == 'nt':
-            self._gtagsconf = os.path.normpath(os.path.join(self._which("gtags.exe"), "..", "share", "gtags", "gtags.conf"))
+            self._gtagsconf = os.path.normpath(os.path.join(self._which("gtags.exe"), "..", "share", "gtags", "gtags.conf")).join('""')
 
         if "--gtagslibpath" in arguments_dict:
             self._gtagslibpath = [os.path.abspath(os.path.expanduser(p)) for p in arguments_dict["--gtagslibpath"]]
@@ -391,11 +392,11 @@ class GtagsExplorer(Explorer):
 
     def _generateDbpath(self, path):
         if os.name == 'nt':
-            db_folder = re.sub(r'[\\/]', '%', path.replace(':\\', '%', 1))
+            db_folder = re.sub(r'[\\/]', '_', path.replace(':\\', '_', 1))
         else:
-            db_folder = path.replace('/', '%')
+            db_folder = path.replace('/', '_')
 
-        if lfEval("get(g:, 'Lf_GtagsStoreInProject', 0)") == '1':
+        if self._store_in_project:
             return path
         else:
             return os.path.join(self._db_location, db_folder)
@@ -442,7 +443,7 @@ class GtagsExplorer(Explorer):
         root, dbpath, exists = self._root_dbpath(filename)
         try:
             lfCmd("echohl Question")
-            if lfEval("get(g:, 'Lf_GtagsStoreInProject', 0)") == '1':
+            if self._store_in_project:
                 if lfEval('input("Are you sure you want to remove GTAGS files?[Ny] ")') in ["Y","y"]:
                     os.remove(os.path.join(dbpath, "GTAGS"))
                     os.remove(os.path.join(dbpath, "GPATH"))
@@ -463,7 +464,7 @@ class GtagsExplorer(Explorer):
             return
 
         if self._gtagsconf == '' and os.name == 'nt':
-            self._gtagsconf = os.path.normpath(os.path.join(self._which("gtags.exe"), "..", "share", "gtags", "gtags.conf"))
+            self._gtagsconf = os.path.normpath(os.path.join(self._which("gtags.exe"), "..", "share", "gtags", "gtags.conf")).join('""')
 
         root, dbpath, exists = self._root_dbpath(filename)
         if not filename.startswith(root):
@@ -504,7 +505,7 @@ class GtagsExplorer(Explorer):
                 f.writelines(libpaths)
 
         if self._gtagsconf == '' and os.name == 'nt':
-            self._gtagsconf = os.path.normpath(os.path.join(self._which("gtags.exe"), "..", "share", "gtags", "gtags.conf"))
+            self._gtagsconf = os.path.normpath(os.path.join(self._which("gtags.exe"), "..", "share", "gtags", "gtags.conf")).join('""')
 
         env = os.environ
         # env["GTAGSFORCECPP"] = "" # lead to issue #489
@@ -538,6 +539,8 @@ class GtagsExplorer(Explorer):
         self._skip_symlink = "--skip-symlink%s " % ('=' + lfEval("get(g:, 'Lf_GtagsSkipSymlink', '')")
                                 if lfEval("get(g:, 'Lf_GtagsSkipSymlink', '')") != '' else "")
         self._gtagsconf = lfEval("get(g:, 'Lf_Gtagsconf', '')")
+        if self._gtagsconf:
+            self._gtagsconf = self._gtagsconf.join('""')
         self._gtagslabel = lfEval("get(g:, 'Lf_Gtagslabel', 'default')")
 
         self._Lf_GtagsSource = int(lfEval("get(g:, 'Lf_GtagsSource', 0)"))
@@ -549,10 +552,11 @@ class GtagsExplorer(Explorer):
             return
 
         if lfEval("exists('g:Lf_ExternalCommand')") == '1':
-            self._Lf_ExternalCommand = lfEval("g:Lf_ExternalCommand") % dir.join('""')
+            self._Lf_ExternalCommand = lfEval("g:Lf_ExternalCommand")
             return
+        else:
+            self._Lf_ExternalCommand = None
 
-        self._Lf_ExternalCommand = None
         self._Lf_UseVersionControlTool = lfEval("g:Lf_UseVersionControlTool") == '1'
         self._Lf_WildIgnore = lfEval("g:Lf_WildIgnore")
         self._Lf_RecurseSubmodules = lfEval("get(g:, 'Lf_RecurseSubmodules', 0)") == '1'
@@ -603,7 +607,7 @@ class GtagsExplorer(Explorer):
             return None
 
         if self._Lf_ExternalCommand:
-            return self._Lf_ExternalCommand
+            return self._Lf_ExternalCommand.replace('"%s"', '%s') % dir.join('""')
 
         arguments_dict = kwargs.get("arguments", {})
         if self._Lf_UseVersionControlTool:
@@ -939,7 +943,6 @@ class GtagsExplManager(Manager):
                 return line[line.find('\t')+1:]
             else:
                 return line[:line.find('\t')]
-            return line
         elif self._getExplorer().getResultFormat() == "ctags-x":
             if mode == 2:
                 return line[line.find(' ') + 1:]

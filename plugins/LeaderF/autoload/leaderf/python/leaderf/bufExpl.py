@@ -10,6 +10,14 @@ from .utils import *
 from .explorer import *
 from .manager import *
 from .mru import *
+from .devicons import (
+    webDevIconsGetFileTypeSymbol,
+    webDevIconsStrLen,
+    webDevIconsBytesLen,
+    matchaddDevIconsDefault,
+    matchaddDevIconsExact,
+    matchaddDevIconsExtension,
+)
 
 
 #*****************************************************
@@ -45,13 +53,15 @@ class BufferExplorer(Explorer):
                            if os.path.basename(w.buffer.name) != "LeaderF"}
 
 
-        # e.g., 12 u %a+- aaa.txt
+        # e.g., 12 u %a+-  aaa.txt
         bufnr_len = len(lfEval("bufnr('$')"))
         self._prefix_length = bufnr_len + 8
+        if lfEval("get(g:, 'Lf_ShowDevIcons', 1)") == '1':
+            self._prefix_length += webDevIconsStrLen()
 
         self._max_bufname_len = max([int(lfEval("strdisplaywidth('%s')"
                                         % escQuote(getBasename(buffers[nr].name))))
-                                    for nr in mru.getMruBufnrs() if nr in buffers] or [0])
+                                    for nr in mru.getMruBufnrs() if nr in buffers] + [len('[No Name]')] or [0])
 
         bufnames = []
         for nr in mru.getMruBufnrs():
@@ -65,15 +75,19 @@ class BufferExplorer(Explorer):
                 dirname = getDirname(buf_name)
                 space_num = self._max_bufname_len \
                             - int(lfEval("strdisplaywidth('%s')" % escQuote(basename)))
-                # e.g., 12 u %a+- aaa.txt
-                buf_name = '{:{width}d} {:1s} {:1s}{:1s}{:1s}{:1s} {}{} "{}"'.format(nr,
+                if lfEval("get(g:, 'Lf_ShowDevIcons', 1)") == '1':
+                    icon = webDevIconsGetFileTypeSymbol(basename)
+                else:
+                    icon = ''
+                # e.g., 12 u %a+-  aaa.txt
+                buf_name = '{:{width}d} {:1s} {:1s}{:1s}{:1s}{:1s} {}{}{} "{}"'.format(nr,
                             '' if buffers[nr].options["buflisted"] else 'u',
                             '%' if int(lfEval("bufnr('%')")) == nr
                                 else '#' if int(lfEval("bufnr('#')")) == nr else '',
                             'a' if lfEval("bufwinnr(%d)" % nr) != '-1' else 'h',
                             '+' if buffers[nr].options["modified"] else '',
                             '-' if not buffers[nr].options["modifiable"] else '',
-                            basename, ' ' * space_num,
+                            icon, basename, ' ' * space_num,
                             dirname if dirname else '.' + os.sep,
                             width=bufnr_len)
                 bufnames.append(buf_name)
@@ -158,7 +172,7 @@ class BufExplManager(Manager):
         """
         if not line:
             return 0
-        prefix_len = self._getExplorer().getPrefixLength()
+        prefix_len = self._getExplorer().getPrefixLength() - webDevIconsStrLen() + webDevIconsBytesLen()
         if mode == 0:
             return prefix_len
         elif mode == 1:
@@ -186,6 +200,8 @@ class BufExplManager(Manager):
 
     def _afterEnter(self):
         super(BufExplManager, self)._afterEnter()
+
+        winid = None
         if self._getInstance().getWinPos() == 'popup':
             lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_bufNumber'', ''^\s*\zs\d\+'')')"""
                     % self._getInstance().getPopupWinId())
@@ -207,6 +223,7 @@ class BufExplManager(Manager):
                     % self._getInstance().getPopupWinId())
             id = int(lfEval("matchid"))
             self._match_ids.append(id)
+            winid = self._getInstance().getPopupWinId()
         else:
             id = int(lfEval("matchadd('Lf_hl_bufNumber', '^\s*\zs\d\+')"))
             self._match_ids.append(id)
@@ -218,6 +235,12 @@ class BufExplManager(Manager):
             self._match_ids.append(id)
             id = int(lfEval('''matchadd('Lf_hl_bufDirname', ' \zs".*"$')'''))
             self._match_ids.append(id)
+
+        # devicons
+        if lfEval("get(g:, 'Lf_ShowDevIcons', 1)") == '1':
+            self._match_ids.extend(matchaddDevIconsExtension(r'__icon__\ze\s\+\S\+\.__name__\($\|\s\)', winid))
+            self._match_ids.extend(matchaddDevIconsExact(r'__icon__\ze\s\+__name__\($\|\s\)', winid))
+            self._match_ids.extend(matchaddDevIconsDefault(r'__icon__\ze\s\+\S\+\($\|\s\)', winid))
 
     def _beforeExit(self):
         super(BufExplManager, self)._beforeExit()

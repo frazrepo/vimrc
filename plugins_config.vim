@@ -298,7 +298,8 @@ if exists("g:developer_edition")
           \ 'coc-snippets',
           \ 'coc-ultisnips',
           \ 'coc-python',
-          \ 'coc-marketplace'
+          \ 'coc-marketplace',
+          \ 'coc-powershell'
           \ ]
 
 

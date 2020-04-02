@@ -9,6 +9,14 @@ from .utils import *
 from .explorer import *
 from .manager import *
 from .mru import *
+from .devicons import (
+    webDevIconsGetFileTypeSymbol,
+    webDevIconsStrLen,
+    webDevIconsBytesLen,
+    matchaddDevIconsDefault,
+    matchaddDevIconsExact,
+    matchaddDevIconsExtension,
+)
 
 
 #*****************************************************
@@ -44,8 +52,18 @@ class MruExplorer(Explorer):
         if kwargs["cb_name"] == lines[0]:
             lines = lines[1:] + lines[0:1]
 
+        if lfEval("get(g:, 'Lf_ShowDevIcons', 1)") == '1':
+            self._prefix_length = webDevIconsStrLen()
+
         if "--no-split-path" in kwargs.get("arguments", {}):
-            return lines
+            if lfEval("get(g:, 'Lf_ShowDevIcons', 1)") == "0":
+                return lines
+
+            for line in lines:
+                return [
+                    webDevIconsGetFileTypeSymbol(getBasename(line)) + line
+                    for line in lines
+                ]
 
         self._max_bufname_len = max(int(lfEval("strdisplaywidth('%s')"
                                         % escQuote(getBasename(line))))
@@ -57,7 +75,13 @@ class MruExplorer(Explorer):
             dirname = getDirname(line)
             space_num = self._max_bufname_len \
                         - int(lfEval("strdisplaywidth('%s')" % escQuote(basename)))
-            lines[i] = '{}{} "{}"'.format(getBasename(line), ' ' * space_num,
+
+            if lfEval("get(g:, 'Lf_ShowDevIcons', 1)") == '1':
+                icon = webDevIconsGetFileTypeSymbol(basename)
+            else:
+                icon = ""
+
+            lines[i] = '{}{}{} "{}"'.format(icon, getBasename(line), ' ' * space_num,
                                           dirname if dirname else '.' + os.sep)
         return lines
 
@@ -142,7 +166,9 @@ class MruExplManager(Manager):
         if not line:
             return ''
 
+        prefix_len = self._getExplorer().getPrefixLength()
         if "--no-split-path" in self._arguments:
+            line = line[prefix_len:]
             if mode == 0:
                 return line
             elif mode == 1:
@@ -150,7 +176,6 @@ class MruExplManager(Manager):
             else:
                 return getDirname(line)
         else:
-            prefix_len = self._getExplorer().getPrefixLength()
             if mode == 0:
                 return line[prefix_len:]
             elif mode == 1:
@@ -172,11 +197,11 @@ class MruExplManager(Manager):
             return 0
         if "--no-split-path" in self._arguments:
             if mode == 0 or mode == 2:
-                return 0
+                return webDevIconsBytesLen()
             else:
                 return lfBytesLen(getDirname(line))
         else:
-            prefix_len = self._getExplorer().getPrefixLength()
+            prefix_len = self._getExplorer().getPrefixLength() - webDevIconsStrLen() + webDevIconsBytesLen()
             if mode == 0:
                 return prefix_len
             elif mode == 1:
@@ -204,6 +229,13 @@ class MruExplManager(Manager):
 
     def _afterEnter(self):
         super(MruExplManager, self)._afterEnter()
+
+        icon_extension_pattern = ''
+        icon_exact_pattern = ''
+        icon_default_pattern = ''
+
+        winid = self._getInstance().getPopupWinId() if self._getInstance().getWinPos() == 'popup' else None
+
         if "--no-split-path" not in self._arguments:
             if self._getInstance().getWinPos() == 'popup':
                 lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_bufDirname'', '' \zs".*"$'')')"""
@@ -213,6 +245,19 @@ class MruExplManager(Manager):
             else:
                 id = int(lfEval('''matchadd('Lf_hl_bufDirname', ' \zs".*"$')'''))
                 self._match_ids.append(id)
+
+            icon_extension_pattern = r'^__icon__\ze\s\+\S\+\.__name__\s'
+            icon_exact_pattern = r'^__icon__\ze\s\+__name__\s'
+            icon_default_pattern = r'^__icon__'
+        else:
+            icon_extension_pattern = r'^__icon__\ze\s\+\S\+\.__name__$'
+            icon_exact_pattern = r'^__icon__\ze\s\+\S*__name__$'
+            icon_default_pattern = r'^__icon__'
+
+        if lfEval("get(g:, 'Lf_ShowDevIcons', 1)") == '1':
+            self._match_ids.extend(matchaddDevIconsExtension(icon_extension_pattern, winid))
+            self._match_ids.extend(matchaddDevIconsExact(icon_exact_pattern, winid))
+            self._match_ids.extend(matchaddDevIconsDefault(icon_default_pattern, winid))
 
     def _beforeExit(self):
         super(MruExplManager, self)._beforeExit()
@@ -226,6 +271,9 @@ class MruExplManager(Manager):
         else:
             lfCmd("setlocal modifiable")
         line = instance._buffer_object[instance.window.cursor[0] - 1]
+
+        if line == '':
+            return
 
         dirname = self._getDigest(line, 2)
         basename = self._getDigest(line, 1)

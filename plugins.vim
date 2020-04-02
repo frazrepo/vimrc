@@ -84,7 +84,6 @@ if (s:developer_edition == 1)
     endif
 
     "Languages
-    Plug 'yatli/coc-powershell', { 'for' : 'ps1'}
     Plug 'fatih/vim-go', { 'for' : 'go'}
 
 else
