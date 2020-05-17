@@ -1,11 +1,11 @@
 
-## How to install for Linux ?
+## How to install on Linux ?
 
     1) git clone --depth=1 https://github.com/frazrepo/vimrc.git ~/.vim_runtime
     
     2) run ./install.sh
 
-## How to install Windows ?
+## How to install on Windows ?
 
     1) git clone --depth=1 https://github.com/frazrepo/vimrc.git %USERPROFILE%/.vim_runtime
     
