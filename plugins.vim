@@ -65,10 +65,12 @@ Plug 'tpope/vim-fugitive'
 " File management, searching, quickfix {{{1
 Plug 'Yggdroot/LeaderF'
 Plug 'airblade/vim-rooter'
-Plug 'justinmk/vim-dirvish'                             "Not lazy loadable
 Plug 'justinmk/vim-gtfo'
 Plug 'romainl/vim-qlist'
 Plug 'romainl/vim-qf'
+Plug 'preservim/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'ryanoasis/vim-devicons'
 
 " Snippet -  Code Generation - AutoCompletion {{{1
 Plug 'machakann/vim-sandwich'

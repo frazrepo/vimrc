@@ -273,6 +273,9 @@ nnoremap mù m`
 nnoremap ùù ``
 nnoremap ' `
 
+" Toggle to next item
+nnoremap <Tab> %
+
 " Execute a macro over a visual range
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 

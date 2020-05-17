@@ -121,7 +121,8 @@ if has("gui_running")
 
   if has("gui_gtk2") || has("gui_gtk3") 
     set lines=535 columns=1366
-    set guifont=Inconsolata\ 17
+    " set guifont=Inconsolata\ 17
+    set guifont=Fira\ Code\ 14
   endif
 
   if has("gui_macvim")
@@ -287,6 +288,9 @@ map ² .
 nnoremap mù m`
 nnoremap ùù ``
 nnoremap ' `
+
+" Toggle to next item
+nnoremap <Tab> %
 
 " Execute a macro over a visual range
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>

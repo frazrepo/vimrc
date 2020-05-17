@@ -39,10 +39,6 @@ nnoremap <silent> <leader>;  :LeaderfLine<CR>
 nnoremap <silent> <leader>co :LeaderfHistoryCmd<CR>
 nnoremap <silent> <leader>u  :LeaderfMru<CR>
 
-"Simple Notes taking (experimental)
-nnoremap <leader>gn  :<C-U>e <C-R>=fnameescape(expand($HOME . '/.notes/'))<CR>
-nnoremap <silent> <leader>n  :<C-U>LeaderfFile <C-R>=fnameescape(expand($HOME . '/.notes/'))<CR><CR>
-
 " popup mode
 let g:Lf_WindowPosition = 'popup'
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -458,6 +454,14 @@ nnoremap <leader>gd :Gvdiff<cr>
 nnoremap <leader>gb :Gblame<cr>
 nnoremap gdh :diffget //2<cr>
 nnoremap gdl :diffget //3<cr>
+
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => NerdTree  {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
+nnoremap <C-n> :NERDTreeToggle<CR>
+nnoremap <leader>n :NERDTreeFind<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
