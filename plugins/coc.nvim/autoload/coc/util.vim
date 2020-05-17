@@ -189,9 +189,9 @@ function! coc#util#remote_fns(name)
 endfunction
 
 function! coc#util#job_command()
-  let node = get(g:, 'coc_node_path', 'node')
+  let node = expand(get(g:, 'coc_node_path', 'node'))
   if !executable(node)
-    echohl Error | echom '[coc.nvim] '.node.' is not executable, checkout https://nodejs.org/en/download/' | echohl None
+    echohl Error | echom '[coc.nvim] "'.node.'" is not executable, checkout https://nodejs.org/en/download/' | echohl None
     return
   endif
   let bundle = s:root.'/build/index.js'
@@ -268,11 +268,11 @@ function! coc#util#echo_messages(hl, msgs)
   if a:hl !~# 'Error' && (mode() !~# '\v^(i|n)$')
     return
   endif
-  execute 'echohl '.a:hl
   let msgs = filter(copy(a:msgs), '!empty(v:val)')
-  for msg in msgs
-    echom msg
-  endfor
+  execute 'echohl '.a:hl
+  echom a:msgs[0]
+  redraw
+  echo join(msgs, "\n")
   echohl None
 endfunction
 
@@ -325,8 +325,12 @@ function! s:variables(bufnr) abort
   return variables
 endfunction
 
-function! coc#util#root_patterns()
+function! coc#util#root_patterns() abort
   return coc#rpc#request('rootPatterns', [bufnr('%')])
+endfunction
+
+function! coc#util#get_config(key) abort
+  return coc#rpc#request('getConfig', [a:key])
 endfunction
 
 function! coc#util#on_error(msg) abort
@@ -354,7 +358,7 @@ endfunction
 
 function! coc#util#get_config_home()
   if !empty(get(g:, 'coc_config_home', ''))
-      return g:coc_config_home
+      return expand(g:coc_config_home)
   endif
   if exists('$VIMCONFIG')
     return resolve($VIMCONFIG)
@@ -377,7 +381,7 @@ endfunction
 
 function! coc#util#get_data_home()
   if !empty(get(g:, 'coc_data_home', ''))
-    return g:coc_data_home
+    return resolve(expand(g:coc_data_home))
   endif
   if exists('$XDG_CONFIG_HOME')
     return resolve($XDG_CONFIG_HOME."/coc")
@@ -450,6 +454,36 @@ function! coc#util#with_callback(method, args, cb)
   call timer_start(timeout, {-> s:Cb() })
 endfunction
 
+function! coc#util#quickpick(title, items, cb) abort
+  if exists('*popup_menu')
+    function! s:QuickpickHandler(id, result) closure
+      call a:cb(v:null, a:result)
+    endfunction
+    function! s:QuickpickFilter(id, key) closure
+      for i in range(1, len(a:items))
+        if a:key == string(i)
+          call popup_close(a:id, i)
+          return 1
+        endif
+      endfor
+      " No shortcut, pass to generic filter
+      return popup_filter_menu(a:id, a:key)
+    endfunction
+    try
+      call popup_menu(a:items, #{
+        \ title: a:title,
+        \ filter: function('s:QuickpickFilter'),
+        \ callback: function('s:QuickpickHandler'),
+        \ })
+    catch /.*/
+      call a:cb(v:exception)
+    endtry
+  else
+    let res = inputlist([a:title] + a:items)
+    call a:cb(v:null, res)
+  endif
+endfunction
+
 function! coc#util#add_matchids(ids)
   let w:coc_matchids = get(w:, 'coc_matchids', []) + a:ids
 endfunction
@@ -513,7 +547,7 @@ endfunction
 " cmd, cwd
 function! coc#util#open_terminal(opts) abort
   if s:is_vim && !exists('*term_start')
-    echohl WarningMsg | echon "Your vim doesn't have termnial support!" | echohl None
+    echohl WarningMsg | echon "Your vim doesn't have terminal support!" | echohl None
     return
   endif
   if get(a:opts, 'position', 'bottom') ==# 'bottom'
@@ -716,6 +750,7 @@ function! coc#util#install(...) abort
     echohl WarningMsg | echon '[coc.nvim] coc#util#install not needed for release branch.' | echohl None
     return
   endif
+  echohl WarningMsg | echon '[coc.nvim] coc#util#install support will be removed, please use release branch of coc.nvim' | echohl None
   let cmd = (s:is_win ? 'install.cmd' : './install.sh') . ' nightly'
   let cwd = getcwd()
   exe 'lcd '.s:root
@@ -735,18 +770,11 @@ function! coc#util#extension_root() abort
   if !empty($COC_TEST)
     return s:root.'/src/__tests__/extensions'
   endif
-  let dir = get(g:, 'coc_data_home', '')
-  if !empty(dir)
-    return dir.'/extensions'
+  if !empty(get(g:, 'coc_extension_root', ''))
+    echohl WarningMsg | echon "g:coc_extension_root variable is deprecated, use g:coc_data_home as parent folder of extensions." | echohl None
+    return resolve(expand(g:coc_extension_root))
   endif
-
-  let dir = get(g:, 'coc_extension_root', '')
-  if empty(dir)
-    let dir = coc#util#get_data_home().'/extensions'
-  else
-    echohl WarningMsg | echon "g:coc_extension_root has been deprecated, use g:coc_data_home instead" | echohl None
-  endif
-  return dir
+  return coc#util#get_data_home().'/extensions'
 endfunction
 
 function! coc#util#update_extensions(...) abort

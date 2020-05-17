@@ -91,7 +91,7 @@
         "progressOnInitialization": {
           "type": "boolean",
           "default": true,
-          "description": "Enable progress request to languageserver"
+          "description": "Enable progress report on languageserver initialize."
         },
         "initializationOptions": {
           "type": "object",
@@ -556,7 +556,7 @@
     "diagnostic.enableHighlightLineNumber": {
       "type": "boolean",
       "default": true,
-      "description": "Enable highlighting line numbers for diagnostics."
+      "description": "Enable highlighting line numbers for diagnostics, only works with neovim and diagnostic.enableSign is true."
     },
     "diagnostic.enableMessage": {
       "type": "string",
@@ -618,6 +618,11 @@
       "type": "string",
       "description": "Define the diagnostic format. Available parts: source, code, severity, message",
       "default": "[%source%code] [%severity] %message"
+    },
+    "diagnostic.separateRelatedInformationAsDiagnostics": {
+      "type": "boolean",
+      "default": false,
+      "description": "Separate related information as diagnostics"
     },
     "signature.enable": {
       "type": "boolean",
@@ -786,6 +791,11 @@
       "type": "string",
       "default": "<C-p>",
       "description": "Key used for jump to previous cursors position."
+    },
+    "coc.preferences.promptWorkspaceEdit": {
+      "type": "boolean",
+      "description": "Prompt confirm from user for workspace edit.",
+      "default": true
     },
     "coc.preferences.useQuickfixForLocations": {
       "type": "boolean",

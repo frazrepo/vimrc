@@ -103,9 +103,9 @@ CONFIGURATION						*coc-configuration*
 
 Most of coc.nvim configuration is stored within `coc-settings` file that can
 be opened using `:CocConfig`. This will open either the global configuration
-file (located at `$HOME/.vim/coc-config` or
+file (located at `$HOME/.vim/coc-settings.json` or
 `$HOME/.config/nvim/coc-settings.json` by default) or the local configuration
-file which is located under the project root: `$ROOT/.vim/coc-config.json`
+file which is located under the project root: `$ROOT/.vim/coc-settings.json`
 (see `b:coc_root_patterns` for more information about project root). The
 location of global configuration can be modified using `g:coc_config_home`.
 
@@ -484,6 +484,11 @@ Built in configurations:~
 
 	Custom key mappings in the insert mode, default: `{}`
 
+"coc.preferences.promptWorkspaceEdit":~
+
+	Prompt confirm from user for workspace edit.
+	default: `true`
+
 "coc.preferences.useQuickfixForLocations":~
 
 	Use Vim's quickfix list for jump locations. Requires restart on change,
@@ -804,9 +809,9 @@ VARIABLES					*coc-variables*
 
 b:coc_enabled					*b:coc_enabled*
 
-			Set to `0` on buffer create if you don't want
-			coc.nvim send buffer events for this buffer, including
-			buffer create, change and unload.
+			Set to `0` on buffer create if you don't want coc.nvim
+			receive content from buffer, usually used for improve
+			performance with large files.
 
 b:coc_root_patterns				*b:coc_root_patterns*
 
@@ -867,17 +872,6 @@ g:coc_user_config				*g:coc_user_config*
 			User configuration object, define this variable when
 			you can't use |coc#config()|
 
-g:coc_extension_root				*g:coc_extension_root*
-
-			Deprecated: use `g:coc_data_home` instead.
-
-			Location that coc extensions would be installed to,
-			empty to use default location:
-			Windows:
-				`~/AppData/Local/coc/extensions`
-			Other:
-				`~/.config/coc/extensions`
-
 g:coc_global_extensions				*g:coc_global_extensions*
 
 			Global extension names to install when they aren't
@@ -901,7 +895,10 @@ g:coc_cygqwin_path_prefixes			*g:coc_cygqwin_path_prefixes*
 
 g:coc_enable_locationlist			*g:coc_enable_locationlist*
 
-			Open location list when location list changes.
+			Use location list of coc.nvim when jump locations.
+			Set it to 0 when you need customize behavior of
+			location jump by use |CocLocationsChange| and
+			|g:coc_jump_locations|
 
 			Default: 1
 
@@ -959,7 +956,7 @@ g:coc_node_path					*g:coc_node_path*
 <
 			Use this when coc has problems with your system node,
 
-			Note: you have to use `$HOME` as home directory.
+			Note: you can use `~` as home directory.
 
 g:coc_force_debug				*g:coc_force_debug*
 
@@ -1264,11 +1261,27 @@ coc#util#float_scroll({forward})
 	nnoremap <expr><C-f> coc#util#has_float() ? coc#util#float_scroll(1) : "\<C-f>"
 	nnoremap <expr><C-b> coc#util#has_float() ? coc#util#float_scroll(0) : "\<C-b>"
 <
+						*coc#util#root_patterns()*
+coc#util#root_patterns()
+
+	Get root patterns used for current document.
+
+	Result could be something like: >
+
+	{'global': ['.git', '.hg', '.projections.json'], 'buffer': [], 'server': v:null}
+<
+						*coc#util#get_config()*
+coc#util#get_config({key})
+
+	Get configuration (mostly defined in coc-settings.json)	by {key}, ex: >
+
+	:echo coc#util#get_config('coc.preferences')
+<
 						*CocRequest()*
 CocRequest({id}, {method}, [{params}])
 
 	Send a request to language client of {id} with {method} and optional
-	{params}. eg: >
+	{params}. ex: >
 
 	call CocRequest('tslint', 'textDocument/tslint/allFixes',
 		\  {'textDocument': {'uri': 'file:///tmp'}})
@@ -1276,11 +1289,20 @@ CocRequest({id}, {method}, [{params}])
 	Vim error will be raised if the response contains an error.
 
 						*CocRequestAsync()*
+
 CocRequestAsync({id}, {method}, [{params}, [{callback}]])
 
-	Async request for remote language client. {callback} is called with
-	error and response.
+	Send async request to remote language server.
+	{callback} function is called with error and response.
 
+						*CocNotify()*
+
+CocNotify({id}, {method}, [{params}])
+
+	Send notification to remote language server, ex:
+>
+	call CocNotify('ccls', '$ccls/reload')
+<
 						*CocRegistNotification()*
 
 CocRegistNotification({id}, {method}, {callback})
@@ -1348,6 +1370,8 @@ CocTagFunc({pattern}, {flags}, {info})
 ------------------------------------------------------------------------------
 
 Available Actions ~
+
+Acceptable {action} names for |CocAction()| and |CocActionAsync|.
 
 "sourceStat"					*coc-action-sourceStat*
 
@@ -1982,7 +2006,7 @@ The following features are supported:
 
 LIST COMMAND						*coc-list-command*
 
-:CocList [{...options}] [{source}] [{...args}]		*CocList*
+:CocList [{...options}] [{source}] [{...args}]		*:CocList*
 
 		Open coc list of {source}, Ex: >
 
@@ -1998,18 +2022,18 @@ LIST COMMAND						*coc-list-command*
 
 		When {source} is empty, lists source is used.
 
-:CocListResume						*CocListResume*
+:CocListResume						*:CocListResume*
 
 		Reopen last opened list, input and cursor position will be
 		preserved.
 
-:CocPrev						*CocPrev*
+:CocPrev						*:CocPrev*
 
 		Invoke default action for the previous item in the last list.
 
 		Doesn't open the list window if it's closed.
 
-:CocNext						*CocNext*
+:CocNext						*:CocNext*
 
 		Invoke the default action for the next item in the last list.
 
@@ -2108,6 +2132,7 @@ Default mappings in insert mode:
 
 <Esc>       - cancel list session.
 <C-c>       - stop loading task.
+<C-v>       - paste text from system clipboard.
 <C-l>       - reload list.
 <C-o>       - change to normal mode.
 <Down>      - select next line.
