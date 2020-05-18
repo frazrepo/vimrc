@@ -96,6 +96,11 @@ if executable('ag')
     set grepformat=%f:%l:%c:%m,%f:%l:%m
 endif
 
+" grepprg to ripgrep
+if executable("rg")
+    set grepprg=rg\ --vimgrep\ --no-heading
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
+endif
 
 " Maximized window on start and Font Size
 if has("gui_running")
