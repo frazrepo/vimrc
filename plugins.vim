@@ -70,7 +70,6 @@ Plug 'romainl/vim-qlist'
 Plug 'romainl/vim-qf'
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'ryanoasis/vim-devicons'
 
 " Snippet -  Code Generation - AutoCompletion {{{1
 Plug 'machakann/vim-sandwich'
