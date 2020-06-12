@@ -95,10 +95,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 | Mapping | Action   |
 | ---     | ---      |
-| "p      | for vi""0p |
-| 'p      | for vi'"0p |
-| (p      | for vi("0p |
-| )p      | for vi)"0p |
 | \<leader>p      | "0p      |
 
 **Formatting**
@@ -322,7 +318,7 @@ Regexp search/replace pattern
 - [Undotree](https://github.com/mbbill/undotree): Undo tree history
 - [vim-abolish](https://github.com/tpope/vim-abolish) : Search words, Coercion
 - [vim-commentary](https://github.com/tpope/vim-commentary)
-- [vim-dirvish](https://github.com/justinmk/vim-dirvish)
+- [vim-nerdtree](https://github.com/preservim/nerdtree) : Tree Explorer
 - [vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
 - [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
 - [vim-gtfo](https://github.com/justinmk/vim-gtfo) : Go to File Manager or Terminal
