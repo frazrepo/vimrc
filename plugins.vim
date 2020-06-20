@@ -78,11 +78,7 @@ Plug 'tpope/vim-commentary'
 if (s:developer_edition == 1) 
 
     "Use coc for nvim
-    if has('win32') || has('win64')
-        Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.cmd'}
-    else
-        Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
-    endif
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
     "Languages
     Plug 'fatih/vim-go', { 'for' : 'go'}
