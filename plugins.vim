@@ -68,8 +68,6 @@ Plug 'airblade/vim-rooter'
 Plug 'justinmk/vim-gtfo'
 Plug 'romainl/vim-qlist'
 Plug 'romainl/vim-qf'
-Plug 'preservim/nerdtree'
-Plug 'Xuyuanp/nerdtree-git-plugin'
 
 " Snippet -  Code Generation - AutoCompletion {{{1
 Plug 'machakann/vim-sandwich'
@@ -84,6 +82,8 @@ if (s:developer_edition == 1)
     Plug 'fatih/vim-go', { 'for' : 'go'}
 
 else
+    Plug 'preservim/nerdtree'
+    Plug 'Xuyuanp/nerdtree-git-plugin'
     "Use completor for basic usage
     Plug 'maralla/completor.vim'
     Plug 'jiangmiao/auto-pairs'

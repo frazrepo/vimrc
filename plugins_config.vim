@@ -292,12 +292,12 @@ if exists("g:developer_edition")
           \ 'coc-tsserver',
           \ 'coc-tslint',
           \ 'coc-eslint',
-          \ 'coc-vimlsp',
           \ 'coc-snippets',
           \ 'coc-ultisnips',
           \ 'coc-python',
           \ 'coc-marketplace',
-          \ 'coc-powershell'
+          \ 'coc-powershell',
+          \ 'coc-explorer'
           \ ]
 
 
@@ -456,12 +456,15 @@ nnoremap gdh :diffget //2<cr>
 nnoremap gdl :diffget //3<cr>
 
 
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => NerdTree  {{{1
+" => NerdTree and CocExplorer {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-nnoremap <C-n> :NERDTreeToggle<CR>
-nnoremap <leader>n :NERDTreeFind<CR>
+if exists("g:developer_edition") 
+    nnoremap <C-n> :CocCommand explorer<CR>
+else
+    nnoremap <C-n> :NERDTreeToggle<CR>
+    nnoremap <leader>n :NERDTreeFind<CR>
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
