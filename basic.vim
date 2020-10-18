@@ -333,6 +333,13 @@ map <silent> <F8> :call <SID>ToggleQf()<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Miscellaneous {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+
+" Increment/Decrement
+nnoremap + <C-a>
+nnoremap - <C-x>
+xnoremap + g<C-a>
+xnoremap - g<C-x>
+
 " Map ALT Key in terminal
 if &term =~ 'xterm' && !has("gui_running")
   execute "set <A-k>=\ek"
