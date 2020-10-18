@@ -129,8 +129,8 @@ endif
 let g:grepper={}
 let g:grepper.tools=["rg"]
 
-nmap     <leader>/ :Grepper<Space>
-vmap     <leader>/ "sy:Grepper <C-r>s<Space>
+nmap     <leader>/ :GrepperRg<Space>
+vmap     <leader>/ "sy:GrepperRg <C-r>s<Space>
 vmap     <leader>gr <plug>(GrepperOperator)
 
 nnoremap <Leader>* :Grepper -cword -noprompt<CR>
