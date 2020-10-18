@@ -40,7 +40,7 @@ Plug 'tommcdo/vim-exchange'
 Plug 'vim-scripts/ReplaceWithRegister'
 
 " Code Searching {{{1
-Plug 'dyng/ctrlsf.vim' , { 'on' : ['CtrlSF', '<Plug>CtrlSFPrompt', '<Plug>CtrlSFVwordExec','<Plug>CtrlSFVwordPath']}
+Plug 'mhinz/vim-grepper'
 Plug 'tpope/vim-abolish'
 Plug 'frazrepo/vim-yankmatches'
 Plug 'osyo-manga/vim-over'

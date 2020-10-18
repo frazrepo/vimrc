@@ -124,43 +124,35 @@ else
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => CTRLSF Side Search {{{1
+" => vim-grepper search {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:ctrlsf_auto_close = {
-    \ "normal" : 0,
-    \ "compact": 0
-    \}
-    
-let g:ctrlsf_default_view_mode = 'compact'
+let g:grepper={}
+let g:grepper.tools=["rg"]
 
-nmap     <leader>/ <Plug>CtrlSFPrompt
-vmap     <leader>/ <Plug>CtrlSFVwordPath
-nnoremap <F9> :CtrlSFToggle<CR>
+nmap     <leader>/ :Grepper<Space>
+vmap     <leader>/ "sy:Grepper <C-r>s<Space>
+vmap     <leader>gr <plug>(GrepperOperator)
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => CtrlSF Quick Search {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-let g:ctrlsf_populate_qflist = 1
-let g:ctrlsf_ignore_dir = ['tags','node_modules']
+nnoremap <Leader>* :Grepper -cword -noprompt<CR>
 
-nnoremap <silent> <leader>* :call SearchWordWithCtrlSf()<CR>
-vnoremap <silent> <leader>* :call SearchVisualSelectionWithCtrlSf()<CR>
+xmap <Leader>*
+    \ "sy
+    \ gv<Leader>gr
 
-function! SearchWordWithCtrlSf()
-   execute 'CtrlSF ' . expand('<cword>') . ' **/*'
-endfunction
+" Project wide find and replace. It's similar to <leader>r but applies to all matches
+" across all files.
+nnoremap <Leader>R
+  \ :let @s='\<'.expand('<cword>').'\>'<CR>
+  \ :Grepper -cword -noprompt<CR>
+  \ :cfdo %s/<C-r>s//g \| update
+  \<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
 
-function! SearchVisualSelectionWithCtrlSf() range
-    let old_reg = getreg('"')
-    let old_regtype = getregtype('"')
-    let old_clipboard = &clipboard
-    set clipboard&
-    normal! ""gvy
-    let selection = getreg('"')
-    call setreg('"', old_reg, old_regtype)
-    let &clipboard = old_clipboard
-    execute 'CtrlSF ' . selection  . ' **/*'
- endfunction
+" Visual Selection Variant
+xmap <Leader>R
+    \ "sy
+    \ gv<Leader>gr
+    \ :cfdo %s/<C-r>s//g \| update
+     \<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-markdown {{{1
