@@ -197,20 +197,6 @@ vnoremap <silent> <leader>f :<C-u>call VisualSelection('', '')<CR>:Ilist <C-R>=@
 let g:over#command_line#substitute#replace_pattern_visually = 1
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => tagbar  {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-if executable('ctags')
-  nmap <F11> :TagbarToggle<CR>
-endif
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => gutentags  {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-" For debugging ctags
-let g:gutentags_trace = 0
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Undotree  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 nnoremap <F4> :UndotreeToggle<cr>

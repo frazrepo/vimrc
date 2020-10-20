@@ -104,15 +104,6 @@ Plug 'mbbill/undotree', { 'on' : 'UndotreeToggle' }
 " Scratch 
 Plug 'frazrepo/vim-scratch', { 'on' : 'Scratch'}
 
-"Code navigation {{{1
-" On Linux do a chmod +x ./plat/update_tags.sh
-" Install ctags for host OS 
-if executable('ctags')
-    Plug 'ludovicchabant/vim-gutentags', { 'for':  ['go', 'py']} 
-    Plug 'majutsushi/tagbar' , { 'on' : 'TagbarToggle'}
-endif
-" }}}
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugs End 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

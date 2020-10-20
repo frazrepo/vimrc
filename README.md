@@ -124,8 +124,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | F8         |Toggle quickfix window             |
 | F9         |Toggle CtrlSF                      |
 | F10        |Rotate colorschemes                |
-| F11        |Tagbar Toggle                      |
-| F12        |Tag navigation                     |
 | \<M-0>     |Set font bigger (gui only)         |
 | \<M-9>     |Set font smaller (gui only)        |
 
@@ -209,7 +207,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | \<leader>,     | Buffers                       |
 | \<leader>;     | BLines                       |
 | \<leader>u      | MRU                           |
-| \<leader>t      | Tags                           |
 | \<leader>co      | Commands                           |
 
 **vim-rainbow**
@@ -270,11 +267,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | up/down/left/right | After a selection in visual mode, drag using arrow key |
 | D | Duplicate in Visual Mode|
 
-**vim-gutentags and tagbar**
-
-| Mapping            | Action           |
-| ---                | ---              |
-| F11                |  Toggle tagBar   |
 
 **custom text-objects**
 
@@ -322,9 +314,7 @@ Regexp search/replace pattern
 - [vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
 - [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
 - [vim-gtfo](https://github.com/justinmk/vim-gtfo) : Go to File Manager or Terminal
-- [vim-gutentag](https://github.com/ludovicchabant/vim-gutentags) : Tag generation and nagivation
 - [vim-illuminate](https://github.com/RRethy/vim-illuminate) : Highlight all occurence of current word under cursor
-- [tagbar](https://github.com/majutsushi/tagbar) : Tagbar
 - [vim-lion](https://github.com/tommcdo/vim-lion) : Align text (like tabular)
 - [ReplaceWithRegister](https://github.com/vim-scripts/ReplaceWithRegister) : Custom operator gr to replace with register content
 - [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys
