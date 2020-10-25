@@ -127,7 +127,7 @@ endif
 " => vim-grepper search {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:grepper={}
-let g:grepper.tools=["rg"]
+let g:grepper.tools=["rg", "git"]
 
 nmap     <leader>/ :GrepperRg<Space>
 vmap     <leader>/ "sy:GrepperRg <C-r>s<Space>
