@@ -130,7 +130,7 @@ let g:grepper={}
 let g:grepper.tools=["rg", "git"]
 
 nmap     <leader>/ :GrepperRg<Space>
-vmap     <leader>/ "sy:GrepperRg <C-r>s<Space>
+vmap     <leader>/ "sy:GrepperRg -F '<C-r>s'<Space>
 vmap     <leader>gr <plug>(GrepperOperator)
 
 nnoremap <Leader>* :Grepper -cword -noprompt<CR>
