@@ -274,7 +274,6 @@ if exists("g:developer_edition")
           \ 'coc-ultisnips',
           \ 'coc-python',
           \ 'coc-marketplace',
-          \ 'coc-powershell',
           \ 'coc-explorer'
           \ ]
 
