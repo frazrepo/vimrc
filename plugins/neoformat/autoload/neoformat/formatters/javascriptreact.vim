@@ -1,8 +1,8 @@
-function! neoformat#formatters#javascript#enabled() abort
-    return ['jsbeautify', 'standard', 'semistandard', 'prettier', 'prettydiff', 'clangformat', 'esformatter', 'prettiereslint', 'eslint_d', 'denofmt']
+function! neoformat#formatters#javascriptreact#enabled() abort
+    return ['jsbeautify', 'standard', 'semistandard', 'prettier', 'prettydiff', 'esformatter', 'prettiereslint', 'eslint_d', 'denofmt']
 endfunction
 
-function! neoformat#formatters#javascript#jsbeautify() abort
+function! neoformat#formatters#javascriptreact#jsbeautify() abort
     return {
             \ 'exe': 'js-beautify',
             \ 'args': ['--indent-size ' .shiftwidth()],
@@ -11,16 +11,7 @@ function! neoformat#formatters#javascript#jsbeautify() abort
             \ }
 endfunction
 
-function! neoformat#formatters#javascript#clangformat() abort
-    return {
-            \ 'exe': 'clang-format',
-            \ 'args': ['-assume-filename=' . expand('%:t')],
-            \ 'stdin': 1,
-            \ 'try_node_exe': 1,
-            \ }
-endfunction
-
-function! neoformat#formatters#javascript#prettydiff() abort
+function! neoformat#formatters#javascriptreact#prettydiff() abort
     return {
         \ 'exe': 'prettydiff',
         \ 'args': ['mode:"beautify"',
@@ -32,7 +23,7 @@ function! neoformat#formatters#javascript#prettydiff() abort
         \ }
 endfunction
 
-function! neoformat#formatters#javascript#esformatter() abort
+function! neoformat#formatters#javascriptreact#esformatter() abort
     return {
         \ 'exe': 'esformatter',
         \ 'stdin': 1,
@@ -40,7 +31,7 @@ function! neoformat#formatters#javascript#esformatter() abort
         \ }
 endfunction
 
-function! neoformat#formatters#javascript#prettier() abort
+function! neoformat#formatters#javascriptreact#prettier() abort
     return {
         \ 'exe': 'prettier',
         \ 'args': ['--stdin-filepath', '"%:p"'],
@@ -49,7 +40,7 @@ function! neoformat#formatters#javascript#prettier() abort
         \ }
 endfunction
 
-function! neoformat#formatters#javascript#prettiereslint() abort
+function! neoformat#formatters#javascriptreact#prettiereslint() abort
     return {
         \ 'exe': 'prettier-eslint',
         \ 'args': ['--stdin', '--stdin-filepath', '"%:p"'],
@@ -58,7 +49,7 @@ function! neoformat#formatters#javascript#prettiereslint() abort
         \ }
 endfunction
 
-function! neoformat#formatters#javascript#eslint_d() abort
+function! neoformat#formatters#javascriptreact#eslint_d() abort
     return {
         \ 'exe': 'eslint_d',
         \ 'args': ['--stdin', '--stdin-filename', '"%:p"', '--fix-to-stdout'],
@@ -67,7 +58,7 @@ function! neoformat#formatters#javascript#eslint_d() abort
         \ }
 endfunction
 
-function! neoformat#formatters#javascript#standard() abort
+function! neoformat#formatters#javascriptreact#standard() abort
     return {
         \ 'exe': 'standard',
         \ 'args': ['--stdin','--fix'],
@@ -76,7 +67,7 @@ function! neoformat#formatters#javascript#standard() abort
         \ }
 endfunction
 
-function! neoformat#formatters#javascript#denofmt() abort
+function! neoformat#formatters#javascriptreact#denofmt() abort
     return {
         \ 'exe': 'deno',
         \ 'args': ['fmt','-'],
@@ -84,7 +75,7 @@ function! neoformat#formatters#javascript#denofmt() abort
         \ }
 endfunction
 
-function! neoformat#formatters#javascript#semistandard() abort
+function! neoformat#formatters#javascriptreact#semistandard() abort
     return {
         \ 'exe': 'semistandard',
         \ 'args': ['--stdin','--fix'],

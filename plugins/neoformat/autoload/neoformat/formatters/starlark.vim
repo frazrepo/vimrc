@@ -1,8 +1,8 @@
-function! neoformat#formatters#bzl#enabled() abort
+function! neoformat#formatters#starlark#enabled() abort
     return ['buildifier']
 endfunction
 
-function! neoformat#formatters#bzl#buildifier() abort
+function! neoformat#formatters#starlark#buildifier() abort
     return {
         \ 'exe': 'buildifier',
         \ 'args': ['-path', expand('%:p')],

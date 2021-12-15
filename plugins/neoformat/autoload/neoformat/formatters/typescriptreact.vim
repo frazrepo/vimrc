@@ -1,8 +1,8 @@
-function! neoformat#formatters#typescript#enabled() abort
+function! neoformat#formatters#typescriptreact#enabled() abort
    return ['tsfmt', 'prettier', 'prettiereslint', 'tslint', 'eslint_d', 'clangformat', 'denofmt']
 endfunction
 
-function! neoformat#formatters#typescript#tsfmt() abort
+function! neoformat#formatters#typescriptreact#tsfmt() abort
     return {
         \ 'exe': 'tsfmt',
         \ 'args': ['--replace', '--baseDir=%:h'],
@@ -11,7 +11,7 @@ function! neoformat#formatters#typescript#tsfmt() abort
         \ }
 endfunction
 
-function! neoformat#formatters#typescript#prettier() abort
+function! neoformat#formatters#typescriptreact#prettier() abort
     return {
         \ 'exe': 'prettier',
         \ 'args': ['--stdin-filepath', '"%:p"', '--parser', 'typescript'],
@@ -20,7 +20,7 @@ function! neoformat#formatters#typescript#prettier() abort
         \ }
 endfunction
 
-function! neoformat#formatters#typescript#prettiereslint() abort
+function! neoformat#formatters#typescriptreact#prettiereslint() abort
     return {
         \ 'exe': 'prettier-eslint',
         \ 'args': ['--stdin', '--stdin-filepath', '"%:p"', '--parser', 'typescript'],
@@ -29,7 +29,7 @@ function! neoformat#formatters#typescript#prettiereslint() abort
         \ }
 endfunction
 
-function! neoformat#formatters#typescript#tslint() abort
+function! neoformat#formatters#typescriptreact#tslint() abort
     let args = ['--fix', '--force']
 
     if filereadable('tslint.json')
@@ -44,7 +44,7 @@ function! neoformat#formatters#typescript#tslint() abort
         \ }
 endfunction
 
-function! neoformat#formatters#typescript#eslint_d() abort
+function! neoformat#formatters#typescriptreact#eslint_d() abort
     return {
         \ 'exe': 'eslint_d',
         \ 'args': ['--stdin', '--stdin-filename', '"%:p"', '--fix-to-stdout'],
@@ -53,7 +53,7 @@ function! neoformat#formatters#typescript#eslint_d() abort
         \ }
 endfunction
 
-function! neoformat#formatters#typescript#clangformat() abort
+function! neoformat#formatters#typescriptreact#clangformat() abort
     return {
             \ 'exe': 'clang-format',
             \ 'args': ['-assume-filename=' . expand('%:t')],
@@ -62,6 +62,6 @@ function! neoformat#formatters#typescript#clangformat() abort
             \ }
 endfunction
 
-function! neoformat#formatters#typescript#denofmt() abort
+function! neoformat#formatters#typescriptreact#denofmt() abort
     return neoformat#formatters#javascript#denofmt()
 endfunction
