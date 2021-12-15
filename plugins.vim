@@ -35,14 +35,12 @@ Plug 'coderifous/textobj-word-column.vim'
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'wellle/targets.vim'
 Plug 'matze/vim-move'
-Plug 'zirrostig/vim-schlepp'
 Plug 'tommcdo/vim-exchange'
 Plug 'vim-scripts/ReplaceWithRegister'
 
 " Code Searching {{{1
 Plug 'mhinz/vim-grepper'
 Plug 'tpope/vim-abolish'
-Plug 'frazrepo/vim-yankmatches'
 Plug 'osyo-manga/vim-over'
 
 " Code formatting {{{1

@@ -153,17 +153,6 @@ xmap <Leader>R
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:vim_markdown_folding_disabled = 1
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-schlep to drag in visual mode {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-vmap  <up>    <Plug>SchleppUp
-vmap  <down>  <Plug>SchleppDown
-vmap  <left>  <Plug>SchleppLeft
-vmap  <right> <Plug>SchleppRight
-
-" Duplicate selection
-vmap D <Plug>SchleppDup
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""	
 " => Vim-autopairs workarounf for â, î and û {{{1	
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     	
@@ -239,11 +228,6 @@ let g:rooter_change_directory_for_non_project_files = ''
 " => neoformat  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 noremap <F3> :Neoformat<CR>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => yankmatches {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-let g:YankMatches#ClipboardRegister='+'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Highlightedyank {{{1
