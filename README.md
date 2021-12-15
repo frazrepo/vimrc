@@ -304,7 +304,6 @@ Regexp search/replace pattern
 ## Plugins list
 
 - [completor](https://github.com/maralla/completor.vim) : Manage auto completion correctly
-- [coc.nvim](https://github.com/neoclide/coc.nvim) : Completion Plugin used for nvim
 - [ctrlsf.vim](https://github.com/dyng/ctrlsf.vim) : Side searching
 - [emmet-vim](https://github.com/mattn/emmet-vim) : Html editing
 - [leaderF](https://github.com/Yggdroot/LeaderF) : Fuzzy finder
@@ -312,14 +311,12 @@ Regexp search/replace pattern
 - [neoformat](https://github.com/sbdchd/neoformat): Various formatters for many languages
 - [auto-pairs](https://github.com/jiangmiao/auto-pairs) : Auto close pairs (parentheses, quotes, ...)
 - [utilsnips + vim-snippets](https://github.com/SirVer/ultisnips) : Snippets
-- [Undotree](https://github.com/mbbill/undotree): Undo tree history
 - [vim-abolish](https://github.com/tpope/vim-abolish) : Search words, Coercion
 - [vim-commentary](https://github.com/tpope/vim-commentary)
 - [vim-nerdtree](https://github.com/preservim/nerdtree) : Tree Explorer
 - [vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
 - [vim-fugitive](https://github.com/tpope/vim-fugitive) : Git command inside vim
 - [vim-gtfo](https://github.com/justinmk/vim-gtfo) : Go to File Manager or Terminal
-- [vim-illuminate](https://github.com/RRethy/vim-illuminate) : Highlight all occurence of current word under cursor
 - [vim-lion](https://github.com/tommcdo/vim-lion) : Align text (like tabular)
 - [ReplaceWithRegister](https://github.com/vim-scripts/ReplaceWithRegister) : Custom operator gr to replace with register content
 - [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys
@@ -332,13 +329,10 @@ Regexp search/replace pattern
 - [vim-rooter](https://github.com/airblade/vim-rooter) : Change dir to root project directory
 - [vim-rotatescheme](https://github.com/frazrepo/vimrc/tree/master/plugins/vim-rotatescheme) : Custom plugin to rotate a list of colorschemes
 - [vim-sandwich](https://github.com/machakann/vim-sandwich) : Surround texts with delimiters
-- [vim-schlepp](https://github.com/zirrostig/vim-schlepp) : Drag selection in visual mode
 - [vim-sort-motion](https://github.com/christoomey/vim-sort-motion) : Add an operator gs to apply sort
 - [targets.vim](https://github.com/wellle/targets.vim) : Some text objects - quotes (q), columns (c), indents (i), line (l), entire buffer (e)
 - [vim-tranpose](https://github.com/salsifis/vim-transpose) : Tranpose lines, csv, words, ...
 - [vim-unimpaired](https://github.com/tpope/vim-unimpaired) :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
-- [yankmatches](https://github.com/thoughtstream/Damian-Conway-s-Vim-Setup/blob/master/plugin/yankmatches.vim) : Copy or Delete search results
-
   
 ## How to uninstall
 Just do following:
