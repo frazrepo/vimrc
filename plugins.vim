@@ -75,6 +75,7 @@ Plug 'cocopon/iceberg.vim'
 " nerdtree
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'ryanoasis/vim-devicons'
 
 "Completion
 Plug 'maralla/completor.vim'
