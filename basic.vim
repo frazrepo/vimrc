@@ -9,16 +9,6 @@
 "
 " To start vim without loading any .vimrc or plugins, use:
 "     vim -u NONE
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" => Global Mode Variables {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Define this variable for developer edition
-" Currently for nvim only
-if has('nvim')
-  let g:developer_edition = 1
-endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General {{{1
@@ -104,14 +94,6 @@ endif
 if executable("rg")
     set grepprg=rg\ --vimgrep\ --no-heading
     set grepformat=%f:%l:%c:%m,%f:%l:%m
-endif
-
-"Developer Edition
-if exists("g:developer_edition") 
-
-  set cmdheight=2                   "Fix : Press Enter or Type Command to continue error in nvim 
-  set signcolumn=yes                " always show signcolumns
-
 endif
 
 " Maximized window on start and Font Size

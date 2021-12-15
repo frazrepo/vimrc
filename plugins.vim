@@ -76,21 +76,13 @@ Plug 'tpope/vim-commentary'
 "theme
 Plug 'cocopon/iceberg.vim'
 
-if (s:developer_edition == 1) 
+" nerdtree
+Plug 'preservim/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 
-    "Use coc for nvim
-    Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
-    "Languages
-    Plug 'fatih/vim-go', { 'for' : 'go'}
-
-else
-    Plug 'preservim/nerdtree'
-    Plug 'Xuyuanp/nerdtree-git-plugin'
-    "Use completor for basic usage
-    Plug 'maralla/completor.vim'
-    Plug 'jiangmiao/auto-pairs'
-endif
+"Completion
+Plug 'maralla/completor.vim'
+Plug 'jiangmiao/auto-pairs'
 
 " Snippets
 Plug 'SirVer/ultisnips'

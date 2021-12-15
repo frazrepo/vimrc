@@ -115,13 +115,7 @@ xmap ) ]
 " => Emmet plugin remap {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 " Default leader <C-y> 
- 
-if exists("g:developer_edition") 
-  let g:user_emmet_leader_key = '<C-e>'
-  let g:user_emmet_expandabbr_key = '<C-x><C-e>'
-else
-    let g:user_emmet_leader_key = ','
-endif
+let g:user_emmet_leader_key = ','
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-grepper search {{{1
@@ -173,12 +167,10 @@ vmap D <Plug>SchleppDup
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""	
 " => Vim-autopairs workarounf for â, î and û {{{1	
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     	
-if !exists("g:developer_edition") 
-  "Toggle with Alt-P mapping	
-  let g:AutoPairsShortcutBackInsert=''	
-  let g:AutoPairsShortcutJump=''	
-  let g:AutoPairsMoveCharacter=''	
-endif
+"Toggle with Alt-P mapping	
+let g:AutoPairsShortcutBackInsert=''	
+let g:AutoPairsShortcutJump=''	
+let g:AutoPairsMoveCharacter=''	
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-sandwich to simulate surround mappings {{{1
@@ -195,11 +187,6 @@ vnoremap <silent> <leader>f :<C-u>call VisualSelection('', '')<CR>:Ilist <C-R>=@
 " => vim-over {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:over#command_line#substitute#replace_pattern_visually = 1
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Undotree  {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-nnoremap <F4> :UndotreeToggle<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-move  {{{1
@@ -242,161 +229,6 @@ if !exists("g:developer_edition")
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => coc  {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-" Languages Support : 
-" javascript : coc-tsserver  and coc-eslint (npm install -g eslint) (ok)
-" typescript : coc-tsserver and coc-tslint (npm install -g tslint typescript) (ok)
-" html, css : coc-html and coc-css (ok)
-" vim : vim-lsp (ok)
-" ruby : coc-solargraph (not installed yet)
-" python : coc-python (jedi) (ok)
-" go :  via languageserver and vim-go (ok)
-" powershell : coc-powershell (ok)
-" sql snippets : SadeghPM/sql-vscode-snipptes
-
-" Snippets
-" coc-snippets
-" coc-ultisnips : to handle ultisnips python snippets, uuid, ....
-
-if exists("g:developer_edition") 
-    let g:coc_global_extensions = [
-          \ 'coc-css',
-          \ 'coc-html',
-          \ 'coc-tag',
-          \ 'coc-json',
-          \ 'coc-pairs',
-          \ 'coc-prettier',
-          \ 'coc-tsserver',
-          \ 'coc-tslint',
-          \ 'coc-eslint',
-          \ 'coc-snippets',
-          \ 'coc-ultisnips',
-          \ 'coc-python',
-          \ 'coc-marketplace',
-          \ 'coc-explorer'
-          \ ]
-
-
-    "  Powershell :  call coc#powershell#install() to install
-    " call coc#powershell#install()
-
-    " Language Server : Go and Python
-    " go-langserver : go get -u github.com/sourcegraph/go-langserver
-    " python :  - Jedi : do pip3 install jedi (default activated)
-              " - Windows/Linux : use Microsoft Language Server (disable jedi in config)
-
-
-    let g:coc_user_config = {
-                \   'coc.preferences.extensionUpdateCheck': 'never',
-                \   'snippets.ultisnips.directories': [
-                \    'plugins/vim-snippets/UltiSnips'
-                \   ],
-                \  'suggest.noselect': v:false,
-                \  'python.jediEnabled': v:true,
-                \ 'languageserver': {
-                \    'golang': {
-                \      'command': '~/go/bin/go-langserver',
-                \      'filetypes': ['go'],
-                \      'initializationOptions': {
-                \        'gocodeCompletionEnabled': v:true,
-                \        'diagnosticsEnabled': v:true,
-                \        'lintTool': 'golint'
-                \      }
-                \    }
-                \  }
-            \  }
-
-    " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-    " Expand or Validate with <Tab>
-
-    imap <silent><expr> <Tab> <SID>expand()
-
-    function! s:expand()
-      "Expand snippet
-      if pumvisible()
-        return "\<CR>"
-      endif
-
-      "Place Holder
-      if coc#expandableOrJumpable()
-        return "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>"
-      endif
-
-      "If back space, insert Tab
-      let col = col('.') - 1
-      if !col || getline('.')[col - 1]  =~# '\s'
-        return "\<Tab>"
-      endif
-
-      "Emmet
-      return "\<C-x>\<C-e>"
-    endfunction
-
-    " Close preview window after completion is done
-    autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
-
-    "Jump to next/previous placeholder for snippet
-    let g:coc_snippet_next = '<TAB>'
-    let g:coc_snippet_prev = '<S-TAB>'
-
-    " Use <c-space> to trigger completion.
-    inoremap <silent><expr> <c-space> coc#refresh()
-
-    " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
-    " Coc only does snippet and additional edit on confirm.
-    inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() :
-                                              \"\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-    " Remap keys for gotos
-    nmap <silent> gd <Plug>(coc-definition)
-    " nmap <silent> gy <Plug>(coc-type-definition)
-    nmap <silent> gi <Plug>(coc-implementation)
-    nmap <silent> gx <Plug>(coc-references)
-
-    " Use K to show documentation in preview window
-    nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-    function! s:show_documentation()
-      if (index(['vim','help'], &filetype) >= 0)
-        execute 'h '.expand('<cword>')
-      else
-        call CocAction('doHover')
-      endif
-    endfunction
-
-    " Highlight symbol under cursor on CursorHold
-    autocmd CursorHold * silent call CocActionAsync('highlight')
-
-    " Remap for rename current word
-    nmap <leader>rn <Plug>(coc-rename)
-
-    " Remap for format selected region
-    xmap ,f  <Plug>(coc-format-selected)
-    nmap ,f  <Plug>(coc-format-selected)
-
-    augroup mygroup
-      autocmd!
-      " Setup formatexpr specified filetype(s).
-      autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-      " Update signature help on jump placeholder
-      autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-    augroup end
-
-    " Add diagnostic info for https://github.com/itchyny/lightline.vim
-    let g:lightline = {
-          \ 'colorscheme': 'wombat',
-          \ 'active': {
-          \   'left': [ [ 'mode', 'paste' ],
-          \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
-          \ },
-          \ 'component_function': {
-          \   'cocstatus': 'coc#status'
-          \ },
-          \ }
-
-endif 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-rooter  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:rooter_silent_chdir = 1
@@ -434,14 +266,10 @@ nnoremap gdl :diffget //3<cr>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => NerdTree and CocExplorer {{{1
+" => NerdTreer {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-if exists("g:developer_edition") 
-    nnoremap <C-n> :CocCommand explorer<CR>
-else
-    nnoremap <C-n> :NERDTreeToggle<CR>
-    nnoremap <leader>n :NERDTreeFind<CR>
-endif
+nnoremap <C-n> :NERDTreeToggle<CR>
+nnoremap <leader>n :NERDTreeFind<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
