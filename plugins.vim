@@ -17,8 +17,6 @@ endif
 " => Vim Plug plugins declaration
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let s:developer_edition = get(g:,'developer_edition',0)
-
 call plug#begin('~/.vim_runtime/plugins')
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
