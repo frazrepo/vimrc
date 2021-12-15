@@ -250,6 +250,12 @@ nnoremap <leader>n :NERDTreeFind<CR>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => tokyonight {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
+set termguicolors
+
+let g:tokyonight_style = 'night' " available: night, storm
+let g:tokyonight_enable_italic = 1
+
+colorscheme tokyonight
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
