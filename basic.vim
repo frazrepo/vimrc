@@ -117,7 +117,7 @@ if has("gui_running")
     autocmd GUIEnter * :simalt ~n
     " set guifont=Consolas:h15:cANSI
     " Consolas Nerd Font for icons
-    set guifont=Consolas\ NF:h15:cANSI
+    set guifont=Consolas\ NF:h14:cANSI
   endif
 
 endif
