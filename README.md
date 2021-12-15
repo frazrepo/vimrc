@@ -43,7 +43,10 @@ And run install.sh (or install.bat) to update vimrc configuration file
     Dark theme : anderson, atom-dark256, apprentice, codedark, gruvbox8, minimalist, 
                  molokai, mustang, monokai(sublime text), nord, seoul, space-vim-dark
     Light theme : ayu (dark available), seoul256-light, pencil
-
+## Mappings
+<details>
+    <summary>Click to expand</summary>
+    
 ## Normal mode mappings
 
 **General**
@@ -289,6 +292,8 @@ And run install.sh (or install.bat) to update vimrc configuration file
 | WipeReg   | Clean all registers |
 | RemoveTrailingSpaces | Remove spaces |  
 
+</details>
+    
 ## Custom Docs
 
 Regexp search/replace pattern
