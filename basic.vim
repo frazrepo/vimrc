@@ -84,7 +84,6 @@ set timeout timeoutlen=500 ttimeoutlen=50
 set ttyfast                        " Make the keyboard fast
 set textwidth=500
 
-
 set updatetime=300                 " Smaller updatetime for CursorHold & CursorHoldI
 set virtualedit=block              " VirtualEdit block allow selection everywhere in visual block mode
 set visualbell t_vb=               " No sound on errors
@@ -93,7 +92,6 @@ set whichwrap+=<,>,h,l
 set wildignore=*.o,*~,*.pyc,tags   " Ignore compiled files
 set wildignore+=*/.git/*,*/node_modules/*,*/dist/*
 set wildignore+=.git\*,node_modules\*
-
 set wildmenu                       " Turn on the Wild menu
 set wildmode=full
 
@@ -130,7 +128,7 @@ if has("gui_running")
 
   if has("gui_macvim")
     set lines=768 columns=1366
-    set guifont=Menlo\ Regular:h14
+    set guifont=Fira\ Code:h16
   endif
 
   if has("gui_win32")

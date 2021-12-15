@@ -73,6 +73,9 @@ Plug 'romainl/vim-qf'
 Plug 'machakann/vim-sandwich'
 Plug 'tpope/vim-commentary'
 
+"theme
+Plug 'cocopon/iceberg.vim'
+
 if (s:developer_edition == 1) 
 
     "Use coc for nvim
@@ -98,8 +101,6 @@ Plug 'sheerun/vim-polyglot'
 Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
 Plug 'sbdchd/neoformat', { 'on' : 'Neoformat'}
 
-" Undo
-Plug 'mbbill/undotree', { 'on' : 'UndotreeToggle' }
 
 " Scratch 
 Plug 'frazrepo/vim-scratch', { 'on' : 'Scratch'}
