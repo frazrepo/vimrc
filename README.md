@@ -1,3 +1,8 @@
+# VIM Configuration
+
+This repository hosts my vim configuration.
+
+For neovim configuration, see here : https://github.com/frazrepo/nvim-config
 
 ## How to install on Linux ?
 
@@ -25,16 +30,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
  - [Cheat Sheet for this vimrc](https://www.cheatography.com/fraz/cheat-sheets/vim-mappings/)
  - [Muscle Memory Cheat](https://www.cheatography.com/fraz/cheat-sheets/vim-muscle-memory/)
 
-## Mode
-
-    - Default Mode : For heavy text editing 
-    - Developer Mode : 
-          * Define let g:developer_edition = 1 
-          * coc autocompletion and LSP mode
-
-## Leader key
-
-    leader = <space>
 
 ## Rotatable color schemes
 
@@ -43,9 +38,14 @@ And run install.sh (or install.bat) to update vimrc configuration file
     Dark theme : anderson, atom-dark256, apprentice, codedark, gruvbox8, minimalist, 
                  molokai, mustang, monokai(sublime text), nord, seoul, space-vim-dark
     Light theme : ayu (dark available), seoul256-light, pencil
+
 ## Mappings
 <details>
     <summary>Click to expand</summary>
+
+## Leader key
+
+leader = <space>
     
 ## Normal mode mappings
 
