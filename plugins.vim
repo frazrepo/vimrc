@@ -91,10 +91,6 @@ Plug 'sheerun/vim-polyglot'
 Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
 Plug 'sbdchd/neoformat', { 'on' : 'Neoformat'}
 
-
-" Scratch 
-Plug 'frazrepo/vim-scratch', { 'on' : 'Scratch'}
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugs End 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
