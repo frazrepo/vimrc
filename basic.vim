@@ -114,8 +114,9 @@ if has("gui_running")
   endif
 
   if has("gui_win32")
-    autocmd GUIEnter * :simalt ~n
+    " autocmd GUIEnter * :simalt ~n
     " set guifont=Consolas:h15:cANSI
+    set lines=600 columns=800
     " Consolas Nerd Font for icons
     set guifont=Consolas\ NF:h14:cANSI
   endif
