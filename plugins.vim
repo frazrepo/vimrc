@@ -52,7 +52,6 @@ Plug 'frazrepo/vim-rotatescheme'
 Plug 'itchyny/lightline.vim'
 Plug 'frazrepo/vim-rainbow', { 'on' : 'RainbowToggle' }
 Plug 'machakann/vim-highlightedyank'
-Plug 'RRethy/vim-illuminate'
 
 " Git integration {{{1
 Plug 'tpope/vim-fugitive'
