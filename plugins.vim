@@ -38,7 +38,6 @@ Plug 'vim-scripts/ReplaceWithRegister'
 
 " Code Searching {{{1
 Plug 'mhinz/vim-grepper'
-Plug 'tpope/vim-abolish'
 Plug 'osyo-manga/vim-over'
 
 " Code formatting {{{1
