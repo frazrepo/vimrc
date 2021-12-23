@@ -75,9 +75,8 @@ Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'ryanoasis/vim-devicons'
 
-" LSP (Disabled)
-" Plug 'prabirshrestha/vim-lsp'
-" Plug 'mattn/vim-lsp-settings'
+" auto rename tags
+Plug 'AndrewRadev/tagalong.vim'
 
 "Completion
 Plug 'maralla/completor.vim'
