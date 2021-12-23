@@ -96,6 +96,12 @@ let g:UltiSnipsEditSplit="vertical"
 " Add custom directories for snippets
 let g:UltiSnipsSnippetDirectories = [$HOME.'/.vim_runtime/plugins/vim-snippets/UltiSnips']
 
+call asyncomplete#register_source(asyncomplete#sources#ultisnips#get_source_options({
+    \ 'name': 'ultisnips',
+    \ 'allowlist': ['*'],
+    \ 'completor': function('asyncomplete#sources#ultisnips#completor'),
+    \ }))
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim unimpaired  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
@@ -180,39 +186,57 @@ let g:move_auto_indent = 0
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""	
 " => Completor  {{{1	
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     	
-if !exists("g:developer_edition") 
-  fun! TabOrComplete() "{{{	
-      call UltiSnips#ExpandSnippet()	
-      if g:ulti_expand_res == 0	
-        if pumvisible()	
-          return "\<C-n>"	
-        else	
-          call UltiSnips#JumpForwards()	
-          if g:ulti_jump_forwards_res == 0	
-            " If completor is not open and we are in the middle of typing a word then	
-            " `tab` opens completor menu.	
-            let inp_str = strpart( getline('.'), col('.')-3, 2 )	
-            if col('.')>1 && (inp_str =~ '^\w$' || inp_str =~ '\%(->\)\|\%(.\w\)\|\%(\w\.\)\|\%(./\)')	
-              return "\<C-R>=completor#do('complete')\<CR>"	
-              " Uncomment here to return to vanilla completion	
-              " return "\<C-n>"	
-            else	
-              return "\<TAB>"	
-            endif	
-          endif	
-        endif	
-      endif	
-      return ""	
-    endf "}}}	
-    au InsertEnter * exec "inoremap <silent> <Tab> <C-R>=TabOrComplete()<cr>"	
+"if !exists("g:developer_edition") 
+"  fun! TabOrComplete() "{{{	
+"      call UltiSnips#ExpandSnippet()	
+"      if g:ulti_expand_res == 0	
+"        if pumvisible()	
+"          return "\<C-n>"	
+"        else	
+"          call UltiSnips#JumpForwards()	
+"          if g:ulti_jump_forwards_res == 0	
+"            " If completor is not open and we are in the middle of typing a word then	
+"            " `tab` opens completor menu.	
+"            let inp_str = strpart( getline('.'), col('.')-3, 2 )	
+"            if col('.')>1 && (inp_str =~ '^\w$' || inp_str =~ '\%(->\)\|\%(.\w\)\|\%(\w\.\)\|\%(./\)')	
+"              return "\<C-R>=completor#do('complete')\<CR>"	
+"              " Uncomment here to return to vanilla completion	
+"              " return "\<C-n>"	
+"            else	
+"              return "\<TAB>"	
+"            endif	
+"          endif	
+"        endif	
+"      endif	
+"      return ""	
+"    endf "}}}	
+"    au InsertEnter * exec "inoremap <silent> <Tab> <C-R>=TabOrComplete()<cr>"	
 
-   "LSP Activation (not working ?)	
-  let g:completor_filetype_map = {}	
-  " Enable lsp for go by using gopls	
-  let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}	
-endif
+"   "LSP Activation (not working ?)	
+"  let g:completor_filetype_map = {}	
+"  " Enable lsp for go by using gopls	
+"  let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}	
+"endif
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Async Complete  {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr>    pumvisible() ? asyncomplete#close_popup() : "\<cr>"
+imap <c-space> <Plug>(asyncomplete_force_refresh)
+
+call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
+    \ 'name': 'buffer',
+    \ 'allowlist': ['*'],
+    \ 'blocklist': ['go'],
+    \ 'completor': function('asyncomplete#sources#buffer#completor'),
+    \ 'config': {
+    \    'max_buffer_size': 5000000,
+    \  },
+    \ }))
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-rooter  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
@@ -258,9 +282,60 @@ let g:tokyonight_enable_italic = 1
 colorscheme tokyonight
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => LSP Client {{{1
+" => LSP Client ALE {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
+" In ~/.vim/vimrc, or somewhere similar.
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'javascript': ['prettier', 'eslint'],
+\}
+let g:ale_sign_column_always = 1
+let g:ale_set_quickfix = 1
 
+" LSP
+
+" let g:lsp_diagnostics_enabled = 0         " disable diagnostics support  and use ALE
+
+
+" :LspStatus
+" :LspInstallServer
+" if executable('pyls')
+"     " pip install python-language-server
+"     au User lsp_setup call lsp#register_server({
+"         \ 'name': 'pyls',
+"         \ 'cmd': {server_info->['pyls']},
+"         \ 'allowlist': ['python'],
+"         \ })
+" endif
+
+" function! s:on_lsp_buffer_enabled() abort
+"     setlocal omnifunc=lsp#complete
+"     setlocal signcolumn=yes
+"     if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+"     nmap <buffer> gd <plug>(lsp-definition)
+"     nmap <buffer> gs <plug>(lsp-document-symbol-search)
+"     nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
+"     nmap <buffer> gr <plug>(lsp-references)
+"     nmap <buffer> gi <plug>(lsp-implementation)
+"     nmap <buffer> gt <plug>(lsp-type-definition)
+"     nmap <buffer> <leader>rn <plug>(lsp-rename)
+"     nmap <buffer> [g <plug>(lsp-previous-diagnostic)
+"     nmap <buffer> ]g <plug>(lsp-next-diagnostic)
+"     nmap <buffer> K <plug>(lsp-hover)
+"     inoremap <buffer> <expr><c-f> lsp#scroll(+4)
+"     inoremap <buffer> <expr><c-d> lsp#scroll(-4)
+
+"     let g:lsp_format_sync_timeout = 1000
+"     autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+    
+"     " refer to doc to add more commands
+" endfunction
+
+" augroup lsp_install
+"     au!
+"     " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+"     autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+" augroup END
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

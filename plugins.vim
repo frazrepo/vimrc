@@ -77,17 +77,25 @@ Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'ryanoasis/vim-devicons'
 
-" LSP (Disabled)
-" Plug 'prabirshrestha/vim-lsp'
-" Plug 'mattn/vim-lsp-settings'
-
-"Completion
-Plug 'maralla/completor.vim'
-Plug 'jiangmiao/auto-pairs'
+" LSP (Disabled) Usage : :LspInstallServer on a buffer
+Plug 'prabirshrestha/vim-lsp'
+Plug 'mattn/vim-lsp-settings'
+" Plug 'dense-analysis/ale'
 
 " Snippets
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
+
+" Completion
+" Plug 'maralla/completor.vim'
+Plug 'prabirshrestha/asyncomplete.vim'
+
+" Sources
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+Plug 'prabirshrestha/asyncomplete-buffer.vim'
+Plug 'prabirshrestha/asyncomplete-emmet.vim'
+Plug 'prabirshrestha/asyncomplete-ultisnips.vim'
+Plug 'jiangmiao/auto-pairs'
 
 " Languages - Formatters {{{1
 Plug 'sheerun/vim-polyglot'
