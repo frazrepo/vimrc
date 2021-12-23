@@ -81,33 +81,16 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
-" Completion
-" Plug 'maralla/completor.vim'
-Plug 'prabirshrestha/asyncomplete.vim'
+"Use coc for nvim
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" LSP (Disabled) Usage : :LspInstallServer on a buffer
-" :help vim-lsp-register_server
-" https://github.com/prabirshrestha/vim-lsp/wiki/Servers
-Plug 'prabirshrestha/vim-lsp'
-Plug 'mattn/vim-lsp-settings'
-
-" Plug 'dense-analysis/ale'
-
-" Sources
-Plug 'prabirshrestha/asyncomplete-lsp.vim'
-Plug 'prabirshrestha/asyncomplete-buffer.vim'
-Plug 'prabirshrestha/asyncomplete-emmet.vim'
-Plug 'prabirshrestha/asyncomplete-ultisnips.vim'
-
-
-" Auto-pairs
-Plug 'jiangmiao/auto-pairs'
+" Auto-pairs (replaced with coc-pairs)
+" Plug 'jiangmiao/auto-pairs'
 
 " Languages - Formatters {{{1
 Plug 'sheerun/vim-polyglot'
 Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
 Plug 'sbdchd/neoformat', { 'on' : 'Neoformat'}
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugs End 
