@@ -28,6 +28,9 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-unimpaired'
 Plug 'vim-scripts/Transpose', { 'on': ['Transpose','TransposeWords','TransposeCSV','TransposeTab','TransposeInteractive']}
 
+" auto rename tags
+Plug 'AndrewRadev/tagalong.vim'
+
 " Text Objects, Motions and Operators {{{1
 Plug 'coderifous/textobj-word-column.vim'
 Plug 'michaeljsmith/vim-indent-object'
