@@ -87,9 +87,6 @@ Plug 'honza/vim-snippets'
 "Use coc for nvim
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" Auto-pairs (replaced with coc-pairs)
-" Plug 'jiangmiao/auto-pairs'
-
 " Languages - Formatters {{{1
 Plug 'sheerun/vim-polyglot'
 Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}

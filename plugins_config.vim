@@ -269,7 +269,6 @@ autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
 let g:coc_snippet_next = '<TAB>'
 let g:coc_snippet_prev = '<S-TAB>'
 
-
 " Use <c-space> to trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
 
@@ -406,74 +405,6 @@ let g:tokyonight_enable_italic = 1
 
 colorscheme tokyonight
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => LSP Client ALE {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-" In ~/.vim/vimrc, or somewhere similar.
-" let g:ale_fixers = {
-" \   '*': ['remove_trailing_lines', 'trim_whitespace'],
-" \   'javascript': ['prettier', 'eslint'],
-" \}
-" let g:ale_sign_column_always = 1
-" let g:ale_set_quickfix = 1
-
-" LSP
-" let g:lsp_diagnostics_enabled = 0         " disable diagnostics support  and use ALE
-" :LspStatus
-" :LspInstallServer
-" python
-" if executable('pyls')
-"     " pip install python-language-server
-"     au User lsp_setup call lsp#register_server({
-"         \ 'name': 'pyls',
-"         \ 'cmd': {server_info->['pyls']},
-"         \ 'allowlist': ['python'],
-"         \ })
-" endif
-
-" " vim
-" if executable('vim-language-server')
-"   augroup LspVim
-"     autocmd!
-"     autocmd User lsp_setup call lsp#register_server({
-"         \ 'name': 'vim-language-server',
-"         \ 'cmd': {server_info->['vim-language-server', '--stdio']},
-"         \ 'whitelist': ['vim'],
-"         \ 'initialization_options': {
-"         \   'vimruntime': $VIMRUNTIME,
-"         \   'runtimepath': &rtp,
-"         \ }})
-"   augroup END
-" endif
-
-" function! s:on_lsp_buffer_enabled() abort
-"     setlocal omnifunc=lsp#complete
-"     setlocal signcolumn=yes
-"     if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-"     nmap <buffer> gd <plug>(lsp-definition)
-"     nmap <buffer> gs <plug>(lsp-document-symbol-search)
-"     nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
-"     nmap <buffer> gr <plug>(lsp-references)
-"     nmap <buffer> gi <plug>(lsp-implementation)
-"     nmap <buffer> gt <plug>(lsp-type-definition)
-"     nmap <buffer> <leader>rn <plug>(lsp-rename)
-"     nmap <buffer> (g <plug>(lsp-previous-diagnostic)
-"     nmap <buffer> )g <plug>(lsp-next-diagnostic)
-"     nmap <buffer> K <plug>(lsp-hover)
-"     inoremap <buffer> <expr><c-f> lsp#scroll(+4)
-"     inoremap <buffer> <expr><c-d> lsp#scroll(-4)
-
-"     let g:lsp_format_sync_timeout = 1000
-"     autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
-
-"     " refer to doc to add more commands
-" endfunction
-
-" augroup lsp_install
-"     au!
-"     " call s:on_lsp_buffer_enabled only for languages that has the server registered.
-"     autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-" augroup END
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
