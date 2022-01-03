@@ -321,6 +321,12 @@ nnoremap - <C-x>
 xnoremap + g<C-a>
 xnoremap - g<C-x>
 
+" Undo breakpoints
+inoremap , ,<C-g>u
+inoremap . .<C-g>u
+inoremap ? ?<C-g>u
+inoremap ! !<C-g>u
+
 " Map ALT Key in terminal
 if &term =~ 'xterm' && !has("gui_running")
   execute "set <A-k>=\ek"
