@@ -5,24 +5,27 @@ This repository hosts my vim configuration.
 For neovim configuration, see here : https://github.com/frazrepo/nvim-config
 
 ## How to install on Linux ?
-
-    1) git clone --depth=1 https://github.com/frazrepo/vimrc.git ~/.vim_runtime
-    
-    2) run ./install.sh
-
+```shell
+git clone --depth=1 https://github.com/frazrepo/vimrc.git ~/.vim_runtime
+cd ~/.vim_runtime
+./install.sh
+```
 ## How to install on Windows ?
+```shell
+git clone --depth=1 https://github.com/frazrepo/vimrc.git %USERPROFILE%/.vim_runtime
+cd %USERPROFILE%/.vim_runtime
+install.bat
 
-    1) git clone --depth=1 https://github.com/frazrepo/vimrc.git %USERPROFILE%/.vim_runtime
-    
-    2) run install.bat
+```
 
 ## How to update to latest version?
 
 Just do a git rebase!
 
+```shell
     cd ~/.vim_runtime
     git pull --rebase
-
+```
 And run install.sh (or install.bat) to update vimrc configuration file
 
 ## Cheat Sheet
