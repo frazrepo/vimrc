@@ -34,13 +34,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
  - [Muscle Memory Cheat](https://www.cheatography.com/fraz/cheat-sheets/vim-muscle-memory/)
 
 
-## Rotatable color schemes
-
-    Default GUI : auy (light theme), dracula (dark theme)
-    Default Terminal : apprentice (dark theme)
-    Dark theme : anderson, atom-dark256, apprentice, codedark, gruvbox8, minimalist, 
-                 molokai, mustang, monokai(sublime text), nord, seoul, space-vim-dark
-    Light theme : ayu (dark available), seoul256-light, pencil
 
 ## Mappings
 <details>
