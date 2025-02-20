@@ -36,8 +36,9 @@ let g:Lf_ShortcutF = '<C-P>'
 let g:Lf_ShortcutB = '<leader>,'
 
 nnoremap <silent> <leader>;  :LeaderfLine<CR>
-nnoremap <silent> <leader>co :LeaderfHistoryCmd<CR>
+nnoremap <silent> <leader>sc :LeaderfHistoryCmd<CR>
 nnoremap <silent> <leader>u  :LeaderfMru<CR>
+nnoremap <silent> <leader>fr  :LeaderfMru<CR>
 
 " popup mode
 let g:Lf_WindowPosition = 'popup'
@@ -238,6 +239,7 @@ nnoremap gdl :diffget //3<cr>
 " => NerdTree {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <C-n> :NERDTreeToggle<CR>
+nnoremap <leader>e :NERDTreeToggle<CR>
 nnoremap <leader>n :NERDTreeFind<CR>
 
 

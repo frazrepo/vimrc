@@ -520,11 +520,6 @@ function! HasColorscheme(name)
     return !empty(globpath(&rtp, pat))
 endfunction
 
-" ColorScheme ayu for GUI and apprentice for terminal
-if HasColorscheme('apprentice')
-  color apprentice
-endif
-
 " Toggle Checkbox Markdown
 function s:Toggle(pattern, dict, ...)
   let view = winsaveview()

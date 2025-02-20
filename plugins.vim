@@ -48,11 +48,10 @@ Plug 'tommcdo/vim-lion'                             "Not lazy loadable
 Plug 'christoomey/vim-sort-motion'
 
 " Visual Comfort - Color Schemes {{{1
-Plug 'frazrepo/vim-colorschemes'
-Plug 'frazrepo/vim-rotatescheme'
 Plug 'itchyny/lightline.vim'
 Plug 'frazrepo/vim-rainbow', { 'on' : 'RainbowToggle' }
 Plug 'machakann/vim-highlightedyank'
+Plug 'ghifarit53/tokyonight-vim'
 
 " Git integration {{{1
 Plug 'tpope/vim-fugitive'
@@ -65,9 +64,6 @@ Plug 'justinmk/vim-gtfo'
 " Snippet -  Code Generation - AutoCompletion {{{1
 Plug 'machakann/vim-sandwich'
 Plug 'tpope/vim-commentary'
-
-"theme
-Plug 'cocopon/iceberg.vim'
 
 " nerdtree
 Plug 'preservim/nerdtree'
