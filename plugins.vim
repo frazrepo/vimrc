@@ -61,8 +61,6 @@ Plug 'tpope/vim-fugitive'
 Plug 'Yggdroot/LeaderF'
 Plug 'airblade/vim-rooter'
 Plug 'justinmk/vim-gtfo'
-Plug 'romainl/vim-qlist'
-Plug 'romainl/vim-qf'
 
 " Snippet -  Code Generation - AutoCompletion {{{1
 Plug 'machakann/vim-sandwich'

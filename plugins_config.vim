@@ -163,12 +163,6 @@ let g:AutoPairsMoveCharacter=''
 runtime macros/sandwich/keymap/surround.vim
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-qlist {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-nnoremap <silent> <leader>f :execute 'Ilist ' . expand('<cword>')<CR>
-vnoremap <silent> <leader>f :<C-u>call VisualSelection('', '')<CR>:Ilist <C-R>=@/<CR><CR>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-over {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:over#command_line#substitute#replace_pattern_visually = 1
@@ -241,7 +235,7 @@ nnoremap gdl :diffget //3<cr>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => NerdTreer {{{1
+" => NerdTree {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <C-n> :NERDTreeToggle<CR>
 nnoremap <leader>n :NERDTreeFind<CR>
@@ -256,10 +250,6 @@ let g:tokyonight_style = 'night' " available: night, storm
 let g:tokyonight_enable_italic = 1
 
 colorscheme tokyonight
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => LSP Client {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
