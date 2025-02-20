@@ -85,11 +85,6 @@ set wildignore+=.git\*,node_modules\*
 set wildmenu                       " Turn on the Wild menu
 set wildmode=full
 
-" grepprg to ag
-if executable('ag')
-    set grepprg=ag\ --vimgrep
-    set grepformat=%f:%l:%c:%m,%f:%l:%m
-endif
 " grepprg to ripgrep
 if executable("rg")
     set grepprg=rg\ --vimgrep\ --no-heading
