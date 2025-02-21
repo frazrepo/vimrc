@@ -259,11 +259,19 @@ colorscheme tokyonight
 noremap <silent> <leader> :WhichKey '<Space>'<CR>
 " provide an exemple of whichkey mappings
 let g:which_key_map = {}
-let g:which_key_map['w'] = [ ':w<CR>', 'save' ]
+" Direct leader mappings"
+"let g:which_key_map['<Space>'] = {
+"      \ 'name' : '+leader',
+"      \ '-' : 'buffer-split',
+"      \ '=' : 'buffer-vsplit',
+"      \ '!' : 'buffer-delete',
+"      \ }
+"      Fix this
 " Find
 let g:which_key_map.f = {
       \ 'name' : '+find',
       \ }
+
 " Git
 let g:which_key_map.g = {
       \ 'name' : '+git',
