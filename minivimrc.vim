@@ -85,27 +85,18 @@ endif
 " Space as a Leader key
 let mapleader = "\<Space>" 
 
-" Fast saving
-nmap <leader>w :w!<cr>
-
 " Use CTRL-S for saving, also in Insert mode
 nnoremap <C-S>		     :update<CR>
+vnoremap <C-S>		<C-C>:update<CR>
 inoremap <C-S>		<C-O>:update<CR>
-
-
-" Map jk to ESC in insert mode
-inoremap jk <Esc>
 
 " Search using magic regex
 nnoremap / /\v
 nnoremap ? ?\v
 
-" Search/Replace
-nnoremap <leader>r :%s///g<Left><Left>
-
 "Visual find and replace
-nnoremap <Leader>fr :%s/
-xnoremap <Leader>fr :<C-u>'<,'>s/
+nnoremap <Leader>rr :%s/
+xnoremap <Leader>rr :<C-u>'<,'>s/
 
 " Repeat . command in visual mode
 vnoremap . :normal.<CR>
@@ -118,40 +109,43 @@ vnoremap < <gv
 " Reselect last insertext
 nnoremap gV `[v`]
 
-" Disable highlight when <space><space> is pressed
-map <silent> <space><space> :noh<cr>
+" Disable highlight
+map <silent> <ESC> :noh<cr>
 
-" Smart way to move between windows horizontally
+" Smart way to move between windows 
 map <C-h> <C-W>h
 map <C-l> <C-W>l
+map <C-j> <C-W>j
+map <C-k> <C-W>k
 
-" Move faster vertically (paragraph motion)
-map <c-j> }
-map <c-k> {
+" Split windows
+map <leader>- <C-W>s
+map <leader>= <C-W>v
+map <leader>wd <C-W>c
 
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
-" Close the current buffer
+" Buffers
+map <leader>bd :bd<cr>
 map <leader>! :bd!<cr>
-
-" Useful mapping for managing  buffers
 map <leader>bn :enew<cr>
 map <leader>ba :bufdo bd<cr>
+" Close all buffers except current
+map <leader>bo :execute "%bd|e#|bd#"<cr>
+" Edit quickly with the current buffer path
+map <leader>be :edit <c-r>=expand("%:p:h")<cr>/
  
-" Buffers navigation
-map <leader>l :bnext<cr>
-map <leader>h :bprevious<cr>
-
 " Backspace to navigate to alternate buffer
 nnoremap <bs> <c-^>
 
-" Edit quickly with the current buffer path
-map <leader>e :edit <c-r>=expand("%:p:h")<cr>/
+" Next and previous buffer
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
 
 " Change word under cursor and dot repeat, really useful to edit quickly
 nnoremap c* *Ncgn
-nnoremap c# #NcgN
+nnoremap cg* g*Ncgn
 
 " Quick yanking to the end of the line
 nnoremap Y y$
@@ -164,6 +158,10 @@ xnoremap Q :normal @q<cr>
 nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
 
+"Insert new line in normal mode quickly and move cursor (but not in quickfix window or in command line history)
+nnoremap <silent> gO <Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>
+nnoremap <silent> go <Cmd>call append(line('.'),     repeat([''], v:count1))<CR>
+
 " Navigating quickfix (Experimental)
 nnoremap <A-Down> :cnext<Cr>
 nnoremap <A-Up> :cprevious<Cr>
@@ -171,10 +169,6 @@ nnoremap <A-Up> :cprevious<Cr>
 " H and L Begin/End on homerow
 map H ^
 map L g_
-
-" Paste from yank register 
-xnoremap <leader>p "0p
-nnoremap <leader>p "0p
 
 "Paste quickly in insert mode
 inoremap <C-r><C-r> <C-r>*
@@ -200,9 +194,9 @@ cnoremap :: <C-R>=fnameescape(expand("%"))<CR>
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
 " Quickly open a txt, markdown scratch
-map <leader>x :e ~/buffer.txt<cr>
-map <leader>d :e ~/buffer.md<cr>
-map <leader>s :e ~/buffer.sql<cr>
+map <leader>bx :e ~/buffer.txt<cr>
+map <leader>bd :e ~/buffer.md<cr>
+map <leader>bs :e ~/buffer.sql<cr>
 
 " Tab Completion
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"

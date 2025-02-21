@@ -163,9 +163,16 @@ nnoremap gV `[v`]
 " Disable highlight when ESC is pressed
 map <silent> <ESC> :noh<cr>
 
-" Smart way to move between windows horizontally
+" Smart way to move between windows 
 map <C-h> <C-W>h
 map <C-l> <C-W>l
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+
+" Split windows
+map <leader>- <C-W>s
+map <leader>= <C-W>v
+map <leader>wd <C-W>c
 
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
@@ -182,6 +189,10 @@ map <leader>be :edit <c-r>=expand("%:p:h")<cr>/
 
 " Backspace to navigate to alternate buffer
 nnoremap <bs> <c-^>
+
+" Next and previous buffer
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
 
 " Tabs
 map <leader>tn :tabnew<cr>
@@ -245,8 +256,6 @@ nnoremap mù m`
 nnoremap ùù ``
 nnoremap ' `
 
-" Toggle to next item
-nnoremap <Tab> %
 
 " Execute a macro over a visual range
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
