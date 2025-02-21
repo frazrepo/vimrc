@@ -138,16 +138,13 @@ inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
 nnoremap / /\v
 nnoremap ? ?\v
 
-" Search/Replace
-nnoremap <leader>r :OverCommandLine%s///g<Left><Left>
-
 " Visual mode pressing * or # searches for the current selection
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
-"Visual find and replace
-nnoremap <Leader>fr :call VisualFindAndReplace()<CR>
-xnoremap <Leader>fr :call VisualFindAndReplaceWithSelection()<CR>
+" Search and Replace
+nnoremap <Leader>rr :call VisualFindAndReplace()<CR>
+xnoremap <Leader>rr :call VisualFindAndReplaceWithSelection()<CR>
 
 "Search and replace the selected text
 vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
@@ -163,7 +160,7 @@ vnoremap < <gv
 " Reselect last insertext
 nnoremap gV `[v`]
 
-" Disable highlight when <space><space> is pressed
+" Disable highlight when ESC is pressed
 map <silent> <ESC> :noh<cr>
 
 " Smart way to move between windows horizontally
@@ -173,30 +170,27 @@ map <C-l> <C-W>l
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
-" Close the current buffer
+" Buffers
 map <leader>bd :bd<cr>
 map <leader>! :bd!<cr>
-
-" Useful mapping for managing  buffers
 map <leader>bn :enew<cr>
 map <leader>ba :bufdo bd<cr>
- 
+" Close all buffers except current
+map <leader>bo :execute "%bd|e#|bd#"<cr>
+" Edit quickly with the current buffer path
+map <leader>be :edit <c-r>=expand("%:p:h")<cr>/
+
 " Backspace to navigate to alternate buffer
 nnoremap <bs> <c-^>
 
-" Edit quickly with the current buffer path
-map <leader>e :edit <c-r>=expand("%:p:h")<cr>/
-
-" Useful mappings for managing tabs
+" Tabs
 map <leader>tn :tabnew<cr>
 map <leader>to :tabonly<cr>
 map <leader>tc :tabclose<cr>
-
 " Toggle between this and the last accessed tab
 let g:lasttab = 1
 nmap <Leader><bs> :exe "tabn ".g:lasttab<CR>
 autocmd TabLeave * let g:lasttab = tabpagenr()
-
 " Opens a new tab with the current buffer's path
 map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 
