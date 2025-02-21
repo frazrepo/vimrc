@@ -7,7 +7,13 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " AI completion engine
-let g:ai_engine = 'copilot'
+if has("gui_macvim")
+  let g:ai_engine = 'codeium'
+elseif has("gui_win32")
+  let g:ai_engine = 'copilot'
+else
+  let g:ai_engine = 'copilot'
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Native Vim Plugins
