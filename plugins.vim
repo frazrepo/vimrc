@@ -55,6 +55,7 @@ Plug 'itchyny/lightline.vim'
 Plug 'frazrepo/vim-rainbow', { 'on' : 'RainbowToggle' }
 Plug 'machakann/vim-highlightedyank'
 Plug 'RRethy/vim-illuminate'
+Plug 'ghifarit53/tokyonight-vim'
 
 " Git integration {{{1
 Plug 'tpope/vim-fugitive'
