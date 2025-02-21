@@ -35,9 +35,12 @@ let g:Lf_ShortcutF = '<C-P>'
 "Buffers
 let g:Lf_ShortcutB = '<leader>,'
 
+nnoremap <silent> <leader>ff :LeaderfFile<CR>
+nnoremap <silent> <leader><leader>  :LeaderfFile<CR>
 nnoremap <silent> <leader>;  :LeaderfLine<CR>
-nnoremap <silent> <leader>co :LeaderfHistoryCmd<CR>
+nnoremap <silent> <leader>sc :LeaderfHistoryCmd<CR>
 nnoremap <silent> <leader>u  :LeaderfMru<CR>
+nnoremap <silent> <leader>fr  :LeaderfMru<CR>
 
 " popup mode
 let g:Lf_WindowPosition = 'popup'
