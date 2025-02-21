@@ -157,12 +157,6 @@ let g:vim_markdown_folding_disabled = 1
 runtime macros/sandwich/keymap/surround.vim
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-qlist {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-nnoremap <silent> <leader>f :execute 'Ilist ' . expand('<cword>')<CR>
-vnoremap <silent> <leader>f :<C-u>call VisualSelection('', '')<CR>:Ilist <C-R>=@/<CR><CR>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-over {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:over#command_line#substitute#replace_pattern_visually = 1

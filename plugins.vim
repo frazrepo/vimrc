@@ -17,7 +17,7 @@ endif
 " => Vim Plug plugins declaration
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-call plug#begin('~/.vim_runtime/plugins')
+call plug#begin()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugs Start
@@ -51,8 +51,6 @@ Plug 'tommcdo/vim-lion'                             "Not lazy loadable
 Plug 'christoomey/vim-sort-motion'
 
 " Visual Comfort - Color Schemes {{{1
-Plug 'frazrepo/vim-colorschemes'
-Plug 'frazrepo/vim-rotatescheme'
 Plug 'itchyny/lightline.vim'
 Plug 'frazrepo/vim-rainbow', { 'on' : 'RainbowToggle' }
 Plug 'machakann/vim-highlightedyank'
@@ -65,15 +63,10 @@ Plug 'tpope/vim-fugitive'
 Plug 'Yggdroot/LeaderF'
 Plug 'airblade/vim-rooter'
 Plug 'justinmk/vim-gtfo'
-Plug 'romainl/vim-qlist'
-Plug 'romainl/vim-qf'
 
 " Snippet -  Code Generation - AutoCompletion {{{1
 Plug 'machakann/vim-sandwich'
 Plug 'tpope/vim-commentary'
-
-"theme
-Plug 'cocopon/iceberg.vim'
 
 " nerdtree
 Plug 'preservim/nerdtree'
