@@ -266,7 +266,11 @@ let g:which_key_map = {}
 "      \ '=' : 'buffer-vsplit',
 "      \ '!' : 'buffer-delete',
 "      \ }
-"      Fix this
+let g:which_key_map.u = 'file-recent'
+let g:which_key_map.e = 'nerdree-toggle'
+let g:which_key_map.n = 'nerdree-find-buffer'
+let g:which_key_map.q = 'quickfix-toggle'
+let g:which_key_map.R = 'replace-word-or-selection'
 " Find
 let g:which_key_map.f = {
       \ 'name' : '+find',
