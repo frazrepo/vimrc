@@ -113,7 +113,8 @@ if has("gui_running")
     " set guifont=Consolas:h15:cANSI
     set lines=600 columns=800
     " Consolas Nerd Font for icons
-    set guifont=Consolas\ NF:h14:cANSI
+    "set guifont=Consolas\ NF:h14:cANSI
+    set guifont=Fira\ Code:h12:cANSI
   endif
 
 endif
@@ -183,7 +184,7 @@ map <leader>! :bd!<cr>
 map <leader>bn :enew<cr>
 map <leader>ba :bufdo bd<cr>
 " Close all buffers except current
-map <leader>bo :execute "%bd|e#|bd#"<cr>
+noremap <leader>bo :%bd\|e#\|bd#<cr>\|'"
 " Edit quickly with the current buffer path
 map <leader>be :edit <c-r>=expand("%:p:h")<cr>/
 
