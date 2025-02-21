@@ -147,7 +147,7 @@ nnoremap <Leader>rr :call VisualFindAndReplace()<CR>
 xnoremap <Leader>rr :call VisualFindAndReplaceWithSelection()<CR>
 
 "Search and replace the selected text
-vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
+vnoremap <silent> <leader>rw :call VisualSelection('replace','')<CR>
 
 " Repeat . command in visual mode
 vnoremap . :normal.<CR>
@@ -434,13 +434,11 @@ function! VisualSelection(direction, extra_filter) range
     let l:pattern = escape(@", "\\/.*'$^~[]")
     let l:pattern = substitute(l:pattern, "\n$", "", "")
 
-    if a:direction == 'gv'
-        call CmdLine("Ack '" . l:pattern . "' " )
-    elseif a:direction == 'replace'
-        call CmdLine("%s" . '/'. l:pattern . '/')
+    let @/ = l:pattern
+    if a:direction == 'replace'
+        :OverCommandLine%s//
     endif 
 
-    let @/ = l:pattern
     let @" = l:saved_reg
 endfunction
 
