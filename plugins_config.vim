@@ -257,7 +257,52 @@ colorscheme tokyonight
 " => whichkey {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 noremap <silent> <leader> :WhichKey '<Space>'<CR>
+" provide an exemple of whichkey mappings
+let g:which_key_map = {}
+let g:which_key_map['w'] = [ ':w<CR>', 'save' ]
+" Find
+let g:which_key_map.f = {
+      \ 'name' : '+find',
+      \ }
+" Git
+let g:which_key_map.g = {
+      \ 'name' : '+git',
+      \ }
+" Buffers"
+let g:which_key_map.b = {
+      \ 'name' : '+buffers',
+      \ 'd' : 'buffer-delete',
+      \ 'n' : 'buffer-new',
+      \ 'a' : 'buffer-delete-all',
+      \ 'o' : 'buffer-only',
+      \ '-' : 'buffer-split',
+      \ '=' : 'buffer-vsplit',
+      \ 'x' : 'buffer-text',
+      \ 'm' : 'buffer-markdown',
+      \ 's' : 'buffer-sql',
+      \ 'e' : 'buffer-new-cwd',
+      \ }
 
+" Tab
+let g:which_key_map.t = {
+      \ 'name' : '+tab',
+      \ 'n' : 'tab-new',
+      \ 'o' : 'tab-only',
+      \ 'c' : 'tab-close',
+      \ 'e' : 'tab-new-cwd',
+      \ }
+
+" Search
+let g:which_key_map.s = {
+      \ 'name' : '+search',
+      \ }
+
+" Replace
+let g:which_key_map.r = {
+      \ 'name' : '+replace',
+      \ }
+
+call which_key#register('<Space>', 'g:which_key_map')
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
