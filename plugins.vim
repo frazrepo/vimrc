@@ -102,6 +102,8 @@ if g:ai_engine == 'codeium'
   Plug 'Exafunction/codeium.vim'
 endif
 
+Plug 'liuchengxu/vim-which-key'
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugs End 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
