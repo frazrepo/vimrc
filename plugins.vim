@@ -17,7 +17,6 @@ endif
 " => Vim Plug plugins declaration
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" call plug#begin('~/.vim_runtime/plugins')
 call plug#begin()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
