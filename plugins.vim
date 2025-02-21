@@ -6,6 +6,9 @@
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" AI completion engine
+let g:ai_engine = 'copilot'
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Native Vim Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -84,6 +87,14 @@ Plug 'honza/vim-snippets'
 Plug 'sheerun/vim-polyglot'
 Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
 Plug 'sbdchd/neoformat', { 'on' : 'Neoformat'}
+
+"AI engine
+if g:ai_engine == 'copilot'
+  Plug 'github/copilot.vim'
+endif
+if g:ai_engine == 'codeium'
+  Plug 'Exafunction/codeium.vim'
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugs End 
