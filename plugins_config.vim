@@ -260,12 +260,6 @@ noremap <silent> <leader> :WhichKey '<Space>'<CR>
 " provide an exemple of whichkey mappings
 let g:which_key_map = {}
 " Direct leader mappings"
-"let g:which_key_map['<Space>'] = {
-"      \ 'name' : '+leader',
-"      \ '-' : 'buffer-split',
-"      \ '=' : 'buffer-vsplit',
-"      \ '!' : 'buffer-delete',
-"      \ }
 let g:which_key_map.u = 'Find recent files'
 let g:which_key_map.e = 'NerdTree Toggle'
 let g:which_key_map.m = 'Replace special char ^m'
@@ -280,6 +274,7 @@ let g:which_key_map[','] = 'Find buffers'
 let g:which_key_map['-'] = 'Split horizontally'
 let g:which_key_map['='] = 'Split vertically'
 let g:which_key_map['!'] = 'Buffer delete'
+let g:which_key_map['<BS>'] = 'Alternate tab'
 " Find
 let g:which_key_map.f = {
       \ 'name' : '+find',
@@ -289,6 +284,7 @@ let g:which_key_map.f = {
 let g:which_key_map.g = {
       \ 'name' : '+git',
       \ }
+
 " Buffers"
 let g:which_key_map.b = {
       \ 'name' : '+buffers',
@@ -311,6 +307,11 @@ let g:which_key_map.t = {
       \ 'o' : 'tab-only',
       \ 'c' : 'tab-close',
       \ 'e' : 'tab-new-cwd',
+      \ }
+
+" Windows
+let g:which_key_map.w = {
+      \ 'name' : '+windows',
       \ }
 
 " Search
