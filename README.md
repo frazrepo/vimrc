@@ -43,78 +43,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 leader = <space>
     
-## Normal mode mappings
-
-**General**
-
-| Mapping           | Action                                 |
-| ---               | ---                                    |
-| \<leader>w        | Save buffer                            |
-| :W                | Save as sudo (linux)                   |
-| \<leader>fr       | Find/Replace highlighted text          |
-| \<leader><leader> | noh                                    |
-| \<leader>m        | Remove bad formatting ^M               |
-| \<leader>f        | Search current buffer using Ilist                     |
-
-**Move between Windows**
-
-| Mapping | Action |
-| ---     | ---    |
-| \<C-h>  | Left   |
-| \<C-l>  | Right  |
-
-**Buffers**
-
-| Mapping      | Action                         |
-| ---          | ---                            |
-| \<leader>bn  | New buffer                     |
-| \<leader>bd or !  | Close buffer                   |
-| \<leader>ba  | Close all buffers              |
-| \<bs>        | Navigate alternate buffer      |
-| \<leader>h   | Navigate previous              |
-| \<leader>l   | Navigate next                  |
-| \<leader>e   | Edit in current buffer's path                    | 
-| \<leader>x   | Scratch txt                    | 
-| \<leader>d:  | Scratch Markdown               |
-| \<leader>s   | Scratch SQL                    | 
-
-**Tabs**
-
-| Mapping        | Action                                |
-| ---            | ---                                   |
-| \<leader>tn    | New tab                               |
-| \<leader>to    | Tab Only                              |
-| \<leader>tc    | Close tab                             |
-| \<leader>\<bs> | Alternate tab                         |
-| \<leader>te    | Edit new tab in current buffer's path |
-
-## Editing mappings
-
-**Paste inner object quickly**
-
-| Mapping | Action   |
-| ---     | ---      |
-| \<leader>p      | "0p      |
-
-**Formatting**
-
-| Mapping | Action                   |
-| ---     | ---                      |
-| g=      | Equalize entire document |
-| gQ      | Format entire document   |
-
-## Visual mode mappings
-| Mapping    | Action                            |
-| ---        | ---                               |
-| *          | Search current selection          |
-| #          | Search current selection backward |
-| \<leader>r | Replace visual selection          |
-
-## Command line mappings
-| Mapping     | Action                            |
-| ---         | ---                               |
-| :W          |Write sudo                         |
-
 ## Various mappings
 | Mapping    | Action                            |
 | ---        | ---                               |
@@ -141,19 +69,6 @@ leader = <space>
 | gl{to-m}=        | Right Align with =     |
 | gL{to-m}=        | Left Align with =      |
 
-**vim-abolish**
-
-| Mapping   | Action               |
-| ---       | ---                  |
-| Subvert   | Search Command       |
-| crs       | Coerce to snake_case |
-| crm       | Coerce to MixedCase  |
-| crc       | Coerce to CamelCase  |
-| cru       | Coerce to UPPER_CASE |
-| cr-       | Coerce to dash-case  |
-| cr.       | Coerce to dot-case   |
-| cr<space> | Coerce to space case |
-| crt       | Coerce to Title Case |
 
 **vim-exchange**
 
@@ -214,11 +129,6 @@ leader = <space>
 | ---           | ---             |
 | RainbowToggle | Toggle coloring |
 
-**vim-rotatescheme**
-
-| Mapping       | Action                  |
-| ---           | ---                     |
-| F10 / \<S-F10> | Rotate Forward/Backward |
 
 **vim-scripts/Tranpose**
 
@@ -251,20 +161,6 @@ leader = <space>
 | \<leader>*         | Find selected word                       |
 | F9        | Toggle CtrlSF result Window              |
 | \<leader>/| Prompt or Exec in Visual Mode |
-
-**yankmatches**
-
-| Mapping | Action                                           |
-| ---     | ---                                              |
-| ym / YM | Yank highlighted search lines  (YM for inverse)  |
-| dm / DM | Delete highlighteed search line (DM for inverse) |
-
-**zirrostig/vim-schlepp**
-
-| Mapping            | Action                                                 |
-| ---                | ---                                                    |
-| up/down/left/right | After a selection in visual mode, drag using arrow key |
-| D | Duplicate in Visual Mode|
 
 
 **custom text-objects**
