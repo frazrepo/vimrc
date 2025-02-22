@@ -276,8 +276,8 @@ inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() :
 
 " Remap keys for gotos
 nmap <silent> gd <Plug>(coc-definition)
-" nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gI <Plug>(coc-implementation)
 nmap <silent> gx <Plug>(coc-references)
 
 " Use K to show documentation in preview window
@@ -300,7 +300,7 @@ nmap <silent> (g <Plug>(coc-diagnostic-prev)
 nmap <silent> )g <Plug>(coc-diagnostic-next)
 
 " Remap for rename current word
-nmap <leader>rn <Plug>(coc-rename)
+nmap <leader>cr <Plug>(coc-rename)
 
 " Remap for format selected region
 xmap ,f  <Plug>(coc-format-selected)
@@ -308,13 +308,13 @@ nmap ,f  <Plug>(coc-format-selected)
 
 " Applying codeAction to the selected region.
 " Example: `<leader>aap` for current paragraph
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
+xmap <leader>ca  <Plug>(coc-codeaction-selected)
+nmap <leader>ca  <Plug>(coc-codeaction-selected)
 
 " Remap keys for applying codeAction to the current buffer.
-nmap <leader>ac  <Plug>(coc-codeaction)
+nmap <leader>cb  <Plug>(coc-codeaction)
 " Apply AutoFix to problem on the current line.
-nmap <leader>qf  <Plug>(coc-fix-current)
+nmap <leader>cf  <Plug>(coc-fix-current)
 
 " Run the Code Lens action on the current line.
 nmap <leader>cl  <Plug>(coc-codelens-action)augroup mygroup
