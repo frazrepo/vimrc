@@ -117,7 +117,7 @@ leader = '<space>'
 | \<leader>,     | Buffers                       |
 | \<leader>;     | BLines                       |
 | \<leader>u      | MRU                           |
-| \<leader>co      | Commands                           |
+| \<leader>sc      | Commands                           |
 
 **vim-rainbow**
 
@@ -150,13 +150,12 @@ leader = '<space>'
 | \<Tab>   | Jump forward  |
 | \<S-Tab>   | Jump backward |
 
-**CtrlSF**
+**Grepper**
 
 | Mapping   | Action                                   |
 | ---       | ---                                      |
 | \<leader>*         | Find selected word                       |
-| F9        | Toggle CtrlSF result Window              |
-| \<leader>/| Prompt or Exec in Visual Mode |
+| \<leader>/| Grepper Prompt |
 
 
 **custom text-objects**
