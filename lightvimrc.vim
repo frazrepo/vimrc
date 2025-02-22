@@ -87,12 +87,6 @@ set wildignore+=.git\*,node_modules\*
 set wildmenu                       " Turn on the Wild menu
 set wildmode=full
 
-" grepprg to ag
-if executable('ag')
-    set grepprg=ag\ --vimgrep
-    set grepformat=%f:%l:%c:%m,%f:%l:%m
-endif
-
 " grepprg to ripgrep
 if executable("rg")
     set grepprg=rg\ --vimgrep\ --no-heading
@@ -282,6 +276,10 @@ map <leader>bx :e ~/buffer.txt<cr>
 map <leader>bd :e ~/buffer.md<cr>
 map <leader>bs :e ~/buffer.sql<cr>
 
+" Tab Completion
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
 "Adjust font size
 nnoremap <M-9>        :Smaller<CR>
 nnoremap <M-0>        :Bigger<CR>
@@ -470,6 +468,21 @@ function! s:FilterQuickfixList(bang, pattern)
 endfunction
 command! -bang -nargs=1 -complete=file QFilter call s:FilterQuickfixList(<bang>0, <q-args>)
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => File {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"Cheap MRU files
+nnoremap <leader>u :bro ol<CR>
+
+"Cheap buffer switching
+nnoremap <leader>, :ls<CR>:b<Space>
+
+" Cheap ctrl+p (Warning : too slow on big project)
+set path=.,**
+nnoremap <C-p> :find *
+
+" File Browser
+map <leader>e :Vexplore %:p:h<cr>
 "Cheap MRU files
 nnoremap <leader>u :bro ol<CR>
 
