@@ -228,8 +228,9 @@ let g:highlightedyank_highlight_duration = 300
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Fugitive  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-nnoremap <leader>gs :Gstatus<cr>
-nnoremap <leader>gd :Gvdiff<cr>
+nnoremap <leader>gg :Git<cr>
+nnoremap <leader>gs :Git status<cr>
+nnoremap <leader>gd :Git diff<cr>
 nnoremap <leader>gb :Git blame<cr>
 nnoremap gdh :diffget //2<cr>
 nnoremap gdl :diffget //3<cr>
