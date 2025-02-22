@@ -256,10 +256,10 @@ colorscheme tokyonight
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => whichkey {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
+" Space whihch key
 noremap <silent> <leader> :WhichKey '<Space>'<CR>
-" provide an exemple of whichkey mappings
 let g:which_key_map = {}
-" Direct leader mappings"
+" Direct maps
 let g:which_key_map.u = 'Find recent files'
 let g:which_key_map.e = 'NerdTree Toggle'
 let g:which_key_map.m = 'Replace special char ^m'
@@ -325,6 +325,24 @@ let g:which_key_map.r = {
       \ }
 
 call which_key#register('<Space>', 'g:which_key_map')
+
+" g which key"
+noremap <silent> g :WhichKey 'g'<CR>
+let g:g_which_key_map = {}
+" Direct maps
+let g:g_which_key_map['%'] = 'Macth pair backward'
+let g:g_which_key_map['='] = 'Indent buffer'
+let g:g_which_key_map['Q'] = 'Format buffer'
+let g:g_which_key_map.l = 'Align right'
+let g:g_which_key_map.L = 'Align left'
+let g:g_which_key_map.c = 'Comment'
+let g:g_which_key_map['cc'] = 'Comment line'
+let g:g_which_key_map.r = 'Replace operator'
+let g:g_which_key_map['rr'] = 'Replace line (with register)'
+let g:g_which_key_map.s = 'Sort operator'
+let g:g_which_key_map['ss'] = 'Sort lines'
+let g:g_which_key_map.V = 'Reselect visual selection'
+call which_key#register('g', 'g:g_which_key_map')
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
