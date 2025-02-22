@@ -87,12 +87,6 @@ set wildignore+=.git\*,node_modules\*
 set wildmenu                       " Turn on the Wild menu
 set wildmode=full
 
-" grepprg to ag
-if executable('ag')
-    set grepprg=ag\ --vimgrep
-    set grepformat=%f:%l:%c:%m,%f:%l:%m
-endif
-
 " grepprg to ripgrep
 if executable("rg")
     set grepprg=rg\ --vimgrep\ --no-heading
@@ -128,17 +122,10 @@ endif
 " Space as a Leader key
 let mapleader = "\<Space>" 
 
-" Fast saving
-nmap <leader>w :w!<cr>
-
 " Use CTRL-S for saving, also in Insert mode
 nnoremap <C-S>		     :update<CR>
 vnoremap <C-S>		<C-C>:update<CR>
 inoremap <C-S>		<C-O>:update<CR>
-
-
-" Map jk to ESC in insert mode
-inoremap jk <Esc>
 
 " For autocompletion
 inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
@@ -148,19 +135,16 @@ inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
 nnoremap / /\v
 nnoremap ? ?\v
 
-" Search/Replace
-nnoremap <leader>r :%s///g<Left><Left>
-
 " Visual mode pressing * or # searches for the current selection
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
 "Visual find and replace
-nnoremap <Leader>fr :%s/
-xnoremap <Leader>fr :<C-u>'<,'>s/
+nnoremap <Leader>rr :%s/
+xnoremap <Leader>rr :<C-u>'<,'>s/
 
 "Search and replace the selected text
-vnoremap <silent> <leader>r :call VisualSelection('replace','')<CR>
+vnoremap <silent> <leader>rw :call VisualSelection('replace','')<CR>
 
 " Repeat . command in visual mode
 vnoremap . :normal.<CR>
@@ -173,57 +157,55 @@ vnoremap < <gv
 " Reselect last insertext
 nnoremap gV `[v`]
 
-" Disable highlight when <space><space> is pressed
-map <silent> <space><space> :noh<cr>
+" Disable highlight
+map <silent> <ESC> :noh<cr>
 
-" Smart way to move between windows horizontally
+" Smart way to move between windows 
 map <C-h> <C-W>h
 map <C-l> <C-W>l
+map <C-j> <C-W>j
+map <C-k> <C-W>k
 
-" Move faster vertically (paragraph motion)
-map <c-j> }
-map <c-k> {
-
+" Split windows
+map <leader>- <C-W>s
+map <leader>= <C-W>v
+map <leader>wd <C-W>c
 
 " Switch CWD to the directory of the open buffer
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
-" Close the current buffer
+" Buffers
 map <leader>bd :bd<cr>
 map <leader>! :bd!<cr>
-
-" Useful mapping for managing  buffers
 map <leader>bn :enew<cr>
 map <leader>ba :bufdo bd<cr>
- 
-" Buffers navigation
-map <leader>l :bnext<cr>
-map <leader>h :bprevious<cr>
+" Close all buffers except current
+map <leader>bo :execute "%bd|e#|bd#"<cr>
+" Edit quickly with the current buffer path
+map <leader>be :edit <c-r>=expand("%:p:h")<cr>/
 
 " Backspace to navigate to alternate buffer
 nnoremap <bs> <c-^>
 
-" Edit quickly with the current buffer path
-map <leader>e :edit <c-r>=expand("%:p:h")<cr>/
+" Next and previous buffer
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
 
-" Useful mappings for managing tabs
+
+" Tabs
 map <leader>tn :tabnew<cr>
 map <leader>to :tabonly<cr>
 map <leader>tc :tabclose<cr>
-
 " Toggle between this and the last accessed tab
 let g:lasttab = 1
 nmap <Leader><bs> :exe "tabn ".g:lasttab<CR>
 autocmd TabLeave * let g:lasttab = tabpagenr()
-
 " Opens a new tab with the current buffer's path
 map <leader>te :tabedit <c-r>=expand("%:p:h")<cr>/
 
 " Change word under cursor and dot repeat, really useful to edit quickly
 nnoremap c* *Ncgn
-nnoremap c# #NcgN
 nnoremap cg* g*Ncgn
-nnoremap cg# g#NcgN
 
 " Quick yanking to the end of the line
 nnoremap Y y$
@@ -237,8 +219,10 @@ nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
 
 "Insert new line in normal mode quickly and move cursor (but not in quickfix window or in command line history)
-nnoremap <silent> <expr> <cr>  &buftype ==# 'nofile' ? "\<CR>" : &buftype ==# 'quickfix' ? "\<CR>" : ":set paste<CR>o<Esc>:set nopaste<CR>"
-nnoremap <silent> <S-cr> :set paste<CR>O<Esc>:set nopaste<CR>
+nnoremap <silent> gO <Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>
+nnoremap <silent> go <Cmd>call append(line('.'),     repeat([''], v:count1))<CR>
+nnoremap <silent> (<space> <Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>
+nnoremap <silent> )<space> <Cmd>call append(line('.'),     repeat([''], v:count1))<CR>
 
 " Navigating quickfix (Experimental)
 nnoremap <A-Down> :cnext<Cr>
@@ -247,10 +231,6 @@ nnoremap <A-Up> :cprevious<Cr>
 " H and L Begin/End on homerow
 map H ^
 map L g_
-
-" Paste from yank register 
-xnoremap <leader>p "0p
-nnoremap <leader>p "0p
 
 "Paste quickly in insert mode
 inoremap <C-r><C-r> <C-r>*
@@ -275,9 +255,6 @@ nnoremap mù m`
 nnoremap ùù ``
 nnoremap ' `
 
-" Toggle to next item
-nnoremap <Tab> %
-
 " Execute a macro over a visual range
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 
@@ -297,9 +274,13 @@ cnoremap <expr> <CR> CommandLineCR()
 noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
 " Quickly open a txt, markdown and sql buffer for scribble
-map <leader>x :e ~/buffer.txt<cr>
-map <leader>d :e ~/buffer.md<cr>
-map <leader>s :e ~/buffer.sql<cr>
+map <leader>bx :e ~/buffer.txt<cr>
+map <leader>bd :e ~/buffer.md<cr>
+map <leader>bs :e ~/buffer.sql<cr>
+
+" Tab Completion
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 "Adjust font size
 nnoremap <M-9>        :Smaller<CR>
@@ -309,7 +290,7 @@ nnoremap <M-0>        :Bigger<CR>
 nmap <F12> <C-]>
 
 " Toogle quickfix windows
-map <silent> <F8> :call <SID>ToggleQf()<cr>
+map <silent> <leader>q :call <SID>ToggleQf()<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Miscellaneous {{{1
@@ -416,11 +397,11 @@ onoremap in :<C-u>normal vin<CR>
 
 " Buffer(entire) text-object
 " -------------------
-" ie ae
-xnoremap ie GoggV
-onoremap ie :<C-u>normal vie<CR>
-xnoremap ae GoggV
-onoremap ae :<C-u>normal vae<CR>
+" ig ag
+xnoremap ig GoggV
+onoremap ig :<C-u>normal vig<CR>
+xnoremap ag GoggV
+onoremap ag :<C-u>normal vag<CR>
 
 " Right Angle and Angle Bracket text-object 
 " ---------------------------------------
@@ -489,11 +470,18 @@ function! s:FilterQuickfixList(bang, pattern)
 endfunction
 command! -bang -nargs=1 -complete=file QFilter call s:FilterQuickfixList(<bang>0, <q-args>)
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => File {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "Cheap MRU files
 nnoremap <leader>u :bro ol<CR>
+nnoremap <leader>fr :bro ol<CR>
 
 "Cheap buffer switching
 nnoremap <leader>, :ls<CR>:b<Space>
+
+" File Browser
+map <leader>e :Vexplore %:p:h<cr>
 
 " Cheap ctrl+p (Warning : too slow on big project)
 set path=.,**

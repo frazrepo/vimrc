@@ -6,6 +6,15 @@
 "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" AI completion engine
+if has("gui_macvim")
+  let g:ai_engine = 'codeium'
+elseif has("gui_win32")
+  let g:ai_engine = 'copilot'
+else
+  let g:ai_engine = 'copilot'
+endif
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Native Vim Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -17,7 +26,7 @@ endif
 " => Vim Plug plugins declaration
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-call plug#begin('~/.vim_runtime/plugins')
+call plug#begin()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugs Start
@@ -47,11 +56,10 @@ Plug 'tommcdo/vim-lion'                             "Not lazy loadable
 Plug 'christoomey/vim-sort-motion'
 
 " Visual Comfort - Color Schemes {{{1
-Plug 'frazrepo/vim-colorschemes'
-Plug 'frazrepo/vim-rotatescheme'
 Plug 'itchyny/lightline.vim'
 Plug 'frazrepo/vim-rainbow', { 'on' : 'RainbowToggle' }
 Plug 'machakann/vim-highlightedyank'
+Plug 'ghifarit53/tokyonight-vim'
 
 " Git integration {{{1
 Plug 'tpope/vim-fugitive'
@@ -60,15 +68,10 @@ Plug 'tpope/vim-fugitive'
 Plug 'Yggdroot/LeaderF'
 Plug 'airblade/vim-rooter'
 Plug 'justinmk/vim-gtfo'
-Plug 'romainl/vim-qlist'
-Plug 'romainl/vim-qf'
 
 " Snippet -  Code Generation - AutoCompletion {{{1
 Plug 'machakann/vim-sandwich'
 Plug 'tpope/vim-commentary'
-
-"theme
-Plug 'cocopon/iceberg.vim'
 
 " nerdtree
 Plug 'preservim/nerdtree'
@@ -90,6 +93,16 @@ Plug 'honza/vim-snippets'
 Plug 'sheerun/vim-polyglot'
 Plug 'mattn/emmet-vim' , { 'for':  ['html', 'css']}
 Plug 'sbdchd/neoformat', { 'on' : 'Neoformat'}
+
+"AI engine
+if g:ai_engine == 'copilot'
+  Plug 'github/copilot.vim'
+endif
+if g:ai_engine == 'codeium'
+  Plug 'Exafunction/codeium.vim'
+endif
+
+Plug 'liuchengxu/vim-which-key'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugs End 

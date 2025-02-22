@@ -5,24 +5,27 @@ This repository hosts my vim configuration.
 For neovim configuration, see here : https://github.com/frazrepo/nvim-config
 
 ## How to install on Linux ?
-
-    1) git clone --depth=1 https://github.com/frazrepo/vimrc.git ~/.vim_runtime
-    
-    2) run ./install.sh
-
+```shell
+git clone --depth=1 https://github.com/frazrepo/vimrc.git ~/.vim_runtime
+cd ~/.vim_runtime
+./install.sh
+```
 ## How to install on Windows ?
+```shell
+git clone --depth=1 https://github.com/frazrepo/vimrc.git %USERPROFILE%/.vim_runtime
+cd %USERPROFILE%/.vim_runtime
+install.bat
 
-    1) git clone --depth=1 https://github.com/frazrepo/vimrc.git %USERPROFILE%/.vim_runtime
-    
-    2) run install.bat
+```
 
 ## How to update to latest version?
 
 Just do a git rebase!
 
+```shell
     cd ~/.vim_runtime
     git pull --rebase
-
+```
 And run install.sh (or install.bat) to update vimrc configuration file
 
 ## Cheat Sheet
@@ -31,13 +34,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
  - [Muscle Memory Cheat](https://www.cheatography.com/fraz/cheat-sheets/vim-muscle-memory/)
 
 
-## Rotatable color schemes
-
-    Default GUI : auy (light theme), dracula (dark theme)
-    Default Terminal : apprentice (dark theme)
-    Dark theme : anderson, atom-dark256, apprentice, codedark, gruvbox8, minimalist, 
-                 molokai, mustang, monokai(sublime text), nord, seoul, space-vim-dark
-    Light theme : ayu (dark available), seoul256-light, pencil
 
 ## Mappings
 <details>
@@ -47,78 +43,6 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 leader = <space>
     
-## Normal mode mappings
-
-**General**
-
-| Mapping           | Action                                 |
-| ---               | ---                                    |
-| \<leader>w        | Save buffer                            |
-| :W                | Save as sudo (linux)                   |
-| \<leader>fr       | Find/Replace highlighted text          |
-| \<leader><leader> | noh                                    |
-| \<leader>m        | Remove bad formatting ^M               |
-| \<leader>f        | Search current buffer using Ilist                     |
-
-**Move between Windows**
-
-| Mapping | Action |
-| ---     | ---    |
-| \<C-h>  | Left   |
-| \<C-l>  | Right  |
-
-**Buffers**
-
-| Mapping      | Action                         |
-| ---          | ---                            |
-| \<leader>bn  | New buffer                     |
-| \<leader>bd or !  | Close buffer                   |
-| \<leader>ba  | Close all buffers              |
-| \<bs>        | Navigate alternate buffer      |
-| \<leader>h   | Navigate previous              |
-| \<leader>l   | Navigate next                  |
-| \<leader>e   | Edit in current buffer's path                    | 
-| \<leader>x   | Scratch txt                    | 
-| \<leader>d:  | Scratch Markdown               |
-| \<leader>s   | Scratch SQL                    | 
-
-**Tabs**
-
-| Mapping        | Action                                |
-| ---            | ---                                   |
-| \<leader>tn    | New tab                               |
-| \<leader>to    | Tab Only                              |
-| \<leader>tc    | Close tab                             |
-| \<leader>\<bs> | Alternate tab                         |
-| \<leader>te    | Edit new tab in current buffer's path |
-
-## Editing mappings
-
-**Paste inner object quickly**
-
-| Mapping | Action   |
-| ---     | ---      |
-| \<leader>p      | "0p      |
-
-**Formatting**
-
-| Mapping | Action                   |
-| ---     | ---                      |
-| g=      | Equalize entire document |
-| gQ      | Format entire document   |
-
-## Visual mode mappings
-| Mapping    | Action                            |
-| ---        | ---                               |
-| *          | Search current selection          |
-| #          | Search current selection backward |
-| \<leader>r | Replace visual selection          |
-
-## Command line mappings
-| Mapping     | Action                            |
-| ---         | ---                               |
-| :W          |Write sudo                         |
-
 ## Various mappings
 | Mapping    | Action                            |
 | ---        | ---                               |
@@ -145,19 +69,6 @@ leader = <space>
 | gl{to-m}=        | Right Align with =     |
 | gL{to-m}=        | Left Align with =      |
 
-**vim-abolish**
-
-| Mapping   | Action               |
-| ---       | ---                  |
-| Subvert   | Search Command       |
-| crs       | Coerce to snake_case |
-| crm       | Coerce to MixedCase  |
-| crc       | Coerce to CamelCase  |
-| cru       | Coerce to UPPER_CASE |
-| cr-       | Coerce to dash-case  |
-| cr.       | Coerce to dot-case   |
-| cr<space> | Coerce to space case |
-| crt       | Coerce to Title Case |
 
 **vim-exchange**
 
@@ -218,11 +129,6 @@ leader = <space>
 | ---           | ---             |
 | RainbowToggle | Toggle coloring |
 
-**vim-rotatescheme**
-
-| Mapping       | Action                  |
-| ---           | ---                     |
-| F10 / \<S-F10> | Rotate Forward/Backward |
 
 **vim-scripts/Tranpose**
 
@@ -255,20 +161,6 @@ leader = <space>
 | \<leader>*         | Find selected word                       |
 | F9        | Toggle CtrlSF result Window              |
 | \<leader>/| Prompt or Exec in Visual Mode |
-
-**yankmatches**
-
-| Mapping | Action                                           |
-| ---     | ---                                              |
-| ym / YM | Yank highlighted search lines  (YM for inverse)  |
-| dm / DM | Delete highlighteed search line (DM for inverse) |
-
-**zirrostig/vim-schlepp**
-
-| Mapping            | Action                                                 |
-| ---                | ---                                                    |
-| up/down/left/right | After a selection in visual mode, drag using arrow key |
-| D | Duplicate in Visual Mode|
 
 
 **custom text-objects**
@@ -311,7 +203,6 @@ Regexp search/replace pattern
 - [neoformat](https://github.com/sbdchd/neoformat): Various formatters for many languages
 - [auto-pairs](https://github.com/jiangmiao/auto-pairs) : Auto close pairs (parentheses, quotes, ...)
 - [utilsnips + vim-snippets](https://github.com/SirVer/ultisnips) : Snippets
-- [vim-abolish](https://github.com/tpope/vim-abolish) : Search words, Coercion
 - [vim-commentary](https://github.com/tpope/vim-commentary)
 - [vim-nerdtree](https://github.com/preservim/nerdtree) : Tree Explorer
 - [vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
@@ -322,17 +213,15 @@ Regexp search/replace pattern
 - [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys
 - [vim-over](https://github.com/osyo-manga/vim-over) : Highlight buffer when operating from command line (s/, /, g/)
 - [vim-polyglot](https://github.com/sheerun/vim-polyglot) : Languages Support
-- [vim-qlist](https://github.com/romainl/vim-qlist) : Enhances ilist and dlist
-- [vim-qf](https://github.com/romainl/vim-qf) : Quickfix management, filtering,...
 - [vim-rainbow](https://github.com/luochen1990/rainbow) : Color parentheses, brackets,...
 - [vim-repeat](https://github.com/tpope/vim-repeat) : To repeat plugin command with dot (.)
 - [vim-rooter](https://github.com/airblade/vim-rooter) : Change dir to root project directory
-- [vim-rotatescheme](https://github.com/frazrepo/vimrc/tree/master/plugins/vim-rotatescheme) : Custom plugin to rotate a list of colorschemes
 - [vim-sandwich](https://github.com/machakann/vim-sandwich) : Surround texts with delimiters
 - [vim-sort-motion](https://github.com/christoomey/vim-sort-motion) : Add an operator gs to apply sort
 - [targets.vim](https://github.com/wellle/targets.vim) : Some text objects - quotes (q), columns (c), indents (i), line (l), entire buffer (e)
 - [vim-tranpose](https://github.com/salsifis/vim-transpose) : Tranpose lines, csv, words, ...
 - [vim-unimpaired](https://github.com/tpope/vim-unimpaired) :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
+- [vim-whichkey](https://github.com/liuchengxu/vim-which-key) :  Display available key bindings in popup
   
 ## How to uninstall
 Just do following:

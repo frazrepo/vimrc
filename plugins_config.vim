@@ -35,9 +35,12 @@ let g:Lf_ShortcutF = '<C-P>'
 "Buffers
 let g:Lf_ShortcutB = '<leader>,'
 
+nnoremap <silent> <leader>ff :LeaderfFile<CR>
+nnoremap <silent> <leader><leader>  :LeaderfFile<CR>
 nnoremap <silent> <leader>;  :LeaderfLine<CR>
-nnoremap <silent> <leader>co :LeaderfHistoryCmd<CR>
+nnoremap <silent> <leader>sc :LeaderfHistoryCmd<CR>
 nnoremap <silent> <leader>u  :LeaderfMru<CR>
+nnoremap <silent> <leader>fr  :LeaderfMru<CR>
 
 " popup mode
 let g:Lf_WindowPosition = 'popup'
@@ -163,12 +166,6 @@ let g:AutoPairsMoveCharacter=''
 runtime macros/sandwich/keymap/surround.vim
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => vim-qlist {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-nnoremap <silent> <leader>f :execute 'Ilist ' . expand('<cword>')<CR>
-vnoremap <silent> <leader>f :<C-u>call VisualSelection('', '')<CR>:Ilist <C-R>=@/<CR><CR>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-over {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
 let g:over#command_line#substitute#replace_pattern_visually = 1
@@ -181,37 +178,35 @@ let g:move_auto_indent = 0
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""	
 " => Completor  {{{1	
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     	
-if !exists("g:developer_edition") 
-  fun! TabOrComplete() "{{{	
-      call UltiSnips#ExpandSnippet()	
-      if g:ulti_expand_res == 0	
-        if pumvisible()	
-          return "\<C-n>"	
-        else	
-          call UltiSnips#JumpForwards()	
-          if g:ulti_jump_forwards_res == 0	
-            " If completor is not open and we are in the middle of typing a word then	
-            " `tab` opens completor menu.	
-            let inp_str = strpart( getline('.'), col('.')-3, 2 )	
-            if col('.')>1 && (inp_str =~ '^\w$' || inp_str =~ '\%(->\)\|\%(.\w\)\|\%(\w\.\)\|\%(./\)')	
-              return "\<C-R>=completor#do('complete')\<CR>"	
-              " Uncomment here to return to vanilla completion	
-              " return "\<C-n>"	
-            else	
-              return "\<TAB>"	
-            endif	
+fun! TabOrComplete() "{{{	
+    call UltiSnips#ExpandSnippet()	
+    if g:ulti_expand_res == 0	
+      if pumvisible()	
+        return "\<C-n>"	
+      else	
+        call UltiSnips#JumpForwards()	
+        if g:ulti_jump_forwards_res == 0	
+          " If completor is not open and we are in the middle of typing a word then	
+          " `tab` opens completor menu.	
+          let inp_str = strpart( getline('.'), col('.')-3, 2 )	
+          if col('.')>1 && (inp_str =~ '^\w$' || inp_str =~ '\%(->\)\|\%(.\w\)\|\%(\w\.\)\|\%(./\)')	
+            return "\<C-R>=completor#do('complete')\<CR>"	
+            " Uncomment here to return to vanilla completion	
+            " return "\<C-n>"	
+          else	
+            return "\<TAB>"	
           endif	
         endif	
       endif	
-      return ""	
-    endf "}}}	
-    au InsertEnter * exec "inoremap <silent> <Tab> <C-R>=TabOrComplete()<cr>"	
+    endif	
+    return ""	
+  endf "}}}	
+  au InsertEnter * exec "inoremap <silent> <Tab> <C-R>=TabOrComplete()<cr>"	
 
-   "LSP Activation (not working ?)	
-  let g:completor_filetype_map = {}	
-  " Enable lsp for go by using gopls	
-  let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}	
-endif
+ "LSP Activation (not working ?)	
+let g:completor_filetype_map = {}	
+" Enable lsp for go by using gopls	
+let g:completor_filetype_map.go = {'ft': 'lsp', 'cmd': 'gopls'}	
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => vim-rooter  {{{1
@@ -233,17 +228,19 @@ let g:highlightedyank_highlight_duration = 300
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Fugitive  {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
-nnoremap <leader>gs :Gstatus<cr>
-nnoremap <leader>gd :Gvdiff<cr>
-nnoremap <leader>gb :Gblame<cr>
+nnoremap <leader>gg :Git<cr>
+nnoremap <leader>gs :Git status<cr>
+nnoremap <leader>gd :Git diff<cr>
+nnoremap <leader>gb :Git blame<cr>
 nnoremap gdh :diffget //2<cr>
 nnoremap gdl :diffget //3<cr>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => NerdTreer {{{1
+" => NerdTree {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <C-n> :NERDTreeToggle<CR>
+nnoremap <leader>e :NERDTreeToggle<CR>
 nnoremap <leader>n :NERDTreeFind<CR>
 
 
@@ -258,9 +255,96 @@ let g:tokyonight_enable_italic = 1
 colorscheme tokyonight
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => LSP Client {{{1
+" => whichkey {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
+" Space whihch key
+noremap <silent> <leader> :WhichKey '<Space>'<CR>
+let g:which_key_map = {}
+" Direct maps
+let g:which_key_map.u = 'Find recent files'
+let g:which_key_map.e = 'NerdTree Toggle'
+let g:which_key_map.m = 'Replace special char ^m'
+let g:which_key_map.n = 'NerdTree find buffer'
+let g:which_key_map.q = 'QuickFix Toggle'
+let g:which_key_map.R = 'Replace word or selection'
+"let g:which_key_map[' '] = 'Find files'
+let g:which_key_map['/'] = 'Grep (Root Dir)'
+let g:which_key_map['*'] = 'Grep word or selection'
+let g:which_key_map[';'] = 'Buffer lines'
+let g:which_key_map[','] = 'Find buffers'
+let g:which_key_map['-'] = 'Split horizontally'
+let g:which_key_map['='] = 'Split vertically'
+let g:which_key_map['!'] = 'Buffer delete'
+let g:which_key_map['<BS>'] = 'Alternate tab'
+" Find
+let g:which_key_map.f = {
+      \ 'name' : '+find',
+      \ }
 
+" Git
+let g:which_key_map.g = {
+      \ 'name' : '+git',
+      \ }
+
+" Buffers"
+let g:which_key_map.b = {
+      \ 'name' : '+buffers',
+      \ 'd' : 'buffer-delete',
+      \ 'n' : 'buffer-new',
+      \ 'a' : 'buffer-delete-all',
+      \ 'o' : 'buffer-only',
+      \ '-' : 'buffer-split',
+      \ '=' : 'buffer-vsplit',
+      \ 'x' : 'buffer-text',
+      \ 'm' : 'buffer-markdown',
+      \ 's' : 'buffer-sql',
+      \ 'e' : 'buffer-new-cwd',
+      \ }
+
+" Tab
+let g:which_key_map.t = {
+      \ 'name' : '+tab',
+      \ 'n' : 'tab-new',
+      \ 'o' : 'tab-only',
+      \ 'c' : 'tab-close',
+      \ 'e' : 'tab-new-cwd',
+      \ }
+
+" Windows
+let g:which_key_map.w = {
+      \ 'name' : '+windows',
+      \ }
+
+" Search
+let g:which_key_map.s = {
+      \ 'name' : '+search',
+      \ }
+
+" Replace
+let g:which_key_map.r = {
+      \ 'name' : '+replace',
+      \ }
+
+call which_key#register('<Space>', 'g:which_key_map')
+
+" g which key"
+" Disabled for now as not working when typing gg
+"noremap <silent> g :WhichKey 'g'<CR>
+"let g:g_which_key_map = {}
+"" Direct maps
+"let g:g_which_key_map['%'] = 'Macth pair backward'
+"let g:g_which_key_map['='] = 'Indent buffer'
+"let g:g_which_key_map['Q'] = 'Format buffer'
+"let g:g_which_key_map.l = 'Align right'
+"let g:g_which_key_map.L = 'Align left'
+"let g:g_which_key_map.c = 'Comment'
+"let g:g_which_key_map['cc'] = 'Comment line'
+"let g:g_which_key_map.r = 'Replace operator'
+"let g:g_which_key_map['rr'] = 'Replace line (with register)'
+"let g:g_which_key_map.s = 'Sort operator'
+"let g:g_which_key_map['ss'] = 'Sort lines'
+"let g:g_which_key_map.V = 'Reselect visual selection'
+"call which_key#register('g', 'g:g_which_key_map')
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
