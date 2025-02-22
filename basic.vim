@@ -161,7 +161,7 @@ vnoremap < <gv
 " Reselect last insertext
 nnoremap gV `[v`]
 
-" Disable highlight
+" Disable highlight when ESC is pressed
 map <silent> <ESC> :noh<cr>
 
 " Smart way to move between windows 

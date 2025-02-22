@@ -87,12 +87,6 @@ set wildignore+=.git\*,node_modules\*
 set wildmenu                       " Turn on the Wild menu
 set wildmode=full
 
-" grepprg to ag
-if executable('ag')
-    set grepprg=ag\ --vimgrep
-    set grepformat=%f:%l:%c:%m,%f:%l:%m
-endif
-
 " grepprg to ripgrep
 if executable("rg")
     set grepprg=rg\ --vimgrep\ --no-heading
@@ -227,6 +221,8 @@ nnoremap gQ mmgggqG`m
 "Insert new line in normal mode quickly and move cursor (but not in quickfix window or in command line history)
 nnoremap <silent> gO <Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>
 nnoremap <silent> go <Cmd>call append(line('.'),     repeat([''], v:count1))<CR>
+nnoremap <silent> (<space> <Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>
+nnoremap <silent> )<space> <Cmd>call append(line('.'),     repeat([''], v:count1))<CR>
 
 " Navigating quickfix (Experimental)
 nnoremap <A-Down> :cnext<Cr>
@@ -281,6 +277,10 @@ noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 map <leader>bx :e ~/buffer.txt<cr>
 map <leader>bd :e ~/buffer.md<cr>
 map <leader>bs :e ~/buffer.sql<cr>
+
+" Tab Completion
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 "Adjust font size
 nnoremap <M-9>        :Smaller<CR>
@@ -470,11 +470,18 @@ function! s:FilterQuickfixList(bang, pattern)
 endfunction
 command! -bang -nargs=1 -complete=file QFilter call s:FilterQuickfixList(<bang>0, <q-args>)
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => File {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "Cheap MRU files
 nnoremap <leader>u :bro ol<CR>
+nnoremap <leader>fr :bro ol<CR>
 
 "Cheap buffer switching
 nnoremap <leader>, :ls<CR>:b<Space>
+
+" File Browser
+map <leader>e :Vexplore %:p:h<cr>
 
 " Cheap ctrl+p (Warning : too slow on big project)
 set path=.,**
