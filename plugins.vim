@@ -50,7 +50,6 @@ Plug 'vim-scripts/ReplaceWithRegister'
 
 " Code Searching {{{1
 Plug 'mhinz/vim-grepper'
-Plug 'tpope/vim-abolish'
 Plug 'osyo-manga/vim-over'
 
 " Code formatting {{{1
@@ -63,7 +62,6 @@ Plug 'christoomey/vim-sort-motion'
 Plug 'itchyny/lightline.vim'
 Plug 'frazrepo/vim-rainbow', { 'on' : 'RainbowToggle' }
 Plug 'machakann/vim-highlightedyank'
-Plug 'RRethy/vim-illuminate'
 Plug 'ghifarit53/tokyonight-vim'
 
 " Git integration {{{1

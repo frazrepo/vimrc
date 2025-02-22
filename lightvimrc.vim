@@ -1,14 +1,16 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Light vimrc : No plugins version
 " Maintainer: frazrepo
 " https://github.com/frazrepo/vimrc
-"
-" Debug : vim --startuptime vim.log
-"
-" To start vim without using this .vimrc file, use:
-"     vim -u NORC
-"
-" To start vim without loading any .vimrc or plugins, use:
-"     vim -u NONE
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Plugins (experimental) {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+if !has("nvim")
+    packadd! matchit
+endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => General {{{1
@@ -46,7 +48,6 @@ set mouse=a                        " Activate mouse
 set nobackup                       " Turn backup off, since most stuff is in SVN, git et.c anyway...
 set noerrorbells
 set nolist                         " List Chars
-set noshowmode                     " Do not show mode (displayed by lightline already)
 set noswapfile
 set nowritebackup
 
@@ -82,8 +83,15 @@ set whichwrap+=<,>,h,l
 set wildignore=*.o,*~,*.pyc,tags   " Ignore compiled files
 set wildignore+=*/.git/*,*/node_modules/*,*/dist/*
 set wildignore+=.git\*,node_modules\*
+
 set wildmenu                       " Turn on the Wild menu
 set wildmode=full
+
+" grepprg to ag
+if executable('ag')
+    set grepprg=ag\ --vimgrep
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
+endif
 
 " grepprg to ripgrep
 if executable("rg")
@@ -93,28 +101,22 @@ endif
 
 " Maximized window on start and Font Size
 if has("gui_running")
-
   "GuiOptions - Horizontal scrollbar
   set guioptions+=b
 
   if has("gui_gtk2") || has("gui_gtk3") 
     set lines=535 columns=1366
-    " set guifont=Inconsolata\ 17
-    set guifont=Fira\ Code\ 14
+    set guifont=Inconsolata\ 17
   endif
 
   if has("gui_macvim")
     set lines=768 columns=1366
-    set guifont=Fira\ Code:h16
+    set guifont=Menlo\ Regular:h14
   endif
 
   if has("gui_win32")
-    " autocmd GUIEnter * :simalt ~n
-    " set guifont=Consolas:h15:cANSI
-    set lines=600 columns=800
-    " Consolas Nerd Font for icons
-    "set guifont=Consolas\ NF:h14:cANSI
-    set guifont=Fira\ Code:h12:cANSI
+    autocmd GUIEnter * :simalt ~n
+    set guifont=Consolas:h15:cANSI
   endif
 
 endif
@@ -143,9 +145,9 @@ nnoremap ? ?\v
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 
-" Search and Replace
-nnoremap <Leader>rr :call VisualFindAndReplace()<CR>
-xnoremap <Leader>rr :call VisualFindAndReplaceWithSelection()<CR>
+"Visual find and replace
+nnoremap <Leader>rr :%s/
+xnoremap <Leader>rr :<C-u>'<,'>s/
 
 "Search and replace the selected text
 vnoremap <silent> <leader>rw :call VisualSelection('replace','')<CR>
@@ -184,7 +186,7 @@ map <leader>! :bd!<cr>
 map <leader>bn :enew<cr>
 map <leader>ba :bufdo bd<cr>
 " Close all buffers except current
-noremap <leader>bo :%bd\|e#\|bd#<cr>\|'"
+map <leader>bo :execute "%bd|e#|bd#"<cr>
 " Edit quickly with the current buffer path
 map <leader>be :edit <c-r>=expand("%:p:h")<cr>/
 
@@ -194,6 +196,7 @@ nnoremap <bs> <c-^>
 " Next and previous buffer
 nnoremap <Tab> :bnext<CR>
 nnoremap <S-Tab> :bprevious<CR>
+
 
 " Tabs
 map <leader>tn :tabnew<cr>
@@ -221,6 +224,10 @@ xnoremap Q :normal @q<cr>
 nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
 
+"Insert new line in normal mode quickly and move cursor (but not in quickfix window or in command line history)
+nnoremap <silent> gO <Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>
+nnoremap <silent> go <Cmd>call append(line('.'),     repeat([''], v:count1))<CR>
+
 " Navigating quickfix (Experimental)
 nnoremap <A-Down> :cnext<Cr>
 nnoremap <A-Up> :cprevious<Cr>
@@ -228,7 +235,6 @@ nnoremap <A-Up> :cprevious<Cr>
 " H and L Begin/End on homerow
 map H ^
 map L g_
-
 
 "Paste quickly in insert mode
 inoremap <C-r><C-r> <C-r>*
@@ -252,7 +258,6 @@ map ² .
 nnoremap mù m`
 nnoremap ùù ``
 nnoremap ' `
-
 
 " Execute a macro over a visual range
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
@@ -281,24 +286,20 @@ map <leader>bs :e ~/buffer.sql<cr>
 nnoremap <M-9>        :Smaller<CR>
 nnoremap <M-0>        :Bigger<CR>
 
+" For Tags navigation - <C-$> doesn't work yet
+nmap <F12> <C-]>
+
 " Toogle quickfix windows
 map <silent> <leader>q :call <SID>ToggleQf()<cr>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Miscellaneous {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""     
-
 " Increment/Decrement
 nnoremap + <C-a>
 nnoremap - <C-x>
 xnoremap + g<C-a>
 xnoremap - g<C-x>
-
-" Undo breakpoints
-inoremap , ,<C-g>u
-inoremap . .<C-g>u
-inoremap ? ?<C-g>u
-inoremap ! !<C-g>u
 
 " Map ALT Key in terminal
 if &term =~ 'xterm' && !has("gui_running")
@@ -309,6 +310,9 @@ endif
 " Insert mode cursor for terminal
 let &t_SI = "\e[6 q"
 let &t_EI = "\e[2 q"
+
+" Hide tilde ~ sign at the end of buffer
+ hi! EndOfBuffer guibg=bg guifg=bg
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Commands {{{1
@@ -362,7 +366,7 @@ if has("autocmd")
         autocmd FocusGained,BufEnter,CursorHold buffer.* silent! checktime
 
         " Format : - [ ] Task item
-        autocmd FileType markdown nnoremap <buffer> <silent> - :call winrestview(<SID>Toggle('^\s*-\s*\[\zs.\ze\]', {' ': '.', '.': 'x', 'x': ' '}))<cr>
+        autocmd FileType markdown nnoremap <buffer> <silent> - :call winrestview(<SID>toggle('^\s*-\s*\[\zs.\ze\]', {' ': '.', '.': 'x', 'x': ' '}))<cr>
 
     augroup END
 endif
@@ -413,7 +417,139 @@ onoremap ia :<C-u>normal vi><CR>
 xnoremap aa a>
 onoremap aa :<C-u>normal va><CR>
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Plugins Replacement for minimal vimrc {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+" vim targets : 24 simple text-objects
+" ----------------------
+" i_ i. i: i, i; i| i/ i\ i* i+ i- i#
+" a_ a. a: a, a; a| a/ a\ a* a+ a- a#
+for char in [ '_', '.', ':', ',', ';', '<bar>', '/', '<bslash>', '*', '+', '-', '#' ]
+	execute 'xnoremap i' . char . ' :<C-u>normal! T' . char . 'vt' . char . '<CR>'
+	execute 'onoremap i' . char . ' :normal vi' . char . '<CR>'
+	execute 'xnoremap a' . char . ' :<C-u>normal! F' . char . 'vf' . char . '<CR>'
+	execute 'onoremap a' . char . ' :normal va' . char . '<CR>'
+endfor
+
+" <TAB>: minimal tab completion.
+function! InsertTabWrapper()
+    let col = col('.') - 1
+    if !col || getline('.')[col - 1] !~ '\k'
+        return "\<tab>"
+    else
+        return "\<c-p>"
+    endif
+endfunction
+inoremap <expr> <tab> InsertTabWrapper()
+inoremap <s-tab> <c-n>
+
+" vim-move
+nnoremap <A-j> :m .+1<CR>==
+nnoremap <A-k> :m .-2<CR>==
+inoremap <A-j> <Esc>:m .+1<CR>==gi
+inoremap <A-k> <Esc>:m .-2<CR>==gi
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
+
+" Search in files (ctrlsf)
+nnoremap <leader>* :execute "grep " . expand("<cword>") . " **/*" <Bar> cw<CR>
+vnoremap <silent> <leader>* :<C-u>call VisualSelection('', '')<CR>:grep <C-R>=@/<CR> **/*<CR>:cw<cr>
+
+":grep foo /dir/*.sql 
+nnoremap <leader>/ :grep <C-R>=' **/*.'. expand('%:p:e')<CR><C-Left><Left>
+vnoremap <leader>/ :<C-u>call VisualSelection('', '')<CR>:grep <C-R>=@/<CR> **/*.<C-R>=expand('%:p:e')<CR>
+
+"Open automatically the Quickfix Window
+autocmd QuickFixCmdPost [^l]* cwindow
+
+" Filter Quickfix list
+function! s:FilterQuickfixList(bang, pattern)
+  let cmp = a:bang ? '!~#' : '=~#'
+  call setqflist(filter(getqflist(), "bufname(v:val['bufnr']) " . cmp . " a:pattern"))
+endfunction
+command! -bang -nargs=1 -complete=file QFilter call s:FilterQuickfixList(<bang>0, <q-args>)
+
+"Cheap MRU files
+nnoremap <leader>u :bro ol<CR>
+
+"Cheap buffer switching
+nnoremap <leader>, :ls<CR>:b<Space>
+
+" Cheap ctrl+p (Warning : too slow on big project)
+set path=.,**
+nnoremap <C-p> :find *
+nnoremap ,F :find <C-R>=expand('%:p:h').'/**/*'<CR>
+nnoremap ,s :sfind *
+nnoremap ,S :sfind <C-R>=expand('%:p:h').'/**/*'<CR>
+nnoremap ,v :vert sfind *
+nnoremap ,V :vert sfind <C-R>=expand('%:p:h').'/**/*'<CR>
+
+" Mapping like vinegar for netrw
+let g:netrw_banner=0
+nnoremap - :e %:h<cr>
+
+" Scratch buffer
+command! Scratch vnew | setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile
+nnoremap <leader>bs :Scratch<cr>
+
+" Yankmatches/ DeleteMatches
+if has('win32') || has('win64')
+  nnoremap <silent> ym qxq:g/<C-R>//yank X<CR>:let @*=@x<CR>
+else
+  nnoremap <silent> ym qxq:g/<C-R>//yank X<CR>:let @+=@x<CR>
+endif
+nnoremap <silent> dm :g/<C-R>//d<CR>
+
+" gtfo
+nnoremap gof :call CopyFilePath()<CR>
+function! CopyFilePath()
+  let @+=expand('%:p:h')
+  let @*=expand('%:p:h')
+  echo "File path copied to system clipboard"
+endfunction
+
+"Auto-Pairs /Pear Tree replacement
+inoremap ( ()<Left>
+inoremap <expr> ) getline('.')[getpos('.')[2]-1] == ')' ? '<Right>' : ')'
+                   
+inoremap [ []<Left>
+inoremap <expr> ] getline('.')[getpos('.')[2]-1] == ']' ? '<Right>' : ']'
+                   
+inoremap { {}<Left>
+inoremap <expr> } getline('.')[getpos('.')[2]-1] == '}' ? '<Right>' : '}'
+                   
+inoremap < <><Left>
+inoremap <expr> > getline('.')[getpos('.')[2]-1] == '>' ? '<Right>' : '>'
+
+inoremap <expr> " getline('.')[getpos('.')[2]-1] == '"' ? '<Right>' : '""<Left>'
+inoremap <expr> ' getline('.')[getpos('.')[2]-1] == "'" ? '<Right>' : "''<Left>"
+
+" IList Search in the buffer
+" nnoremap <leader>f :ilist<space>/
+nnoremap <leader>f :execute "vimgrep /" . expand("<cword>") . "/j %" <Bar> cw<CR>
+vnoremap <silent> <leader>f :<C-u>call VisualSelection('', '')<CR>:vimgrep/<C-R>=@/<CR>/j %<CR>:cw<cr>
+
+" Minimal vim rooter
+" CWD automatically for the current buffer
+augroup CwdBufferEnter
+  autocmd!
+  autocmd Filetype,BufEnter *  call ChangeCurrentWorkingDirectory()
+augroup END
+
+" Change Current Working Directory (CWD) to buffer directory
+function! ChangeCurrentWorkingDirectory()
+  try
+    :cd %:p:h
+  catch
+  endtry
+endfunction
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Statusline {{{1
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set laststatus=2
+set statusline=%<\ %f\ %m%r%y%w%=%l\/%-6L\ %3c\ 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions and Commands {{{1
@@ -440,20 +576,14 @@ function! VisualSelection(direction, extra_filter) range
     let l:pattern = escape(@", "\\/.*'$^~[]")
     let l:pattern = substitute(l:pattern, "\n$", "", "")
 
+    if a:direction == 'gv'
+        call CmdLine("Ack '" . l:pattern . "' " )
+    elseif a:direction == 'replace'
+        call CmdLine("%s" . '/'. l:pattern . '/')
+    endif
+
     let @/ = l:pattern
-    if a:direction == 'replace'
-        :OverCommandLine%s//
-    endif 
-
     let @" = l:saved_reg
-endfunction
-
-function! VisualFindAndReplace()
-    :OverCommandLine%s/
-endfunction
-
-function! VisualFindAndReplaceWithSelection() range
-    :'<,'>OverCommandLine s/
 endfunction
 
 " Toogle quickfix windows
@@ -496,25 +626,8 @@ function! CommandLineCR()
     endif
 endfunction
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Load Plugins and Configs {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"Plugins and Configurations
-source $HOME/.vim_runtime/plugins.vim
-source $HOME/.vim_runtime/plugins_config.vim
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Color Scheme {{{1
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Check colorScheme function
-function! HasColorscheme(name)
-    let pat = 'colors/'.a:name.'.vim'
-    return !empty(globpath(&rtp, pat))
-endfunction
-
 " Toggle Checkbox Markdown
-function s:Toggle(pattern, dict, ...)
+function s:toggle(pattern, dict, ...)
   let view = winsaveview()
   execute 'keeppatterns s/' . a:pattern . '/\=get(a:dict, submatch(0), a:0 ? a:1 : " ")/e'
   return view
