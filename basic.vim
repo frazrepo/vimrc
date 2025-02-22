@@ -221,11 +221,6 @@ xnoremap Q :normal @q<cr>
 nnoremap g= mmgg=G`m
 nnoremap gQ mmgggqG`m
 
-"Insert new line in normal mode quickly and move cursor (but not in quickfix window or in command line history)
-" go/gO Conflict with plugin gtfo using )<space> instead from vim-unimpaired
-"nnoremap <silent> )O <Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>
-"nnoremap <silent> go <Cmd>call append(line('.'),     repeat([''], v:count1))<CR>
-
 " Navigating quickfix (Experimental)
 nnoremap <A-Down> :cnext<Cr>
 nnoremap <A-Up> :cprevious<Cr>

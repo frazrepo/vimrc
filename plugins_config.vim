@@ -230,7 +230,7 @@ let g:highlightedyank_highlight_duration = 300
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
 nnoremap <leader>gs :Gstatus<cr>
 nnoremap <leader>gd :Gvdiff<cr>
-nnoremap <leader>gb :Gblame<cr>
+nnoremap <leader>gb :Git blame<cr>
 nnoremap gdh :diffget //2<cr>
 nnoremap gdl :diffget //3<cr>
 
@@ -327,22 +327,23 @@ let g:which_key_map.r = {
 call which_key#register('<Space>', 'g:which_key_map')
 
 " g which key"
-noremap <silent> g :WhichKey 'g'<CR>
-let g:g_which_key_map = {}
-" Direct maps
-let g:g_which_key_map['%'] = 'Macth pair backward'
-let g:g_which_key_map['='] = 'Indent buffer'
-let g:g_which_key_map['Q'] = 'Format buffer'
-let g:g_which_key_map.l = 'Align right'
-let g:g_which_key_map.L = 'Align left'
-let g:g_which_key_map.c = 'Comment'
-let g:g_which_key_map['cc'] = 'Comment line'
-let g:g_which_key_map.r = 'Replace operator'
-let g:g_which_key_map['rr'] = 'Replace line (with register)'
-let g:g_which_key_map.s = 'Sort operator'
-let g:g_which_key_map['ss'] = 'Sort lines'
-let g:g_which_key_map.V = 'Reselect visual selection'
-call which_key#register('g', 'g:g_which_key_map')
+" Disabled for now as not working when typing gg
+"noremap <silent> g :WhichKey 'g'<CR>
+"let g:g_which_key_map = {}
+"" Direct maps
+"let g:g_which_key_map['%'] = 'Macth pair backward'
+"let g:g_which_key_map['='] = 'Indent buffer'
+"let g:g_which_key_map['Q'] = 'Format buffer'
+"let g:g_which_key_map.l = 'Align right'
+"let g:g_which_key_map.L = 'Align left'
+"let g:g_which_key_map.c = 'Comment'
+"let g:g_which_key_map['cc'] = 'Comment line'
+"let g:g_which_key_map.r = 'Replace operator'
+"let g:g_which_key_map['rr'] = 'Replace line (with register)'
+"let g:g_which_key_map.s = 'Sort operator'
+"let g:g_which_key_map['ss'] = 'Sort lines'
+"let g:g_which_key_map.V = 'Reselect visual selection'
+"call which_key#register('g', 'g:g_which_key_map')
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
