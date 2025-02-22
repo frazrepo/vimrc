@@ -257,8 +257,12 @@ colorscheme tokyonight
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => whichkey {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
+" Options
+let g:which_key_fallback_to_native_key = 1
+
 " Space whihch key
-noremap <silent> <leader> :WhichKey '<Space>'<CR>
+nnoremap <silent> <leader> :<c-u>WhichKey '<Space>'<CR>
+vnoremap <silent> <leader> :<c-u>WhichKeyVisual '<Space>'<CR>
 let g:which_key_map = {}
 " Direct maps
 let g:which_key_map.u = 'Find recent files'
@@ -328,23 +332,27 @@ let g:which_key_map.r = {
 call which_key#register('<Space>', 'g:which_key_map')
 
 " g which key"
-" Disabled for now as not working when typing gg
-"noremap <silent> g :WhichKey 'g'<CR>
-"let g:g_which_key_map = {}
-"" Direct maps
-"let g:g_which_key_map['%'] = 'Macth pair backward'
-"let g:g_which_key_map['='] = 'Indent buffer'
-"let g:g_which_key_map['Q'] = 'Format buffer'
-"let g:g_which_key_map.l = 'Align right'
-"let g:g_which_key_map.L = 'Align left'
-"let g:g_which_key_map.c = 'Comment'
-"let g:g_which_key_map['cc'] = 'Comment line'
-"let g:g_which_key_map.r = 'Replace operator'
-"let g:g_which_key_map['rr'] = 'Replace line (with register)'
-"let g:g_which_key_map.s = 'Sort operator'
-"let g:g_which_key_map['ss'] = 'Sort lines'
-"let g:g_which_key_map.V = 'Reselect visual selection'
-"call which_key#register('g', 'g:g_which_key_map')
+nnoremap <silent> g :<c-u>WhichKey 'g'<CR>
+vnoremap <silent> g :<c-u>WhichKeyVisual 'g'<CR>
+let g:g_which_key_map = {}
+" Direct maps
+let g:g_which_key_map['%'] = 'Macth pair backward'
+let g:g_which_key_map['='] = 'Indent buffer'
+let g:g_which_key_map['Q'] = 'Format buffer'
+let g:g_which_key_map.l = 'Align right'
+let g:g_which_key_map.L = 'Align left'
+let g:g_which_key_map.c = 'Comment'
+let g:g_which_key_map['cc'] = 'Comment line'
+let g:g_which_key_map.r = 'Replace operator'
+let g:g_which_key_map['rr'] = 'Replace line (with register)'
+let g:g_which_key_map.s = 'Sort operator'
+let g:g_which_key_map['ss'] = 'Sort lines'
+let g:g_which_key_map.V = 'Reselect visual selection'
+" Group"
+let g:g_which_key_map.o = {
+      \ 'name' : '+gtfo',
+      \ }
+call which_key#register('g', 'g:g_which_key_map')
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
