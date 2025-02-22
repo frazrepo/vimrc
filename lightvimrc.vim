@@ -221,6 +221,8 @@ nnoremap gQ mmgggqG`m
 "Insert new line in normal mode quickly and move cursor (but not in quickfix window or in command line history)
 nnoremap <silent> gO <Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>
 nnoremap <silent> go <Cmd>call append(line('.'),     repeat([''], v:count1))<CR>
+nnoremap <silent> (<space> <Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>
+nnoremap <silent> )<space> <Cmd>call append(line('.'),     repeat([''], v:count1))<CR>
 
 " Navigating quickfix (Experimental)
 nnoremap <A-Down> :cnext<Cr>
@@ -473,21 +475,13 @@ command! -bang -nargs=1 -complete=file QFilter call s:FilterQuickfixList(<bang>0
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "Cheap MRU files
 nnoremap <leader>u :bro ol<CR>
+nnoremap <leader>fr :bro ol<CR>
 
 "Cheap buffer switching
 nnoremap <leader>, :ls<CR>:b<Space>
-
-" Cheap ctrl+p (Warning : too slow on big project)
-set path=.,**
-nnoremap <C-p> :find *
 
 " File Browser
 map <leader>e :Vexplore %:p:h<cr>
-"Cheap MRU files
-nnoremap <leader>u :bro ol<CR>
-
-"Cheap buffer switching
-nnoremap <leader>, :ls<CR>:b<Space>
 
 " Cheap ctrl+p (Warning : too slow on big project)
 set path=.,**

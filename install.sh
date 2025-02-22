@@ -6,7 +6,6 @@ userConfig=$userdir/.vimrc
 backupConfig=~/.vimrc.bkp
 vimrcfile=vimrc
 lightvimrc=lightvimrc.vim
-minivimrc=minivimrc.vim
 
 [ -e $backupConfig ] &&  rm $backupConfig
 
@@ -20,10 +19,6 @@ if [ $option == "-l" ]
 then
     echo "Installing light vimrc file.."
     cp  $lightvimrc $userConfig
-elif [ $option == "-m" ]
-then
-    echo "Installing mini vimrc file.."
-    cp  $minivimrc $userConfig
 elif [ $option == "full" ]
 then
     echo "Installing vimrc file.."
