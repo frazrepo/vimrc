@@ -203,7 +203,6 @@ Regexp search/replace pattern
 - [neoformat](https://github.com/sbdchd/neoformat): Various formatters for many languages
 - [auto-pairs](https://github.com/jiangmiao/auto-pairs) : Auto close pairs (parentheses, quotes, ...)
 - [utilsnips + vim-snippets](https://github.com/SirVer/ultisnips) : Snippets
-- [vim-abolish](https://github.com/tpope/vim-abolish) : Search words, Coercion
 - [vim-commentary](https://github.com/tpope/vim-commentary)
 - [vim-nerdtree](https://github.com/preservim/nerdtree) : Tree Explorer
 - [vim-exchange](https://github.com/tommcdo/vim-exchange) : Exchange in pair with a new operator cx
@@ -214,17 +213,15 @@ Regexp search/replace pattern
 - [vim-move](https://github.com/matze/vim-move) : Move lines or selections up and down using (ALT) jk keys
 - [vim-over](https://github.com/osyo-manga/vim-over) : Highlight buffer when operating from command line (s/, /, g/)
 - [vim-polyglot](https://github.com/sheerun/vim-polyglot) : Languages Support
-- [vim-qlist](https://github.com/romainl/vim-qlist) : Enhances ilist and dlist
-- [vim-qf](https://github.com/romainl/vim-qf) : Quickfix management, filtering,...
 - [vim-rainbow](https://github.com/luochen1990/rainbow) : Color parentheses, brackets,...
 - [vim-repeat](https://github.com/tpope/vim-repeat) : To repeat plugin command with dot (.)
 - [vim-rooter](https://github.com/airblade/vim-rooter) : Change dir to root project directory
-- [vim-rotatescheme](https://github.com/frazrepo/vimrc/tree/master/plugins/vim-rotatescheme) : Custom plugin to rotate a list of colorschemes
 - [vim-sandwich](https://github.com/machakann/vim-sandwich) : Surround texts with delimiters
 - [vim-sort-motion](https://github.com/christoomey/vim-sort-motion) : Add an operator gs to apply sort
 - [targets.vim](https://github.com/wellle/targets.vim) : Some text objects - quotes (q), columns (c), indents (i), line (l), entire buffer (e)
 - [vim-tranpose](https://github.com/salsifis/vim-transpose) : Tranpose lines, csv, words, ...
 - [vim-unimpaired](https://github.com/tpope/vim-unimpaired) :  Toogle Options, Next/Previous, Switch Lines or Add Spaces
+- [vim-whichkey](https://github.com/liuchengxu/vim-which-key) :  Display available key bindings in popup
   
 ## How to uninstall
 Just do following:
