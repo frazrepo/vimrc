@@ -416,7 +416,29 @@ colorscheme tokyonight
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => whichkey {{{1
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""             
+" Space whihch key
 noremap <silent> <leader> :WhichKey '<Space>'<CR>
+let g:which_key_map = {}
+" Direct maps
+let g:which_key_map.u = 'Find recent files'
+let g:which_key_map.e = 'NerdTree Toggle'
+let g:which_key_map.m = 'Replace special char ^m'
+let g:which_key_map.n = 'NerdTree find buffer'
+let g:which_key_map.q = 'QuickFix Toggle'
+let g:which_key_map.R = 'Replace word or selection'
+"let g:which_key_map[' '] = 'Find files'
+let g:which_key_map['/'] = 'Grep (Root Dir)'
+let g:which_key_map['*'] = 'Grep word or selection'
+let g:which_key_map[';'] = 'Buffer lines'
+let g:which_key_map[','] = 'Find buffers'
+let g:which_key_map['-'] = 'Split horizontally'
+let g:which_key_map['='] = 'Split vertically'
+let g:which_key_map['!'] = 'Buffer delete'
+let g:which_key_map['<BS>'] = 'Alternate tab'
+" Find
+let g:which_key_map.f = {
+      \ 'name' : '+find',
+      \ }
 
 " Git
 let g:which_key_map.g = {
