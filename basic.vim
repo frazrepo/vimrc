@@ -520,13 +520,14 @@ function s:Toggle(pattern, dict, ...)
   return view
 endfunction
 
-" }}} "
-
-" Host specific vim 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Host specific vim {{{1 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if filereadable(expand($HOME . '/.vimrc.local'))
     source $HOME/.vimrc.local
 endif
 
+" }}} "
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Modeline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
