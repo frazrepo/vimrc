@@ -41,16 +41,12 @@ And run install.sh (or install.bat) to update vimrc configuration file
 
 ## Leader key
 
-leader = <space>
+leader = '<space>'
     
 ## Various mappings
 | Mapping    | Action                            |
 | ---        | ---                               |
 | F3         |Neoformat                          |
-| F4         |UndoTreeToggle                     |
-| F8         |Toggle quickfix window             |
-| F9         |Toggle CtrlSF                      |
-| F10        |Rotate colorschemes                |
 | \<M-0>     |Set font bigger (gui only)         |
 | \<M-9>     |Set font smaller (gui only)        |
 
