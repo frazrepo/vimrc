@@ -274,7 +274,7 @@ noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 
 " Quickly open a txt, markdown and sql buffer for scribble
 map <leader>bx :e ~/buffer.txt<cr>
-map <leader>bd :e ~/buffer.md<cr>
+map <leader>bm :e ~/buffer.md<cr>
 map <leader>bs :e ~/buffer.sql<cr>
 
 "Adjust font size
